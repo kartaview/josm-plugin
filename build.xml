@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="openstreetview-plugin" xmlns:if="ant:if" xmlns:unless="ant:unless" default="dist" basedir=".">
+
+	<property name="plugin.build.dir" value="${basedir}/build/classes" />
+	<property name="plugin.apidoc.dir" value="${basedir}/build/doc" />
+	<property name="plugin.src.dir" value="${basedir}/src" />
+	<property name="plugin.dist.dir" value="${basedir}/dist" />
+	<property name="plugin.lib.dir" value="${basedir}/lib" />
+	<property name="plugin.images.dir" value="${basedir}/images" />
+	<property name="plugin.name" value="OpenStreetView.jar" />
+	<property name="JOSM_lib" value="josm-tested.jar" />
+
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>
+
+
+	<!--
+    **********************************************************
+    ** compile - complies the source tree
+    **********************************************************
+    -->
+	<target name="init">
+		<delete dir="${plugin.build.dir}" />
+		<delete dir="${plugin.apidoc.dir}" />
+		<mkdir dir="${plugin.build.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<path id="classpath">
+			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-old.jar" />
+			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
+		</path>
+		<javac srcdir="src" debug="false" destdir="${plugin.build.dir}" includeantruntime="true" excludes="**/package-info.java" classpathref="classpath">
+			<compilerarg value="-Xlint:deprecation" />
+			<compilerarg value="-Xlint:unchecked" />
+		</javac>
+	</target>
+
+	<!--
+    **********************************************************
+    ** javadoc - creates javadocs
+    **********************************************************
+    -->
+	<target name="javadoc">
+		<mkdir dir="${plugin.apidoc.dir}" />
+		<path id="classpath">
+			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-latest.jar" />
+			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
+		</path>
+		<javadoc destdir="${plugin.apidoc.dir}" source="1.7" classpathref="classpath" windowtitle="OpenStreetView plugin API">
+			<link href="http://java.sun.com/javase/7/docs/api/" />
+			<packageset dir="${plugin.src.dir}">
+			</packageset>
+		</javadoc>
+
+	</target>
+
+	<!--
+    **********************************************************
+    ** dist - creates the plugin jar
+    **********************************************************
+    -->
+	<target name="dist" depends="compile">
+		<condition property="plugin.out.dir" value="${plugin.dist.dir}/${out.dir}" else="${plugin.dist.dir}">
+			<isset property="out.dir" />
+		</condition>
+		<echo message="out dir: ${plugin.out.dir}" />
+		<delete dir="${plugin.out.dir}" />
+		<mkdir dir="${plugin.out.dir}" />
+		<copy todir="${plugin.build.dir}">
+			<fileset dir="resources" />
+		</copy>
+		<replaceregexp if:set="service_url" file="${plugin.build.dir}/openstreetview_service.properties" match="${url.key}" replace="${service_url}" />
+		<copy todir="${plugin.build.dir}/images">
+			<fileset dir="images" />
+		</copy>
+		<copy todir="${plugin.build.dir}">
+			<fileset dir=".">
+				<include name="README" />
+				<include name="LICENSE.txt" />
+			</fileset>
+		</copy>
+		<jar destfile="${plugin.out.dir}/${plugin.name}" basedir="${plugin.build.dir}">
+			<zipfileset src="${plugin.lib.dir}/gson-2.6.2.jar" />
+			<zipfileset src="${plugin.lib.dir}/josm-common-1.0.jar" />
+			<manifest>
+				<attribute name="Author" value="telenav" />
+				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetview.OpenStreetViewPlugin" />
+				<attribute name="Plugin-Date" value="${TODAY}" />
+				<attribute name="Plugin-Description" value="This plugin displays the images from the OpenStreetView project." />
+				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetView" />
+				<attribute name="Plugin-Icon" value="images/openstreetview_logo_50x50.png" />
+				<attribute name="Plugin-Version" value="${build-label}" />
+				<attribute name="Plugin-Early" value="true" />
+				<attribute name="Plugin-Mainversion" value="10161" />
+			</manifest>
+		</jar>
+	</target>
+
+
+	<!--
+    **********************************************************
+    ** clean - clean up the build environment
+    **********************************************************
+    -->
+
+	<!--
+    **********************************************************
+    ** install - install the plugin in your local JOSM installation
+    **********************************************************
+    -->
+	<target name="install" depends="dist">
+		<property environment="env" />
+		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
+			<and>
+				<os family="windows" />
+			</and>
+		</condition>
+		<delete file="${josm.plugins.dir}/${plugin.name}" failonerror="false" />
+		<copy file="${plugin.dist.dir}/${plugin.name}" todir="${josm.plugins.dir}" />
+	</target>
+</project>
