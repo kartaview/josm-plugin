@@ -112,7 +112,7 @@ class FilterPanel extends JPanel {
         if (uncommitteddDate == null) {
             // the 'uncommitted' date is invalid
             if (!editorText.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getErrorDateFilterTxt(),
+                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
@@ -129,7 +129,18 @@ class FilterPanel extends JPanel {
         // the 'uncommitted' date is valid
         // the date from the date picker editor was already committed
         if (uncommitteddDate.equals(pickerDate.getDate())) {
+            // the 'uncommitted' date is greater than the current date
+            if (!checkAcceptance(uncommitteddDate)) {
+                return null;
+            }
+
+            // the 'uncommitted' date is committed and valid
             return new ListFilter(pickerDate.getDate(), cbbUser.isSelected());
+        }
+
+        // the date from the date picker editor was not committed
+        if (!checkAcceptance(uncommitteddDate)) {
+            return null;
         }
 
         // the uncommitted date need an extra confirmation
@@ -145,6 +156,16 @@ class FilterPanel extends JPanel {
             return new ListFilter(date, cbbUser.isSelected());
         }
         return null;
+    }
+
+    private boolean checkAcceptance(final Date date) {
+        if (date.compareTo(
+                (Date) (new DateFormatter().stringToValue(GuiConfig.getInstance().getMaxDateFilterTxt()))) > 0) {
+            JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
+                    GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 
     /**
