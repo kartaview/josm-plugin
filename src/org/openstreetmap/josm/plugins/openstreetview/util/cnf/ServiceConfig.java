@@ -19,6 +19,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
 
 
 /**
+ * Loads service related information.
  *
  * @author Beata
  * @version $Revision$
@@ -29,14 +30,16 @@ public class ServiceConfig extends BaseConfig {
     private static final String CONFIG_FILE = "openstreetview_service.properties";
     private static final ServiceConfig INSTANCE = new ServiceConfig();
 
-    private final String serviceUrl;
+    private final String baseUrl;
+    private final String version;
     private int photoZoom;
 
 
     public ServiceConfig() {
         super(CONFIG_FILE);
 
-        serviceUrl = readProperty("service.url");
+        baseUrl = readProperty("service.url");
+        version = readProperty("service.version");
 
         final String photoZoomValue = readProperty("photoZoom");
         try {
@@ -52,7 +55,11 @@ public class ServiceConfig extends BaseConfig {
     }
 
     public String getServiceUrl() {
-        return serviceUrl;
+        return baseUrl + version;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     public int getPhotoZoom() {

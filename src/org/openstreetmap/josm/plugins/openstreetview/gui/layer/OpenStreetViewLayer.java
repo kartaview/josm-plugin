@@ -15,73 +15,53 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.RENDERING_MAP;
 import java.awt.Graphics2D;
-import javax.swing.Action;
-import javax.swing.Icon;
+import java.awt.Point;
+import java.util.List;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MapView;
-import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
-import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
-import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 
 
 /**
+ * Defines the OpenStreetView layer functionality.
  *
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetViewLayer extends Layer {
+public class OpenStreetViewLayer extends AbtractLayer {
 
-    public OpenStreetViewLayer() {
-        super(GuiConfig.getInstance().getPluginShortName());
-    }
+    private final PaintHandler paintHandler = new PaintHandler();
+    private List<Photo> photos;
+    private Photo selectedPhoto;
 
-    @Override
-    public void paint(final Graphics2D arg0, final MapView arg1, final Bounds arg2) {
-        // TODO Auto-generated method stub
-
-    }
 
     @Override
-    public Icon getIcon() {
-        return IconConfig.getInstance().getLayerIcon();
+    public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
+        mapView.setDoubleBuffered(true);
+        graphics.setRenderingHints(RENDERING_MAP);
+        System.out.println(Util.zoom(Main.map.mapView.getRealBounds()));
+        if (photos != null) {
+            paintHandler.drawPhotos(graphics, mapView, photos, selectedPhoto);
+        }
     }
 
-    @Override
-    public Object getInfoComponent() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setPhotos(final List<Photo> photos) {
+        this.photos = photos;
     }
 
-    @Override
-    public Action[] getMenuEntries() {
-        final LayerListDialog layerListDialog = LayerListDialog.getInstance();
-        return new Action[] { layerListDialog.createActivateLayerAction(this),
-                layerListDialog.createShowHideLayerAction(), layerListDialog.createDeleteLayerAction(),
-                SeparatorLayerAction.INSTANCE, SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+    public Photo nearbyPhoto(final Point point) {
+        return photos != null ? Util.nearbyPhoto(photos, point) : null;
     }
 
-    @Override
-    public String getToolTipText() {
-        return GuiConfig.getInstance().getPluginLongName();
+    public Photo getSelectedPhoto() {
+        return selectedPhoto;
     }
 
-    @Override
-    public boolean isMergable(final Layer arg0) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void mergeFrom(final Layer layer) {
-        // this operation is not supported
-    }
-
-    @Override
-    public void visitBoundingBox(final BoundingXYVisitor visitor) {
-        // this operation is not supported
+    public void setSelectedPhoto(final Photo selectedPhoto) {
+        this.selectedPhoto = selectedPhoto;
     }
 }

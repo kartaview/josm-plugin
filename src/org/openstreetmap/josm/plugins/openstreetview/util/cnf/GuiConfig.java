@@ -19,6 +19,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
 
 
 /**
+ * Loads GUI related texts.
  *
  * @author Beata
  * @version $Revision$
@@ -32,6 +33,12 @@ public class GuiConfig extends BaseConfig {
     private final String pluginLongName;
     private final String pluginTlt;
 
+    private final String btnFilterTlt;
+    private final String btnLocationTlt;
+    private final String btnWebPageTlt;
+
+    private final String photoErrorTxt;
+
 
     public GuiConfig() {
         super(CONFIG_FILE);
@@ -39,6 +46,10 @@ public class GuiConfig extends BaseConfig {
         pluginShortName = readProperty("plugin.name.short");
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
+        btnFilterTlt = readProperty("btn.filter.tlt");
+        btnLocationTlt = readProperty("btn.location.tlt");
+        btnWebPageTlt = readProperty("btn.webPage.tlt");
+        photoErrorTxt = readProperty("photo.error.txt");
     }
 
 
@@ -56,5 +67,21 @@ public class GuiConfig extends BaseConfig {
 
     public String getPluginTlt() {
         return pluginTlt;
+    }
+
+    public String getBtnFilterTlt() {
+        return btnFilterTlt;
+    }
+
+    public String getBtnLocationTlt() {
+        return btnLocationTlt;
+    }
+
+    public String getBtnWebPageTlt() {
+        return btnWebPageTlt;
+    }
+
+    public String getPhotoErrorTxt() {
+        return photoErrorTxt;
     }
 }

@@ -16,11 +16,13 @@
 package org.openstreetmap.josm.plugins.openstreetview.util.cnf;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.cnf.BaseConfig;
 
 
 /**
+ * Loads icons and icon names.
  *
  * @author Beata
  * @version $Revision$
@@ -33,6 +35,11 @@ public class IconConfig extends BaseConfig {
     private final String pluginIconName;
     private final String dialogShortcutName;
     private final Icon layerIcon;
+    private final ImageIcon photoIcon;
+    private final ImageIcon photoSelectedIcon;
+    private final Icon filterIcon;
+    private final Icon locationIcon;
+    private final Icon webPageIcon;
 
 
     public IconConfig() {
@@ -41,6 +48,11 @@ public class IconConfig extends BaseConfig {
         pluginIconName = readProperty("plugin.icon");
         layerIcon = ImageProvider.get(readProperty("layer.icon"));
         dialogShortcutName = readProperty("dialog.shortcut");
+        photoIcon = ImageProvider.get(readProperty("photo.icon"));
+        photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
+        filterIcon = ImageProvider.get(readProperty("filter.icon"));
+        locationIcon = ImageProvider.get(readProperty("location.icon"));
+        webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
     }
 
 
@@ -58,5 +70,25 @@ public class IconConfig extends BaseConfig {
 
     public Icon getLayerIcon() {
         return layerIcon;
+    }
+
+    public ImageIcon getPhotoIcon() {
+        return photoIcon;
+    }
+
+    public ImageIcon getPhotoSelectedIcon() {
+        return photoSelectedIcon;
+    }
+
+    public Icon getFilterIcon() {
+        return filterIcon;
+    }
+
+    public Icon getLocationIcon() {
+        return locationIcon;
+    }
+
+    public Icon getWebPageIcon() {
+        return webPageIcon;
     }
 }
