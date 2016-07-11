@@ -73,6 +73,6 @@ abstract class AbtractLayer extends Layer {
 
     @Override
     public void visitBoundingBox(final BoundingXYVisitor visitor) {
-        // this operation is not supported
+        System.out.println("visit bounding box");
     }
 }

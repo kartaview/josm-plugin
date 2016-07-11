@@ -19,6 +19,7 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
 
 
 /**
@@ -30,9 +31,9 @@ import org.openstreetmap.josm.gui.MapView;
  */
 public class Circle {
 
-    private static final int MAX_RADIUS = 5000;
     private final LatLon center;
     private final int radius;
+
 
     /**
      * Builds a new circle based on the given map view.
@@ -45,9 +46,16 @@ public class Circle {
                 .toBBox();
         this.center = bbox.getCenter();
         final int distance = (int) this.center.greatCircleDistance(bbox.getBottomRight());
-        this.radius = distance > MAX_RADIUS ? MAX_RADIUS : distance;
+        this.radius = distance > ServiceConfig.getInstance().getMaxRadius() ? ServiceConfig.getInstance().getMaxRadius()
+                : distance;
     }
 
+    public Circle(final Bounds bounds) {
+        this.center = bounds.toBBox().getCenter();
+        final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
+        this.radius = distance > ServiceConfig.getInstance().getMaxRadius() ? ServiceConfig.getInstance().getMaxRadius()
+                : distance;
+    }
 
     public LatLon getCenter() {
         return center;

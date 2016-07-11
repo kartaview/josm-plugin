@@ -13,35 +13,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package org.openstreetmap.josm.plugins.openstreetview.argument;
-
-import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
-
+package org.openstreetmap.josm.plugins.openstreetview.observer;
 
 /**
- * Defines the attributes of a pagination.
  *
  * @author Beata
  * @version $Revision$
  */
-public class Paging {
+public interface LocationObserver {
 
-    public static final Paging DEFAULT = new Paging(1, ServiceConfig.getInstance().getMaxItems());
-
-    private final int page;
-    private final int itemsPerPage;
-
-
-    public Paging(final int page, final int itemsPerPage) {
-        this.page = page;
-        this.itemsPerPage = itemsPerPage;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public int getItemsPerPage() {
-        return itemsPerPage;
-    }
+    void zoomToSelectedPhoto();
 }

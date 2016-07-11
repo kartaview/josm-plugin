@@ -48,8 +48,8 @@ class PhotoPanel extends JPanel {
     }
 
     void updateUI(final String photoName) {
+        removeAll();
         if (photoName != null) {
-            removeAll();
             final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
             link.append(photoName);
             try {

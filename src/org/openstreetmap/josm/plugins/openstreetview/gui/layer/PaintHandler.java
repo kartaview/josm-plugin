@@ -39,12 +39,17 @@ class PaintHandler {
         for (final Photo photo : photos) {
             // if (!photo.equals(selectedPhoto)) {
             final Point point = mapView.getPoint(photo.getLocation());
-            drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
+
+            if (mapView.contains(point)) {
+                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
+            }
             // }
         }
         if (selectedPhoto != null) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());
-            drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
+            if (mapView.contains(point)) {
+                drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
+            }
         }
     }
 

@@ -30,8 +30,8 @@ import com.google.gson.stream.JsonWriter;
 class PhotoTypeAdapter extends TypeAdapter<Photo> {
 
     private static final String ID = "id";
-    private static final String SEQUENCE_ID = "seguence_id";
-    private static final String SEQUENCE_IDX = "seguence_index";
+    private static final String SEQUENCE_ID = "sequence_id";
+    private static final String SEQUENCE_IDX = "sequence_index";
     private static final String LATITUDE = "lat";
     private static final String LONGITUDE = "lng";
     private static final String NAME = "name";

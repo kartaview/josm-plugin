@@ -19,7 +19,6 @@ import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.List;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
@@ -43,7 +42,6 @@ public class OpenStreetViewLayer extends AbtractLayer {
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
-        System.out.println(Util.zoom(Main.map.mapView.getRealBounds()));
         if (photos != null) {
             paintHandler.drawPhotos(graphics, mapView, photos, selectedPhoto);
         }

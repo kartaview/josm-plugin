@@ -27,26 +27,28 @@ import com.telenav.josm.common.cnf.BaseConfig;
 public class ServiceConfig extends BaseConfig {
 
     private static final int DEFAULT_PHOTO_ZOOM = 15;
+    private static final int MAX_RADIUS = 5000;
+    private static final int MAX_ITEMS = 5000;
     private static final String CONFIG_FILE = "openstreetview_service.properties";
     private static final ServiceConfig INSTANCE = new ServiceConfig();
 
     private final String baseUrl;
-    private final String version;
-    private int photoZoom;
+    private final String serviceUrl;
+    private final String photoDetailsUrl;
+    private final int photoZoom;
+    private final int maxRadius;
+    private final int maxItems;
 
 
     public ServiceConfig() {
         super(CONFIG_FILE);
 
         baseUrl = readProperty("service.url");
-        version = readProperty("service.version");
-
-        final String photoZoomValue = readProperty("photoZoom");
-        try {
-            photoZoom = Integer.parseInt(photoZoomValue);
-        } catch (final NumberFormatException e) {
-            photoZoom = DEFAULT_PHOTO_ZOOM;
-        }
+        serviceUrl = baseUrl + readProperty("service.version");
+        photoDetailsUrl = baseUrl + readProperty("service.details");
+        photoZoom = readInt("photoZoom", DEFAULT_PHOTO_ZOOM);
+        maxRadius = readInt("maxRadius", MAX_RADIUS);
+        maxItems = readInt("maxItems", MAX_ITEMS);
     }
 
 
@@ -54,15 +56,39 @@ public class ServiceConfig extends BaseConfig {
         return INSTANCE;
     }
 
-    public String getServiceUrl() {
-        return baseUrl + version;
-    }
 
     public String getBaseUrl() {
         return baseUrl;
     }
 
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
+
+    public String getPhotoDetailsUrl() {
+        return photoDetailsUrl;
+    }
+
     public int getPhotoZoom() {
         return photoZoom;
+    }
+
+    public int getMaxRadius() {
+        return maxRadius;
+    }
+
+    public int getMaxItems() {
+        return maxItems;
+    }
+
+    private int readInt(final String key, final int defaultValue) {
+        final String valueStr = readProperty(key);
+        int value;
+        try {
+            value = Integer.parseInt(valueStr);
+        } catch (final NumberFormatException e) {
+            value = defaultValue;
+        }
+        return value;
     }
 }

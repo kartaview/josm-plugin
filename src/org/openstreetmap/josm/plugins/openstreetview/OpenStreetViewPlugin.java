@@ -20,9 +20,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
@@ -32,9 +34,11 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
+import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
 
@@ -45,7 +49,8 @@ import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener {
+public class OpenStreetViewPlugin extends Plugin
+implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver {
 
     /* details dialog associated with this plugin */
     private OpenStreetViewDetailsDialog detailsDialog;
@@ -55,6 +60,7 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
 
     private static final int SEARCH_DELAY = 700;
     private Timer zoomTimer;
+    private Bounds selectedPhotoBounds;
 
 
     /**
@@ -70,6 +76,7 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             detailsDialog = new OpenStreetViewDetailsDialog();
+            detailsDialog.registerLocationObserver(this);
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.showDialog();
 
@@ -137,20 +144,32 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
     @Override
     public void mouseClicked(final MouseEvent event) {
         if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event)) {
-            final Photo photo = layer.nearbyPhoto(event.getPoint());
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (!detailsDialog.getButton().isSelected()) {
-                        detailsDialog.getButton().doClick();
-                    }
-                    detailsDialog.updateUI(photo);
-                    layer.setSelectedPhoto(photo);
-                    Main.map.repaint();
+            if (event.getClickCount() == 2) {
+                this.selectedPhotoBounds = null;
+                selectPhoto(null);
+            } else {
+                final Photo photo = layer.nearbyPhoto(event.getPoint());
+                this.selectedPhotoBounds = Main.map.mapView.getRealBounds();
+                if (photo != null) {
+                    selectPhoto(photo);
                 }
-            });
+            }
         }
+    }
+
+    private void selectPhoto(final Photo photo) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!detailsDialog.getButton().isSelected()) {
+                    detailsDialog.getButton().doClick();
+                }
+                detailsDialog.updateUI(photo);
+                layer.setSelectedPhoto(photo);
+                Main.map.repaint();
+            }
+        });
     }
 
     private boolean shouldSelectPhoto() {
@@ -177,5 +196,21 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
     @Override
     public void mouseExited(final MouseEvent event) {
         // no logic for this action
+    }
+
+    @Override
+    public void zoomToSelectedPhoto() {
+        if (selectedPhotoBounds != null && !selectedPhotoBounds.equals(Main.map.mapView.getRealBounds())
+                && layer.getSelectedPhoto() != null) {
+            final Circle circle = new Circle(selectedPhotoBounds);
+            Main.worker.submit(new Runnable() {
+                @Override
+                public void run() {
+                    final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, null);
+                    layer.setPhotos(photos);
+                    Main.map.mapView.zoomTo(layer.getSelectedPhoto().getLocation());
+                }
+            });
+        }
     }
 }

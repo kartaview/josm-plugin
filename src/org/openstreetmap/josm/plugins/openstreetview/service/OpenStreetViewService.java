@@ -70,7 +70,6 @@ public class OpenStreetViewService {
             throw new OpenStreetViewServiceException(e);
         }
         final ListPhotoResponse listPhotoResponse = parseResponse(response, ListPhotoResponse.class);
-        System.out.println(response);
         verifyResponseStatus(listPhotoResponse.getStatus());
         return listPhotoResponse.getCurrentPageItems();
 

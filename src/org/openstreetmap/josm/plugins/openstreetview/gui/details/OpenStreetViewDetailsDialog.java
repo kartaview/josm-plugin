@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.Shortcut;
@@ -73,9 +74,16 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
             pnlPhoto.updateUI(photo.getLargeThumbnailName());
         } else {
             // TODO: needs to be decided when to clear out the selection
+            lblDetails.setText("");
+            pnlPhoto.updateUI(null);
         }
+        pnlBtn.enablePanelActions(photo);
         lblDetails.revalidate();
         pnlPhoto.revalidate();
         repaint();
+    }
+
+    public void registerLocationObserver(final LocationObserver observer) {
+        pnlBtn.registerObserver(observer);
     }
 }

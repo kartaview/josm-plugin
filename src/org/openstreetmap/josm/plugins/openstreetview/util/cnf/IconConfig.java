@@ -37,7 +37,7 @@ public class IconConfig extends BaseConfig {
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
-    private final Icon filterIcon;
+    private final ImageIcon filterIcon;
     private final Icon locationIcon;
     private final Icon webPageIcon;
 
@@ -80,7 +80,7 @@ public class IconConfig extends BaseConfig {
         return photoSelectedIcon;
     }
 
-    public Icon getFilterIcon() {
+    public ImageIcon getFilterIcon() {
         return filterIcon;
     }
 
