@@ -24,9 +24,12 @@ import java.awt.Insets;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.DefaultFormatterFactory;
 import org.jdesktop.swingx.JXDatePicker;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.io.MessageNotifier;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
@@ -79,6 +82,10 @@ class FilterPanel extends JPanel {
         final String osmUserId = null;
         if (cbbUser.isSelected()) {
             // get the user id
+            if (!MessageNotifier.isUserEnoughIdentified()) {
+                JOptionPane.showInputDialog(Main.parent, "Osm username", "User is not authenticated",
+                        JOptionPane.WARNING_MESSAGE);
+            }
         }
         return date != null || osmUserId != null ? new ListFilter(date, osmUserId) : null;
     }

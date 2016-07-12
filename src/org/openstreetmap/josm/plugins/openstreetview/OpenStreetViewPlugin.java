@@ -25,6 +25,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
+import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
@@ -41,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLay
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
 
 
 /**
@@ -50,7 +53,7 @@ import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
  * @version $Revision$
  */
 public class OpenStreetViewPlugin extends Plugin
-implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver {
+implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetViewDetailsDialog detailsDialog;
@@ -204,6 +207,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
                 && layer.getSelectedPhoto() != null) {
             final Circle circle = new Circle(selectedPhotoBounds);
             Main.worker.submit(new Runnable() {
+
                 @Override
                 public void run() {
                     final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, null);
@@ -211,6 +215,15 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
                     Main.map.mapView.zoomTo(layer.getSelectedPhoto().getLocation());
                 }
             });
+        }
+    }
+
+    @Override
+    public void preferenceChanged(final PreferenceChangeEvent event) {
+        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
+                Main.worker.execute(new DataUpdateThread(layer));
+            }
         }
     }
 }

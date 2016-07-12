@@ -16,6 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetview.argument;
 
 import java.util.Date;
+import com.telenav.josm.common.util.EntityUtil;
 
 
 /**
@@ -40,5 +41,27 @@ public class ListFilter {
 
     public String getOsmUserId() {
         return osmUserId;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + EntityUtil.hashCode(date);
+        result = prime * result + EntityUtil.hashCode(osmUserId);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        boolean result = false;
+        if (this == obj) {
+            result = true;
+        } else if (obj instanceof ListFilter) {
+            final ListFilter other = (ListFilter) obj;
+            result = EntityUtil.bothNullOrEqual(date, other.getDate());
+            result = result && EntityUtil.bothNullOrEqual(osmUserId, other.getOsmUserId());
+        }
+        return result;
     }
 }

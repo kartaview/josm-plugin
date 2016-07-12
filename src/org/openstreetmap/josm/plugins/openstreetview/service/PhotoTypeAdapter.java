@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 
@@ -55,22 +56,23 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         Double heading = null;
         String username = null;
         reader.beginObject();
+
         while (reader.hasNext()) {
             switch (reader.nextName()) {
                 case ID:
-                    id = reader.nextLong();
+                    id = readLong(reader);
                     break;
                 case SEQUENCE_ID:
-                    sequenceId = reader.nextLong();
+                    sequenceId = readLong(reader);
                     break;
                 case SEQUENCE_IDX:
-                    sequenceIdx = reader.nextLong();
+                    sequenceIdx = readLong(reader);
                     break;
                 case LATITUDE:
-                    latitude = reader.nextDouble();
+                    latitude = readDouble(reader);
                     break;
                 case LONGITUDE:
-                    longitude = reader.nextDouble();
+                    longitude = readDouble(reader);
                     break;
                 case NAME:
                     name = reader.nextString();
@@ -82,10 +84,10 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     thumbnailName = reader.nextString();
                     break;
                 case TIMESTAMP:
-                    timestamp = reader.nextLong();
+                    timestamp = readLong(reader);
                     break;
                 case HEADING:
-                    heading = reader.nextDouble();
+                    heading = readDouble(reader);
                     break;
                 case USERNAME:
                     username = reader.nextString();
@@ -99,6 +101,27 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         return new Photo(id, sequenceId, sequenceIdx, latitude, longitude, name, largeThumbnailName, thumbnailName,
                 timestamp, heading, username);
     }
+
+    private Double readDouble(final JsonReader reader) throws IOException {
+        Double value = null;
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+        } else {
+            value = reader.nextDouble();
+        }
+        return value;
+    }
+
+    private Long readLong(final JsonReader reader) throws IOException {
+        Long value = null;
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+        } else {
+            value = reader.nextLong();
+        }
+        return value;
+    }
+
 
     @Override
     public void write(final JsonWriter writer, final Photo photo) throws IOException {

@@ -15,12 +15,58 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.util.pref;
 
+import java.util.Date;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
+
 
 /**
-* 
-* @author Beata
-* @version $Revision$
-*/
-public class PreferenceManager {
+ *
+ * @author Beata
+ * @version $Revision$
+ */
+public final class PreferenceManager {
 
+    private static final PreferenceManager INSTANCE = new PreferenceManager();
+
+    private PreferenceManager() {}
+
+    public static PreferenceManager getInstance() {
+        return INSTANCE;
+    }
+
+    public boolean loadErrorSuppressFlag() {
+        return Main.pref.getBoolean(Keys.SUPPRESS_ERROR);
+    }
+
+    public void saveErrorSuppressFlag(final boolean flag) {
+        Main.pref.put(Keys.SUPPRESS_ERROR, flag);
+    }
+
+    public void saveFiltersChangedFlag(final boolean changed) {
+        Main.pref.put(Keys.FILTERS_CHANGED, "");
+        Main.pref.put(Keys.FILTERS_CHANGED, "" + changed);
+    }
+
+    public String getFiltersChangedFlag() {
+        return Keys.FILTERS_CHANGED;
+    }
+
+    public ListFilter loadListFilter() {
+        final String dateStr = Main.pref.get(Keys.DATE);
+        Date date = null;
+        if (!dateStr.isEmpty()) {
+            date = new Date(Long.parseLong(dateStr));
+        }
+        final String userId = Main.pref.get(Keys.OSM_USER_ID);
+        return date != null || userId != null ? new ListFilter(date, userId) : null;
+    }
+
+    public void saveListFilter(final ListFilter filter) {
+        if (filter != null) {
+            final String dateStr = filter.getDate() != null ? "" + filter.getDate().getTime() : "";
+            Main.pref.put(Keys.DATE, dateStr);
+            Main.pref.put(Keys.OSM_USER_ID, filter.getOsmUserId());
+        }
+    }
 }

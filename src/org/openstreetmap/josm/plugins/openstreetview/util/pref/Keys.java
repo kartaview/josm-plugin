@@ -17,10 +17,16 @@ package org.openstreetmap.josm.plugins.openstreetview.util.pref;
 
 
 /**
-* 
-* @author Beata
-* @version $Revision$
-*/
+ *
+ * @author Beata
+ * @version $Revision$
+ */
 final class Keys {
 
+    private Keys() {}
+
+    static final String SUPPRESS_ERROR = "openstreetview.error.suppress";
+    static final String FILTERS_CHANGED = "openstreetview.filter.changed";
+    static final String DATE = "openstreetview.filter.date";
+    static final String OSM_USER_ID = "openstreetview.filter.userId";
 }

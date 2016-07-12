@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.CancelAction;
 import com.telenav.josm.common.gui.GuiBuilder;
 import com.telenav.josm.common.gui.ModalDialog;
@@ -70,7 +71,14 @@ public class FilterDialog extends ModalDialog {
         public void actionPerformed(final ActionEvent event) {
             final ListFilter filter = pnlFilter.selectedFilters();
             if (filter != null) {
-
+                final PreferenceManager prefManager = PreferenceManager.getInstance();
+                final ListFilter oldFilter = prefManager.loadListFilter();
+                if (filter.equals(oldFilter)) {
+                    prefManager.saveFiltersChangedFlag(false);
+                } else {
+                    prefManager.saveListFilter(filter);
+                    prefManager.saveFiltersChangedFlag(true);
+                }
             }
             dispose();
         }

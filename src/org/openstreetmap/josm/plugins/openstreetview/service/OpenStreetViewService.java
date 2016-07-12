@@ -31,6 +31,7 @@ import com.google.gson.JsonSyntaxException;
 import com.telenav.josm.common.http.ContentType;
 import com.telenav.josm.common.http.HttpConnector;
 import com.telenav.josm.common.http.HttpConnectorException;
+import com.telenav.josm.common.http.HttpUtil;
 
 
 /**
@@ -45,6 +46,7 @@ public class OpenStreetViewService {
 
     private GsonBuilder createGsonBuilder() {
         final GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls();
         builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
         return builder;
     }
@@ -61,6 +63,8 @@ public class OpenStreetViewService {
     public List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter, final Paging paging)
             throws OpenStreetViewServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(circle, filter, paging).getContent();
+        System.out.println(ServiceConfig.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
+        System.out.println(HttpUtil.utf8Encode(arguments));
         String response = null;
         try {
             final HttpConnector connector = new HttpConnector(
@@ -77,6 +81,7 @@ public class OpenStreetViewService {
 
     private void verifyResponseStatus(final Status status) throws OpenStreetViewServiceException {
         if (status != null && status.getHttpCode() != HttpURLConnection.HTTP_OK) {
+            System.out.println("call failed");
             throw new OpenStreetViewServiceException(status.getApiMessage());
         }
     }
