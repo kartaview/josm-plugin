@@ -49,6 +49,9 @@ public class OpenStreetViewLayer extends AbtractLayer {
 
     public void setPhotos(final List<Photo> photos) {
         this.photos = photos;
+        if ((this.selectedPhoto != null) && (this.photos == null || !this.photos.contains(selectedPhoto))) {
+            this.selectedPhoto = null;
+        }
     }
 
     public Photo nearbyPhoto(final Point point) {

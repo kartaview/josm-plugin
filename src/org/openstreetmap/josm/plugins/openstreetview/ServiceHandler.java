@@ -53,7 +53,7 @@ final class ServiceHandler {
     List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter) {
         List<Photo> result = new ArrayList<>();
         try {
-            result = service.listNearbyPhotos(circle, null, Paging.DEFAULT);
+            result = service.listNearbyPhotos(circle, filter, Paging.DEFAULT);
         } catch (final OpenStreetViewServiceException e) {
             JOptionPane.showMessageDialog(Main.parent, e.getMessage(), GuiConfig.getInstance().getPhotoErrorTxt(),
                     JOptionPane.ERROR_MESSAGE);

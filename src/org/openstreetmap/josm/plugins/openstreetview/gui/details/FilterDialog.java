@@ -62,7 +62,6 @@ public class FilterDialog extends ModalDialog {
         add(pnlButton, BorderLayout.SOUTH);
     }
 
-
     private final class OkAction extends AbstractAction {
 
         private static final long serialVersionUID = -1573801969230451122L;

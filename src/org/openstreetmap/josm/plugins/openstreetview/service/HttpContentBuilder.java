@@ -32,7 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
 final class HttpContentBuilder {
 
     private static final String SEPARATOR = ",";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd");
 
     private final Map<String, String> content = new HashMap<>();
 
@@ -45,7 +45,7 @@ final class HttpContentBuilder {
             if (filter.getDate() != null) {
                 content.put(RequestConstants.DATE, DATE_FORMAT.format(filter.getDate()));
             }
-            if (filter.getOsmUserId() != null) {
+            if (filter.getOsmUserId() != null && !filter.getOsmUserId().isEmpty()) {
                 content.put(RequestConstants.USER_ID, filter.getOsmUserId());
             }
         }

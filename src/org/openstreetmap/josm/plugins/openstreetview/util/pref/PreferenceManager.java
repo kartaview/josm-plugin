@@ -58,8 +58,9 @@ public final class PreferenceManager {
         if (!dateStr.isEmpty()) {
             date = new Date(Long.parseLong(dateStr));
         }
-        final String userId = Main.pref.get(Keys.OSM_USER_ID);
-        return date != null || userId != null ? new ListFilter(date, userId) : null;
+        String userId = Main.pref.get(Keys.OSM_USER_ID);
+        userId = userId.isEmpty() ? null : userId;
+        return new ListFilter(date, userId);
     }
 
     public void saveListFilter(final ListFilter filter) {

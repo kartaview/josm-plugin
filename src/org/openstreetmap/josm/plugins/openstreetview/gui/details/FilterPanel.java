@@ -24,14 +24,12 @@ import java.awt.Insets;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.DefaultFormatterFactory;
 import org.jdesktop.swingx.JXDatePicker;
-import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.io.MessageNotifier;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.GuiBuilder;
 
@@ -50,29 +48,35 @@ class FilterPanel extends JPanel {
 
     FilterPanel() {
         super(new GridBagLayout());
-        addDateFitler();
-        addUserFilter();
+        final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
+        addDateFitler(filter.getDate());
+        final boolean selectUserFilter = filter.getOsmUserId() != null;
+        addUserFilter(selectUserFilter);
     }
 
-    private void addDateFitler() {
+    private void addDateFitler(final Date date) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), getFont().deriveFont(Font.BOLD),
                 getBackground()), Constraints.LBL_DATE);
 
         pickerDate = new JXDatePicker();
         pickerDate.setPreferredSize(PICKER_SIZE);
-        pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
         pickerDate.getMonthView().setTodayBackground(Color.darkGray);
         pickerDate.getMonthView().setDayForeground(Calendar.SATURDAY, Color.red);
         pickerDate.getMonthView().setShowingLeadingDays(true);
-
+        pickerDate.getMonthView().setShowingTrailingDays(true);
+        pickerDate.getMonthView().setSelectionDate(date);
+        pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
         add(pickerDate, Constraints.PICKER_DATE);
     }
 
 
-    private void addUserFilter() {
+    private void addUserFilter(final boolean isSelected) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
+        if (isSelected) {
+            cbbUser.setSelected(true);
+        }
         add(cbbUser, Constraints.CBB_USER);
     }
 
@@ -82,12 +86,9 @@ class FilterPanel extends JPanel {
         final String osmUserId = null;
         if (cbbUser.isSelected()) {
             // get the user id
-            if (!MessageNotifier.isUserEnoughIdentified()) {
-                JOptionPane.showInputDialog(Main.parent, "Osm username", "User is not authenticated",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+            // TODO: get the externalUserID from JOSM
         }
-        return date != null || osmUserId != null ? new ListFilter(date, osmUserId) : null;
+        return new ListFilter(date, osmUserId);
     }
 
     void clearFilters() {

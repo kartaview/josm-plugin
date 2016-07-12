@@ -86,6 +86,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             // register listeners
             NavigatableComponent.addZoomChangeListener(this);
             Main.getLayerManager().addLayerChangeListener(this);
+            Main.pref.addPreferenceChangeListener(this);
             Main.map.mapView.addMouseListener(this);
 
             // add layer
@@ -106,7 +107,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
                 @Override
                 public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer));
+                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog));
                 }
             });
             zoomTimer.setRepeats(false);
@@ -137,6 +138,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
             Main.map.remove(detailsDialog);
+            Main.pref.removePreferenceChangeListener(this);
             layer = null;
             detailsDialog.hideDialog();
         }
@@ -222,7 +224,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
-                Main.worker.execute(new DataUpdateThread(layer));
+                Main.worker.execute(new DataUpdateThread(layer, detailsDialog));
             }
         }
     }
