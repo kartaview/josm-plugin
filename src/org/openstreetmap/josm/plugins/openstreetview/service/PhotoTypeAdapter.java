@@ -53,7 +53,8 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         String largeThumbnailName = null;
         String thumbnailName = null;
         Long timestamp = null;
-        Double heading = null;
+        // Double heading = null;
+        String heading = null;
         String username = null;
         reader.beginObject();
 
@@ -87,7 +88,11 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     timestamp = readLong(reader);
                     break;
                 case HEADING:
-                    heading = readDouble(reader);
+                    if (reader.peek() == JsonToken.NULL) {
+                        reader.nextNull();
+                    } else {
+                        heading = reader.nextString();
+                    }
                     break;
                 case USERNAME:
                     username = reader.nextString();

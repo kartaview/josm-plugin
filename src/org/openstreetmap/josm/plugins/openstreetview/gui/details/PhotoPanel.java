@@ -47,7 +47,7 @@ class PhotoPanel extends JPanel {
     private BufferedImage image;
 
     /** a rectangle where the image is incorporated related to the outside panel */
-    private Rectangle rectangle;
+    private Rectangle frame;
 
     /** a part of the image that is currently displayed */
     private Rectangle currentView;
@@ -69,8 +69,8 @@ class PhotoPanel extends JPanel {
         @Override
         public synchronized void mouseWheelMoved(final MouseWheelEvent e) {
             // get the mouse position on the image (avoid the empty space around image)
-            final int xMouseCoord = currentView.x + (e.getX() - rectangle.x) * currentView.width / rectangle.width;
-            final int yMouseCoord = currentView.y + (e.getY() - rectangle.y) * currentView.height / rectangle.height;
+            final int xMouseCoord = currentView.x + (e.getX() - frame.x) * currentView.width / frame.width;
+            final int yMouseCoord = currentView.y + (e.getY() - frame.y) * currentView.height / frame.height;
             zoom(xMouseCoord, yMouseCoord, e.getWheelRotation());
             PhotoPanel.this.repaint();
 
@@ -79,11 +79,6 @@ class PhotoPanel extends JPanel {
 
     @Override
     public void paintComponent(final Graphics g) {
-        // if (current != currentImageView.getWidth() || buttom - top !=
-        // currentImageView.getHeight()) {
-        // currentView = currentImageView.getSubimage(left, top, right - left,
-        // buttom - top);
-        // }
         if (image != null) {
             // clean the panel
             g.setColor(getBackground());
@@ -111,20 +106,18 @@ class PhotoPanel extends JPanel {
 
     /** The method match the current view of the picture in the panel. */
     private void matchDisplayAreaToOutsideComponent(final Graphics g) {
-        final int frameWidth = this.getWidth();
-        final int frameHeight = this.getHeight();
-        int imageWidth = frameWidth;
-        int imageHeight = (frameWidth * currentView.height) / currentView.width;
+        int imageWidth = this.getWidth();
+        int imageHeight = (this.getWidth() * currentView.height) / currentView.width;
         int marginLeft = 0;
-        int marginTop = (frameHeight - imageHeight) / 2;
+        int marginTop = (this.getHeight() - imageHeight) / 2;
 
-        if (imageHeight > frameHeight) {
-            imageHeight = frameHeight;
-            imageWidth = (frameHeight * currentView.width) / currentView.height;
-            marginLeft = (frameWidth - imageWidth) / 2;
+        if (imageHeight > this.getHeight()) {
+            imageHeight = this.getHeight();
+            imageWidth = (this.getHeight() * currentView.width) / currentView.height;
+            marginLeft = (this.getWidth() - imageWidth) / 2;
             marginTop = 0;
         }
-        rectangle = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
+        frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
         g.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight, currentView.x,
                 currentView.y, currentView.x + currentView.width, currentView.y + currentView.height, null);
     }
@@ -137,30 +130,16 @@ class PhotoPanel extends JPanel {
 
         // if the outside panel has a landscape format
         if (frameWidth > frameHeight) {
-            // then the new image will have as height, 4/5 from the current displayed image
             Pair vertical;
-
             if (wheelRotation < 0) {
+                // then the new image will have as height, 4/5 of the current view
                 vertical = getPart(yMouseCoord, currentView.y, currentView.y + currentView.height,
                         (currentView.height * 4 / 5) / 2);
             } else {
-                if (currentView.getHeight() != image.getHeight()) {
-                    final int dif = (currentView.height * 5 / 4) / 2;
-                    int firstReference = currentView.y - dif;
-                    int secondReference = currentView.y + currentView.height + dif;
-                    if (firstReference < 0) {
-                        firstReference = 0;
-                    }
-                    if (secondReference > image.getHeight()) {
-                        secondReference = image.getHeight();
-                    }
-                    vertical = getPart(yMouseCoord, firstReference, secondReference, dif);
-                } else {
-                    vertical = new Pair();
-                    vertical.first = 0;
-                    vertical.second = image.getHeight();
-                }
+                vertical = getCurrentViewNewFixedDimension(yMouseCoord, currentView.y, currentView.height,
+                        image.getHeight());
             }
+
             // and as width, as much as possible from the current displayed image
             int newWidth = (vertical.second - vertical.first) * frameWidth / frameHeight;
             final Pair horizontal;
@@ -170,38 +149,38 @@ class PhotoPanel extends JPanel {
                 }
                 horizontal = getPart(xMouseCoord, currentView.x, currentView.x + currentView.width, newWidth / 2);
             } else {                  // zoom out
-                if (currentView.getWidth() != image.getWidth()) {
-                    if (newWidth > image.getWidth()) {
-                        newWidth = image.getWidth();
-                    }
-                    int firstReference = currentView.x - (newWidth / 2 - currentView.width / 2);
-                    int secondReference = currentView.x + currentView.width + (newWidth / 2 - currentView.width / 2);
-                    if (firstReference < 0) {
-                        firstReference = 0;
-                    }
-                    if (secondReference > image.getWidth()) {
-                        secondReference = image.getWidth();
-                    }
-                    horizontal = getPart(xMouseCoord, firstReference, secondReference, newWidth / 2);
-                } else {
-                    horizontal = new Pair();
-                    horizontal.first = 0;
-                    horizontal.second = image.getWidth();
-                }
+                horizontal = getCurrentViewNewRelativeDimension(xMouseCoord, currentView.x, currentView.width, newWidth,
+                        image.getWidth());
             }
 
-            // if (vertical.second - vertical.first != image.getHeight()
-            // || (horizontal.second - horizontal.first != image.getWidth())) {
             currentView = new Rectangle(horizontal.first, vertical.first, horizontal.second - horizontal.first,
                     vertical.second - vertical.first);
         } else {
-            /*
-             * final Pair rightLeftResult = getPart(xMouseCoord, 0, currentImageView.getWidth(),
-             * (currentImageView.getWidth() * 4 / 5) / 2); left = rightLeftResult.first; right = rightLeftResult.second;
-             * int newHeight = (right - left) * frameHeight / frameWidth; if (newHeight > image.getHeight()) { newHeight
-             * = image.getHeight(); } final Pair topButtomResult = getPart(yMouseCoord, 0, currentImageView.getHeight(),
-             * newHeight / 2); top = topButtomResult.first; buttom = topButtomResult.second;
-             */
+            Pair horizontal;
+            if (wheelRotation < 0) {
+                // then the new image will have as width, 4/5 of the current view
+                horizontal = getPart(xMouseCoord, currentView.x, currentView.x + currentView.width,
+                        (currentView.width * 4 / 5) / 2);
+            } else {
+                horizontal = getCurrentViewNewFixedDimension(xMouseCoord, currentView.x, currentView.width,
+                        image.getWidth());
+            }
+
+            // and as height, as much as possible from the current displayed image
+            int newHeight = (horizontal.second - horizontal.first) * frameHeight / frameWidth;
+            final Pair vertical;
+            if (wheelRotation < 0) {  // zoom in
+                if (newHeight > currentView.height) {
+                    newHeight = currentView.height;
+                }
+                vertical = getPart(yMouseCoord, currentView.y, currentView.y + currentView.height, newHeight / 2);
+            } else {                  // zoom out
+                vertical = getCurrentViewNewRelativeDimension(yMouseCoord, currentView.y, currentView.height, newHeight,
+                        image.getHeight());
+            }
+
+            currentView = new Rectangle(horizontal.first, vertical.first, horizontal.second - horizontal.first,
+                    vertical.second - vertical.first);
         }
     }
 
@@ -226,6 +205,59 @@ class PhotoPanel extends JPanel {
             result.second = secondReference;
         }
 
+        if (result.first < firstReference) {
+            result.first = firstReference;
+        }
+        if (result.second > secondReference) {
+            result.second = secondReference;
+        }
         return result;
+    }
+
+    Pair getCurrentViewNewFixedDimension(final int mouseCoord, final int currentViewMinCoord,
+            final int currentViewDimension, final int imageDimension) {
+        final Pair pair;
+        if (currentViewDimension != imageDimension) {
+            final int dif = (currentViewDimension * 5 / 4) / 2;
+            int firstReference = currentViewMinCoord - dif;
+            int secondReference = currentViewMinCoord + currentViewDimension + dif;
+            if (firstReference < 0) {
+                firstReference = 0;
+            }
+            if (secondReference > imageDimension) {
+                secondReference = imageDimension;
+            }
+            pair = getPart(mouseCoord, firstReference, secondReference, dif);
+        } else {
+            pair = new Pair();
+            pair.first = 0;
+            pair.second = imageDimension;
+        }
+        return pair;
+    }
+
+    Pair getCurrentViewNewRelativeDimension(final int mouseCoord, final int currentViewMinCoord,
+            final int currentViewDimension, int newDimension, final int imageDimension) {
+        final Pair pair;
+        if (currentViewDimension != imageDimension) {
+            if (newDimension > imageDimension) {
+                newDimension = imageDimension;
+            }
+            int firstReference = currentViewMinCoord - (newDimension / 2 - currentViewDimension / 2);
+            int secondReference =
+                    currentViewMinCoord + currentViewDimension + (newDimension / 2 - currentViewDimension / 2);
+            if (firstReference < 0) {
+                firstReference = 0;
+            }
+            if (secondReference > imageDimension) {
+                secondReference = imageDimension;
+            }
+            pair = getPart(mouseCoord, firstReference, secondReference, newDimension / 2);
+        } else {
+            pair = new Pair();
+            pair.first = 0;
+            pair.second = imageDimension;
+        }
+        return pair;
     }
 }
