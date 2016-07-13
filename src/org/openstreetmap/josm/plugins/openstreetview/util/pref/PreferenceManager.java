@@ -58,16 +58,16 @@ public final class PreferenceManager {
         if (!dateStr.isEmpty()) {
             date = new Date(Long.parseLong(dateStr));
         }
-        String userId = Main.pref.get(Keys.OSM_USER_ID);
-        userId = userId.isEmpty() ? null : userId;
-        return new ListFilter(date, userId);
+        final String onlyUserFlagStr = Main.pref.get(Keys.ONLY_USER_FLAG);
+        final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : new Boolean(onlyUserFlagStr).booleanValue();
+        return new ListFilter(date, onlyUserFlag);
     }
 
     public void saveListFilter(final ListFilter filter) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? "" + filter.getDate().getTime() : "";
             Main.pref.put(Keys.DATE, dateStr);
-            Main.pref.put(Keys.OSM_USER_ID, filter.getOsmUserId());
+            Main.pref.put(Keys.ONLY_USER_FLAG, filter.isOnlyUserFlag());
         }
     }
 }

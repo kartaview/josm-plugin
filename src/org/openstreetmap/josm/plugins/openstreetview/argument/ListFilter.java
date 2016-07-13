@@ -28,19 +28,20 @@ import com.telenav.josm.common.util.EntityUtil;
 public class ListFilter {
 
     private final Date date;
-    private final String osmUserId;
+    private final boolean onlyUserFlag;
+    private String osmUserId;
 
-    public ListFilter(final Date date, final String osmUserId) {
+    public ListFilter(final Date date, final boolean onlyUserFlag) {
         this.date = date;
-        this.osmUserId = osmUserId;
+        this.onlyUserFlag = onlyUserFlag;
     }
 
     public Date getDate() {
         return date;
     }
 
-    public String getOsmUserId() {
-        return osmUserId;
+    public boolean isOnlyUserFlag() {
+        return onlyUserFlag;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ListFilter {
         final int prime = 31;
         int result = 1;
         result = prime * result + EntityUtil.hashCode(date);
-        result = prime * result + EntityUtil.hashCode(osmUserId);
+        result = prime * result + EntityUtil.hashCode(onlyUserFlag);
         return result;
     }
 
@@ -60,7 +61,7 @@ public class ListFilter {
         } else if (obj instanceof ListFilter) {
             final ListFilter other = (ListFilter) obj;
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
-            result = result && EntityUtil.bothNullOrEqual(osmUserId, other.getOsmUserId());
+            result = result && (onlyUserFlag == other.isOnlyUserFlag());
         }
         return result;
     }

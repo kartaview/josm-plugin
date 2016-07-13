@@ -46,6 +46,7 @@ public class FilterDialog extends ModalDialog {
 
     public FilterDialog() {
         super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon().getImage());
+        setModalityType(ModalityType.DOCUMENT_MODAL);
         createComponents();
         setSize(DIM);
     }

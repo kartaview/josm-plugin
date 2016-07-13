@@ -28,5 +28,5 @@ final class Keys {
     static final String SUPPRESS_ERROR = "openstreetview.error.suppress";
     static final String FILTERS_CHANGED = "openstreetview.filter.changed";
     static final String DATE = "openstreetview.filter.date";
-    static final String OSM_USER_ID = "openstreetview.filter.userId";
+    static final String ONLY_USER_FLAG = "openstreetview.filter.onlyUserFlag";
 }

@@ -27,6 +27,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
+import org.openstreetmap.josm.gui.IconToggleButton;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
@@ -81,21 +82,26 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             detailsDialog = new OpenStreetViewDetailsDialog();
             detailsDialog.registerLocationObserver(this);
             newMapFrame.addToggleDialog(detailsDialog);
-            detailsDialog.showDialog();
+            detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
             // register listeners
-            NavigatableComponent.addZoomChangeListener(this);
-            Main.getLayerManager().addLayerChangeListener(this);
-            Main.pref.addPreferenceChangeListener(this);
-            Main.map.mapView.addMouseListener(this);
+            registerListeners();
 
             // add layer
             layer = new OpenStreetViewLayer();
             newMapFrame.mapView.getLayerManager().addLayer(layer);
+            if (!detailsDialog.getButton().isSelected()) {
+                detailsDialog.getButton().doClick();
+            }
         }
     }
 
-
+    private void registerListeners() {
+        NavigatableComponent.addZoomChangeListener(this);
+        Main.getLayerManager().addLayerChangeListener(this);
+        Main.pref.addPreferenceChangeListener(this);
+        Main.map.mapView.addMouseListener(this);
+    }
     /* implementation of ZoomChangeListener */
 
     @Override
@@ -225,6 +231,38 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
                 Main.worker.execute(new DataUpdateThread(layer, detailsDialog));
+            }
+        }
+    }
+
+    /*
+     * Listens to toggle dialog button actions.
+     */
+    private class ToggleButtonActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (event.getSource() instanceof IconToggleButton) {
+                final IconToggleButton btn = (IconToggleButton) event.getSource();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (btn.isSelected()) {
+                            detailsDialog.setVisible(true);
+                            btn.setSelected(true);
+                        } else {
+                            detailsDialog.setVisible(false);
+                            btn.setSelected(false);
+                            btn.setFocusable(false);
+                        }
+                        if (layer == null) {
+                            registerListeners();
+                            layer = new OpenStreetViewLayer();
+                            Main.map.mapView.getLayerManager().addLayer(layer);
+                        }
+                    }
+                });
             }
         }
     }

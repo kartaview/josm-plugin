@@ -53,7 +53,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         String largeThumbnailName = null;
         String thumbnailName = null;
         Long timestamp = null;
-        Double heading = null;
+        final Double heading = null;
         String username = null;
         reader.beginObject();
 
@@ -85,9 +85,6 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
                 case TIMESTAMP:
                     timestamp = readLong(reader);
-                    break;
-                case HEADING:
-                    heading = readDouble(reader);
                     break;
                 case USERNAME:
                     username = reader.nextString();

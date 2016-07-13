@@ -16,9 +16,11 @@
 package org.openstreetmap.josm.plugins.openstreetview;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
@@ -52,8 +54,10 @@ final class ServiceHandler {
 
     List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter) {
         List<Photo> result = new ArrayList<>();
+        final Long userId = JosmUserIdentityManager.getInstance().asUser().getId();
+        final Date date = filter != null ? filter.getDate() : null;
         try {
-            result = service.listNearbyPhotos(circle, filter, Paging.DEFAULT);
+            result = service.listNearbyPhotos(circle, date, userId, Paging.DEFAULT);
         } catch (final OpenStreetViewServiceException e) {
             JOptionPane.showMessageDialog(Main.parent, e.getMessage(), GuiConfig.getInstance().getPhotoErrorTxt(),
                     JOptionPane.ERROR_MESSAGE);

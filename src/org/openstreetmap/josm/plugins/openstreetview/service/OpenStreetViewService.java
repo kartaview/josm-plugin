@@ -16,10 +16,10 @@
 package org.openstreetmap.josm.plugins.openstreetview.service;
 
 import java.net.HttpURLConnection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
-import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.service.entity.ListPhotoResponse;
@@ -59,9 +59,9 @@ public class OpenStreetViewService {
      * @return a list of {@code Photo}s
      * @throws OpenStreetViewServiceException if the operation failed
      */
-    public List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter, final Paging paging)
-            throws OpenStreetViewServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(circle, filter, paging).getContent();
+    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId,
+            final Paging paging) throws OpenStreetViewServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(circle, date, osmUserId, paging).getContent();
         String response = null;
         try {
             final HttpConnector connector = new HttpConnector(

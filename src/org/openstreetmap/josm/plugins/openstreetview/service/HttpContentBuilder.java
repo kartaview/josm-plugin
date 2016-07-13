@@ -16,10 +16,10 @@
 package org.openstreetmap.josm.plugins.openstreetview.service;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
-import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
 
 
@@ -37,17 +37,15 @@ final class HttpContentBuilder {
     private final Map<String, String> content = new HashMap<>();
 
 
-    HttpContentBuilder(final Circle circle, final ListFilter filter, final Paging paging) {
+    HttpContentBuilder(final Circle circle, final Date date, final Long osmUserId, final Paging paging) {
         content.put(RequestConstants.COORDINATE, circle.getCenter().getY() + SEPARATOR + circle.getCenter().getX());
         final String radius = "" + (int) circle.getRadius();
         content.put(RequestConstants.RADIUS, radius);
-        if (filter != null) {
-            if (filter.getDate() != null) {
-                content.put(RequestConstants.DATE, DATE_FORMAT.format(filter.getDate()));
-            }
-            if (filter.getOsmUserId() != null && !filter.getOsmUserId().isEmpty()) {
-                content.put(RequestConstants.USER_ID, filter.getOsmUserId());
-            }
+        if (date != null) {
+            content.put(RequestConstants.DATE, DATE_FORMAT.format(date));
+        }
+        if (osmUserId != null && osmUserId > 0) {
+            content.put(RequestConstants.USER_ID, "" + osmUserId);
         }
         if (paging == null) {
             content.put(RequestConstants.PAGE, "" + Paging.DEFAULT.getPage());

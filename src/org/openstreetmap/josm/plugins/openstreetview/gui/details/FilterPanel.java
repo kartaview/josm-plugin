@@ -24,9 +24,11 @@ import java.awt.Insets;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.DefaultFormatterFactory;
 import org.jdesktop.swingx.JXDatePicker;
+import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
@@ -45,13 +47,13 @@ class FilterPanel extends JPanel {
     private static final Dimension PICKER_SIZE = new Dimension(120, 20);
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
+    private JLabel lblLoginWarning;
 
     FilterPanel() {
         super(new GridBagLayout());
         final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
         addDateFitler(filter.getDate());
-        final boolean selectUserFilter = filter.getOsmUserId() != null;
-        addUserFilter(selectUserFilter);
+        addUserFilter(filter.isOnlyUserFlag());
     }
 
     private void addDateFitler(final Date date) {
@@ -74,27 +76,27 @@ class FilterPanel extends JPanel {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
-        if (isSelected) {
-            cbbUser.setSelected(true);
+        cbbUser.setSelected(isSelected);
+        lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
+                getFont().deriveFont(Font.ITALIC), getBackground());
+        if (JosmUserIdentityManager.getInstance().asUser().getId() < 0) {
+            cbbUser.setEnabled(false);
+            lblLoginWarning.setForeground(Color.red);
+            add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
         }
         add(cbbUser, Constraints.CBB_USER);
     }
 
-
     ListFilter selectedFilters() {
         final Date date = pickerDate.getDate();
-        final String osmUserId = null;
-        if (cbbUser.isSelected()) {
-            // get the user id
-            // TODO: get the externalUserID from JOSM
-        }
-        return new ListFilter(date, osmUserId);
+        return new ListFilter(date, cbbUser.isSelected());
     }
 
     void clearFilters() {
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
     }
+
 
     /* Holds UI constraints */
     private static final class Constraints {
@@ -103,12 +105,14 @@ class FilterPanel extends JPanel {
 
         private static final GridBagConstraints LBL_DATE = new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
-        private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 1, 1, 1, 0,
+        private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 2, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 10), 0, 0);
 
         private static final GridBagConstraints LBL_USER = new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_USER = new GridBagConstraints(1, 1, 1, 1, 1, 0,
+        private static final GridBagConstraints CBB_USER = new GridBagConstraints(1, 1, 1, 1, 0, 0,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
+        private static final GridBagConstraints LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 1, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
     }
 }

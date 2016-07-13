@@ -41,6 +41,7 @@ public class GuiConfig extends BaseConfig {
     private final String dlgFilterTitle;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
+    private final String dlgFilterLoginWarning;
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
@@ -59,6 +60,7 @@ public class GuiConfig extends BaseConfig {
         dlgFilterTitle = readProperty("filter.title");
         dlgFilterDateLbl = readProperty("filter.date");
         dlgFilterUserLbl = readProperty("filter.user");
+        dlgFilterLoginWarning = readProperty("filter.login.warning");
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
         btnCancelLbl = readProperty("btn.cancel.lbl");
@@ -107,6 +109,10 @@ public class GuiConfig extends BaseConfig {
 
     public String getDlgFilterUserLbl() {
         return dlgFilterUserLbl;
+    }
+
+    public String getDlgFilterLoginWarning() {
+        return dlgFilterLoginWarning;
     }
 
     public String getBtnOkLbl() {
