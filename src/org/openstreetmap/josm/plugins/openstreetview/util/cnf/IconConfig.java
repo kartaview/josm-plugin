@@ -38,6 +38,7 @@ public class IconConfig extends BaseConfig {
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
     private final ImageIcon filterIcon;
+    private final ImageIcon filterSelectedIcon;
     private final Icon locationIcon;
     private final Icon webPageIcon;
 
@@ -51,6 +52,7 @@ public class IconConfig extends BaseConfig {
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         filterIcon = ImageProvider.get(readProperty("filter.icon"));
+        filterSelectedIcon = ImageProvider.get(readProperty("filter.sel.icon"));
         locationIcon = ImageProvider.get(readProperty("location.icon"));
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
     }
@@ -82,6 +84,10 @@ public class IconConfig extends BaseConfig {
 
     public ImageIcon getFilterIcon() {
         return filterIcon;
+    }
+
+    public ImageIcon getFilterSelectedIcon() {
+        return filterSelectedIcon;
     }
 
     public Icon getLocationIcon() {

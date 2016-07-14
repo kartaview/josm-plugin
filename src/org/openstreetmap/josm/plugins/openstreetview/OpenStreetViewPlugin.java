@@ -211,16 +211,21 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     @Override
     public void zoomToSelectedPhoto() {
-        if (selectedPhotoBounds != null && !selectedPhotoBounds.equals(Main.map.mapView.getRealBounds())
-                && layer.getSelectedPhoto() != null) {
-            final Circle circle = new Circle(selectedPhotoBounds);
+        if (layer.getSelectedPhoto() != null && selectedPhotoBounds != null
+                && !selectedPhotoBounds.getCenter().equals(Main.map.mapView.getRealBounds().getCenter())) {
             Main.worker.submit(new Runnable() {
 
                 @Override
                 public void run() {
-                    final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, null);
+                    final Photo selectedPhoto = layer.getSelectedPhoto();
+                    layer.setPhotos(null, true);
+                    Main.map.repaint();
+                    final List<Photo> photos =
+                            ServiceHandler.getInstance().listNearbyPhotos(new Circle(selectedPhotoBounds), null);
                     layer.setPhotos(photos, false);
-                    Main.map.mapView.zoomTo(layer.getSelectedPhoto().getLocation());
+                    layer.setSelectedPhoto(selectedPhoto);
+                    Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                    Main.map.repaint();
                 }
             });
         }

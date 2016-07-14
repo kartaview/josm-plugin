@@ -50,7 +50,7 @@ class DataUpdateThread implements Runnable {
                 final Circle circle = new Circle(Main.map.mapView);
                 final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
                 final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, filter);
-                final boolean checkSelectedPhoto = filter != null;
+                final boolean checkSelectedPhoto = filter != null && !filter.isDefaultFilter();
                 updateUI(photos, checkSelectedPhoto);
             } else {
                 updateUI(null, false);

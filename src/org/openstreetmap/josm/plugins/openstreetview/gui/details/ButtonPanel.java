@@ -20,16 +20,20 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
+import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.GuiBuilder;
 
@@ -41,7 +45,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable {
+class ButtonPanel extends JPanel implements LocationObservable, PreferenceChangedListener {
 
     private static final long serialVersionUID = -2909078640977666884L;
     private static final int ROWS = 1;
@@ -61,8 +65,9 @@ class ButtonPanel extends JPanel implements LocationObservable {
 
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
-        btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), iconConfig.getFilterIcon(),
-                guiConfig.getBtnFilterTlt(), true);
+        final ImageIcon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                ? iconConfig.getFilterIcon() : iconConfig.getFilterSelectedIcon();
+        btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
         btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
@@ -72,6 +77,7 @@ class ButtonPanel extends JPanel implements LocationObservable {
         add(btnLocation);
         add(btnWebPage);
         setPreferredSize(DIM);
+        Main.pref.addPreferenceChangeListener(this);
     }
 
 
@@ -95,6 +101,18 @@ class ButtonPanel extends JPanel implements LocationObservable {
     @Override
     public void notifyObserver() {
         this.observer.zoomToSelectedPhoto();
+    }
+
+
+    @Override
+    public void preferenceChanged(final PreferenceChangeEvent event) {
+        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
+                final ImageIcon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                        ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
+                btnFilter.setIcon(icon);
+            }
+        }
     }
 
     private final class DisplayFilterDialogAction extends AbstractAction {

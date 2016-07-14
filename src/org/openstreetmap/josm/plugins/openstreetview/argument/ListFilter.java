@@ -27,9 +27,9 @@ import com.telenav.josm.common.util.EntityUtil;
  */
 public class ListFilter {
 
+    private static final ListFilter DEFAULT = new ListFilter(null, false);
     private final Date date;
     private final boolean onlyUserFlag;
-    private String osmUserId;
 
     public ListFilter(final Date date, final boolean onlyUserFlag) {
         this.date = date;
@@ -64,5 +64,9 @@ public class ListFilter {
             result = result && (onlyUserFlag == other.isOnlyUserFlag());
         }
         return result;
+    }
+
+    public boolean isDefaultFilter() {
+        return DEFAULT.equals(this);
     }
 }

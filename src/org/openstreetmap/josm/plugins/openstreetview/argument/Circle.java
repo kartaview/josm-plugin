@@ -20,6 +20,7 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
+import com.telenav.josm.common.util.EntityUtil;
 
 
 /**
@@ -63,5 +64,29 @@ public class Circle {
 
     public double getRadius() {
         return radius;
+    }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + EntityUtil.hashCode(radius);
+        result = prime * result + EntityUtil.hashCode(center);
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(final Object obj) {
+        boolean result = false;
+        if (this == obj) {
+            result = true;
+        } else if (obj instanceof Circle) {
+            final Circle other = (Circle) obj;
+            result = EntityUtil.bothNullOrEqual(radius, other.getRadius());
+            result = result && EntityUtil.bothNullOrEqual(center, other.getCenter());
+        }
+        return result;
     }
 }
