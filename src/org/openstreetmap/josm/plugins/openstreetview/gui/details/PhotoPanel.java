@@ -132,7 +132,10 @@ class PhotoPanel extends JPanel {
                     image.getHeight(), wheelRotation);
         }
 
+        // if ((horizontal.b - horizontal.a > image.getWidth() / 5) && (vertical.b - vertical.a > image.getHeight() /
+        // 5)) {
         currentView = new Rectangle(horizontal.a, vertical.a, horizontal.b - horizontal.a, vertical.b - vertical.a);
+        // }
     }
 
     private Pair<Integer, Integer> getPart(final int mouseCoord, final int firstReference, final int secondReference,
