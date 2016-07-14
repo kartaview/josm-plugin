@@ -17,6 +17,8 @@ package org.openstreetmap.josm.plugins.openstreetview.gui.details;
 
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 
 
 /**
@@ -29,6 +31,11 @@ public class DisplayFilterDialogAction extends AbstractAction {
 
 
     private static final long serialVersionUID = 8325126526750975651L;
+
+
+    public DisplayFilterDialogAction() {
+        super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon());
+    }
 
     @Override
     public void actionPerformed(final ActionEvent event) {
