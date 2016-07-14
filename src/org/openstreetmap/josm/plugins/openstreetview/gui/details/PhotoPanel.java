@@ -132,10 +132,9 @@ class PhotoPanel extends JPanel {
                     image.getHeight(), wheelRotation);
         }
 
-        // if ((horizontal.b - horizontal.a > image.getWidth() / 5) && (vertical.b - vertical.a > image.getHeight() /
-        // 5)) {
-        currentView = new Rectangle(horizontal.a, vertical.a, horizontal.b - horizontal.a, vertical.b - vertical.a);
-        // }
+        if ((horizontal.b - horizontal.a > image.getWidth() / 5) && (vertical.b - vertical.a > image.getHeight() / 5)) {
+            currentView = new Rectangle(horizontal.a, vertical.a, horizontal.b - horizontal.a, vertical.b - vertical.a);
+        }
     }
 
     private Pair<Integer, Integer> getPart(final int mouseCoord, final int firstReference, final int secondReference,
@@ -171,9 +170,8 @@ class PhotoPanel extends JPanel {
             final int currentViewDimension, final int imageDimension, final int wheelRotation) {
         Pair<Integer, Integer> pair;
         if (wheelRotation < 0) {
-            // then the new image will have as height, 4/5 of the current view
-            pair = getPart(mouseCoord, currentView.y, currentView.y + currentView.height,
-                    (currentView.height * 4 / 5) / 2);
+            pair = getPart(mouseCoord, currentViewMinCoord, currentViewMinCoord + currentViewDimension,
+                    (currentViewDimension * 4 / 5) / 2);
         } else {
             if (currentViewDimension != imageDimension) {
                 final int dif = (currentViewDimension * 5 / 4) / 2;
@@ -199,10 +197,11 @@ class PhotoPanel extends JPanel {
             final int wheelRotation) {
         Pair<Integer, Integer> pair;
         if (wheelRotation < 0) {  // zoom in
-            if (newDimension > currentView.width) {
-                newDimension = currentView.width;
+            if (newDimension > currentViewDimension) {
+                newDimension = currentViewDimension;
             }
-            pair = getPart(mouseCoord, currentView.x, currentView.x + currentView.width, newDimension / 2);
+            pair = getPart(mouseCoord, currentViewMinCoord, currentViewMinCoord + currentViewDimension,
+                    newDimension / 2);
         } else {                  // zoom out
             if (currentViewDimension != imageDimension) {
                 if (newDimension > imageDimension) {
