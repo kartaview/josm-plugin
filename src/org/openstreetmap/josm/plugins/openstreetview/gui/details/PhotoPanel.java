@@ -30,6 +30,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.gui.GuiBuilder;
 
 
@@ -59,14 +60,10 @@ class PhotoPanel extends JPanel {
         this.addMouseWheelListener(new ImageMouseListener());
     }
 
-    private class Pair {
-
-        int first, second;
-    }
-
 
     @Override
     public void paintComponent(final Graphics g) {
+
         if (image != null) {
             // clean the panel
             g.setColor(getBackground());
@@ -115,63 +112,61 @@ class PhotoPanel extends JPanel {
     }
 
     private void zoom(final int xMouseCoord, final int yMouseCoord, final int wheelRotation) {
-        final Pair vertical;
-        final Pair horizontal;
+        final Pair<Integer, Integer> vertical;
+        final Pair<Integer, Integer> horizontal;
 
         // if the outside panel has a landscape format
         if (this.getWidth() > this.getHeight()) {
             vertical = getCurrentViewNewFixedDimension(yMouseCoord, currentView.y, currentView.height,
                     image.getHeight(), wheelRotation);
 
-            final int newWidth = (vertical.second - vertical.first) * this.getWidth() / this.getHeight();
+            final int newWidth = (vertical.b - vertical.a) * this.getWidth() / this.getHeight();
             horizontal = getCurrentViewNewRelativeDimension(xMouseCoord, currentView.x, currentView.width, newWidth,
                     image.getWidth(), wheelRotation);
         } else {
             horizontal = getCurrentViewNewFixedDimension(xMouseCoord, currentView.x, currentView.width,
                     image.getWidth(), wheelRotation);
 
-            final int newHeight = (horizontal.second - horizontal.first) * this.getHeight() / this.getWidth();
+            final int newHeight = (horizontal.b - horizontal.a) * this.getHeight() / this.getWidth();
             vertical = getCurrentViewNewRelativeDimension(yMouseCoord, currentView.y, currentView.height, newHeight,
                     image.getHeight(), wheelRotation);
         }
 
-        currentView = new Rectangle(horizontal.first, vertical.first, horizontal.second - horizontal.first,
-                vertical.second - vertical.first);
+        currentView = new Rectangle(horizontal.a, vertical.a, horizontal.b - horizontal.a, vertical.b - vertical.a);
     }
 
-    private Pair getPart(final int mouseCoord, final int firstReference, final int secondReference,
+    private Pair<Integer, Integer> getPart(final int mouseCoord, final int firstReference, final int secondReference,
             final int croppedSize) {
-
-        final Pair result = new Pair();
 
         final int firstPartMargin = mouseCoord - croppedSize;
         final int secondPartMargin = mouseCoord + croppedSize;
 
-        result.first = firstPartMargin;
-        result.second = secondPartMargin;
+        final Pair<Integer, Integer> result = new Pair<>(firstPartMargin, secondPartMargin);
+        result.a = firstPartMargin;
+        result.b = secondPartMargin;
 
         if (firstPartMargin < firstReference) {
-            result.first = firstReference;
-            result.second = result.second - firstPartMargin + firstReference;
+            result.a = firstReference;
+            result.b = result.b - firstPartMargin + firstReference;
         }
 
         if (secondPartMargin > secondReference) {
-            result.first = result.first - secondPartMargin + secondReference;
-            result.second = secondReference;
+            result.a = result.a - secondPartMargin + secondReference;
+            result.b = secondReference;
         }
 
-        if (result.first < firstReference) {
-            result.first = firstReference;
+        if (result.a < firstReference) {
+            result.a = firstReference;
         }
-        if (result.second > secondReference) {
-            result.second = secondReference;
+        if (result.b > secondReference) {
+            result.b = secondReference;
         }
         return result;
     }
 
-    private Pair getCurrentViewNewFixedDimension(final int mouseCoord, final int currentViewMinCoord,
+    private Pair<Integer, Integer> getCurrentViewNewFixedDimension(final int mouseCoord, final int currentViewMinCoord,
             final int currentViewDimension, final int imageDimension, final int wheelRotation) {
-        Pair pair;
+        Pair<Integer, Integer> pair;
         if (wheelRotation < 0) {
             // then the new image will have as height, 4/5 of the current view
             pair = getPart(mouseCoord, currentView.y, currentView.y + currentView.height,
@@ -189,18 +184,17 @@ class PhotoPanel extends JPanel {
                 }
                 pair = getPart(mouseCoord, firstReference, secondReference, dif);
             } else {
-                pair = new Pair();
-                pair.first = 0;
-                pair.second = imageDimension;
+                pair = new Pair<>(0, imageDimension);
             }
         }
 
         return pair;
     }
 
-    Pair getCurrentViewNewRelativeDimension(final int mouseCoord, final int currentViewMinCoord,
-            final int currentViewDimension, int newDimension, final int imageDimension, final int wheelRotation) {
-        final Pair pair;
+    private Pair<Integer, Integer> getCurrentViewNewRelativeDimension(final int mouseCoord,
+            final int currentViewMinCoord, final int currentViewDimension, int newDimension, final int imageDimension,
+            final int wheelRotation) {
+        Pair<Integer, Integer> pair;
         if (wheelRotation < 0) {  // zoom in
             if (newDimension > currentView.width) {
                 newDimension = currentView.width;
@@ -222,9 +216,7 @@ class PhotoPanel extends JPanel {
                 }
                 pair = getPart(mouseCoord, firstReference, secondReference, newDimension / 2);
             } else {
-                pair = new Pair();
-                pair.first = 0;
-                pair.second = imageDimension;
+                pair = new Pair<>(0, imageDimension);
             }
         }
         return pair;
