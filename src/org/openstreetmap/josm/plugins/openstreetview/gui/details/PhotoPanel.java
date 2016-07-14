@@ -79,9 +79,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     public synchronized void mouseWheelMoved(final MouseWheelEvent e) {
         if (image != null) {
             // get the mouse position on the image (avoid the empty space around image)
-            final int xMouseCoord = currentView.x + (e.getX() - frame.x) * currentView.width / frame.width;
-            final int yMouseCoord = currentView.y + (e.getY() - frame.y) * currentView.height / frame.height;
-            zoom(xMouseCoord, yMouseCoord, e.getWheelRotation());
+            final int x = currentView.x + (e.getX() - frame.x) * currentView.width / frame.width;
+            final int y = currentView.y + (e.getY() - frame.y) * currentView.height / frame.height;
+            zoom(x, y, e.getWheelRotation());
             PhotoPanel.this.repaint();
         }
     }
