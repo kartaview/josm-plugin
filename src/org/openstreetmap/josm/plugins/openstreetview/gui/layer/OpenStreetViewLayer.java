@@ -47,9 +47,10 @@ public class OpenStreetViewLayer extends AbtractLayer {
         }
     }
 
-    public void setPhotos(final List<Photo> photos) {
+    public void setPhotos(final List<Photo> photos, final boolean checkSelectedPhoto) {
         this.photos = photos;
-        if ((this.selectedPhoto != null) && (this.photos == null || !this.photos.contains(selectedPhoto))) {
+        if ((checkSelectedPhoto && this.selectedPhoto != null)
+                && (this.photos == null || !this.photos.contains(selectedPhoto))) {
             this.selectedPhoto = null;
         }
     }

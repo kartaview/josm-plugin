@@ -35,13 +35,13 @@ public class Photo {
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final Long timestamp;
-    private final Double heading;
+    private final String heading;
     private final String username;
 
 
     public Photo(final Long id, final Long sequenceId, final Long sequenceIndex, final Double latitude,
             final Double longitude, final String name, final String largeThumbnailName, final String thumbnailName,
-            final Long timestamp, final Double heading, final String username) {
+            final Long timestamp, final String heading, final String username) {
         this.id = id;
         this.sequenceId = sequenceId;
         this.sequenceIndex = sequenceIndex;
@@ -87,7 +87,7 @@ public class Photo {
         return timestamp;
     }
 
-    public Double getHeading() {
+    public String getHeading() {
         return heading;
     }
 

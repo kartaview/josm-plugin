@@ -54,7 +54,8 @@ final class ServiceHandler {
 
     List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter) {
         List<Photo> result = new ArrayList<>();
-        final Long userId = JosmUserIdentityManager.getInstance().asUser().getId();
+        final Long userId = filter != null && filter.isOnlyUserFlag()
+                ? JosmUserIdentityManager.getInstance().asUser().getId() : null;
         final Date date = filter != null ? filter.getDate() : null;
         try {
             result = service.listNearbyPhotos(circle, date, userId, Paging.DEFAULT);

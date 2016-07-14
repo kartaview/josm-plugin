@@ -113,7 +113,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
                 @Override
                 public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog));
+                    Main.worker.execute(new DataUpdateThread(layer));
                 }
             });
             zoomTimer.setRepeats(false);
@@ -219,7 +219,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
                 @Override
                 public void run() {
                     final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, null);
-                    layer.setPhotos(photos);
+                    layer.setPhotos(photos, false);
                     Main.map.mapView.zoomTo(layer.getSelectedPhoto().getLocation());
                 }
             });
@@ -230,7 +230,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
-                Main.worker.execute(new DataUpdateThread(layer, detailsDialog));
+                Main.worker.execute(new DataUpdateThread(layer));
             }
         }
     }

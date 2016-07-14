@@ -21,7 +21,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
@@ -37,12 +36,10 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
 class DataUpdateThread implements Runnable {
 
     private final OpenStreetViewLayer layer;
-    private final OpenStreetViewDetailsDialog detailsDialog;
 
 
-    DataUpdateThread(final OpenStreetViewLayer layer, final OpenStreetViewDetailsDialog detailsDialog) {
+    DataUpdateThread(final OpenStreetViewLayer layer) {
         this.layer = layer;
-        this.detailsDialog = detailsDialog;
     }
 
     @Override
@@ -53,22 +50,20 @@ class DataUpdateThread implements Runnable {
                 final Circle circle = new Circle(Main.map.mapView);
                 final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
                 final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, filter);
-                updateUI(photos);
+                final boolean checkSelectedPhoto = filter != null;
+                updateUI(photos, checkSelectedPhoto);
             } else {
-                updateUI(null);
+                updateUI(null, false);
             }
         }
     }
 
-    private void updateUI(final List<Photo> photos) {
+    private void updateUI(final List<Photo> photos, final boolean checkSelectedPhoto) {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                layer.setPhotos(photos);
-                if (layer.getSelectedPhoto() == null) {
-                    detailsDialog.updateUI(null);
-                }
+                layer.setPhotos(photos, checkSelectedPhoto);
                 Main.map.repaint();
             }
         });
