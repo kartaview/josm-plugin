@@ -21,6 +21,7 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.plugins.openstreetview.gui.details.DisplayFilterDialogAction;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 
@@ -53,7 +54,8 @@ abstract class AbtractLayer extends Layer {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
         return new Action[] { layerListDialog.createActivateLayerAction(this),
                 layerListDialog.createShowHideLayerAction(), layerListDialog.createDeleteLayerAction(),
-                SeparatorLayerAction.INSTANCE, SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(), SeparatorLayerAction.INSTANCE,
+                new LayerListPopup.InfoAction(this) };
     }
 
     @Override
@@ -73,6 +75,6 @@ abstract class AbtractLayer extends Layer {
 
     @Override
     public void visitBoundingBox(final BoundingXYVisitor visitor) {
-        System.out.println("visit bounding box");
+        // no logic to add here
     }
 }

@@ -35,6 +35,7 @@ public class ServiceConfig extends BaseConfig {
     private final String baseUrl;
     private final String serviceUrl;
     private final String photoDetailsUrl;
+    private final String feedbackUrl;
     private final int photoZoom;
     private final int maxRadius;
     private final int maxItems;
@@ -46,6 +47,7 @@ public class ServiceConfig extends BaseConfig {
         baseUrl = readProperty("service.url");
         serviceUrl = baseUrl + readProperty("service.version");
         photoDetailsUrl = baseUrl + readProperty("service.details");
+        feedbackUrl = readProperty("feedback.url");
         photoZoom = readInt("photoZoom", DEFAULT_PHOTO_ZOOM);
         maxRadius = readInt("maxRadius", MAX_RADIUS);
         maxItems = readInt("maxItems", MAX_ITEMS);
@@ -67,6 +69,10 @@ public class ServiceConfig extends BaseConfig {
 
     public String getPhotoDetailsUrl() {
         return photoDetailsUrl;
+    }
+
+    public String getFeedbackUrl() {
+        return feedbackUrl;
     }
 
     public int getPhotoZoom() {

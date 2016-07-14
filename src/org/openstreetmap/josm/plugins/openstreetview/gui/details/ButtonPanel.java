@@ -20,7 +20,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,6 +57,8 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
     private final JButton btnFilter;
     private final JButton btnLocation;
     private final JButton btnWebPage;
+    private final JButton btnFeedbackPage;
+
 
     private Photo photo;
 
@@ -65,17 +67,20 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
 
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
-        final ImageIcon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+        final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                 ? iconConfig.getFilterIcon() : iconConfig.getFilterSelectedIcon();
         btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
         btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
+        btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
+                guiConfig.getBtnWebPageTlt(), true);
 
         add(btnFilter);
         add(btnLocation);
         add(btnWebPage);
+        add(btnFeedbackPage);
         setPreferredSize(DIM);
         Main.pref.addPreferenceChangeListener(this);
     }
@@ -108,24 +113,13 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
-                final ImageIcon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                         ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
                 btnFilter.setIcon(icon);
             }
         }
     }
 
-    private final class DisplayFilterDialogAction extends AbstractAction {
-
-        private static final long serialVersionUID = 3384826283452064630L;
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            final FilterDialog filterDialog = new FilterDialog();
-            filterDialog.setVisible(true);
-        }
-
-    }
 
     private final class JumpToLocationAction extends AbstractAction {
 
@@ -159,4 +153,18 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
         }
     }
 
+    private final class OpenFeedbackPageAction extends AbstractAction {
+
+        private static final long serialVersionUID = 4196639030623647016L;
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            try {
+                OpenBrowser.displayUrl(new URI(ServiceConfig.getInstance().getFeedbackUrl()));
+            } catch (final Exception e) {
+                JOptionPane.showMessageDialog(Main.parent, "Could not open feedback page", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 }

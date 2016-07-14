@@ -36,19 +36,21 @@ import com.telenav.josm.common.gui.ModalDialog;
  * @author Beata
  * @version $Revision$
  */
-public class FilterDialog extends ModalDialog {
+class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
-    private static final Dimension DIM = new Dimension(300, 150);
+    private static final Dimension DIM = new Dimension(300, 170);
 
     private FilterPanel pnlFilter;
 
 
-    public FilterDialog() {
+    FilterDialog() {
         super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon().getImage());
         setModalityType(ModalityType.DOCUMENT_MODAL);
         createComponents();
         setSize(DIM);
+        setMinimumSize(DIM);
+        setPreferredSize(DIM);
     }
 
     @Override
