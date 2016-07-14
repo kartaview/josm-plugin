@@ -101,6 +101,8 @@ class PhotoPanel extends JPanel {
                 add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPhotoErrorTxt(),
                         getFont().deriveFont(Font.BOLD, 12), Color.white), BorderLayout.CENTER);
             }
+        } else {
+            image = null;
         }
     }
 
