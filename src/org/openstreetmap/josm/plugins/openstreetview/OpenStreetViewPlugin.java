@@ -154,10 +154,12 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     /* Implementation of MouseListener */
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event)) {
+        if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
             if (event.getClickCount() == 2) {
-                this.selectedPhotoBounds = null;
-                selectPhoto(null);
+                if (layer.getSelectedPhoto() != null) {
+                    this.selectedPhotoBounds = null;
+                    selectPhoto(null);
+                }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 this.selectedPhotoBounds = Main.map.mapView.getRealBounds();
