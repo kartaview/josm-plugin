@@ -173,11 +173,11 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
             @Override
             public void run() {
-                if (!detailsDialog.getButton().isSelected()) {
+                if (photo != null && !detailsDialog.getButton().isSelected()) {
                     detailsDialog.getButton().doClick();
                 }
-                detailsDialog.updateUI(photo);
                 layer.setSelectedPhoto(photo);
+                detailsDialog.updateUI(photo);
                 Main.map.repaint();
             }
         });
