@@ -89,7 +89,7 @@
 				<attribute name="Author" value="telenav" />
 				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetview.OpenStreetViewPlugin" />
 				<attribute name="Plugin-Date" value="${TODAY}" />
-				<attribute name="Plugin-Description" value="This plugin displays the images from the OpenStreetView project." />
+				<attribute name="Plugin-Description" value="Lets you map from OpenStreetView street level imagery." />
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetView" />
 				<attribute name="Plugin-Icon" value="images/openstreetview_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
