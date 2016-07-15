@@ -32,7 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
  */
 public final class Util {
 
-    private static final double POZ_DIST = 15.0;
+    private static final double POZ_DIST = 18.0;
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 18;
     private static final int TILE_SIZE = 1024;

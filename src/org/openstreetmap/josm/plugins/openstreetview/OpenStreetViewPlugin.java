@@ -175,12 +175,18 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
             @Override
             public void run() {
+                layer.setSelectedPhoto(photo);
+                Main.map.repaint();
+            }
+        });
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
                 if (photo != null && !detailsDialog.getButton().isSelected()) {
                     detailsDialog.getButton().doClick();
                 }
-                layer.setSelectedPhoto(photo);
                 detailsDialog.updateUI(photo);
-                Main.map.repaint();
             }
         });
     }
