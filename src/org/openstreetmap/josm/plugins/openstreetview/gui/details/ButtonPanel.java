@@ -75,7 +75,7 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
         btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
-                guiConfig.getBtnWebPageTlt(), true);
+                guiConfig.getBtnFeedbackTlt(), true);
 
         add(btnFilter);
         add(btnLocation);

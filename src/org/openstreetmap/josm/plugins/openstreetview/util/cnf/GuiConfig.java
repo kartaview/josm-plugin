@@ -36,6 +36,7 @@ public class GuiConfig extends BaseConfig {
     private final String btnFilterTlt;
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
+    private final String btnFeedbackTlt;
 
     private final String photoErrorTxt;
     private final String dlgFilterTitle;
@@ -56,6 +57,7 @@ public class GuiConfig extends BaseConfig {
         btnFilterTlt = readProperty("btn.filter.tlt");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
+        btnFeedbackTlt = readProperty("btn.feedback.tlt");
         photoErrorTxt = readProperty("photo.error.txt");
         dlgFilterTitle = readProperty("filter.title");
         dlgFilterDateLbl = readProperty("filter.date");
@@ -93,6 +95,10 @@ public class GuiConfig extends BaseConfig {
 
     public String getBtnWebPageTlt() {
         return btnWebPageTlt;
+    }
+
+    public String getBtnFeedbackTlt() {
+        return btnFeedbackTlt;
     }
 
     public String getPhotoErrorTxt() {
