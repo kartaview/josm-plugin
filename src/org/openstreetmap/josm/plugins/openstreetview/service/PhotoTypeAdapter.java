@@ -24,6 +24,7 @@ import com.google.gson.stream.JsonWriter;
 
 
 /**
+ * Custom type adapter for the {@code Photo} object.
  *
  * @author Beata
  * @version $Revision$
@@ -42,6 +43,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
     private static final String HEADING = "heading";
     private static final String USERNAME = "username";
 
+
     @Override
     public Photo read(final JsonReader reader) throws IOException {
         Long id = null;
@@ -53,7 +55,6 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         String largeThumbnailName = null;
         String thumbnailName = null;
         Long timestamp = null;
-        // Double heading = null;
         String heading = null;
         String username = null;
         reader.beginObject();
@@ -76,26 +77,22 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     longitude = readDouble(reader);
                     break;
                 case NAME:
-                    name = reader.nextString();
+                    name = readString(reader);
                     break;
                 case LTH_NAME:
-                    largeThumbnailName = reader.nextString();
+                    largeThumbnailName = readString(reader);
                     break;
                 case TH_NAME:
-                    thumbnailName = reader.nextString();
+                    thumbnailName = readString(reader);
                     break;
                 case TIMESTAMP:
                     timestamp = readLong(reader);
                     break;
                 case HEADING:
-                    if (reader.peek() == JsonToken.NULL) {
-                        reader.nextNull();
-                    } else {
-                        heading = reader.nextString();
-                    }
+                    heading = readString(reader);
                     break;
                 case USERNAME:
-                    username = reader.nextString();
+                    username = readString(reader);
                     break;
                 default:
                     reader.skipValue();
@@ -123,6 +120,16 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
             reader.nextNull();
         } else {
             value = reader.nextLong();
+        }
+        return value;
+    }
+
+    private String readString(final JsonReader reader) throws IOException {
+        String value = null;
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+        } else {
+            value = reader.nextString();
         }
         return value;
     }

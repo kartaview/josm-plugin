@@ -54,13 +54,16 @@ public class OpenStreetViewService {
      * Retrieves OpenStreetView photos from the given area based on the specified filters.
      *
      * @param circle a {@code Circle} defines the searching area
-     * @param filter a {@code ListFilter} if defined the photos will be also filtered
+     * @param date a {@code Date} if not null, then the method returns the photos that were uploaded after the specified
+     * date
+     * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
+     * uploaded by the logged in user
      * @param paging a {@code Paging} defines pagination arguments
      * @return a list of {@code Photo}s
      * @throws OpenStreetViewServiceException if the operation failed
      */
-    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId,
-            final Paging paging) throws OpenStreetViewServiceException {
+    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId, final Paging paging)
+            throws OpenStreetViewServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(circle, date, osmUserId, paging).getContent();
         String response = null;
         try {

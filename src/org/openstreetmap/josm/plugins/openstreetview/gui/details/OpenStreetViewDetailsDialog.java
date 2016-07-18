@@ -61,7 +61,7 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
 
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(12), Color.white);
+        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
         final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
@@ -73,11 +73,10 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
             lblDetails.setText(Formatter.formatPhotoDetails(photo));
             pnlPhoto.updateUI(photo.getLargeThumbnailName());
         } else {
-            // TODO: needs to be decided when to clear out the selection
             lblDetails.setText("");
             pnlPhoto.updateUI(null);
         }
-        pnlBtn.enablePanelActions(photo);
+        pnlBtn.updateUI(photo);
         lblDetails.revalidate();
         pnlPhoto.revalidate();
         repaint();

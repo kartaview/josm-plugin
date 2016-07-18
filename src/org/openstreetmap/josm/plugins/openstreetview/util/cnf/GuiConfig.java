@@ -24,7 +24,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author Beata
  * @version $Revision$
  */
-public class GuiConfig extends BaseConfig {
+public final class GuiConfig extends BaseConfig {
 
     private static final String CONFIG_FILE = "openstreetview_gui.properties";
     private static final GuiConfig INSTANCE = new GuiConfig();
@@ -38,7 +38,7 @@ public class GuiConfig extends BaseConfig {
     private final String btnWebPageTlt;
     private final String btnFeedbackTlt;
 
-    private final String photoErrorTxt;
+
     private final String dlgFilterTitle;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
@@ -47,8 +47,14 @@ public class GuiConfig extends BaseConfig {
     private final String btnClearLbl;
     private final String btnCancelLbl;
 
+    private final String errorTitle;
+    private final String errorPhotoListTxt;
+    private final String errorPhotoLoadingTxt;
+    private final String errorPhotoPageTxt;
+    private final String errorFeedbackPageTxt;
 
-    public GuiConfig() {
+
+    private GuiConfig() {
         super(CONFIG_FILE);
 
         pluginShortName = readProperty("plugin.name.short");
@@ -58,7 +64,6 @@ public class GuiConfig extends BaseConfig {
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnFeedbackTlt = readProperty("btn.feedback.tlt");
-        photoErrorTxt = readProperty("photo.error.txt");
         dlgFilterTitle = readProperty("filter.title");
         dlgFilterDateLbl = readProperty("filter.date");
         dlgFilterUserLbl = readProperty("filter.user");
@@ -66,6 +71,13 @@ public class GuiConfig extends BaseConfig {
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
         btnCancelLbl = readProperty("btn.cancel.lbl");
+
+        errorTitle = readProperty("error.title");
+        errorPhotoListTxt = readProperty("error.photo.list");
+        errorPhotoLoadingTxt = readProperty("error.photo.loading");
+        errorPhotoPageTxt = readProperty("error.photo.page");
+        errorFeedbackPageTxt = readProperty("error.feedback.page");
+
     }
 
 
@@ -101,10 +113,6 @@ public class GuiConfig extends BaseConfig {
         return btnFeedbackTlt;
     }
 
-    public String getPhotoErrorTxt() {
-        return photoErrorTxt;
-    }
-
     public String getDlgFilterTitle() {
         return dlgFilterTitle;
     }
@@ -131,5 +139,25 @@ public class GuiConfig extends BaseConfig {
 
     public String getBtnCancelLbl() {
         return btnCancelLbl;
+    }
+
+    public String getErrorTitle() {
+        return errorTitle;
+    }
+
+    public String getErrorPhotoLoadingTxt() {
+        return errorPhotoLoadingTxt;
+    }
+
+    public String getErrorPhotoPageTxt() {
+        return errorPhotoPageTxt;
+    }
+
+    public String getErrorFeedbackPageTxt() {
+        return errorFeedbackPageTxt;
+    }
+
+    public String getErrorPhotoListTxt() {
+        return errorPhotoListTxt;
     }
 }

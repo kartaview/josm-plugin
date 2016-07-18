@@ -29,7 +29,6 @@ import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
  */
 public class DisplayFilterDialogAction extends AbstractAction {
 
-
     private static final long serialVersionUID = 8325126526750975651L;
 
 

@@ -48,19 +48,23 @@ import com.telenav.josm.common.gui.GuiBuilder;
 class ButtonPanel extends JPanel implements LocationObservable, PreferenceChangedListener {
 
     private static final long serialVersionUID = -2909078640977666884L;
+
+    private static final Dimension DIM = new Dimension(200, 23);
     private static final int ROWS = 1;
     private static final int COLS = 5;
-    private static final Dimension DIM = new Dimension(200, 23);
 
-    private LocationObserver observer;
-
+    /* the panel's components */
     private final JButton btnFilter;
     private final JButton btnLocation;
     private final JButton btnWebPage;
     private final JButton btnFeedbackPage;
 
+    /* notifies the plugin main class, if the user click's on the location button */
+    private LocationObserver observer;
 
+    /* the currently selected photo */
     private Photo photo;
+
 
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
@@ -85,8 +89,13 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
         Main.pref.addPreferenceChangeListener(this);
     }
 
-
-    void enablePanelActions(final Photo photo) {
+    /**
+     * Updates the UI components according to the selected photo. If the photo is not null then the location and web
+     * page buttons becomes enabled; otherwise disabled.
+     *
+     * @param photo the currently selected photo
+     */
+    void updateUI(final Photo photo) {
         this.photo = photo;
         if (photo != null) {
             btnLocation.setEnabled(true);
@@ -102,17 +111,15 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
         this.observer = observer;
     }
 
-
     @Override
     public void notifyObserver() {
         this.observer.zoomToSelectedPhoto();
     }
 
-
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
+            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                         ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
                 btnFilter.setIcon(icon);
@@ -120,7 +127,7 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
         }
     }
 
-
+    /* centers the map to the selected photo's location */
     private final class JumpToLocationAction extends AbstractAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
@@ -131,9 +138,9 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
                 notifyObserver();
             }
         }
-
     }
 
+    /* opens the selected photo's web page */
     private final class OpenWebPageAction extends AbstractAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
@@ -146,13 +153,14 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));
                 } catch (final Exception e) {
-                    JOptionPane.showMessageDialog(Main.parent, "Could not open image page", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageTxt(),
+                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
 
+    /* opens the feedback web page */
     private final class OpenFeedbackPageAction extends AbstractAction {
 
         private static final long serialVersionUID = 4196639030623647016L;
@@ -162,8 +170,8 @@ class ButtonPanel extends JPanel implements LocationObservable, PreferenceChange
             try {
                 OpenBrowser.displayUrl(new URI(ServiceConfig.getInstance().getFeedbackUrl()));
             } catch (final Exception e) {
-                JOptionPane.showMessageDialog(Main.parent, "Could not open feedback page", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageTxt(),
+                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
     }

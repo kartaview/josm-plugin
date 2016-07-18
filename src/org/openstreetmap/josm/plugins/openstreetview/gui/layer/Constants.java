@@ -21,6 +21,7 @@ import java.util.Map;
 
 
 /**
+ * Holds constants used by the layer clases.
  *
  * @author Beata
  * @version $Revision$

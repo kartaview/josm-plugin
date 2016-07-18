@@ -51,6 +51,13 @@ public final class Util {
                 Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2))))));
     }
 
+    /**
+     * Returns the photo near to the given location. The method returns null if there is no photo nearby.
+     *
+     * @param photos a list of {@code Photo}s
+     * @param point a {@code Point} the location where the user clicked
+     * @return a {@code Photo} object
+     */
     public static Photo nearbyPhoto(final List<Photo> photos, final Point point) {
         double minDist = Double.MAX_VALUE;
         Photo result = null;

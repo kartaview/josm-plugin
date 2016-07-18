@@ -37,6 +37,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
 
 
 /**
+ * Displays the possible data filters.
  *
  * @author Beata
  * @version $Revision$
@@ -45,9 +46,12 @@ class FilterPanel extends JPanel {
 
     private static final long serialVersionUID = -4229411104270361299L;
     private static final Dimension PICKER_SIZE = new Dimension(120, 20);
+
+    /* panel components */
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
     private JLabel lblLoginWarning;
+
 
     FilterPanel() {
         super(new GridBagLayout());
@@ -71,7 +75,6 @@ class FilterPanel extends JPanel {
         add(pickerDate, Constraints.PICKER_DATE);
     }
 
-
     private void addUserFilter(final boolean isSelected) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
                 getBackground()), Constraints.LBL_USER);
@@ -87,11 +90,19 @@ class FilterPanel extends JPanel {
         add(cbbUser, Constraints.CBB_USER);
     }
 
+    /**
+     * Returns the currently selected filters.
+     *
+     * @return a {@code ListFilter} object
+     */
     ListFilter selectedFilters() {
         final Date date = pickerDate.getDate();
         return new ListFilter(date, cbbUser.isSelected());
     }
 
+    /**
+     * Clears the filters.
+     */
     void clearFilters() {
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
@@ -107,7 +118,6 @@ class FilterPanel extends JPanel {
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
         private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 2, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 10), 0, 0);
-
         private static final GridBagConstraints LBL_USER = new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 5), 0, 0);
         private static final GridBagConstraints CBB_USER = new GridBagConstraints(1, 1, 1, 1, 0, 0,

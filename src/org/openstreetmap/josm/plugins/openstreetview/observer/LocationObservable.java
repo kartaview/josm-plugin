@@ -16,13 +16,22 @@
 package org.openstreetmap.josm.plugins.openstreetview.observer;
 
 /**
+ * The observable interface for the {@code LocationObserver} object.
  *
  * @author Beata
  * @version $Revision$
  */
 public interface LocationObservable {
 
+    /**
+     * Registers the given observer.
+     *
+     * @param observer a {@code LocationObserver}
+     */
     void registerObserver(LocationObserver observer);
 
+    /**
+     * Notifies the observers listening.
+     */
     void notifyObserver();
 }

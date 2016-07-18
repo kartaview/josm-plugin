@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetview.service;
 
 
 /**
+ * Holds paramters and method names.
  *
  * @author Beata
  * @version $Revision$
@@ -33,5 +34,4 @@ final class RequestConstants {
     static final String PAGE_ITEMS = "ipp";
     static final String DATE = "date";
     static final String USER_ID = "externalUserId";
-
 }

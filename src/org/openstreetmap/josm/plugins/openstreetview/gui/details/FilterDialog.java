@@ -32,6 +32,7 @@ import com.telenav.josm.common.gui.ModalDialog;
 
 
 /**
+ * Dialog window that displays the {@code ListFilter}s that can be applied to the OpenStreetView layer.
  *
  * @author Beata
  * @version $Revision$
@@ -65,6 +66,8 @@ class FilterDialog extends ModalDialog {
         add(pnlButton, BorderLayout.SOUTH);
     }
 
+
+    /* applies the selected filters */
     private final class OkAction extends AbstractAction {
 
         private static final long serialVersionUID = -1573801969230451122L;
@@ -86,6 +89,7 @@ class FilterDialog extends ModalDialog {
         }
     }
 
+    /* clears the selected filters */
     private final class ClearAction extends AbstractAction {
 
         private static final long serialVersionUID = -8589369992232950474L;

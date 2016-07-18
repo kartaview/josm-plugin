@@ -29,7 +29,12 @@ final class Formatter {
 
     private Formatter() {}
 
-
+    /**
+     * Returns a string containing the upload date and username of the user who had uploaded the photo.
+     *
+     * @param photo a {@code Photo} represents the currently selected photo
+     * @return a {@code String}
+     */
     static String formatPhotoDetails(final Photo photo) {
         final StringBuilder sb = new StringBuilder();
         sb.append("Uploaded");

@@ -24,7 +24,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author Beata
  * @version $Revision$
  */
-public class ServiceConfig extends BaseConfig {
+public final class ServiceConfig extends BaseConfig {
 
     private static final int DEFAULT_PHOTO_ZOOM = 15;
     private static final int MAX_RADIUS = 5000;
@@ -41,7 +41,7 @@ public class ServiceConfig extends BaseConfig {
     private final int maxItems;
 
 
-    public ServiceConfig() {
+    private ServiceConfig() {
         super(CONFIG_FILE);
 
         baseUrl = readProperty("service.url");

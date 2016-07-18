@@ -47,6 +47,13 @@ public class OpenStreetViewLayer extends AbtractLayer {
         }
     }
 
+    /**
+     * Sets the currently displayed photo list.
+     *
+     * @param photos a list of {@code Photo}s
+     * @param checkSelectedPhoto is true, verifies if the selected photo is present or not in the given photo list. The
+     * selected photo is set to null, if it is not present in the given list.
+     */
     public void setPhotos(final List<Photo> photos, final boolean checkSelectedPhoto) {
         this.photos = photos;
         if ((checkSelectedPhoto && this.selectedPhoto != null)
@@ -55,14 +62,30 @@ public class OpenStreetViewLayer extends AbtractLayer {
         }
     }
 
+    /**
+     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
+     *
+     * @param point a {@code Point} represents the location where the user had clicked
+     * @return a {@code Photo}
+     */
     public Photo nearbyPhoto(final Point point) {
         return photos != null ? Util.nearbyPhoto(photos, point) : null;
     }
 
+    /**
+     * Returns the currently selected photo.
+     *
+     * @return a {@code Photo}
+     */
     public Photo getSelectedPhoto() {
         return selectedPhoto;
     }
 
+    /**
+     * Sets the currently selected photo.
+     *
+     * @param selectedPhoto a {@code Photo} a selected photo
+     */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
     }

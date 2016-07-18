@@ -102,6 +102,8 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         Main.pref.addPreferenceChangeListener(this);
         Main.map.mapView.addMouseListener(this);
     }
+
+
     /* implementation of ZoomChangeListener */
 
     @Override
@@ -134,7 +136,6 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     @Override
     public void layerOrderChanged(final LayerOrderChangeEvent event) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -152,6 +153,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
 
     /* Implementation of MouseListener */
+
     @Override
     public void mouseClicked(final MouseEvent event) {
         if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
@@ -172,7 +174,6 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     private void selectPhoto(final Photo photo) {
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
@@ -180,10 +181,9 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             }
         });
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
-                if (photo != null && !detailsDialog.getButton().isSelected()) {
+                if (!detailsDialog.getButton().isSelected()) {
                     detailsDialog.getButton().doClick();
                 }
                 detailsDialog.updateUI(photo);
@@ -217,12 +217,14 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         // no logic for this action
     }
 
+
+    /* implementation of LocationObserver */
+
     @Override
     public void zoomToSelectedPhoto() {
         if (layer.getSelectedPhoto() != null && selectedPhotoBounds != null
                 && !selectedPhotoBounds.getCenter().equals(Main.map.mapView.getRealBounds().getCenter())) {
             Main.worker.submit(new Runnable() {
-
                 @Override
                 public void run() {
                     final Photo selectedPhoto = layer.getSelectedPhoto();
@@ -239,10 +241,13 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         }
     }
 
+
+    /* implementation of PreferenceChangedListener */
+
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlag())) {
+            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 Main.worker.execute(new DataUpdateThread(layer));
             }
         }

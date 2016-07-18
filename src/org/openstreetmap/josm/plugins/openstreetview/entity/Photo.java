@@ -39,6 +39,21 @@ public class Photo {
     private final String username;
 
 
+    /**
+     * Builds a new photo with the given arguments.
+     *
+     * @param id the unique identifier
+     * @param sequenceId the identifier of the sequence to which the photo belongs
+     * @param sequenceIndex the index of the photo from the sequence
+     * @param latitude the photo's latitude
+     * @param longitude the photo's longitude
+     * @param name the photo's name
+     * @param largeThumbnailName the large thumbnail name
+     * @param thumbnailName the small thumbnail name
+     * @param timestamp the photo's creation date
+     * @param heading the sequence direction
+     * @param username the owner's username
+     */
     public Photo(final Long id, final Long sequenceId, final Long sequenceIndex, final Double latitude,
             final Double longitude, final String name, final String largeThumbnailName, final String thumbnailName,
             final Long timestamp, final String heading, final String username) {

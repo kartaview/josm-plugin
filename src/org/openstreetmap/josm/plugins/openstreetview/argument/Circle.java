@@ -17,7 +17,6 @@ package org.openstreetmap.josm.plugins.openstreetview.argument;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
 import com.telenav.josm.common.util.EntityUtil;
@@ -42,15 +41,14 @@ public class Circle {
      * @param mapView represents the currently visible map
      */
     public Circle(final MapView mapView) {
-        final BBox bbox =
-                new Bounds(mapView.getLatLon(0, mapView.getHeight()), mapView.getLatLon(mapView.getWidth(), 0))
-                .toBBox();
-        this.center = bbox.getCenter();
-        final int distance = (int) this.center.greatCircleDistance(bbox.getBottomRight());
-        this.radius = distance > ServiceConfig.getInstance().getMaxRadius() ? ServiceConfig.getInstance().getMaxRadius()
-                : distance;
+        this(new Bounds(mapView.getLatLon(0, mapView.getHeight()), mapView.getLatLon(mapView.getWidth(), 0)));
     }
 
+    /**
+     * Builds a new circle from the given bounds.
+     *
+     * @param bounds a {@code Bounds} represents the JOSM map view bounds
+     */
     public Circle(final Bounds bounds) {
         this.center = bounds.toBBox().getCenter();
         final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
@@ -66,7 +64,6 @@ public class Circle {
         return radius;
     }
 
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -75,7 +72,6 @@ public class Circle {
         result = prime * result + EntityUtil.hashCode(center);
         return result;
     }
-
 
     @Override
     public boolean equals(final Object obj) {

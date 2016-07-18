@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetview.util.pref;
 
 
 /**
+ * Holds preference keys.
  *
  * @author Beata
  * @version $Revision$

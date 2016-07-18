@@ -34,16 +34,23 @@ import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
  */
 class PaintHandler {
 
+    /**
+     * Draws a list of photos to the map. A photo is represented by an icon on the map.
+     *
+     * @param graphics a {@code Graphics2D} used to draw elements to the map
+     * @param mapView a {@code MapView} represents the current map view
+     * @param photos a list of {@code Photo}s
+     * @param selectedPhoto the currently selected {@code Photo}
+     */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
             final Photo selectedPhoto) {
         for (final Photo photo : photos) {
-            // if (!photo.equals(selectedPhoto)) {
-            final Point point = mapView.getPoint(photo.getLocation());
-
-            if (mapView.contains(point)) {
-                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
+            if (!photo.equals(selectedPhoto)) {
+                final Point point = mapView.getPoint(photo.getLocation());
+                if (mapView.contains(point)) {
+                    drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
+                }
             }
-            // }
         }
         if (selectedPhoto != null) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());

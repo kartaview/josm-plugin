@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetview.service;
 
 
 /**
+ * Exception to be thrown by the service component.
  *
  * @author Beata
  * @version $Revision$
@@ -25,14 +26,30 @@ public class OpenStreetViewServiceException extends Exception {
 
     private static final long serialVersionUID = -7049128049723081647L;
 
+    /**
+     * Builds a new object with the given message.
+     *
+     * @param msg a {@code String}
+     */
     public OpenStreetViewServiceException(final String msg) {
         super(msg);
     }
 
+    /**
+     * Builds a new object with the given cause.
+     *
+     * @param cause a {@code Throwable}
+     */
     public OpenStreetViewServiceException(final Throwable cause) {
         super(cause);
     }
 
+    /**
+     * Builds a new object with the given message and cause.
+     *
+     * @param msg a {@code String}
+     * @param cause a {@code Throwable}
+     */
     public OpenStreetViewServiceException(final String msg, final Throwable cause) {
         super(msg, cause);
     }

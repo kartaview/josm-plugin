@@ -32,10 +32,17 @@ public class Paging {
     private final int itemsPerPage;
 
 
+    /**
+     * Builds a new paging with the given arguments.
+     *
+     * @param page the page number to be returned
+     * @param itemsPerPage the number of items to be returned
+     */
     public Paging(final int page, final int itemsPerPage) {
         this.page = page;
         this.itemsPerPage = itemsPerPage;
     }
+
 
     public int getPage() {
         return page;

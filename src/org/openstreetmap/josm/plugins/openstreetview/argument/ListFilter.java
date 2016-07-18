@@ -20,17 +20,26 @@ import com.telenav.josm.common.util.EntityUtil;
 
 
 /**
- * Defines the filters that can be applied to the list methods.
+ * Defines the filters that the user can use to reduce the displayed results.
  *
  * @author Beata
  * @version $Revision$
  */
 public class ListFilter {
 
-    private static final ListFilter DEFAULT = new ListFilter(null, false);
+    /** the default filter */
+    public static final ListFilter DEFAULT = new ListFilter(null, false);
+
     private final Date date;
     private final boolean onlyUserFlag;
 
+
+    /**
+     * Builds a new filter with the given arguments.
+     *
+     * @param date a {@code Date} the photos that were uploaded after the specified date will be displayed
+     * @param onlyUserFlag if true only the current user's photos will be displayed
+     */
     public ListFilter(final Date date, final boolean onlyUserFlag) {
         this.date = date;
         this.onlyUserFlag = onlyUserFlag;

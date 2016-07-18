@@ -27,7 +27,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author Beata
  * @version $Revision$
  */
-public class IconConfig extends BaseConfig {
+public final class IconConfig extends BaseConfig {
 
     private static final IconConfig INSTANCE = new IconConfig();
     private static final String CONFIG_FILE = "openstreetview_icon.properties";
@@ -44,7 +44,7 @@ public class IconConfig extends BaseConfig {
     private final Icon webPageIcon;
 
 
-    public IconConfig() {
+    private IconConfig() {
         super(CONFIG_FILE);
 
         pluginIconName = readProperty("plugin.icon");

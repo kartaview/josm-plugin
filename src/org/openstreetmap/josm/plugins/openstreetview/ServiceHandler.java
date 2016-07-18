@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.service.OpenStreetViewService;
 import org.openstreetmap.josm.plugins.openstreetview.service.OpenStreetViewServiceException;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
 
 
 /**
@@ -47,11 +48,17 @@ final class ServiceHandler {
         service = new OpenStreetViewService();
     }
 
-
     static ServiceHandler getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * List the photos from the current area based on the given filters.
+     *
+     * @param circle a {@code Circle} represents the search area
+     * @param filter a {@code Filter} represents the user's search filters. Null values are ignored
+     * @return a list of {@code Photo}s
+     */
     List<Photo> listNearbyPhotos(final Circle circle, final ListFilter filter) {
         List<Photo> result = new ArrayList<>();
         final Long userId = filter != null && filter.isOnlyUserFlag()
@@ -60,8 +67,10 @@ final class ServiceHandler {
         try {
             result = service.listNearbyPhotos(circle, date, userId, Paging.DEFAULT);
         } catch (final OpenStreetViewServiceException e) {
-            JOptionPane.showMessageDialog(Main.parent, e.getMessage(), GuiConfig.getInstance().getPhotoErrorTxt(),
-                    JOptionPane.ERROR_MESSAGE);
+            if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
+                JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
+                        GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
+            }
         }
         return result;
     }
