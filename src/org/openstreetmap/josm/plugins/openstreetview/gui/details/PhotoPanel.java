@@ -19,7 +19,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -40,7 +44,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class PhotoPanel extends JPanel implements MouseWheelListener {
+class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener {
 
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int MAX_ZOOM = 5;
@@ -54,13 +58,17 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** a part of the image that is currently displayed */
     private Rectangle currentView;
 
+    /** the image coordinate where the mouse dragging was started */
+    private Point startPoint;
+
     PhotoPanel() {
         super(new BorderLayout());
         setBackground(Color.white);
         setBorder(BorderFactory.createLineBorder(Color.gray));
         this.addMouseWheelListener(this);
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
     }
-
 
     @Override
     public void paintComponent(final Graphics g) {
@@ -76,15 +84,44 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     }
 
     @Override
-    public synchronized void mouseWheelMoved(final MouseWheelEvent e) {
+    public void mouseWheelMoved(final MouseWheelEvent e) {
         if (image != null) {
-            // get the mouse position on the image (avoid the empty space around image)
-            final int x = currentView.x + (e.getX() - frame.x) * currentView.width / frame.width;
-            final int y = currentView.y + (e.getY() - frame.y) * currentView.height / frame.height;
-            zoom(x, y, e.getWheelRotation());
-            PhotoPanel.this.repaint();
+            final Point point = getPointOnImage(e.getPoint());
+            zoom(point.x, point.y, e.getWheelRotation());
+            repaint();
         }
     }
+
+    @Override
+    public void mousePressed(final MouseEvent e) {
+        if (image != null) {
+            startPoint = getPointOnImage(e.getPoint());
+        }
+    }
+
+    @Override
+    public void mouseDragged(final MouseEvent e) {
+        if (image != null) {
+            final Point endPoint = getPointOnImage(e.getPoint());
+            moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
+            repaint();
+        }
+    }
+
+    @Override
+    public void mouseMoved(final MouseEvent e) {}
+
+    @Override
+    public void mouseClicked(final MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(final MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(final MouseEvent e) {}
+
+    @Override
+    public void mouseExited(final MouseEvent e) {}
 
     void updateUI(final String photoName) {
         removeAll();
@@ -96,7 +133,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                 currentView = new Rectangle(0, 0, image.getWidth(), image.getHeight());
             } catch (final IOException e) {
                 add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
-                        getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
+                        getFont().deriveFont(Font.BOLD, 12), Color.white), BorderLayout.CENTER);
             }
         } else {
             image = null;
@@ -123,24 +160,22 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                 currentView.y, currentView.x + currentView.width, currentView.y + currentView.height, null);
     }
 
-    private void zoom(final int xMouseCoord, final int yMouseCoord, final int wheelRotation) {
+    private void zoom(final int x, final int y, final int wheelRotation) {
         final Pair<Integer, Integer> vertical;
         final Pair<Integer, Integer> horizontal;
 
         if (this.getWidth() > this.getHeight()) {
-            vertical = getImageFixedDimension(yMouseCoord, currentView.y, currentView.height, image.getHeight(),
-                    wheelRotation);
+            vertical = getImageFixedDimension(y, currentView.y, currentView.height, image.getHeight(), wheelRotation);
 
             final int newWidth = (vertical.b - vertical.a) * this.getWidth() / this.getHeight();
-            horizontal = getImageRelativeDimension(xMouseCoord, currentView.x, currentView.width, newWidth,
-                    image.getWidth(), wheelRotation);
-        } else {
-            horizontal = getImageFixedDimension(xMouseCoord, currentView.x, currentView.width, image.getWidth(),
+            horizontal = getImageRelativeDimension(x, currentView.x, currentView.width, newWidth, image.getWidth(),
                     wheelRotation);
+        } else {
+            horizontal = getImageFixedDimension(x, currentView.x, currentView.width, image.getWidth(), wheelRotation);
 
             final int newHeight = (horizontal.b - horizontal.a) * this.getHeight() / this.getWidth();
-            vertical = getImageRelativeDimension(yMouseCoord, currentView.y, currentView.height, newHeight,
-                    image.getHeight(), wheelRotation);
+            vertical = getImageRelativeDimension(y, currentView.y, currentView.height, newHeight, image.getHeight(),
+                    wheelRotation);
         }
 
         if ((horizontal.b - horizontal.a > image.getWidth() / MAX_ZOOM)
@@ -149,55 +184,54 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         }
     }
 
-    private Pair<Integer, Integer> getPart(final int mouseCoord, final int firstReference, final int secondReference,
-            final int croppedSize) {
+    private Pair<Integer, Integer> getPart(final int ref, final int firstRef, final int secondRef, final int cut) {
 
-        final int firstPartMargin = mouseCoord - croppedSize;
-        final int secondPartMargin = mouseCoord + croppedSize;
+        final int minCoord = ref - cut;
+        final int maxCoord = ref + cut;
 
-        final Pair<Integer, Integer> result = new Pair<>(firstPartMargin, secondPartMargin);
-        result.a = firstPartMargin;
-        result.b = secondPartMargin;
+        final Pair<Integer, Integer> result = new Pair<>(minCoord, maxCoord);
+        result.a = minCoord;
+        result.b = maxCoord;
 
-        if (firstPartMargin < firstReference) {
-            result.a = firstReference;
-            result.b = result.b - firstPartMargin + firstReference;
+        if (minCoord < firstRef) {
+            result.a = firstRef;
+            result.b = result.b - minCoord + firstRef;
         }
 
-        if (secondPartMargin > secondReference) {
-            result.a = result.a - secondPartMargin + secondReference;
-            result.b = secondReference;
+        if (maxCoord > secondRef) {
+            result.a = result.a - maxCoord + secondRef;
+            result.b = secondRef;
         }
 
-        if (result.a < firstReference) {
-            result.a = firstReference;
+        if (result.a < firstRef) {
+            result.a = firstRef;
         }
-        if (result.b > secondReference) {
-            result.b = secondReference;
+        if (result.b > secondRef) {
+            result.b = secondRef;
         }
         return result;
     }
 
     private Pair<Integer, Integer> getImageFixedDimension(final int mouseCoord, final int currentViewMinCoord,
-            final int currentViewDimension, final int imageDimension, final int wheelRotation) {
+            final int currentViewDim, final int imgDim, final int wheelRotation) {
         Pair<Integer, Integer> pair;
         if (wheelRotation < 0) {
-            pair = getPart(mouseCoord, currentViewMinCoord, currentViewMinCoord + currentViewDimension,
-                    (currentViewDimension * 4 / 5) / 2);
+            pair = getPart(mouseCoord, currentViewMinCoord, currentViewMinCoord + currentViewDim,
+                    (currentViewDim * 4 / 5) / 2);
         } else {
-            if (currentViewDimension != imageDimension) {
-                final int dif = (currentViewDimension * 5 / 4) / 2;
+            if (currentViewDim != imgDim) {
+                final int dif = (currentViewDim * 5 / 4) / 2;
                 int firstReference = currentViewMinCoord - dif;
-                int secondReference = currentViewMinCoord + currentViewDimension + dif;
+                int secondReference = currentViewMinCoord + currentViewDim + dif;
                 if (firstReference < 0) {
                     firstReference = 0;
                 }
-                if (secondReference > imageDimension) {
-                    secondReference = imageDimension;
+                if (secondReference > imgDim) {
+                    secondReference = imgDim;
                 }
                 pair = getPart(mouseCoord, firstReference, secondReference, dif);
             } else {
-                pair = new Pair<>(0, imageDimension);
+                pair = new Pair<>(0, imgDim);
             }
         }
 
@@ -235,4 +269,31 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         return pair;
     }
 
+    private void moveCurrentView(final int xDif, final int yDif) {
+        currentView.x = currentView.x + xDif;
+        currentView.y = currentView.y + yDif;
+
+        if (currentView.x < 0) {
+            currentView.x = 0;
+        }
+
+        if (currentView.y < 0) {
+            currentView.y = 0;
+        }
+
+        if (currentView.x + currentView.width > image.getWidth()) {
+            currentView.x = image.getWidth() - currentView.width;
+        }
+
+        if (currentView.y + currentView.height > image.getHeight()) {
+            currentView.y = image.getHeight() - currentView.height;
+        }
+    }
+
+    /** Get the mouse position on the image (avoid the "empty" space around image) */
+    private Point getPointOnImage(final Point point) {
+        final int x = currentView.x + (point.x - frame.x) * currentView.width / frame.width;
+        final int y = currentView.y + (point.y - frame.y) * currentView.height / frame.height;
+        return new Point(x, y);
+    }
 }
