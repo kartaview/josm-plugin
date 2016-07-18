@@ -58,7 +58,7 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
     /** a part of the image that is currently displayed */
     private Rectangle currentView;
 
-    /** the start and the end coordinates described by the mouse move on the image */
+    /** the image coordinate where the mouse dragging was started */
     private Point startPoint;
 
     PhotoPanel() {
@@ -187,20 +187,20 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
     private Pair<Integer, Integer> getPart(final int ref, final int firstRef, final int secondRef,
             final int cut) {
 
-        final int firstPartMargin = ref - cut;
-        final int secondPartMargin = ref + cut;
+        final int minCoord = ref - cut;
+        final int maxCoord = ref + cut;
 
-        final Pair<Integer, Integer> result = new Pair<>(firstPartMargin, secondPartMargin);
-        result.a = firstPartMargin;
-        result.b = secondPartMargin;
+        final Pair<Integer, Integer> result = new Pair<>(minCoord, maxCoord);
+        result.a = minCoord;
+        result.b = maxCoord;
 
-        if (firstPartMargin < firstRef) {
+        if (minCoord < firstRef) {
             result.a = firstRef;
-            result.b = result.b - firstPartMargin + firstRef;
+            result.b = result.b - minCoord + firstRef;
         }
 
-        if (secondPartMargin > secondRef) {
-            result.a = result.a - secondPartMargin + secondRef;
+        if (maxCoord > secondRef) {
+            result.a = result.a - maxCoord + secondRef;
             result.b = secondRef;
         }
 
