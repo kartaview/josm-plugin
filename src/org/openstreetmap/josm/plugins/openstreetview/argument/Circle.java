@@ -52,8 +52,16 @@ public class Circle {
     public Circle(final Bounds bounds) {
         this.center = bounds.toBBox().getCenter();
         final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
-        this.radius = distance > ServiceConfig.getInstance().getMaxRadius() ? ServiceConfig.getInstance().getMaxRadius()
-                : distance;
+
+        if (distance > ServiceConfig.getInstance().getMaxRadius()) {
+            this.radius = ServiceConfig.getInstance().getMaxRadius();
+        } else {
+            if (distance < ServiceConfig.getInstance().getMinRadius()) {
+                this.radius = ServiceConfig.getInstance().getMinRadius();
+            } else {
+                this.radius = distance;
+            }
+        }
     }
 
     public LatLon getCenter() {
