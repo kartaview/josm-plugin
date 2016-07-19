@@ -72,6 +72,7 @@ class FilterPanel extends JPanel {
         pickerDate.getMonthView().setShowingTrailingDays(true);
         pickerDate.getMonthView().setSelectionDate(date);
         pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
+        pickerDate.getEditor().setEditable(false);
         add(pickerDate, Constraints.PICKER_DATE);
     }
 
