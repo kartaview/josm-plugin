@@ -125,7 +125,8 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
     private Pair<Integer, Integer> getImageFixedDimension(final int ref, final int currentViewMinCoord,
             final int currentViewDim, final int imgDim, final int wheelRotation) {
         Pair<Integer, Integer> pair;
-        if (wheelRotation < 0) {   // zoom in case
+        if (wheelRotation < 0) {
+            // zoom in case
             pair = getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim,
                     (currentViewDim * 4 / 5) / 2);
         } else {
