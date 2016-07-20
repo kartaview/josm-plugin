@@ -28,6 +28,7 @@ public final class ServiceConfig extends BaseConfig {
 
     private static final int DEFAULT_PHOTO_ZOOM = 15;
     private static final int MAX_RADIUS = 5000;
+    private static final int MIN_RADIUS = 1;
     private static final int MAX_ITEMS = 5000;
     private static final String CONFIG_FILE = "openstreetview_service.properties";
     private static final ServiceConfig INSTANCE = new ServiceConfig();
@@ -37,6 +38,7 @@ public final class ServiceConfig extends BaseConfig {
     private final String photoDetailsUrl;
     private final String feedbackUrl;
     private final int photoZoom;
+    private final int minRadius;
     private final int maxRadius;
     private final int maxItems;
 
@@ -49,6 +51,7 @@ public final class ServiceConfig extends BaseConfig {
         photoDetailsUrl = baseUrl + readProperty("service.details");
         feedbackUrl = readProperty("feedback.url");
         photoZoom = readInt("photoZoom", DEFAULT_PHOTO_ZOOM);
+        minRadius = readInt("minRadius", MIN_RADIUS);
         maxRadius = readInt("maxRadius", MAX_RADIUS);
         maxItems = readInt("maxItems", MAX_ITEMS);
     }
@@ -77,6 +80,10 @@ public final class ServiceConfig extends BaseConfig {
 
     public int getPhotoZoom() {
         return photoZoom;
+    }
+
+    public int getMinRadius() {
+        return minRadius;
     }
 
     public int getMaxRadius() {
