@@ -36,10 +36,11 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
 class DataUpdateThread implements Runnable {
 
     private final OpenStreetViewLayer layer;
+    private final Boolean checkSelectedPhoto;
 
-
-    DataUpdateThread(final OpenStreetViewLayer layer) {
+    DataUpdateThread(final OpenStreetViewLayer layer, final Boolean checkSelectedPhoto) {
         this.layer = layer;
+        this.checkSelectedPhoto = checkSelectedPhoto;
     }
 
     @Override
@@ -50,7 +51,6 @@ class DataUpdateThread implements Runnable {
                 final Circle circle = new Circle(Main.map.mapView);
                 final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
                 final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, filter);
-                final boolean checkSelectedPhoto = filter != null && !filter.isDefaultFilter();
                 updateUI(photos, checkSelectedPhoto);
             } else {
                 updateUI(null, false);

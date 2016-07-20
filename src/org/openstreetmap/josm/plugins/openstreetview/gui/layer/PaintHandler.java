@@ -44,15 +44,17 @@ class PaintHandler {
      */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
             final Photo selectedPhoto) {
+        boolean contains = false;
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
                 final Point point = mapView.getPoint(photo.getLocation());
                 if (mapView.contains(point)) {
+                    contains = true;
                     drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
                 }
             }
         }
-        if (selectedPhoto != null) {
+        if (selectedPhoto != null && contains) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());
             if (mapView.contains(point)) {
                 drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);

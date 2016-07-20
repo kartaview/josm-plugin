@@ -20,11 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.gui.IconToggleButton;
@@ -37,7 +35,6 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
-import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
@@ -62,9 +59,8 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     /* layer associated with this plugin */
     private OpenStreetViewLayer layer;
 
-    private static final int SEARCH_DELAY = 700;
+    private static final int SEARCH_DELAY = 600;
     private Timer zoomTimer;
-    private Bounds selectedPhotoBounds;
 
 
     /**
@@ -115,7 +111,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
                 @Override
                 public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer));
+                    Main.worker.execute(new DataUpdateThread(layer, false));
                 }
             });
             zoomTimer.setRepeats(false);
@@ -159,12 +155,10 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
             if (event.getClickCount() == 2) {
                 if (layer.getSelectedPhoto() != null) {
-                    this.selectedPhotoBounds = null;
                     selectPhoto(null);
                 }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
-                this.selectedPhotoBounds = Main.map.mapView.getRealBounds();
                 if (photo != null) {
                     selectPhoto(photo);
                 }
@@ -174,6 +168,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     private void selectPhoto(final Photo photo) {
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
@@ -181,6 +176,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             }
         });
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 if (!detailsDialog.getButton().isSelected()) {
@@ -222,18 +218,14 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     @Override
     public void zoomToSelectedPhoto() {
-        if (layer.getSelectedPhoto() != null && selectedPhotoBounds != null
-                && !selectedPhotoBounds.getCenter().equals(Main.map.mapView.getRealBounds().getCenter())) {
-            Main.worker.submit(new Runnable() {
+        if (layer.getSelectedPhoto() != null
+                && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
+            SwingUtilities.invokeLater(new Runnable() {
+
                 @Override
                 public void run() {
                     final Photo selectedPhoto = layer.getSelectedPhoto();
-                    layer.setPhotos(null, true);
-                    Main.map.repaint();
-                    final List<Photo> photos =
-                            ServiceHandler.getInstance().listNearbyPhotos(new Circle(selectedPhotoBounds), null);
-                    layer.setPhotos(photos, false);
-                    layer.setSelectedPhoto(selectedPhoto);
+                    layer.setPhotos(null, false);
                     Main.map.mapView.zoomTo(selectedPhoto.getLocation());
                     Main.map.repaint();
                 }
@@ -248,7 +240,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                Main.worker.execute(new DataUpdateThread(layer));
+                Main.worker.execute(new DataUpdateThread(layer, true));
             }
         }
     }
