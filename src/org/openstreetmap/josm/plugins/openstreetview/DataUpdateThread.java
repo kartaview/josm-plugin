@@ -21,6 +21,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
@@ -36,10 +37,13 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
 class DataUpdateThread implements Runnable {
 
     private final OpenStreetViewLayer layer;
+    private final OpenStreetViewDetailsDialog detailsDialog;
     private final Boolean checkSelectedPhoto;
 
-    DataUpdateThread(final OpenStreetViewLayer layer, final Boolean checkSelectedPhoto) {
+    DataUpdateThread(final OpenStreetViewLayer layer, final OpenStreetViewDetailsDialog detailsDialog,
+            final Boolean checkSelectedPhoto) {
         this.layer = layer;
+        this.detailsDialog = detailsDialog;
         this.checkSelectedPhoto = checkSelectedPhoto;
     }
 
@@ -64,6 +68,9 @@ class DataUpdateThread implements Runnable {
             @Override
             public void run() {
                 layer.setPhotos(photos, checkSelectedPhoto);
+                if (layer.getSelectedPhoto() == null) {
+                    detailsDialog.updateUI(null);
+                }
                 Main.map.repaint();
             }
         });

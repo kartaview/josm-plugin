@@ -111,7 +111,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
                 @Override
                 public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer, false));
+                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
                 }
             });
             zoomTimer.setRepeats(false);
@@ -240,7 +240,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                Main.worker.execute(new DataUpdateThread(layer, true));
+                Main.worker.execute(new DataUpdateThread(layer, detailsDialog, true));
             }
         }
     }
