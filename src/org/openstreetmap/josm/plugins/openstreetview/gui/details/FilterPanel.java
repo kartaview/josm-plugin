@@ -80,10 +80,10 @@ class FilterPanel extends JPanel {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
-        cbbUser.setSelected(isSelected);
         lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
                 getFont().deriveFont(Font.ITALIC), getBackground());
-        if (JosmUserIdentityManager.getInstance().asUser().getId() < 0) {
+        cbbUser.setSelected(isSelected);
+        if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             cbbUser.setEnabled(false);
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
@@ -107,6 +107,10 @@ class FilterPanel extends JPanel {
     void clearFilters() {
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
+        if (JosmUserIdentityManager.getInstance().asUser().getId() > 0) {
+            cbbUser.setEnabled(true);
+            lblLoginWarning.setForeground(lblLoginWarning.getBackground());
+        }
     }
 
 
