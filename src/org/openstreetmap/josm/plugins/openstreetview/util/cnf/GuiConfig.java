@@ -52,6 +52,10 @@ public final class GuiConfig extends BaseConfig {
     private final String errorPhotoLoadingTxt;
     private final String errorPhotoPageTxt;
     private final String errorFeedbackPageTxt;
+    private final String errorDateFilterTxt;
+
+    private final String confirmDateFilterTitle;
+    private final String confirmDateFilterTxt;
 
 
     private GuiConfig() {
@@ -77,7 +81,10 @@ public final class GuiConfig extends BaseConfig {
         errorPhotoLoadingTxt = readProperty("error.photo.loading");
         errorPhotoPageTxt = readProperty("error.photo.page");
         errorFeedbackPageTxt = readProperty("error.feedback.page");
+        errorDateFilterTxt = readProperty("error.dateFilter");
 
+        confirmDateFilterTitle = readProperty("information.dateFilter.title");
+        confirmDateFilterTxt = readProperty("information.dateFilter.text");
     }
 
 
@@ -159,5 +166,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorPhotoListTxt() {
         return errorPhotoListTxt;
+    }
+
+    public String getErrorDateFilterTxt() {
+        return errorDateFilterTxt;
+    }
+
+    public String getConfirmDateFilterTitle() {
+        return confirmDateFilterTitle;
+    }
+
+    public String getConfirmDateFilterTxt() {
+        return confirmDateFilterTxt;
     }
 }

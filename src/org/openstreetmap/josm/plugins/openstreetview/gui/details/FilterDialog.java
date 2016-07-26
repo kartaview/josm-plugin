@@ -73,18 +73,18 @@ class FilterDialog extends ModalDialog {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final ListFilter filter = pnlFilter.selectedFilters();
-            if (filter != null) {
+            final ListFilter result = pnlFilter.selectedFilters();
+            if (result != null) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
                 final ListFilter oldFilter = prefManager.loadListFilter();
-                if (filter.equals(oldFilter)) {
+                if (result.equals(oldFilter)) {
                     prefManager.saveFiltersChangedFlag(false);
                 } else {
-                    prefManager.saveListFilter(filter);
+                    prefManager.saveListFilter(result);
                     prefManager.saveFiltersChangedFlag(true);
                 }
+                dispose();
             }
-            dispose();
         }
     }
 
