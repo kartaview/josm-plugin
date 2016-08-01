@@ -80,7 +80,7 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
                 currentView = new Rectangle(0, 0, image.getWidth(), image.getHeight());
             } catch (final IOException e) {
                 add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
-                        getFont().deriveFont(Font.BOLD, 12), Color.white), BorderLayout.CENTER);
+                        getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
             }
         } else {
             image = null;
