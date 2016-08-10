@@ -129,7 +129,7 @@ class FilterPanel extends JPanel {
         // the 'uncommitted' date is valid
         // the date from the date picker editor was already committed
         if (uncommitteddDate.equals(pickerDate.getDate())) {
-            // the 'uncommitted' date is greater than the current date
+            // the 'uncommitted' date is greater than the accepted value
             if (!checkAcceptance(uncommitteddDate)) {
                 return null;
             }
@@ -172,6 +172,7 @@ class FilterPanel extends JPanel {
      * Clears the filters.
      */
     void clearFilters() {
+        pickerDate.getEditor().setText("");
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
     }
