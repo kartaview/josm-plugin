@@ -84,7 +84,12 @@ class DateVerifier implements KeyListener {
             final DateFormatter formatter = new DateFormatter();
             final Date newDate = (Date) formatter.stringToValue(valueStr);
             if (newDate == null) {
-                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getErrorDateFilterTxt(),
+                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
+                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (newDate.compareTo((Date) formatter.stringToValue(GuiConfig.getInstance().getMaxDateFilterTxt())) > 0) {
+                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return false;
             }
