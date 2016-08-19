@@ -52,10 +52,13 @@ public final class GuiConfig extends BaseConfig {
     private final String errorPhotoLoadingTxt;
     private final String errorPhotoPageTxt;
     private final String errorFeedbackPageTxt;
-    private final String errorDateFilterTxt;
+    private final String incorrectDateFilterTxt;
+    private final String unacceptedDateFilterTxt;
 
     private final String confirmDateFilterTitle;
     private final String confirmDateFilterTxt;
+
+    private final String maxDateFilterTxt;
 
 
     private GuiConfig() {
@@ -81,10 +84,13 @@ public final class GuiConfig extends BaseConfig {
         errorPhotoLoadingTxt = readProperty("error.photo.loading");
         errorPhotoPageTxt = readProperty("error.photo.page");
         errorFeedbackPageTxt = readProperty("error.feedback.page");
-        errorDateFilterTxt = readProperty("error.dateFilter");
+        unacceptedDateFilterTxt = readProperty("error.dateFilter.unaccepted");
+        incorrectDateFilterTxt = readProperty("error.dateFilter.incorrect");
 
         confirmDateFilterTitle = readProperty("information.dateFilter.title");
         confirmDateFilterTxt = readProperty("information.dateFilter.text");
+
+        maxDateFilterTxt = readProperty("dateFilter.maxDate");
     }
 
 
@@ -168,8 +174,12 @@ public final class GuiConfig extends BaseConfig {
         return errorPhotoListTxt;
     }
 
-    public String getErrorDateFilterTxt() {
-        return errorDateFilterTxt;
+    public String getUnacceptedDateFilterTxt() {
+        return unacceptedDateFilterTxt;
+    }
+
+    public String getIncorrectDateFilterTxt() {
+        return incorrectDateFilterTxt;
     }
 
     public String getConfirmDateFilterTitle() {
@@ -178,5 +188,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getConfirmDateFilterTxt() {
         return confirmDateFilterTxt;
+    }
+
+    public String getMaxDateFilterTxt() {
+        return maxDateFilterTxt;
     }
 }
