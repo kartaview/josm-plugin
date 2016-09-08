@@ -94,7 +94,7 @@
 				<attribute name="Plugin-Icon" value="images/openstreetview_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Early" value="true" />
-				<attribute name="Plugin-Mainversion" value="10161" />
+				<attribute name="Plugin-Mainversion" value="10580" />
 			</manifest>
 		</jar>
 	</target>
