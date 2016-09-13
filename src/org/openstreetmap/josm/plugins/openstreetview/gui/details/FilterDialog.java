@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
@@ -48,6 +49,7 @@ class FilterDialog extends ModalDialog {
     FilterDialog() {
         super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon().getImage());
         createComponents();
+        setLocationRelativeTo(Main.map.mapView);
         setSize(DIM);
         setMinimumSize(DIM);
         setPreferredSize(DIM);
