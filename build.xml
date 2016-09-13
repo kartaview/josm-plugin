@@ -48,8 +48,8 @@
 			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-latest.jar" />
 			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
 		</path>
-		<javadoc destdir="${plugin.apidoc.dir}" source="1.7" classpathref="classpath" windowtitle="OpenStreetView plugin API">
-			<link href="http://java.sun.com/javase/7/docs/api/" />
+		<javadoc destdir="${plugin.apidoc.dir}" source="1.8" classpathref="classpath" windowtitle="OpenStreetView plugin API">
+			<link href="http://docs.oracle.com/javase/8/docs/api/" />
 			<packageset dir="${plugin.src.dir}">
 			</packageset>
 		</javadoc>
@@ -83,7 +83,7 @@
 		</copy>
 		<jar destfile="${plugin.out.dir}/${plugin.name}" basedir="${plugin.build.dir}">
 			<zipfileset src="${plugin.lib.dir}/gson-2.6.2.jar" />
-			<zipfileset src="${plugin.lib.dir}/josm-common-1.3.jar" />
+			<zipfileset src="${plugin.lib.dir}/josm-common-1.4.jar" />
 			<zipfileset src="${plugin.lib.dir}/swingx-all-1.6.5.jar" />
 			<manifest>
 				<attribute name="Author" value="Telenav" />
