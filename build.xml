@@ -83,7 +83,7 @@
 		</copy>
 		<jar destfile="${plugin.out.dir}/${plugin.name}" basedir="${plugin.build.dir}">
 			<zipfileset src="${plugin.lib.dir}/gson-2.5.jar" />
-			<zipfileset src="${plugin.lib.dir}/josm-common-1.5.jar" />
+			<zipfileset src="${plugin.lib.dir}/josm-common-1.7.jar" />
 			<zipfileset src="${plugin.lib.dir}/swingx-all-1.6.5.jar" />
 			<manifest>
 				<attribute name="Author" value="Telenav" />
@@ -113,12 +113,27 @@
     -->
 	<target name="install" depends="dist">
 		<property environment="env" />
-		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
+		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins">
 			<and>
 				<os family="windows" />
 			</and>
 		</condition>
-		<delete file="${josm.plugins.dir}/${plugin.name}" failonerror="false" />
+		<condition property="josm.plugins.dir" value="${user.home}/Library/JOSM/plugins/">
+			<and>
+				<os family="mac" />
+			</and>
+		</condition>
+		<condition property="josm.plugins.dir" value="${user.home}/.josm/plugins">
+			<and>
+				<not>
+					<os family="mac"/>
+				</not>
+				<not>
+					<os family="windows"/>
+				</not>
+			</and>
+		</condition>
+		<delete file="${josm.plugins.dir}/${plugin.jar}" failonerror="false" />
 		<copy file="${plugin.dist.dir}/${plugin.name}" todir="${josm.plugins.dir}" />
 	</target>
 </project>
