@@ -15,9 +15,11 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
@@ -40,6 +42,7 @@ class DataUpdateThread implements Runnable {
     private final OpenStreetViewDetailsDialog detailsDialog;
     private final Boolean checkSelectedPhoto;
 
+    
     DataUpdateThread(final OpenStreetViewLayer layer, final OpenStreetViewDetailsDialog detailsDialog,
             final Boolean checkSelectedPhoto) {
         this.layer = layer;
@@ -52,9 +55,21 @@ class DataUpdateThread implements Runnable {
         if (Main.map != null && Main.map.mapView != null) {
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
             if (zoom >= ServiceConfig.getInstance().getPhotoZoom()) {
-                final Circle circle = new Circle(Main.map.mapView);
+                List<Circle> areas = new ArrayList<>();
+                if (Main.getLayerManager().getEditLayer() != null) {
+                    List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+                    if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                        for (Bounds bounds : osmDataLayerBounds) {
+                            areas.add(new Circle(bounds));
+                        }
+                    } else {
+                        areas.add(new Circle(Main.map.mapView));
+                    }
+                } else {
+                    areas.add(new Circle(Main.map.mapView));
+                }
                 final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
-                final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(circle, filter);
+                final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
                 updateUI(photos, checkSelectedPhoto);
             } else {
                 updateUI(null, false);

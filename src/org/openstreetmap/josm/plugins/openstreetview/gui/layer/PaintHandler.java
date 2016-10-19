@@ -21,6 +21,9 @@ import java.awt.Point;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
@@ -44,33 +47,48 @@ class PaintHandler {
      */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
             final Photo selectedPhoto) {
-        boolean contains = false;
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
                 final Point point = mapView.getPoint(photo.getLocation());
-                if (mapView.contains(point)) {
-                    contains = true;
+                if (contains(mapView, photo.getLocation())) {
                     drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
                 }
             }
         }
-        if (selectedPhoto != null && contains) {
+        if (selectedPhoto != null) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());
-            if (mapView.contains(point)) {
+            if (contains(mapView, selectedPhoto.getLocation())) {
                 drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
             }
         }
+    }
+
+    private boolean contains(MapView mapView, LatLon latLon) {
+        boolean contains = false;
+        if (Main.getLayerManager().getEditLayer() != null) {
+            for (Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
+                if (bounds.contains(latLon)) {
+                    contains = true;
+                    break;
+                }
+            }
+        } else {
+
+            final Point point = mapView.getPoint(latLon);
+            contains = mapView.contains(point);
+        }
+        return contains;
     }
 
     private static void drawIcon(final Graphics2D g2D, final ImageIcon icon, final Point p) {
         g2D.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 new ImageObserver() {
 
-            @Override
-            public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
-                    final int width, final int height) {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
+                            final int width, final int height) {
+                        return false;
+                    }
+                });
     }
 }
