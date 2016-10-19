@@ -32,7 +32,8 @@ import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
  */
 public final class Util {
 
-    private static final double POZ_DIST = 18.0;
+    private static final double POZ_DIST_DATA_LAYER = 5.0;
+    private static final double POZ_DIST = 10.0;
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 18;
     private static final int TILE_SIZE = 1024;
@@ -60,14 +61,16 @@ public final class Util {
      */
     public static Photo nearbyPhoto(final List<Photo> photos, final Point point) {
         double minDist = Double.MAX_VALUE;
+        double maxDist = Main.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
         Photo result = null;
         for (final Photo photo : photos) {
             final double dist = distance(point, photo.getLocation());
-            if (dist <= minDist && dist <= POZ_DIST) {
+            if (dist <= minDist && dist <= maxDist) {
                 minDist = dist;
                 result = photo;
             }
         }
+        System.out.println("minDist:" + minDist);
         return result;
     }
 
