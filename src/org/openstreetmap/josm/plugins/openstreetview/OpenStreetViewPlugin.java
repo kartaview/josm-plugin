@@ -145,6 +145,7 @@ public class OpenStreetViewPlugin extends Plugin
             Main.pref.removePreferenceChangeListener(this);
             layer = null;
             detailsDialog.hideDialog();
+            detailsDialog.updateUI(null);
         }
     }
 
