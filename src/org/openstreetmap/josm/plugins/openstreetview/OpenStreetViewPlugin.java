@@ -51,7 +51,7 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
  * @version $Revision$
  */
 public class OpenStreetViewPlugin extends Plugin
-implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
+        implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetViewDetailsDialog detailsDialog;
@@ -72,6 +72,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         super(pluginInfo);
     }
 
+    
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
@@ -131,7 +132,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     @Override
     public void layerOrderChanged(final LayerOrderChangeEvent event) {
-        // TODO Auto-generated method stub
+        // OSV plugin does not have any special logic for the case when the layers order change
     }
 
     @Override
@@ -152,7 +153,8 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (shouldSelectPhoto() && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
+        if (Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()
+                && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
             if (event.getClickCount() == 2) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
@@ -187,11 +189,6 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
         });
     }
 
-    private boolean shouldSelectPhoto() {
-        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
-        return zoom >= ServiceConfig.getInstance().getPhotoZoom()
-                && Main.getLayerManager().getActiveLayer() instanceof OpenStreetViewLayer;
-    }
 
     @Override
     public void mousePressed(final MouseEvent event) {
