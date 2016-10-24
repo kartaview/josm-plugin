@@ -15,9 +15,15 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.NORMAL_COMPOSITE;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE_COLOR;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.TRANSPARENT_COMPOSITE;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.Line2D;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -26,6 +32,7 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 
 
@@ -46,7 +53,12 @@ class PaintHandler {
      * @param selectedPhoto the currently selected {@code Photo}
      */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
-            final Photo selectedPhoto) {
+            final Photo selectedPhoto, final Sequence selectedSequence) {
+        final Composite composite = selectedSequence != null && !selectedSequence.getPhotos().isEmpty()
+                ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+
+        // draw photo locations
+        graphics.setComposite(composite);
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
                 final Point point = mapView.getPoint(photo.getLocation());
@@ -55,6 +67,13 @@ class PaintHandler {
                 }
             }
         }
+
+        if (selectedSequence != null) {
+            graphics.setComposite(NORMAL_COMPOSITE);
+            graphics.setStroke(SEQUENCE_LINE);
+            drawSequence(graphics, mapView, selectedSequence);
+        }
+
         if (selectedPhoto != null) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());
             if (contains(mapView, selectedPhoto.getLocation())) {
@@ -63,32 +82,59 @@ class PaintHandler {
         }
     }
 
-    private boolean contains(MapView mapView, LatLon latLon) {
+    private boolean contains(final MapView mapView, final LatLon latLon) {
         boolean contains = false;
         if (Main.getLayerManager().getEditLayer() != null) {
-            for (Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
+            for (final Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
                 if (bounds.contains(latLon)) {
                     contains = true;
                     break;
                 }
             }
         } else {
-
             final Point point = mapView.getPoint(latLon);
             contains = mapView.contains(point);
         }
         return contains;
     }
 
-    private static void drawIcon(final Graphics2D g2D, final ImageIcon icon, final Point p) {
-        g2D.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
+    private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
+        graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 new ImageObserver() {
 
-                    @Override
-                    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
-                            final int width, final int height) {
-                        return false;
-                    }
-                });
+            @Override
+            public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
+                    final int width, final int height) {
+                return false;
+            }
+        });
+    }
+
+    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
+        Photo prevPhoto = sequence.getPhotos().get(0);
+        Point prevPoint = mapView.getPoint(prevPhoto.getLocation());
+        for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
+            final Photo currentPhoto = sequence.getPhotos().get(i);
+            final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
+            if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
+                graphics.setColor(SEQUENCE_LINE_COLOR);
+                graphics.draw(new Line2D.Double(prevPoint, currentPoint));
+            }
+            // final Pair<LatLon, LatLon> arrowEndPoints =
+            // Util.arrowEndPoints(prevPhoto.getLocation(), currentPhoto.getLocation(), -5);
+            // graphics.draw(new Line2D.Double(prevPoint, mapView.getPoint(arrowEndPoints.a)));
+            // graphics.draw(new Line2D.Double(prevPoint, mapView.getPoint(arrowEndPoints.b)));
+
+            if (mapView.contains(prevPoint)) {
+                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
+            }
+            prevPhoto = currentPhoto;
+            prevPoint = currentPoint;
+            // draw direction
+            // draw image icon
+        }
+        if (mapView.contains(prevPoint)) {
+            drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
+        }
     }
 }

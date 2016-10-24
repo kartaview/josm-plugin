@@ -53,6 +53,10 @@ final class HttpContentBuilder {
         }
     }
 
+    
+     HttpContentBuilder(final Long id) {
+        content.put(RequestConstants.ID, id.toString());
+    }
 
     Map<String, String> getContent() {
         return content;

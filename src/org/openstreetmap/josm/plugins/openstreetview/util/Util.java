@@ -61,7 +61,7 @@ public final class Util {
      */
     public static Photo nearbyPhoto(final List<Photo> photos, final Point point) {
         double minDist = Double.MAX_VALUE;
-        double maxDist = Main.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
+        final double maxDist = Main.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
         Photo result = null;
         for (final Photo photo : photos) {
             final double dist = distance(point, photo.getLocation());
@@ -70,7 +70,6 @@ public final class Util {
                 result = photo;
             }
         }
-        System.out.println("minDist:" + minDist);
         return result;
     }
 

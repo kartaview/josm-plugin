@@ -16,12 +16,15 @@
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.RENDERING_MAP;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.util.List;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 
 
@@ -36,6 +39,7 @@ public class OpenStreetViewLayer extends AbtractLayer {
     private final PaintHandler paintHandler = new PaintHandler();
     private List<Photo> photos;
     private Photo selectedPhoto;
+    private Sequence selectedSequence;
 
 
     @Override
@@ -43,7 +47,11 @@ public class OpenStreetViewLayer extends AbtractLayer {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
         if (photos != null) {
-            paintHandler.drawPhotos(graphics, mapView, photos, selectedPhoto);
+            final Composite originalComposite = graphics.getComposite();
+            final Stroke originalStorke = graphics.getStroke();
+            paintHandler.drawPhotos(graphics, mapView, photos, selectedPhoto, selectedSequence);
+            graphics.setComposite(originalComposite);
+            graphics.setStroke(originalStorke);
         }
     }
 
@@ -72,6 +80,19 @@ public class OpenStreetViewLayer extends AbtractLayer {
         return photos != null ? Util.nearbyPhoto(photos, point) : null;
     }
 
+    public boolean isPhotoPartOfSequence(final Photo selectedPhoto) {
+        boolean contains = false;
+        if (selectedSequence != null && (selectedSequence.getPhotos() != null)) {
+            for (final Photo photo : selectedSequence.getPhotos()) {
+                if (photo.equals(selectedPhoto)) {
+                    contains = true;
+                    break;
+                }
+            }
+        }
+        return contains;
+    }
+
     /**
      * Returns the currently selected photo.
      *
@@ -88,5 +109,9 @@ public class OpenStreetViewLayer extends AbtractLayer {
      */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
+    }
+
+    public void setSelectedSequence(final Sequence selectedSequence) {
+        this.selectedSequence = selectedSequence;
     }
 }
