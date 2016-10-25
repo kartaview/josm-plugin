@@ -44,8 +44,11 @@ final class Constants {
         return map;
     }
 
-    static final Composite NORMAL_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+    /* constants used for drawing a sequence */
+    static final Composite OPAQUE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
     static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f);
-    static final BasicStroke SEQUENCE_LINE = new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    static final Color SEQUENCE_LINE_COLOR = new Color(19, 157, 235);
+    static final BasicStroke SEQUENCE_LINE = new BasicStroke(2.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    static final Color SEQUENCE_LINE_COLOR = Color.yellow;
+    static final int MIN_ARROW_ZOOM = 16;
+    static final double ARROW_LENGTH = 3.5D;
 }

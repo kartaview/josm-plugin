@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.DebugGraphics;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
@@ -52,7 +53,7 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
  * @version $Revision$
  */
 public class OpenStreetViewPlugin extends Plugin
-implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
+        implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetViewDetailsDialog detailsDialog;
@@ -79,6 +80,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
+            Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
             detailsDialog = new OpenStreetViewDetailsDialog();
             detailsDialog.registerLocationObserver(this);
             newMapFrame.addToggleDialog(detailsDialog);
@@ -177,6 +179,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     private void selectPhoto(final Photo photo) {
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
@@ -187,6 +190,7 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
             }
         });
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 if (!detailsDialog.getButton().isSelected()) {
@@ -199,18 +203,20 @@ implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObser
 
     private void loadSequence(final Photo photo) {
         Main.worker.execute(new Runnable() {
+
             @Override
             public void run() {
                 final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                SwingUtilities.invokeLater(new Runnable() {
+                if (photo.equals(layer.getSelectedPhoto())) {
+                    SwingUtilities.invokeLater(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        layer.setSelectedSequence(sequence);
-                        Main.map.repaint();
-                    }
-                });
-
+                        @Override
+                        public void run() {
+                            layer.setSelectedSequence(sequence);
+                            Main.map.repaint();
+                        }
+                    });
+                }
             }
         });
     }
