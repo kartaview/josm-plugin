@@ -15,6 +15,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,4 +43,12 @@ final class Constants {
         map.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         return map;
     }
+
+    /* constants used for drawing a sequence */
+    static final Composite OPAQUE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+    static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f);
+    static final BasicStroke SEQUENCE_LINE = new BasicStroke(2.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    static final Color SEQUENCE_LINE_COLOR = Color.yellow;
+    static final int MIN_ARROW_ZOOM = 16;
+    static final double ARROW_LENGTH = 3.5D;
 }

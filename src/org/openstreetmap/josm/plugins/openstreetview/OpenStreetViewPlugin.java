@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.DebugGraphics;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
@@ -36,6 +37,7 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
@@ -59,7 +61,9 @@ public class OpenStreetViewPlugin extends Plugin
     /* layer associated with this plugin */
     private OpenStreetViewLayer layer;
 
+    private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
+
     private Timer zoomTimer;
 
 
@@ -72,10 +76,11 @@ public class OpenStreetViewPlugin extends Plugin
         super(pluginInfo);
     }
 
-    
+
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
+            Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
             detailsDialog = new OpenStreetViewDetailsDialog();
             detailsDialog.registerLocationObserver(this);
             newMapFrame.addToggleDialog(detailsDialog);
@@ -155,14 +160,17 @@ public class OpenStreetViewPlugin extends Plugin
     @Override
     public void mouseClicked(final MouseEvent event) {
         if (Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()
-                && SwingUtilities.isLeftMouseButton(event) && !event.isConsumed()) {
-            if (event.getClickCount() == 2) {
+                && SwingUtilities.isLeftMouseButton(event)) {
+            if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
                 }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
+                    if (!layer.isPhotoPartOfSequence(photo)) {
+                        loadSequence(photo);
+                    }
                     selectPhoto(photo);
                 }
             }
@@ -175,6 +183,9 @@ public class OpenStreetViewPlugin extends Plugin
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
+                if (photo == null) {
+                    layer.setSelectedSequence(null);
+                }
                 Main.map.repaint();
             }
         });
@@ -186,6 +197,26 @@ public class OpenStreetViewPlugin extends Plugin
                     detailsDialog.getButton().doClick();
                 }
                 detailsDialog.updateUI(photo);
+            }
+        });
+    }
+
+    private void loadSequence(final Photo photo) {
+        Main.worker.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
+                if (photo.equals(layer.getSelectedPhoto())) {
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            layer.setSelectedSequence(sequence);
+                            Main.map.repaint();
+                        }
+                    });
+                }
             }
         });
     }

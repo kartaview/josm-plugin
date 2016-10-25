@@ -25,9 +25,12 @@ import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
  * @author Beata
  * @version $Revision$
  */
-public class ListPhotoResponse extends BaseListResponse {
+public class ListPhotoResponse extends ListResponse {
 
+    // setters are not required,since GSON sets the fields directly using reflection.
     private List<Photo> currentPageItems;
+
+
 
 
     public List<Photo> getCurrentPageItems() {

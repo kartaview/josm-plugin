@@ -22,7 +22,9 @@ import java.util.Map;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.service.entity.ListPhotoResponse;
+import org.openstreetmap.josm.plugins.openstreetview.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetview.service.entity.Status;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
 import com.google.gson.Gson;
@@ -77,6 +79,24 @@ public class OpenStreetViewService {
         verifyResponseStatus(listPhotoResponse.getStatus());
         return listPhotoResponse.getCurrentPageItems();
 
+    }
+
+    public Sequence retrieveSequence(final Long id) throws OpenStreetViewServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
+        String response = null;
+        try{
+            final HttpConnector connector =
+                    new HttpConnector(
+                            ServiceConfig.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
+            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
+
+        } catch (final HttpConnectorException e) {
+            throw new OpenStreetViewServiceException(e);
+        }
+        // System.err.println(response);
+        final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
+        verifyResponseStatus(detailsResponse.getStatus());
+        return detailsResponse.getOsv();
     }
 
     private void verifyResponseStatus(final Status status) throws OpenStreetViewServiceException {

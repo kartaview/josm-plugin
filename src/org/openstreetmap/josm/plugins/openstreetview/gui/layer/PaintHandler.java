@@ -15,18 +15,27 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.ARROW_LENGTH;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.MIN_ARROW_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.OPAQUE_COMPOSITE;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE_COLOR;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.TRANSPARENT_COMPOSITE;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.Line2D;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
-import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
+import org.openstreetmap.josm.tools.Pair;
 
 
 /**
@@ -46,42 +55,77 @@ class PaintHandler {
      * @param selectedPhoto the currently selected {@code Photo}
      */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
-            final Photo selectedPhoto) {
+            final Photo selectedPhoto, final Sequence selectedSequence) {
+        final Composite composite = selectedSequence != null && !selectedSequence.getPhotos().isEmpty()
+                ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+
+        // draw photo locations
+        graphics.setComposite(composite);
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
                 final Point point = mapView.getPoint(photo.getLocation());
-                if (contains(mapView, photo.getLocation())) {
+                if (Util.containsLatLon(mapView, photo.getLocation())) {
                     drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
                 }
             }
         }
+
+        if (selectedSequence != null) {
+            graphics.setComposite(OPAQUE_COMPOSITE);
+            graphics.setStroke(SEQUENCE_LINE);
+            drawSequence(graphics, mapView, selectedSequence);
+        }
+
         if (selectedPhoto != null) {
             final Point point = mapView.getPoint(selectedPhoto.getLocation());
-            if (contains(mapView, selectedPhoto.getLocation())) {
+            if (Util.containsLatLon(mapView, selectedPhoto.getLocation())) {
                 drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
             }
         }
     }
 
-    private boolean contains(MapView mapView, LatLon latLon) {
-        boolean contains = false;
-        if (Main.getLayerManager().getEditLayer() != null) {
-            for (Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
-                if (bounds.contains(latLon)) {
-                    contains = true;
-                    break;
+    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
+        Photo prevPhoto = sequence.getPhotos().get(0);
+        Point prevPoint = mapView.getPoint(prevPhoto.getLocation());
+        final Double distance =
+                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
+
+        for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
+            final Photo currentPhoto = sequence.getPhotos().get(i);
+            final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
+
+            if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
+                
+                // at least one of the photos is in current view draw line
+                graphics.setColor(SEQUENCE_LINE_COLOR);
+                graphics.draw(new Line2D.Double(prevPoint, currentPoint));
+
+                if (distance != null) {
+                    final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
+                    final Pair<LatLon, LatLon> arrowPair =
+                            Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
+                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
+                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
                 }
             }
-        } else {
 
-            final Point point = mapView.getPoint(latLon);
-            contains = mapView.contains(point);
+            // draw photo if it is in current view
+            if (mapView.contains(prevPoint)) {
+                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
+            }
+            prevPhoto = currentPhoto;
+            prevPoint = currentPoint;
         }
-        return contains;
+
+        // draw last photo if it is in current view
+        if (mapView.contains(prevPoint)) {
+            drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
+        }
     }
 
-    private static void drawIcon(final Graphics2D g2D, final ImageIcon icon, final Point p) {
-        g2D.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
+
+    private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
+        graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 new ImageObserver() {
 
                     @Override

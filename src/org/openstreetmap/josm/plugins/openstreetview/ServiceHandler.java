@@ -1,17 +1,10 @@
 /*
- *  Copyright 2016 Telenav, Inc.
+ *  Copyright ©2016, Telenav, Inc. All Rights Reserved
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ *  https://creativecommons.org/licenses/by-sa/4.0/ *legalcode.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
  */
 package org.openstreetmap.josm.plugins.openstreetview;
 
@@ -32,6 +25,7 @@ import org.openstreetmap.josm.plugins.openstreetview.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetview.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetview.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.service.OpenStreetViewService;
 import org.openstreetmap.josm.plugins.openstreetview.service.OpenStreetViewServiceException;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
@@ -56,7 +50,7 @@ final class ServiceHandler {
     }
 
     /**
-     * 
+     *
      * @return
      */
     static ServiceHandler getInstance() {
@@ -66,7 +60,7 @@ final class ServiceHandler {
 
     /**
      * Lists the photos from the current area based on the given filters.
-     * 
+     *
      * @param areas a list of {@code Circle}s representing the search areas. If the OsmDataLayer is active, there might
      * be several bounds.
      * @param filter a {@code Filter} represents the user's search filters. Null values are ignored
@@ -75,39 +69,52 @@ final class ServiceHandler {
     public List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
         final Long osmUserId = filter != null && filter.isOnlyUserFlag()
                 ? JosmUserIdentityManager.getInstance().asUser().getId() : null;
-        final Date date = filter != null ? filter.getDate() : null;
-        List<Photo> finalResult = new ArrayList<>();
-        try {
-            if (areas.size() > 1) {
-                Set<Photo> result = new HashSet<>();
-                final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
-                final List<Future<List<Photo>>> futures = new ArrayList<>();
-                for (Circle circle : areas) {
-                    futures.add(executor.submit(new Callable<List<Photo>>() {
-                        @Override
-                        public List<Photo> call() throws OpenStreetViewServiceException {
-                            return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
+                final Date date = filter != null ? filter.getDate() : null;
+                List<Photo> finalResult = new ArrayList<>();
+                try {
+                    if (areas.size() > 1) {
+                        final Set<Photo> result = new HashSet<>();
+                        final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
+                        final List<Future<List<Photo>>> futures = new ArrayList<>();
+                        for (final Circle circle : areas) {
+                            futures.add(executor.submit(new Callable<List<Photo>>() {
+
+                                @Override
+                                public List<Photo> call() throws OpenStreetViewServiceException {
+                                    return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
+                                }
+                            }));
                         }
-                    }));
-                }
-                for (Future<List<Photo>> future : futures) {
-                    try {
-                        result.addAll(future.get());
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new OpenStreetViewServiceException(e);
+                        for (final Future<List<Photo>> future : futures) {
+                            try {
+                                result.addAll(future.get());
+                            } catch (InterruptedException | ExecutionException e) {
+                                throw new OpenStreetViewServiceException(e);
+                            }
+                        }
+                        finalResult.addAll(result);
+                        executor.shutdown();
+                    } else {
+                        finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
+                    }
+                } catch (final OpenStreetViewServiceException e) {
+                    if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
+                        JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
+                                GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                finalResult.addAll(result);
-                executor.shutdown();
-            } else {
-                finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
-            }
+                return finalResult;
+    }
+
+    public Sequence retrieveSequence(final Long id) {
+        Sequence sequence = null;
+        try {
+            sequence = service.retrieveSequence(id);
         } catch (final OpenStreetViewServiceException e) {
-            if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
-                JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(Main.parent, e.getMessage(), GuiConfig.getInstance().getErrorPhotoListTxt(),
+                    JOptionPane.ERROR_MESSAGE);
+
         }
-        return finalResult;
+        return sequence;
     }
 }

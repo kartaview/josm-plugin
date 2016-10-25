@@ -24,15 +24,12 @@ import java.util.List;
  * @author Beata
  * @version $Revision$
  */
-class BaseListResponse {
+class ListResponse extends Response {
 
-    private Status status;
+    // setters are not required,since GSON sets the fields directly using reflection.
     private List<Integer> totalFilteredItems;
 
 
-    public Status getStatus() {
-        return status;
-    }
 
     public List<Integer> getTotalFilteredItems() {
         return totalFilteredItems;
