@@ -16,11 +16,14 @@
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.ARROW_LENGTH;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.BING_LAYER_NAME;
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.MAPBOX_LAYER_NAME;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.MIN_ARROW_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.OPAQUE_COMPOSITE;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.SEQUENCE_LINE_COLOR;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.TRANSPARENT_COMPOSITE;
+import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -31,6 +34,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.layer.ImageryLayer;
+import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
@@ -90,14 +95,14 @@ class PaintHandler {
         final Double distance =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
 
+        graphics.setColor(getSequenceColor(mapView));
         for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
             final Photo currentPhoto = sequence.getPhotos().get(i);
             final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
 
             if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
-                
+
                 // at least one of the photos is in current view draw line
-                graphics.setColor(SEQUENCE_LINE_COLOR);
                 graphics.draw(new Line2D.Double(prevPoint, currentPoint));
 
                 if (distance != null) {
@@ -123,6 +128,21 @@ class PaintHandler {
         }
     }
 
+    private Color getSequenceColor(final MapView mapView) {
+        String mapLayerName = "";
+        if (mapView.getLayerManager().getActiveLayer() instanceof ImageryLayer) {
+            mapLayerName = ((ImageryLayer) mapView.getLayerManager().getActiveLayer()).getInfo().getName();
+        } else {
+            for (final Layer layer : mapView.getLayerManager().getLayers()) {
+                if (layer.isVisible() && layer instanceof ImageryLayer) {
+                    mapLayerName = ((ImageryLayer) layer).getInfo().getName();
+                    break;
+                }
+            }
+        }
+        return mapLayerName.equals(BING_LAYER_NAME) || mapLayerName.equals(MAPBOX_LAYER_NAME)
+                ? SEQUENCE_LINE_COLOR.brighter() : SEQUENCE_LINE_COLOR.darker();
+    }
 
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),

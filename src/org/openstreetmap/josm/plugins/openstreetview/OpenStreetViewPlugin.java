@@ -41,6 +41,7 @@ import org.openstreetmap.josm.plugins.openstreetview.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetview.gui.details.OpenStreetViewDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetview.gui.layer.OpenStreetViewLayer;
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetview.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.Util;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager;
@@ -52,8 +53,8 @@ import org.openstreetmap.josm.plugins.openstreetview.util.pref.PreferenceManager
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetViewPlugin extends Plugin
-        implements ZoomChangeListener, LayerChangeListener, MouseListener, LocationObserver, PreferenceChangedListener {
+public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
+        LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetViewDetailsDialog detailsDialog;
@@ -82,7 +83,7 @@ public class OpenStreetViewPlugin extends Plugin
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
             detailsDialog = new OpenStreetViewDetailsDialog();
-            detailsDialog.registerLocationObserver(this);
+            detailsDialog.registerObservers(this, this);
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
@@ -95,6 +96,7 @@ public class OpenStreetViewPlugin extends Plugin
             if (!detailsDialog.getButton().isSelected()) {
                 detailsDialog.getButton().doClick();
             }
+
         }
     }
 
@@ -207,12 +209,14 @@ public class OpenStreetViewPlugin extends Plugin
             @Override
             public void run() {
                 final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                if (photo.equals(layer.getSelectedPhoto())) {
+                if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.getPhotos() != null
+                        && !sequence.getPhotos().isEmpty()) {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
                         public void run() {
                             layer.setSelectedSequence(sequence);
+                            detailsDialog.enableSequenceActions(true, true);
                             Main.map.repaint();
                         }
                     });
@@ -259,6 +263,31 @@ public class OpenStreetViewPlugin extends Plugin
                     Main.map.repaint();
                 }
             });
+        }
+    }
+
+
+    /* implementation of SequenceObserver */
+
+    @Override
+    public void selectSequencePhoto(final int index) {
+        final Photo photo = layer.sequencePhoto(index);
+        final boolean isFirst = index == 1;
+        final boolean isLast = index == layer.getSelectedSequence().getPhotos().size();
+        if (photo != null) {
+            selectPhoto(photo);
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
+                        Main.map.mapView.zoomTo(photo.getLocation());
+                    }
+                    detailsDialog.enableSequenceActions(!isFirst, !isLast);
+                    Main.map.repaint();
+                }
+            });
+
         }
     }
 

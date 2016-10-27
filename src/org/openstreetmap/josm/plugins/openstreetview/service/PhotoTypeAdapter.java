@@ -48,7 +48,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
     public Photo read(final JsonReader reader) throws IOException {
         Long id = null;
         Long sequenceId = null;
-        Long sequenceIdx = null;
+        Integer sequenceIdx = null;
         Double latitude = null;
         Double longitude = null;
         String name = null;
@@ -68,7 +68,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     sequenceId = readLong(reader);
                     break;
                 case SEQUENCE_IDX:
-                    sequenceIdx = readLong(reader);
+                    sequenceIdx = readInt(reader);
                     break;
                 case LATITUDE:
                     latitude = readDouble(reader);
@@ -120,6 +120,16 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
             reader.nextNull();
         } else {
             value = reader.nextLong();
+        }
+        return value;
+    }
+
+    private Integer readInt(final JsonReader reader) throws IOException {
+        Integer value = null;
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+        } else {
+            value = reader.nextInt();
         }
         return value;
     }

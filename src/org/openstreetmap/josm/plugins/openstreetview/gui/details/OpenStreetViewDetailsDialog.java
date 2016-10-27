@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetview.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetview.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetview.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetview.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.Shortcut;
@@ -30,6 +31,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
 
 
 /**
+ * Defines the logic of the left side "OpenStreetViewDetails" panel.
  *
  * @author Beata
  * @version $Revision$
@@ -49,7 +51,6 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
     /* dialog components */
-
     private final JLabel lblDetails;
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
@@ -68,6 +69,12 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
         pnlPhoto.setSize(getPreferredSize());
     }
 
+
+    /**
+     * Updates the details dialog with the details of the given photo.
+     *
+     * @param photo the currently selected {@code Photo}
+     */
     public void updateUI(final Photo photo) {
         if (photo != null) {
             lblDetails.setText(Formatter.formatPhotoDetails(photo));
@@ -82,7 +89,24 @@ public class OpenStreetViewDetailsDialog extends ToggleDialog {
         repaint();
     }
 
-    public void registerLocationObserver(final LocationObserver observer) {
-        pnlBtn.registerObserver(observer);
+    /**
+     * Registers the observers to the button panel.
+     *
+     * @param locationObserver the {@code LocationObserver} listens for location button action
+     * @param sequenceObserver the {@code SequenceObserver} listens for next/previous action
+     */
+    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver) {
+        pnlBtn.registerObserver(locationObserver);
+        pnlBtn.registerObserver(sequenceObserver);
+    }
+
+    /**
+     * Enables/disables the sequence related actions.
+     *
+     * @param isPrevious if true/false the previous photo action button is enabled
+     * @param isNext is true the next photo action button is enabled
+     */
+    public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
+        pnlBtn.enableSequenceActions(isPrevious, isNext);
     }
 }

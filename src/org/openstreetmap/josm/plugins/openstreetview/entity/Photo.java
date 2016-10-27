@@ -29,14 +29,14 @@ public class Photo {
 
     private final Long id;
     private final Long sequenceId;
-    private final Long sequenceIndex;
+    private final Integer sequenceIndex;
     private final LatLon location;
     private final String name;
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final Long timestamp;
     private final String heading;
-    private final String username;
+    private String username;
 
 
     /**
@@ -54,7 +54,7 @@ public class Photo {
      * @param heading the sequence direction
      * @param username the owner's username
      */
-    public Photo(final Long id, final Long sequenceId, final Long sequenceIndex, final Double latitude,
+    public Photo(final Long id, final Long sequenceId, final Integer sequenceIndex, final Double latitude,
             final Double longitude, final String name, final String largeThumbnailName, final String thumbnailName,
             final Long timestamp, final String heading, final String username) {
         this.id = id;
@@ -78,7 +78,7 @@ public class Photo {
         return sequenceId;
     }
 
-    public Long getSequenceIndex() {
+    public Integer getSequenceIndex() {
         return sequenceIndex;
     }
 
@@ -110,6 +110,9 @@ public class Photo {
         return username;
     }
 
+    public void setUsername(final String username) {
+        this.username = username;
+    }
 
     @Override
     public int hashCode() {
@@ -118,7 +121,6 @@ public class Photo {
         result = prime * result + EntityUtil.hashCode(id);
         return result;
     }
-
 
     @Override
     public boolean equals(final Object obj) {

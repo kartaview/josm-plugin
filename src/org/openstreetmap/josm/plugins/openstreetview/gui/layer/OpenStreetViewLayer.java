@@ -77,20 +77,46 @@ public class OpenStreetViewLayer extends AbtractLayer {
      * @return a {@code Photo}
      */
     public Photo nearbyPhoto(final Point point) {
-        return photos != null ? Util.nearbyPhoto(photos, point) : null;
+        Photo photo = (selectedSequence != null && selectedSequence.getPhotos() != null)
+                ? Util.nearbyPhoto(selectedSequence.getPhotos(), point) : null;
+                photo = photo == null  && photos != null ? Util.nearbyPhoto(photos, point) : photo;
+                return photo;
     }
 
-    public boolean isPhotoPartOfSequence(final Photo selectedPhoto) {
+    /**
+     * Checks if the given photo belongs or not to the selected sequence.
+     *
+     * @param photo a {@code Photo}
+     * @return boolean
+     */
+    public boolean isPhotoPartOfSequence(final Photo photo) {
         boolean contains = false;
         if (selectedSequence != null && (selectedSequence.getPhotos() != null)) {
-            for (final Photo photo : selectedSequence.getPhotos()) {
-                if (photo.equals(selectedPhoto)) {
+            for (final Photo elem : selectedSequence.getPhotos()) {
+                if (elem.equals(photo)) {
                     contains = true;
                     break;
                 }
             }
         }
         return contains;
+    }
+
+    /**
+     * Returns the photo from the sequence located at the given position. The method returns null if there is no
+     * correspondig element.
+     *
+     * @param index represents the location of a photo in the selected sequence
+     * @return a {@code Photo}
+     */
+    public Photo sequencePhoto(final int index) {
+        Photo photo = null;
+        if (selectedSequence.getPhotos().size() > index - 1) {
+            photo = selectedSequence.getPhotos().get(index - 1);
+            // API issue: does not return username for sequence photos
+            photo.setUsername(selectedPhoto.getUsername());
+        }
+        return photo;
     }
 
     /**
@@ -103,6 +129,15 @@ public class OpenStreetViewLayer extends AbtractLayer {
     }
 
     /**
+     * Returns the currently selected sequence.
+     *
+     * @return a {@code Sequence}
+     */
+    public Sequence getSelectedSequence() {
+        return selectedSequence;
+    }
+
+    /**
      * Sets the currently selected photo.
      *
      * @param selectedPhoto a {@code Photo} a selected photo
@@ -111,6 +146,11 @@ public class OpenStreetViewLayer extends AbtractLayer {
         this.selectedPhoto = selectedPhoto;
     }
 
+    /**
+     * Sets the currently selected sequence.
+     *
+     * @param selectedSequence a {@code Sequence}
+     */
     public void setSelectedSequence(final Sequence selectedSequence) {
         this.selectedSequence = selectedSequence;
     }

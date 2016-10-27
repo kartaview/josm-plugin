@@ -34,6 +34,8 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginTlt;
 
     private final String btnFilterTlt;
+    private final String btnPreviousTlt;
+    private final String btnNextTlt;
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
     private final String btnFeedbackTlt;
@@ -68,6 +70,8 @@ public final class GuiConfig extends BaseConfig {
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
         btnFilterTlt = readProperty("btn.filter.tlt");
+        btnPreviousTlt = readProperty("btn.previous");
+        btnNextTlt = readProperty("btn.next");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnFeedbackTlt = readProperty("btn.feedback.tlt");
@@ -112,6 +116,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnFilterTlt() {
         return btnFilterTlt;
+    }
+
+    public String getBtnPreviousTlt() {
+        return btnPreviousTlt;
+    }
+
+    public String getBtnNextTlt() {
+        return btnNextTlt;
     }
 
     public String getBtnLocationTlt() {
