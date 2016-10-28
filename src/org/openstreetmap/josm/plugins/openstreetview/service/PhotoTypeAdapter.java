@@ -55,7 +55,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
         String largeThumbnailName = null;
         String thumbnailName = null;
         Long timestamp = null;
-        String heading = null;
+        String headingVal = null;
         String username = null;
         reader.beginObject();
 
@@ -89,7 +89,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     timestamp = readLong(reader);
                     break;
                 case HEADING:
-                    heading = readString(reader);
+                    headingVal = readString(reader);
                     break;
                 case USERNAME:
                     username = readString(reader);
@@ -100,6 +100,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
             }
         }
         reader.endObject();
+        final Double heading = !headingVal.isEmpty() ? Double.parseDouble(headingVal) : null;
         return new Photo(id, sequenceId, sequenceIdx, latitude, longitude, name, largeThumbnailName, thumbnailName,
                 timestamp, heading, username);
     }
