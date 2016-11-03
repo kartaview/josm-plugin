@@ -100,7 +100,7 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
             }
         }
         reader.endObject();
-        final Double heading = !headingVal.isEmpty() ? Double.parseDouble(headingVal) : null;
+        final Double heading = headingVal != null && !headingVal.isEmpty() ? Double.parseDouble(headingVal) : null;
         return new Photo(id, sequenceId, sequenceIdx, latitude, longitude, name, largeThumbnailName, thumbnailName,
                 timestamp, heading, username);
     }

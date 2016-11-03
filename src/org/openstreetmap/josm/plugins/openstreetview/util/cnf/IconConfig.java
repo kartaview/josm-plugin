@@ -37,6 +37,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
+    private final ImageIcon photoNoHeadingIcon;
+    private final ImageIcon photoNoHeadingSelectedIcon;
     private final ImageIcon filterIcon;
     private final Icon filterSelectedIcon;
     private final Icon previousIcon;
@@ -54,6 +56,8 @@ public final class IconConfig extends BaseConfig {
         dialogShortcutName = readProperty("dialog.shortcut");
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
+        photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
+        photoNoHeadingSelectedIcon = ImageProvider.get(readProperty("photo.noHeading.sel.icon"));
         filterIcon = ImageProvider.get(readProperty("filter.icon"));
         filterSelectedIcon = ImageProvider.get(readProperty("filter.sel.icon"));
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
@@ -86,6 +90,14 @@ public final class IconConfig extends BaseConfig {
 
     public ImageIcon getPhotoSelectedIcon() {
         return photoSelectedIcon;
+    }
+
+    public ImageIcon getPhotoNoHeadingIcon() {
+        return photoNoHeadingIcon;
+    }
+
+    public ImageIcon getPhotoNoHeadingSelectedIcon() {
+        return photoNoHeadingSelectedIcon;
     }
 
     public ImageIcon getFilterIcon() {

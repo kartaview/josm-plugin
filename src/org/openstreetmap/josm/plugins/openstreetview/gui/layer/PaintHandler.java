@@ -28,6 +28,7 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.image.ImageObserver;
 import java.util.List;
@@ -68,10 +69,12 @@ class PaintHandler {
         graphics.setComposite(composite);
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
-                final Point point = mapView.getPoint(photo.getLocation());
-                if (Util.containsLatLon(mapView, photo.getLocation())) {
-                    drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
-                }
+                drawPhoto(graphics, mapView, photo, false);
+                // final Point point = mapView.getPoint(photo.getLocation());
+                // if (Util.containsLatLon(mapView, photo.getLocation())) {
+                // drawPhoto(graphics, mapView, selectedPhoto, false);
+                // // drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
+                // }
             }
         }
 
@@ -82,10 +85,7 @@ class PaintHandler {
         }
 
         if (selectedPhoto != null) {
-            final Point point = mapView.getPoint(selectedPhoto.getLocation());
-            if (Util.containsLatLon(mapView, selectedPhoto.getLocation())) {
-                drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
-            }
+            drawPhoto(graphics, mapView, selectedPhoto, true);
         }
     }
 
@@ -95,37 +95,34 @@ class PaintHandler {
         final Double distance =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
 
-        graphics.setColor(getSequenceColor(mapView));
-        for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
-            final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
+                // graphics.setColor(getSequenceColor(mapView));
+                // graphics.setColor(Color.green);
+                for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
+                    final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
 
-            if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
+                    if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
+                graphics.setColor(getSequenceColor(mapView));
+                        // at least one of the photos is in current view draw line
+                        graphics.draw(new Line2D.Double(prevPoint, currentPoint));
 
-                // at least one of the photos is in current view draw line
-                graphics.draw(new Line2D.Double(prevPoint, currentPoint));
+                        if (distance != null) {
+                            final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
+                            final Pair<LatLon, LatLon> arrowPair =
+                                    Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
+                            graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
+                            graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
+                        }
+                    }
 
-                if (distance != null) {
-                    final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
-                    final Pair<LatLon, LatLon> arrowPair =
-                            Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
+                    // draw photo if it is in current view
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
+                    prevPoint = currentPoint;
                 }
-            }
 
-            // draw photo if it is in current view
-            if (mapView.contains(prevPoint)) {
-                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
-            }
-            prevPhoto = currentPhoto;
-            prevPoint = currentPoint;
-        }
-
-        // draw last photo if it is in current view
-        if (mapView.contains(prevPoint)) {
-            drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
-        }
+                // draw last photo if it is in current view
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Color getSequenceColor(final MapView mapView) {
@@ -144,15 +141,68 @@ class PaintHandler {
                 ? SEQUENCE_LINE_COLOR.brighter() : SEQUENCE_LINE_COLOR.darker();
     }
 
+    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
+            final boolean isSelected) {
+        if (Util.containsLatLon(mapView, photo.getLocation())) {
+            final Point point = mapView.getPoint(photo.getLocation());
+
+            if (photo.getHeading() != null) {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
+                        : IconConfig.getInstance().getPhotoIcon();
+                // rotate icon based on heading
+                final Double heading = photo.getHeading() < 0 ? (photo.getHeading() + 360) % 360 : photo.getHeading();
+                if (isSelected) {
+                    System.err.println(
+                            "sequenceId: " + photo.getSequenceId() + "photo: " + photo.getId() + "heading: " + heading);
+                }
+
+                // graphics.setColor(Color.red);
+                // graphics.fillArc(point.x - 15, point.y - 15, 2 * 15, 2 * 15, (int) (90 - heading - 40 / 2), 40);
+
+                int angle = 0;
+                if (heading < 90 && heading > 10) {
+                    angle = 45;
+                } else if (heading == 90) {
+                    angle = 90;
+                } else if (heading < 180) {
+                    angle = 135;
+                } else if (heading == 180) {
+                    angle = 180;
+                } else if (heading < 270) {
+                    angle = 225;
+                } else if (heading < 350) {
+                    angle = 270;
+                }
+                // if (angle > 0) {
+                final AffineTransform old = graphics.getTransform();
+                // graphics.fillArc(point.x - 15, point.y - 15, 2 * 15, 2 * 15, (90 - angle - 40 / 2), 40);
+                // final double theta = Math.toRadians((90 - heading - 40 / 2));
+                graphics.rotate((90 - angle - 40 / 2), point.x, point.y);
+                // graphics.translate(prevPoint.x, prevPoint.y);
+                // graphics.rotate((int) (90 - heading - 40 / 2));
+                // graphics.translate(-prevPoint.x, -prevPoint.y);
+                drawIcon(graphics, icon, point);
+                graphics.setTransform(old);
+                // } else {
+                // drawIcon(graphics, icon, point);
+                // }
+            } else {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
+                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
+                drawIcon(graphics, icon, point);
+            }
+        }
+    }
+
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 new ImageObserver() {
 
-                    @Override
-                    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
-                            final int width, final int height) {
-                        return false;
-                    }
-                });
+            @Override
+            public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
+                    final int width, final int height) {
+                return false;
+            }
+        });
     }
 }
