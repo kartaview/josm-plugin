@@ -73,14 +73,14 @@ public class OpenStreetViewLayer extends AbtractLayer {
     /**
      * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
      *
-     * @param point a {@code Point} represents the location where the user had clicked
+     * @param point a {@code Point} represents location where the user had clicked
      * @return a {@code Photo}
      */
     public Photo nearbyPhoto(final Point point) {
         Photo photo = (selectedSequence != null && selectedSequence.getPhotos() != null)
                 ? Util.nearbyPhoto(selectedSequence.getPhotos(), point) : null;
-                photo = photo == null  && photos != null ? Util.nearbyPhoto(photos, point) : photo;
-                return photo;
+        photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
+        return photo;
     }
 
     /**
