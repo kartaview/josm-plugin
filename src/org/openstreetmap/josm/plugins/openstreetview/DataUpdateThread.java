@@ -42,7 +42,7 @@ class DataUpdateThread implements Runnable {
     private final OpenStreetViewDetailsDialog detailsDialog;
     private final Boolean checkSelectedPhoto;
 
-    
+
     DataUpdateThread(final OpenStreetViewLayer layer, final OpenStreetViewDetailsDialog detailsDialog,
             final Boolean checkSelectedPhoto) {
         this.layer = layer;
@@ -55,11 +55,11 @@ class DataUpdateThread implements Runnable {
         if (Main.map != null && Main.map.mapView != null) {
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
             if (zoom >= ServiceConfig.getInstance().getPhotoZoom()) {
-                List<Circle> areas = new ArrayList<>();
+                final List<Circle> areas = new ArrayList<>();
                 if (Main.getLayerManager().getEditLayer() != null) {
-                    List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+                    final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
                     if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                        for (Bounds bounds : osmDataLayerBounds) {
+                        for (final Bounds bounds : osmDataLayerBounds) {
                             areas.add(new Circle(bounds));
                         }
                     } else {
@@ -71,8 +71,6 @@ class DataUpdateThread implements Runnable {
                 final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
                 final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
                 updateUI(photos, checkSelectedPhoto);
-            } else {
-                updateUI(null, false);
             }
         }
     }
