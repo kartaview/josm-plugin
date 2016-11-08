@@ -26,13 +26,11 @@ import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.TRANSPARENT_COMPOSITE;
 import java.awt.Color;
 import java.awt.Composite;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -150,28 +148,12 @@ class PaintHandler {
                 graphics.rotate(Math.toRadians(heading + ANGLE_360), point.x, point.y);
                 drawIcon(graphics, icon, point);
                 graphics.setTransform(old);
-                if (isSelected) {
-                    drawString(graphics, "heading:" + heading + " , index:" + photo.getSequenceIndex(), point.x + 10,
-                            point.y, Color.red, true);
-                }
             } else {
                 final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
                         : IconConfig.getInstance().getPhotoNoHeadingIcon();
                 drawIcon(graphics, icon, point);
             }
         }
-    }
-
-    private static void drawString(final Graphics2D g2D, final String txt, final int x, final int y, final Color color,
-            final boolean drawBackground) {
-        if (drawBackground) {
-            final FontMetrics fm = g2D.getFontMetrics(g2D.getFont());
-            final Rectangle2D rect = g2D.getFontMetrics(g2D.getFont()).getStringBounds(txt, g2D);
-            g2D.setColor(Color.white);
-            g2D.fillRect(x, y - fm.getAscent(), (int) rect.getWidth(), (int) rect.getHeight());
-        }
-        g2D.setColor(color);
-        g2D.drawString(txt, x, y);
     }
 
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
