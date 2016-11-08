@@ -15,6 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetview.gui.layer;
 
+import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.ANGLE_360;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.ARROW_LENGTH;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.BING_LAYER_NAME;
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.MAPBOX_LAYER_NAME;
@@ -25,10 +26,13 @@ import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.
 import static org.openstreetmap.josm.plugins.openstreetview.gui.layer.Constants.TRANSPARENT_COMPOSITE;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -68,10 +72,7 @@ class PaintHandler {
         graphics.setComposite(composite);
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
-                final Point point = mapView.getPoint(photo.getLocation());
-                if (Util.containsLatLon(mapView, photo.getLocation())) {
-                    drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), point);
-                }
+                drawPhoto(graphics, mapView, photo, false, false);
             }
         }
 
@@ -82,29 +83,25 @@ class PaintHandler {
         }
 
         if (selectedPhoto != null) {
-            final Point point = mapView.getPoint(selectedPhoto.getLocation());
-            if (Util.containsLatLon(mapView, selectedPhoto.getLocation())) {
-                drawIcon(graphics, IconConfig.getInstance().getPhotoSelectedIcon(), point);
-            }
+            drawPhoto(graphics, mapView, selectedPhoto, true, true);
         }
     }
 
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        Point prevPoint = mapView.getPoint(prevPhoto.getLocation());
         final Double distance =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
 
         graphics.setColor(getSequenceColor(mapView));
-        for (int i = 1; i < sequence.getPhotos().size() - 1; i++) {
+
+        Photo prevPhoto = sequence.getPhotos().get(0);
+        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
             final Photo currentPhoto = sequence.getPhotos().get(i);
-            final Point currentPoint = mapView.getPoint(currentPhoto.getLocation());
 
-            if (mapView.contains(prevPoint) || mapView.contains(currentPoint)) {
-
-                // at least one of the photos is in current view draw line
-                graphics.draw(new Line2D.Double(prevPoint, currentPoint));
-
+            // at least one of the photos is in current view draw line
+            if (Util.containsLatLon(mapView, prevPhoto.getLocation())
+                    || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
+                graphics.draw(new Line2D.Double(mapView.getPoint(prevPhoto.getLocation()),
+                        mapView.getPoint(currentPhoto.getLocation())));
                 if (distance != null) {
                     final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
                     final Pair<LatLon, LatLon> arrowPair =
@@ -114,18 +111,11 @@ class PaintHandler {
                 }
             }
 
-            // draw photo if it is in current view
-            if (mapView.contains(prevPoint)) {
-                drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
-            }
+            drawPhoto(graphics, mapView, prevPhoto, false, true);
             prevPhoto = currentPhoto;
-            prevPoint = currentPoint;
         }
 
-        // draw last photo if it is in current view
-        if (mapView.contains(prevPoint)) {
-            drawIcon(graphics, IconConfig.getInstance().getPhotoIcon(), prevPoint);
-        }
+        drawPhoto(graphics, mapView, prevPhoto, false, true);
     }
 
     private Color getSequenceColor(final MapView mapView) {
@@ -144,15 +134,55 @@ class PaintHandler {
                 ? SEQUENCE_LINE_COLOR.brighter() : SEQUENCE_LINE_COLOR.darker();
     }
 
+    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
+            final boolean isSelected, final boolean isTrack) {
+        if (Util.containsLatLon(mapView, photo.getLocation())) {
+            final Point point = mapView.getPoint(photo.getLocation());
+
+            if (photo.getHeading() != null) {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
+                        : IconConfig.getInstance().getPhotoIcon();
+                // rotate icon based on heading
+                final Double heading =
+                        photo.getHeading() < 0 ? (photo.getHeading() + ANGLE_360) % ANGLE_360 : photo.getHeading();
+
+                final AffineTransform old = graphics.getTransform();
+                graphics.rotate(Math.toRadians(heading + ANGLE_360), point.x, point.y);
+                drawIcon(graphics, icon, point);
+                graphics.setTransform(old);
+                if (isSelected) {
+                    drawString(graphics, "heading:" + heading + " , index:" + photo.getSequenceIndex(), point.x + 10,
+                            point.y, Color.red, true);
+                }
+            } else {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
+                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
+                drawIcon(graphics, icon, point);
+            }
+        }
+    }
+
+    private static void drawString(final Graphics2D g2D, final String txt, final int x, final int y, final Color color,
+            final boolean drawBackground) {
+        if (drawBackground) {
+            final FontMetrics fm = g2D.getFontMetrics(g2D.getFont());
+            final Rectangle2D rect = g2D.getFontMetrics(g2D.getFont()).getStringBounds(txt, g2D);
+            g2D.setColor(Color.white);
+            g2D.fillRect(x, y - fm.getAscent(), (int) rect.getWidth(), (int) rect.getHeight());
+        }
+        g2D.setColor(color);
+        g2D.drawString(txt, x, y);
+    }
+
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 new ImageObserver() {
 
-                    @Override
-                    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
-                            final int width, final int height) {
-                        return false;
-                    }
-                });
+            @Override
+            public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
+                    final int width, final int height) {
+                return false;
+            }
+        });
     }
 }

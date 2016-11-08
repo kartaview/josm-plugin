@@ -185,6 +185,7 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
+                detailsDialog.enableSequenceActions(!layer.isSequenceFirstPhoto(), !layer.isSequenceLastPhoto());
                 if (photo == null) {
                     layer.setSelectedSequence(null);
                 }
@@ -209,14 +210,14 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
             @Override
             public void run() {
                 final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.getPhotos() != null
-                        && !sequence.getPhotos().isEmpty()) {
+                if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
                         public void run() {
                             layer.setSelectedSequence(sequence);
-                            detailsDialog.enableSequenceActions(true, true);
+                            detailsDialog.enableSequenceActions(!layer.isSequenceFirstPhoto(),
+                                    !layer.isSequenceLastPhoto());
                             Main.map.repaint();
                         }
                     });
@@ -272,8 +273,6 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
     @Override
     public void selectSequencePhoto(final int index) {
         final Photo photo = layer.sequencePhoto(index);
-        final boolean isFirst = index == 1;
-        final boolean isLast = index == layer.getSelectedSequence().getPhotos().size();
         if (photo != null) {
             selectPhoto(photo);
             SwingUtilities.invokeLater(new Runnable() {
@@ -282,9 +281,8 @@ public class OpenStreetViewPlugin extends Plugin implements ZoomChangeListener, 
                 public void run() {
                     if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                         Main.map.mapView.zoomTo(photo.getLocation());
+                        Main.map.repaint();
                     }
-                    detailsDialog.enableSequenceActions(!isFirst, !isLast);
-                    Main.map.repaint();
                 }
             });
 

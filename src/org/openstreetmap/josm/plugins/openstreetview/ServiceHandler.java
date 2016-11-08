@@ -69,41 +69,41 @@ final class ServiceHandler {
     public List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
         final Long osmUserId = filter != null && filter.isOnlyUserFlag()
                 ? JosmUserIdentityManager.getInstance().asUser().getId() : null;
-                final Date date = filter != null ? filter.getDate() : null;
-                List<Photo> finalResult = new ArrayList<>();
-                try {
-                    if (areas.size() > 1) {
-                        final Set<Photo> result = new HashSet<>();
-                        final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
-                        final List<Future<List<Photo>>> futures = new ArrayList<>();
-                        for (final Circle circle : areas) {
-                            futures.add(executor.submit(new Callable<List<Photo>>() {
+        final Date date = filter != null ? filter.getDate() : null;
+        List<Photo> finalResult = new ArrayList<>();
+        try {
+            if (areas.size() > 1) {
+                final Set<Photo> result = new HashSet<>();
+                final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
+                final List<Future<List<Photo>>> futures = new ArrayList<>();
+                for (final Circle circle : areas) {
+                    futures.add(executor.submit(new Callable<List<Photo>>() {
 
-                                @Override
-                                public List<Photo> call() throws OpenStreetViewServiceException {
-                                    return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
-                                }
-                            }));
+                        @Override
+                        public List<Photo> call() throws OpenStreetViewServiceException {
+                            return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
                         }
-                        for (final Future<List<Photo>> future : futures) {
-                            try {
-                                result.addAll(future.get());
-                            } catch (InterruptedException | ExecutionException e) {
-                                throw new OpenStreetViewServiceException(e);
-                            }
-                        }
-                        finalResult.addAll(result);
-                        executor.shutdown();
-                    } else {
-                        finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
-                    }
-                } catch (final OpenStreetViewServiceException e) {
-                    if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
-                        JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
-                                GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
+                    }));
+                }
+                for (final Future<List<Photo>> future : futures) {
+                    try {
+                        result.addAll(future.get());
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new OpenStreetViewServiceException(e);
                     }
                 }
-                return finalResult;
+                finalResult.addAll(result);
+                executor.shutdown();
+            } else {
+                finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
+            }
+        } catch (final OpenStreetViewServiceException e) {
+            if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
+                JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
+                        GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return finalResult;
     }
 
     public Sequence retrieveSequence(final Long id) {
