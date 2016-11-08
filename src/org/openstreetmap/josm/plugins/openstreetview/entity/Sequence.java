@@ -12,17 +12,17 @@ import java.util.List;
 
 
 /**
- * 
+ *
  * @author beataj
  * @version $Revision$
  */
 public class Sequence {
 
-    private Long id;
-    private List<Photo> photos;
+    private final Long id;
+    private final List<Photo> photos;
 
 
-    public Sequence(Long id, List<Photo> photos) {
+    public Sequence(final Long id, final List<Photo> photos) {
         this.id = id;
         this.photos = photos;
     }
@@ -34,5 +34,9 @@ public class Sequence {
 
     public List<Photo> getPhotos() {
         return photos;
+    }
+
+    public boolean hasPhotos() {
+        return photos != null && !photos.isEmpty();
     }
 }

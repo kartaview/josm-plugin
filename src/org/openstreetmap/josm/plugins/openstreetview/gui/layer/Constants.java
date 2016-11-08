@@ -51,6 +51,7 @@ final class Constants {
     static final Color SEQUENCE_LINE_COLOR = new Color(0, 143, 222);
     static final int MIN_ARROW_ZOOM = 16;
     static final double ARROW_LENGTH = 3.5D;
+    static final int ANGLE_360 = 360;
 
     static final String BING_LAYER_NAME = "Bing aerial imagery";
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";

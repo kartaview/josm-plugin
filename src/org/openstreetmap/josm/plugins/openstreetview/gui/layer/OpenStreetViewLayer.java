@@ -79,8 +79,8 @@ public class OpenStreetViewLayer extends AbtractLayer {
     public Photo nearbyPhoto(final Point point) {
         Photo photo = (selectedSequence != null && selectedSequence.getPhotos() != null)
                 ? Util.nearbyPhoto(selectedSequence.getPhotos(), point) : null;
-        photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
-        return photo;
+                photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
+                return photo;
     }
 
     /**
@@ -104,19 +104,42 @@ public class OpenStreetViewLayer extends AbtractLayer {
 
     /**
      * Returns the photo from the sequence located at the given position. The method returns null if there is no
-     * correspondig element.
+     * corresponding element.
      *
      * @param index represents the location of a photo in the selected sequence
      * @return a {@code Photo}
      */
     public Photo sequencePhoto(final int index) {
         Photo photo = null;
-        if (selectedSequence.getPhotos().size() > index - 1) {
-            photo = selectedSequence.getPhotos().get(index - 1);
-            // API issue: does not return username for sequence photos
-            photo.setUsername(selectedPhoto.getUsername());
+        for (final Photo elem : selectedSequence.getPhotos()) {
+            if (elem.getSequenceIndex().equals(index)) {
+                photo = elem;
+                // API issue: does not return username for sequence photos
+                photo.setUsername(selectedPhoto.getUsername());
+            }
         }
         return photo;
+    }
+
+    /**
+     * Checks if the selected photo is the first photo of the sequence.
+     *
+     * @return true/false
+     */
+    public boolean isSequenceFirstPhoto() {
+        return selectedSequence != null && selectedPhoto != null
+                && selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+    }
+
+    /**
+     * Checks if the selected photo is the last photo of the sequence.
+     * 
+     * @return true/false
+     */
+    public boolean isSequenceLastPhoto() {
+        return selectedSequence != null && selectedPhoto != null
+                && selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
+                .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
