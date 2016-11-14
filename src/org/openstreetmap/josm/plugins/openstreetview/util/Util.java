@@ -149,7 +149,8 @@ public final class Util {
      */
     public static boolean containsLatLon(final MapView mapView, final LatLon latLon) {
         boolean contains = false;
-        if (Main.getLayerManager().getEditLayer() != null) {
+        if (Main.getLayerManager().getEditLayer() != null
+                && !mapView.getLayerManager().getEditLayer().data.getDataSourceBounds().isEmpty()) {
             for (final Bounds bounds : mapView.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
                 if (bounds.contains(latLon)) {
                     contains = true;
