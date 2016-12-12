@@ -7,7 +7,7 @@
 	<property name="plugin.dist.dir" value="${basedir}/dist" />
 	<property name="plugin.lib.dir" value="${basedir}/lib" />
 	<property name="plugin.images.dir" value="${basedir}/images" />
-	<property name="plugin.name" value="OpenStreetView.jar" />
+	<property name="plugin.name" value="OpenStreetCam.jar" />
 	<property name="JOSM_lib" value="josm-tested.jar" />
 
 	<tstamp>
@@ -87,11 +87,11 @@
 			<zipfileset src="${plugin.lib.dir}/swingx-all-1.6.5.jar" />
 			<manifest>
 				<attribute name="Author" value="Telenav" />
-				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetview.OpenStreetViewPlugin" />
+				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetcam.OpenStreetCamPlugin" />
 				<attribute name="Plugin-Date" value="${TODAY}" />
-				<attribute name="Plugin-Description" value="Lets you map from OpenStreetView street level imagery." />
-				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetView" />
-				<attribute name="Plugin-Icon" value="images/openstreetview_logo_50x50.png" />
+				<attribute name="Plugin-Description" value="Lets you map from OpenStreetCam street level imagery." />
+				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
+				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Early" value="true" />
 				<attribute name="Plugin-Mainversion" value="10580" />
