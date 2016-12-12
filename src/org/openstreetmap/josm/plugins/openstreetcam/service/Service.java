@@ -36,7 +36,7 @@ import com.telenav.josm.common.http.HttpConnectorException;
 
 
 /**
- * Executes the operations of the OpenStreetView service.
+ * Executes the operations of the OpenStreetCam service.
  *
  * @author Beata
  * @version $Revision$
@@ -53,7 +53,7 @@ public class Service {
     }
 
     /**
-     * Retrieves OpenStreetView photos from the given area based on the specified filters.
+     * Retrieves OpenStreetCam photos from the given area based on the specified filters.
      *
      * @param circle a {@code Circle} defines the searching area
      * @param date a {@code Date} if not null, then the method returns the photos that were uploaded after the specified

@@ -44,8 +44,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
 
 
 /**
- * Defines the {@code OpenStreetViewDetailsDialog} action panel. The user can perform the following actions: filter,
- * jump to photo location and open photo web page.
+ * Defines the {@code OpenStreetCamDetailsDialog} action panel. The user can perform the following actions: filter, jump
+ * to photo location and open photo web page.
  *
  * @author Beata
  * @version $Revision$
@@ -85,40 +85,40 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         final IconConfig iconConfig = IconConfig.getInstance();
         final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                 ? iconConfig.getFilterIcon() : iconConfig.getFilterSelectedIcon();
-        btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
-        btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
-                guiConfig.getBtnPreviousTlt(), false);
-        btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
-                guiConfig.getBtnNextTlt(), false);
-        btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
-                guiConfig.getBtnLocationTlt(), false);
-        btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
-                guiConfig.getBtnWebPageTlt(), false);
-        btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
-                guiConfig.getBtnFeedbackTlt(), true);
+                btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
+                btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
+                        guiConfig.getBtnPreviousTlt(), false);
+                btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
+                        guiConfig.getBtnNextTlt(), false);
+                btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
+                        guiConfig.getBtnLocationTlt(), false);
+                btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
+                        guiConfig.getBtnWebPageTlt(), false);
+                btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
+                        guiConfig.getBtnFeedbackTlt(), true);
 
-        add(btnFilter);
-        add(btnPrevious);
-        add(btnNext);
-        add(btnLocation);
-        add(btnWebPage);
-        add(btnFeedbackPage);
+                add(btnFilter);
+                add(btnPrevious);
+                add(btnNext);
+                add(btnLocation);
+                add(btnWebPage);
+                add(btnFeedbackPage);
 
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+                Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+                getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+                getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+                getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
 
-        setPreferredSize(DIM);
-        Main.pref.addPreferenceChangeListener(this);
+                setPreferredSize(DIM);
+                Main.pref.addPreferenceChangeListener(this);
     }
 
 
@@ -141,7 +141,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
     /**
-     * Enables or disables the "OpenStreetView Sequence" related action buttons.
+     * Enables or disables the "OpenStreetCam Sequence" related action buttons.
      *
      * @param isPrevious if true then the "Previous" button is enabled; if false then the button is disabled
      * @param isNext if true then the "Next" button is enabled; if false then the button is disabled
@@ -167,7 +167,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                         ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-                btnFilter.setIcon(icon);
+                        btnFilter.setIcon(icon);
             }
         }
     }

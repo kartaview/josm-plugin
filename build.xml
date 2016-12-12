@@ -90,8 +90,8 @@
 				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetcam.OpenStreetCamPlugin" />
 				<attribute name="Plugin-Date" value="${TODAY}" />
 				<attribute name="Plugin-Description" value="Lets you map from OpenStreetCam street level imagery." />
-				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetView" />
-				<attribute name="Plugin-Icon" value="images/openstreetview_logo_50x50.png" />
+				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
+				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Early" value="true" />
 				<attribute name="Plugin-Mainversion" value="10580" />

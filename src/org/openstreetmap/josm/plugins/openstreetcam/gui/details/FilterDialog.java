@@ -33,7 +33,7 @@ import com.telenav.josm.common.gui.ModalDialog;
 
 
 /**
- * Dialog window that displays the {@code ListFilter}s that can be applied to the OpenStreetView layer.
+ * Dialog window that displays the {@code ListFilter}s that can be applied to the OpenStreetCam layer.
  *
  * @author Beata
  * @version $Revision$
