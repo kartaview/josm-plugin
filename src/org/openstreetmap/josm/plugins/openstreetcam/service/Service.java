@@ -84,16 +84,13 @@ public class Service {
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         String response = null;
-        try{
-            final HttpConnector connector =
-                    new HttpConnector(
-                            ServiceConfig.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
+        try {
+            final HttpConnector connector = new HttpConnector(
+                    ServiceConfig.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
         }
-        // System.err.println(response);
         final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
         verifyResponseStatus(detailsResponse.getStatus());
         return detailsResponse.getOsv();
@@ -105,13 +102,11 @@ public class Service {
         }
     }
 
-    private <T> T parseResponse(final String response, final Class<T> responseType)
-            throws ServiceException {
+    private <T> T parseResponse(final String response, final Class<T> responseType) throws ServiceException {
         T root = null;
         if (response != null) {
             try {
                 root = gson.fromJson(response, responseType);
-
             } catch (final JsonSyntaxException e) {
                 throw new ServiceException(e);
             }

@@ -79,8 +79,8 @@ public class OpenStreetCamLayer extends AbtractLayer {
     public Photo nearbyPhoto(final Point point) {
         Photo photo = (selectedSequence != null && selectedSequence.getPhotos() != null)
                 ? Util.nearbyPhoto(selectedSequence.getPhotos(), point) : null;
-        photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
-        return photo;
+                photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
+                return photo;
     }
 
     /**
@@ -111,11 +111,13 @@ public class OpenStreetCamLayer extends AbtractLayer {
      */
     public Photo sequencePhoto(final int index) {
         Photo photo = null;
-        for (final Photo elem : selectedSequence.getPhotos()) {
-            if (elem.getSequenceIndex().equals(index)) {
-                photo = elem;
-                // API issue: does not return username for sequence photos
-                photo.setUsername(selectedPhoto.getUsername());
+        if (selectedSequence != null) {
+            for (final Photo elem : selectedSequence.getPhotos()) {
+                if (elem.getSequenceIndex().equals(index)) {
+                    photo = elem;
+                    // API issue: does not return username for sequence photos
+                    photo.setUsername(selectedPhoto.getUsername());
+                }
             }
         }
         return photo;
@@ -126,9 +128,9 @@ public class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return true/false
      */
-    public boolean isSequenceFirstPhoto() {
+    public boolean enablePreviousPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
-                && selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -136,10 +138,10 @@ public class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return true/false
      */
-    public boolean isSequenceLastPhoto() {
+    public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
-                && selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                        .equals(selectedPhoto.getSequenceIndex());
+                && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
+                .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**

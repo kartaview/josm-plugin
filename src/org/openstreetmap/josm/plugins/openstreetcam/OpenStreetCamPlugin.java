@@ -54,7 +54,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -185,14 +185,19 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
-                detailsDialog.enableSequenceActions(!layer.isSequenceFirstPhoto(), !layer.isSequenceLastPhoto());
+                if (layer.getSelectedSequence() != null) {
+                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                            layer.enableNextPhotoAction());
+                } else {
+                    detailsDialog.enableSequenceActions(false, false);
+                }
                 if (photo == null) {
                     layer.setSelectedSequence(null);
                 }
                 Main.map.repaint();
             }
         });
-        SwingUtilities.invokeLater(new Runnable() {
+        Main.worker.execute(new Runnable() {
 
             @Override
             public void run() {
@@ -209,6 +214,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
             @Override
             public void run() {
+
                 final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
                 if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -216,8 +222,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                         @Override
                         public void run() {
                             layer.setSelectedSequence(sequence);
-                            detailsDialog.enableSequenceActions(!layer.isSequenceFirstPhoto(),
-                                    !layer.isSequenceLastPhoto());
+                            detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                                    layer.enableNextPhotoAction());
                             Main.map.repaint();
                         }
                     });
