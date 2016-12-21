@@ -39,21 +39,41 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the error suppress flag. If this value is true, then all the future service errors will be suppressed.
+     * Loads the photo search error suppress flag. If this value is true, then all the future photo search service
+     * errors will be suppressed.
      *
      * @return a boolean value
      */
-    public boolean loadErrorSuppressFlag() {
-        return Main.pref.getBoolean(Keys.SUPPRESS_ERROR);
+    public boolean loadPhotosErrorSuppressFlag() {
+        return Main.pref.getBoolean(Keys.SUPPRESS_PHOTOS_ERROR);
     }
 
     /**
-     * Saves the error suppress flag to the preference file.
+     * Saves the photo search error suppress flag.
      *
      * @param flag a boolean value
      */
-    public void saveErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(Keys.SUPPRESS_ERROR, flag);
+    public void savePhotosErrorSuppressFlag(final boolean flag) {
+        Main.pref.put(Keys.SUPPRESS_PHOTOS_ERROR, flag);
+    }
+
+    /**
+     * Loads the sequence error suppress flag. If this value is true, then all the future sequence retrieve errors will
+     * be suppressed.
+     *
+     * @return a boolean value
+     */
+    public boolean loadSequenceErrorSuppressFlag() {
+        return Main.pref.getBoolean(Keys.SUPPRESS_SEQUENCE_ERROR);
+    }
+
+    /**
+     * Saves the sequence error suppress flag.
+     *
+     * @param flag a boolean value
+     */
+    public void saveSequenceErrorSuppressFlag(final boolean flag) {
+        Main.pref.put(Keys.SUPPRESS_SEQUENCE_ERROR, flag);
     }
 
     /**

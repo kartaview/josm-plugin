@@ -1,5 +1,5 @@
 /*
- *  Copyright ©2016, Telenav, Inc. All Rights Reserved
+ *  Copyright Â©2016, Telenav, Inc. All Rights Reserved
  *
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
@@ -26,8 +26,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
+import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
@@ -49,10 +49,7 @@ final class ServiceHandler {
         service = new Service();
     }
 
-    /**
-     *
-     * @return
-     */
+
     static ServiceHandler getInstance() {
         return INSTANCE;
     }
@@ -98,9 +95,12 @@ final class ServiceHandler {
                 finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
             }
         } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadErrorSuppressFlag()) {
-                JOptionPane.showMessageDialog(Main.parent, e.getMessage(),
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), JOptionPane.ERROR_MESSAGE);
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
             }
         }
         return finalResult;
@@ -111,9 +111,13 @@ final class ServiceHandler {
         try {
             sequence = service.retrieveSequence(id);
         } catch (final ServiceException e) {
-            JOptionPane.showMessageDialog(Main.parent, e.getMessage(), GuiConfig.getInstance().getErrorPhotoListTxt(),
-                    JOptionPane.ERROR_MESSAGE);
-
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                        GuiConfig.getInstance().getErrorSequenceTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
         }
         return sequence;
     }
