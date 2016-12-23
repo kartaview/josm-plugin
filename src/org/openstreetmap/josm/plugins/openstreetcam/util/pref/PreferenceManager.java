@@ -104,4 +104,45 @@ public final class PreferenceManager {
             Main.pref.put(Keys.ONLY_USER_FLAG, filter.isOnlyUserFlag());
         }
     }
+
+    /**
+     * Loads the dialog appearance status from the preference file.
+     *
+     * @return a {@code Boolean}
+     */
+    public Boolean loadDialogOpened() {
+        final Boolean dialogIsOpened = Main.pref.getBoolean(Keys.DIALOG_OPENED);
+        return dialogIsOpened;
+    }
+
+    /**
+     * Saves the dialog appearance status to the preference file.
+     *
+     * @param dialogIsOpened a {@code Boolean} represents the dialog showing/hiding status
+     */
+    public void saveDialogOpened(final Boolean dialogIsOpened) {
+        Main.pref.put(Keys.DIALOG_OPENED, dialogIsOpened);
+    }
+
+    /**
+     * Loads the layer appearance status from the preference file.
+     *
+     * @return a {@code Boolean}
+     */
+    public Boolean loadLayerOpened() {
+        final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
+        if (layerOpened == null) {
+            return true;
+        }
+        return Boolean.valueOf(layerOpened);
+    }
+
+    /**
+     * Saves the layer appearance status to the preference file.
+     *
+     * @param layerIsOpened a {@code Boolean} represents the layer showing/hiding status
+     */
+    public void saveLayerOpened(final Boolean layerIsOpened) {
+        Main.pref.put(Keys.LAYER_OPENED, layerIsOpened);
+    }
 }

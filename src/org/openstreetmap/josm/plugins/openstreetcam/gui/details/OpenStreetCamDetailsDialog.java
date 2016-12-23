@@ -67,6 +67,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
+
     }
 
 

@@ -24,9 +24,11 @@ import javax.swing.DebugGraphics;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.gui.IconToggleButton;
+import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
@@ -43,8 +45,11 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.ImageProvider;
 
 
 /**
@@ -82,21 +87,22 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
+
+            // create the dialog
             detailsDialog = new OpenStreetCamDetailsDialog();
             detailsDialog.registerObservers(this, this);
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
-            // register listeners
-            registerListeners();
+            // create the menu item
+            MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false).setEnabled(true);
 
-            // add layer
-            layer = new OpenStreetCamLayer();
-            newMapFrame.mapView.getLayerManager().addLayer(layer);
-            if (!detailsDialog.getButton().isSelected()) {
-                detailsDialog.getButton().doClick();
+            // read preferences
+            if (PreferenceManager.getInstance().loadLayerOpened()) {
+                layer = new OpenStreetCamLayer();
+                newMapFrame.mapView.getLayerManager().addLayer(layer);
+                registerListeners();
             }
-
         }
     }
 
@@ -133,6 +139,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     @Override
     public void layerAdded(final LayerAddEvent event) {
         if (event.getAddedLayer() instanceof OpenStreetCamLayer) {
+            PreferenceManager.getInstance().saveLayerOpened(true);
             zoomChanged();
         }
     }
@@ -148,13 +155,12 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
-            Main.map.remove(detailsDialog);
             Main.pref.removePreferenceChangeListener(this);
             layer = null;
-            detailsDialog.hideDialog();
-            detailsDialog.updateUI(null);
+            PreferenceManager.getInstance().saveLayerOpened(false);
         }
     }
+
 
 
     /* Implementation of MouseListener */
@@ -301,6 +307,27 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         }
     }
 
+    private class LayerActivator extends JosmAction {
+
+        private static final long serialVersionUID = -1361735274900300621L;
+
+        public LayerActivator() {
+            super(GuiConfig.getInstance().getPluginShortName(),
+                    new ImageProvider(IconConfig.getInstance().getLayerImagePath()), null, null, false, null, false);
+            // setEnabled(false);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            if (layer == null) {
+                registerListeners();
+                layer = new OpenStreetCamLayer();
+                Main.map.mapView.getLayerManager().addLayer(layer);
+                PreferenceManager.getInstance().saveLayerOpened(true);
+            }
+        }
+    }
+
     /*
      * Listens to toggle dialog button actions.
      */
@@ -322,14 +349,10 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                             btn.setSelected(false);
                             btn.setFocusable(false);
                         }
-                        if (layer == null) {
-                            registerListeners();
-                            layer = new OpenStreetCamLayer();
-                            Main.map.mapView.getLayerManager().addLayer(layer);
-                        }
                     }
                 });
             }
         }
     }
+
 }
