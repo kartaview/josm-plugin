@@ -126,25 +126,6 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the dialog appearance status from the preference file.
-     *
-     * @return a {@code Boolean}
-     */
-    public Boolean loadDialogOpened() {
-        final Boolean dialogIsOpened = Main.pref.getBoolean(Keys.DIALOG_OPENED);
-        return dialogIsOpened;
-    }
-
-    /**
-     * Saves the dialog appearance status to the preference file.
-     *
-     * @param dialogIsOpened a {@code Boolean} represents the dialog showing/hiding status
-     */
-    public void saveDialogOpened(final Boolean dialogIsOpened) {
-        Main.pref.put(Keys.DIALOG_OPENED, dialogIsOpened);
-    }
-
-    /**
      * Loads the layer appearance status from the preference file.
      *
      * @return a {@code Boolean}

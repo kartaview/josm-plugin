@@ -59,13 +59,15 @@ import org.openstreetmap.josm.tools.ImageProvider;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-        LocationObserver, SequenceObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
 
     /* layer associated with this plugin */
     private OpenStreetCamLayer layer;
+
+    private LayerActivator layerActivator;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
@@ -95,7 +97,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
             // create the menu item
-            MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false).setEnabled(true);
+            layerActivator = new LayerActivator();
+            MainMenu.add(Main.main.menu.imageryMenu, layerActivator, false).setEnabled(true);
 
             // read preferences
             if (PreferenceManager.getInstance().loadLayerOpened()) {
@@ -151,6 +154,9 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
 
     @Override
     public void layerRemoving(final LayerRemoveEvent event) {
+        if (event.isLastLayer()) {
+            layerActivator.setEnabled(false);
+        }
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
@@ -238,7 +244,6 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         });
     }
 
-
     @Override
     public void mousePressed(final MouseEvent event) {
         // no logic for this action
@@ -320,7 +325,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         public LayerActivator() {
             super(GuiConfig.getInstance().getPluginShortName(),
                     new ImageProvider(IconConfig.getInstance().getLayerImagePath()), null, null, false, null, false);
-            // setEnabled(false);
+            setEnabled(false);
         }
 
         @Override
