@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.DebugGraphics;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
@@ -67,7 +68,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     /* layer associated with this plugin */
     private OpenStreetCamLayer layer;
 
-    private LayerActivator layerActivator;
+    private JMenuItem layerActivator;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
@@ -96,16 +97,26 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
-            // create the menu item
-            layerActivator = new LayerActivator();
-            MainMenu.add(Main.main.menu.imageryMenu, layerActivator, false).setEnabled(true);
-
             // read preferences
             if (PreferenceManager.getInstance().loadLayerOpened()) {
                 layer = new OpenStreetCamLayer();
                 newMapFrame.mapView.getLayerManager().addLayer(layer);
                 registerListeners();
             }
+        }
+
+        if (layerActivator == null) {
+            layerActivator = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+        }
+
+        // a new map frame is created
+        if (oldMapFrame == null && newMapFrame != null) {
+            layerActivator.setEnabled(true);
+        }
+
+        // all layers are deleted (there is no map frame)
+        if (oldMapFrame != null && newMapFrame == null) {
+            layerActivator.setEnabled(false);
         }
     }
 
@@ -154,9 +165,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void layerRemoving(final LayerRemoveEvent event) {
-        if (event.isLastLayer()) {
-            layerActivator.setEnabled(false);
-        }
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
