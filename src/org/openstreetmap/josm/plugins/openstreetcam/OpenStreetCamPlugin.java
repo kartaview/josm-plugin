@@ -18,10 +18,13 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.DebugGraphics;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
@@ -33,6 +36,7 @@ import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
+import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
@@ -42,6 +46,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamDeleteLayerAction;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -68,7 +73,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     /* layer associated with this plugin */
     private OpenStreetCamLayer layer;
 
-    private JMenuItem layerActivator;
+    private static JMenuItem layerActivatorMenuItem;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
@@ -99,24 +104,22 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
             // read preferences
             if (PreferenceManager.getInstance().loadLayerOpened()) {
-                layer = new OpenStreetCamLayer();
-                newMapFrame.mapView.getLayerManager().addLayer(layer);
-                registerListeners();
+                addLayer();
             }
         }
 
-        if (layerActivator == null) {
-            layerActivator = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+        if (layerActivatorMenuItem == null) {
+            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
 
         // a new map frame is created
         if (oldMapFrame == null && newMapFrame != null) {
-            layerActivator.setEnabled(true);
+            layerActivatorMenuItem.setEnabled(true);
         }
 
         // all layers are deleted (there is no map frame)
         if (oldMapFrame != null && newMapFrame == null) {
-            layerActivator.setEnabled(false);
+            layerActivatorMenuItem.setEnabled(false);
         }
     }
 
@@ -125,6 +128,16 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         Main.getLayerManager().addLayerChangeListener(this);
         Main.pref.addPreferenceChangeListener(this);
         Main.map.mapView.addMouseListener(this);
+    }
+
+    private void addLayer() {
+        registerListeners();
+        layer = new OpenStreetCamLayer();
+        Main.map.mapView.getLayerManager().addLayer(layer);
+
+        LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+        LayerListDialog.getInstance().getActionMap().put("delete", new OpenStreetCamDeleteLayerAction());
     }
 
 
@@ -171,10 +184,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             Main.map.mapView.removeMouseListener(this);
             Main.pref.removePreferenceChangeListener(this);
             layer = null;
-            PreferenceManager.getInstance().saveLayerOpened(false);
         }
     }
-
 
 
     /* Implementation of MouseListener */
@@ -236,7 +247,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             public void run() {
 
                 final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
+                if (layer != null && photo.equals(layer.getSelectedPhoto()) && sequence != null
+                        && sequence.hasPhotos()) {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
@@ -326,6 +338,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         }
     }
 
+
     private class LayerActivator extends JosmAction {
 
         private static final long serialVersionUID = -1361735274900300621L;
@@ -339,13 +352,12 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         @Override
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
-                registerListeners();
-                layer = new OpenStreetCamLayer();
-                Main.map.mapView.getLayerManager().addLayer(layer);
+                addLayer();
                 PreferenceManager.getInstance().saveLayerOpened(true);
             }
         }
     }
+
 
     /*
      * Listens to toggle dialog button actions.
