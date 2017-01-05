@@ -185,12 +185,6 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             @Override
             public void run() {
                 layer.setSelectedPhoto(photo);
-                if (layer.getSelectedSequence() != null) {
-                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                            layer.enableNextPhotoAction());
-                } else {
-                    detailsDialog.enableSequenceActions(false, false);
-                }
                 if (photo == null) {
                     layer.setSelectedSequence(null);
                 }
@@ -205,6 +199,13 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                     detailsDialog.getButton().doClick();
                 }
                 detailsDialog.updateUI(photo);
+                if (layer.getSelectedSequence() != null) {
+                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                            layer.enableNextPhotoAction());
+                } else {
+                    detailsDialog.enableSequenceActions(false, false);
+                }
+                detailsDialog.revalidate();
             }
         });
     }
@@ -222,8 +223,6 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                         @Override
                         public void run() {
                             layer.setSelectedSequence(sequence);
-                            detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                                    layer.enableNextPhotoAction());
                             Main.map.repaint();
                         }
                     });

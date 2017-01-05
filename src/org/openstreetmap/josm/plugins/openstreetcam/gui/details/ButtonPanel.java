@@ -167,7 +167,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                         ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-                btnFilter.setIcon(icon);
+                        btnFilter.setIcon(icon);
             }
         }
     }
@@ -184,6 +184,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
 
     /* selects the previous/next photo from the displayed sequence */
+
     private final class SelectPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
@@ -197,28 +198,45 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final int index = isNext ? photo.getSequenceIndex() + 1 : photo.getSequenceIndex() - 1;
-                notifyObserver(index);
+                Main.worker.execute(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final int index = isNext ? photo.getSequenceIndex() + 1 : photo.getSequenceIndex() - 1;
+                        enableSequenceActions(false, false);
+                        notifyObserver(index);
+                    }
+                });
             }
         }
 
     }
 
+
     /* centers the map to the selected photo's location */
+
     private final class JumpToLocationAction extends AbstractAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            if (photo != null) {
-                notifyObserver();
-            }
+            Main.worker.execute(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (photo != null) {
+                        notifyObserver();
+                    }
+                }
+            });
+
         }
     }
 
 
     /* opens the selected photo's web page */
+
     private final class OpenWebPageAction extends AbstractAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
@@ -240,6 +258,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
 
     /* opens the feedback web page */
+
     private final class OpenFeedbackPageAction extends AbstractAction {
 
         private static final long serialVersionUID = 4196639030623647016L;
