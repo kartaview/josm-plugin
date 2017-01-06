@@ -63,6 +63,11 @@ public final class GuiConfig extends BaseConfig {
 
     private final String maxDateFilterTxt;
 
+    private final String deleteLayerMenuItemTxt;
+    private final String deleteLayerMenuItemShortDescr;
+    private final String deleteLayerMenuItemImgDir;
+    private final String deleteLayerMenuItemImgNames;
+
 
     private GuiConfig() {
         super(CONFIG_FILE);
@@ -97,6 +102,11 @@ public final class GuiConfig extends BaseConfig {
         confirmDateFilterTxt = readProperty("information.dateFilter.text");
 
         maxDateFilterTxt = readProperty("dateFilter.maxDate");
+
+        deleteLayerMenuItemTxt = readProperty("layer.menu.delete.text");
+        deleteLayerMenuItemShortDescr = readProperty("layer.menu.delete.shortDescription");
+        deleteLayerMenuItemImgDir = readProperty("layer.menu.delete.image.directory");
+        deleteLayerMenuItemImgNames = readProperty("layer.menu.delete.image.name");
     }
 
 
@@ -210,5 +220,23 @@ public final class GuiConfig extends BaseConfig {
 
     public String getMaxDateFilterTxt() {
         return maxDateFilterTxt;
+    }
+
+    public String getDeleteLayerMenuItemTxt() {
+        return deleteLayerMenuItemTxt;
+    }
+
+
+    public String getDeleteLayerMenuItemShortDesrciption() {
+        return deleteLayerMenuItemShortDescr;
+    }
+
+    public String getDeleteLayerMenuItemImageDirectory() {
+        return deleteLayerMenuItemImgDir;
+    }
+
+
+    public String getDeleteLayerMenuItemImageName() {
+        return deleteLayerMenuItemImgNames;
     }
 }

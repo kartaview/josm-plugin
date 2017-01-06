@@ -18,13 +18,10 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.DebugGraphics;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.Main;
@@ -36,7 +33,6 @@ import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
 import org.openstreetmap.josm.gui.NavigatableComponent.ZoomChangeListener;
-import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
@@ -46,7 +42,6 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamDeleteLayerAction;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -135,9 +130,9 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         layer = new OpenStreetCamLayer();
         Main.map.mapView.getLayerManager().addLayer(layer);
 
-        LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
-        LayerListDialog.getInstance().getActionMap().put("delete", new OpenStreetCamDeleteLayerAction());
+        // LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+        // .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+        // LayerListDialog.getInstance().getActionMap().put("delete", new OpenStreetCamDeleteLayerAction());
     }
 
 
