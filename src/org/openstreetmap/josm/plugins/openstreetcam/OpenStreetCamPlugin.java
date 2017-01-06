@@ -54,7 +54,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -63,9 +63,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     private OpenStreetCamLayer layer;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
-    private static final int SEARCH_DELAY = 1;
+    private static final int SEARCH_DELAY = 600;
 
-    private static int delay = SEARCH_DELAY;
     private Timer zoomTimer;
 
 
@@ -113,21 +112,18 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void zoomChanged() {
-        if (layer.getSelectedSequence() == null) {
-            if (zoomTimer != null && zoomTimer.isRunning()) {
-                zoomTimer.restart();
-            } else {
-                zoomTimer = new Timer(delay, new ActionListener() {
+        if (zoomTimer != null && zoomTimer.isRunning()) {
+            zoomTimer.restart();
+        } else {
+            zoomTimer = new Timer(SEARCH_DELAY, new ActionListener() {
 
-                    @Override
-                    public void actionPerformed(final ActionEvent event) {
-                        Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
-                    }
-                });
-                zoomTimer.setRepeats(false);
-                zoomTimer.start();
-                delay = SEARCH_DELAY;
-            }
+                @Override
+                public void actionPerformed(final ActionEvent event) {
+                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
+                }
+            });
+            zoomTimer.setRepeats(false);
+            zoomTimer.start();
         }
     }
 
@@ -263,17 +259,16 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     public void zoomToSelectedPhoto() {
         if (layer.getSelectedPhoto() != null
                 && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
-            // SwingUtilities.invokeLater(new Runnable() {
-            //
-            // @Override
-            // public void run() {
-            final Photo selectedPhoto = layer.getSelectedPhoto();
-            layer.setPhotos(null, false);
-            delay = 1;
-            Main.map.mapView.zoomTo(selectedPhoto.getLocation());
-            Main.map.repaint();
-            // }
-            // });
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    final Photo selectedPhoto = layer.getSelectedPhoto();
+                    layer.setPhotos(null, false);
+                    Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                    Main.map.repaint();
+                }
+            });
         }
     }
 
@@ -290,7 +285,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 @Override
                 public void run() {
                     if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                        // delay = 1;
                         Main.map.mapView.zoomTo(photo.getLocation());
                         Main.map.repaint();
                     }
