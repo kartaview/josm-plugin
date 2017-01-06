@@ -129,10 +129,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         registerListeners();
         layer = new OpenStreetCamLayer();
         Main.map.mapView.getLayerManager().addLayer(layer);
-
-        // LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-        // .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
-        // LayerListDialog.getInstance().getActionMap().put("delete", new OpenStreetCamDeleteLayerAction());
     }
 
 
