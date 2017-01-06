@@ -43,12 +43,14 @@ import org.openstreetmap.josm.tools.ImageProvider;
  */
 abstract class AbtractLayer extends Layer {
 
+    private static final String DELETE_ACTION = "delete";
+
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
 
         LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
-        LayerListDialog.getInstance().getActionMap().put("delete", new OpenStreetCamDeleteLayerAction());
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        LayerListDialog.getInstance().getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
     }
 
 
