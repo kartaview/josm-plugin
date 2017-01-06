@@ -84,6 +84,10 @@ public final class IconConfig extends BaseConfig {
         return layerIcon;
     }
 
+    public String getLayerImagePath() {
+        return readProperty("layer.icon");
+    }
+
     public ImageIcon getPhotoIcon() {
         return photoIcon;
     }
