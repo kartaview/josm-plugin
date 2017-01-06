@@ -132,7 +132,7 @@ public final class PreferenceManager {
      */
     public Boolean loadLayerOpened() {
         final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
-        if (layerOpened == null) {
+        if (layerOpened == "") {
             return true;
         }
         return Boolean.valueOf(layerOpened);
