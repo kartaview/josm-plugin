@@ -27,7 +27,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
@@ -86,40 +85,40 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         final IconConfig iconConfig = IconConfig.getInstance();
         final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                 ? iconConfig.getFilterIcon() : iconConfig.getFilterSelectedIcon();
-                btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
-                btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
-                        guiConfig.getBtnPreviousTlt(), false);
-                btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
-                        guiConfig.getBtnNextTlt(), false);
-                btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
-                        guiConfig.getBtnLocationTlt(), false);
-                btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
-                        guiConfig.getBtnWebPageTlt(), false);
-                btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
-                        guiConfig.getBtnFeedbackTlt(), true);
+        btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
+        btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
+                guiConfig.getBtnPreviousTlt(), false);
+        btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
+                guiConfig.getBtnNextTlt(), false);
+        btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
+                guiConfig.getBtnLocationTlt(), false);
+        btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
+                guiConfig.getBtnWebPageTlt(), false);
+        btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
+                guiConfig.getBtnFeedbackTlt(), true);
 
-                add(btnFilter);
-                add(btnPrevious);
-                add(btnNext);
-                add(btnLocation);
-                add(btnWebPage);
-                add(btnFeedbackPage);
+        add(btnFilter);
+        add(btnPrevious);
+        add(btnNext);
+        add(btnLocation);
+        add(btnWebPage);
+        add(btnFeedbackPage);
 
-                Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-                Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-                Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-                Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-                getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-                getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-                getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-                getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
 
-                setPreferredSize(DIM);
-                Main.pref.addPreferenceChangeListener(this);
+        setPreferredSize(DIM);
+        Main.pref.addPreferenceChangeListener(this);
     }
 
 
@@ -199,23 +198,9 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                // try {
-                // SwingUtilities.invokeAndWait(new Runnable() {
-                //
-                // @Override
-                // public void run() {
                 final int index = isNext ? photo.getSequenceIndex() + 1 : photo.getSequenceIndex() - 1;
                 enableSequenceActions(false, false);
                 notifyObserver(index);
-                // }
-                // });
-                // } catch (final InvocationTargetException e) {
-                // // TODO Auto-generated catch block
-                // e.printStackTrace();
-                // } catch (final InterruptedException e) {
-                // // TODO Auto-generated catch block
-                // e.printStackTrace();
-                // }
             }
         }
 
@@ -232,16 +217,8 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         public void actionPerformed(final ActionEvent event) {
 
             if (photo != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        notifyObserver();
-                    }
-                });
+                notifyObserver();
             }
-
-
         }
     }
 

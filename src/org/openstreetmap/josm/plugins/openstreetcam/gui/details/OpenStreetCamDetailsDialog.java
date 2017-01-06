@@ -108,5 +108,6 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);
+        pnlBtn.repaint();
     }
 }

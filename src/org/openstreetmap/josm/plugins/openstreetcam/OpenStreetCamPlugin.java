@@ -45,6 +45,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -65,6 +66,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
 
+    private final ThreadPool threadPool = ThreadPool.getInstance();
     private Timer zoomTimer;
 
 
@@ -97,6 +99,10 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                 detailsDialog.getButton().doClick();
             }
 
+        } else if (newMapFrame == null) {
+            try {
+                threadPool.shutdown();
+            } catch (final InterruptedException e) {}
         }
     }
 
@@ -115,12 +121,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            zoomTimer = new Timer(SEARCH_DELAY, new ActionListener() {
-
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
-                }
+            zoomTimer = new Timer(SEARCH_DELAY, e -> {
+                threadPool.execute(new DataUpdateThread(layer, detailsDialog, false));
             });
             zoomTimer.setRepeats(false);
             zoomTimer.start();
@@ -180,53 +182,41 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     }
 
     private void selectPhoto(final Photo photo) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                layer.setSelectedPhoto(photo);
-                if (photo == null) {
-                    layer.setSelectedSequence(null);
-                }
-                Main.map.repaint();
+        SwingUtilities.invokeLater(() -> {
+            layer.setSelectedPhoto(photo);
+            if (photo == null) {
+                layer.setSelectedSequence(null);
             }
+            Main.map.repaint();
         });
-        Main.worker.execute(new Runnable() {
 
-            @Override
-            public void run() {
-                if (!detailsDialog.getButton().isSelected()) {
-                    detailsDialog.getButton().doClick();
-                }
-                detailsDialog.updateUI(photo);
+        threadPool.execute(() -> {
+            if (!detailsDialog.getButton().isSelected()) {
+                detailsDialog.getButton().doClick();
+            }
+            detailsDialog.updateUI(photo);
+            SwingUtilities.invokeLater(() -> {
                 if (layer.getSelectedSequence() != null) {
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                 } else {
                     detailsDialog.enableSequenceActions(false, false);
                 }
-                detailsDialog.revalidate();
-            }
+            });
         });
     }
 
     private void loadSequence(final Photo photo) {
-        Main.worker.execute(new Runnable() {
+        threadPool.execute(() -> {
 
-            @Override
-            public void run() {
-
-                final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            layer.setSelectedSequence(sequence);
-                            Main.map.repaint();
-                        }
-                    });
-                }
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
+            if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
+                SwingUtilities.invokeLater(() -> {
+                    layer.setSelectedSequence(sequence);
+                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                            layer.enableNextPhotoAction());
+                    Main.map.repaint();
+                });
             }
         });
     }
@@ -259,15 +249,11 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     public void zoomToSelectedPhoto() {
         if (layer.getSelectedPhoto() != null
                 && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    final Photo selectedPhoto = layer.getSelectedPhoto();
-                    layer.setPhotos(null, false);
-                    Main.map.mapView.zoomTo(selectedPhoto.getLocation());
-                    Main.map.repaint();
-                }
+            SwingUtilities.invokeLater(() -> {
+                final Photo selectedPhoto = layer.getSelectedPhoto();
+                layer.setPhotos(null, false);
+                Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                Main.map.repaint();
             });
         }
     }
@@ -280,14 +266,10 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         final Photo photo = layer.sequencePhoto(index);
         if (photo != null) {
             selectPhoto(photo);
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                        Main.map.mapView.zoomTo(photo.getLocation());
-                        Main.map.repaint();
-                    }
+            SwingUtilities.invokeLater(() -> {
+                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
+                    Main.map.mapView.zoomTo(photo.getLocation());
+                    Main.map.repaint();
                 }
             });
 
@@ -301,7 +283,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                Main.worker.execute(new DataUpdateThread(layer, detailsDialog, true));
+                threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
             }
         }
     }
@@ -315,23 +297,19 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         public void actionPerformed(final ActionEvent event) {
             if (event.getSource() instanceof IconToggleButton) {
                 final IconToggleButton btn = (IconToggleButton) event.getSource();
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (btn.isSelected()) {
-                            detailsDialog.setVisible(true);
-                            btn.setSelected(true);
-                        } else {
-                            detailsDialog.setVisible(false);
-                            btn.setSelected(false);
-                            btn.setFocusable(false);
-                        }
-                        if (layer == null) {
-                            registerListeners();
-                            layer = new OpenStreetCamLayer();
-                            Main.map.mapView.getLayerManager().addLayer(layer);
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    if (btn.isSelected()) {
+                        detailsDialog.setVisible(true);
+                        btn.setSelected(true);
+                    } else {
+                        detailsDialog.setVisible(false);
+                        btn.setSelected(false);
+                        btn.setFocusable(false);
+                    }
+                    if (layer == null) {
+                        registerListeners();
+                        layer = new OpenStreetCamLayer();
+                        Main.map.mapView.getLayerManager().addLayer(layer);
                     }
                 });
             }
