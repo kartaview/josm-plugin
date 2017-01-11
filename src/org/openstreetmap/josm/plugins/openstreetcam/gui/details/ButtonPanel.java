@@ -167,7 +167,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                         ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-                        btnFilter.setIcon(icon);
+                btnFilter.setIcon(icon);
             }
         }
     }
