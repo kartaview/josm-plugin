@@ -51,6 +51,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -72,6 +73,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
+
+    private final ThreadPool threadPool = ThreadPool.getInstance();
 
     private Timer zoomTimer;
 
@@ -115,6 +118,9 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         // all layers are deleted (there is no map frame)
         if (oldMapFrame != null && newMapFrame == null) {
             layerActivatorMenuItem.setEnabled(false);
+            try {
+                threadPool.shutdown();
+            } catch (final InterruptedException e) {}
         }
     }
 
@@ -202,55 +208,41 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     }
 
     private void selectPhoto(final Photo photo) {
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(() -> {
+            layer.setSelectedPhoto(photo);
+            if (photo == null) {
+                layer.setSelectedSequence(null);
+            }
+            Main.map.repaint();
+        });
 
-            @Override
-            public void run() {
-                layer.setSelectedPhoto(photo);
+        threadPool.execute(() -> {
+            if (!detailsDialog.getButton().isSelected()) {
+                detailsDialog.getButton().doClick();
+            }
+            detailsDialog.updateUI(photo);
+            SwingUtilities.invokeLater(() -> {
                 if (layer.getSelectedSequence() != null) {
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                 } else {
                     detailsDialog.enableSequenceActions(false, false);
                 }
-                if (photo == null) {
-                    layer.setSelectedSequence(null);
-                }
-                Main.map.repaint();
-            }
-        });
-        Main.worker.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!detailsDialog.getButton().isSelected()) {
-                    detailsDialog.getButton().doClick();
-                }
-                detailsDialog.updateUI(photo);
-            }
+            });
         });
     }
 
     private void loadSequence(final Photo photo) {
-        Main.worker.execute(new Runnable() {
+        threadPool.execute(() -> {
 
-            @Override
-            public void run() {
-
-                final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
-                if (layer != null && photo.equals(layer.getSelectedPhoto()) && sequence != null
-                        && sequence.hasPhotos()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            layer.setSelectedSequence(sequence);
-                            detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                                    layer.enableNextPhotoAction());
-                            Main.map.repaint();
-                        }
-                    });
-                }
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
+            if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
+                SwingUtilities.invokeLater(() -> {
+                    layer.setSelectedSequence(sequence);
+                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                            layer.enableNextPhotoAction());
+                    Main.map.repaint();
+                });
             }
         });
     }
@@ -282,15 +274,11 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     public void zoomToSelectedPhoto() {
         if (layer.getSelectedPhoto() != null
                 && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    final Photo selectedPhoto = layer.getSelectedPhoto();
-                    layer.setPhotos(null, false);
-                    Main.map.mapView.zoomTo(selectedPhoto.getLocation());
-                    Main.map.repaint();
-                }
+            SwingUtilities.invokeLater(() -> {
+                final Photo selectedPhoto = layer.getSelectedPhoto();
+                layer.setPhotos(null, false);
+                Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                Main.map.repaint();
             });
         }
     }
@@ -303,14 +291,10 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         final Photo photo = layer.sequencePhoto(index);
         if (photo != null) {
             selectPhoto(photo);
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                        Main.map.mapView.zoomTo(photo.getLocation());
-                        Main.map.repaint();
-                    }
+            SwingUtilities.invokeLater(() -> {
+                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
+                    Main.map.mapView.zoomTo(photo.getLocation());
+                    Main.map.repaint();
                 }
             });
 
@@ -324,7 +308,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                Main.worker.execute(new DataUpdateThread(layer, detailsDialog, true));
+                threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
             }
         }
     }
@@ -334,7 +318,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
         private static final long serialVersionUID = -1361735274900300621L;
 
-        public LayerActivator() {
+        private LayerActivator() {
             super(GuiConfig.getInstance().getPluginShortName(),
                     new ImageProvider(IconConfig.getInstance().getLayerImagePath()), null, null, false, null, false);
             setEnabled(false);
@@ -359,18 +343,19 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         public void actionPerformed(final ActionEvent event) {
             if (event.getSource() instanceof IconToggleButton) {
                 final IconToggleButton btn = (IconToggleButton) event.getSource();
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (btn.isSelected()) {
-                            detailsDialog.setVisible(true);
-                            btn.setSelected(true);
-                        } else {
-                            detailsDialog.setVisible(false);
-                            btn.setSelected(false);
-                            btn.setFocusable(false);
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    if (btn.isSelected()) {
+                        detailsDialog.setVisible(true);
+                        btn.setSelected(true);
+                    } else {
+                        detailsDialog.setVisible(false);
+                        btn.setSelected(false);
+                        btn.setFocusable(false);
+                    }
+                    if (layer == null) {
+                        registerListeners();
+                        layer = new OpenStreetCamLayer();
+                        Main.map.mapView.getLayerManager().addLayer(layer);
                     }
                 });
             }

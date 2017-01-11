@@ -27,7 +27,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -76,12 +76,14 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
             final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
             link.append(photoName);
             try {
-                image = ImageIO.read(new URL(link.toString()));
+                ImageIO.setUseCache(false);
+                image = ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
                 currentView = new Rectangle(0, 0, image.getWidth(), image.getHeight());
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
                         getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
             }
+            repaint();
         } else {
             image = null;
             currentView = null;
@@ -143,7 +145,6 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
                 pair = new Pair<>(0, imgDim);
             }
         }
-
         return pair;
     }
 
@@ -186,7 +187,6 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
     }
 
     private Pair<Integer, Integer> getImagePart(final int ref, final int firstRef, final int secondRef, final int cut) {
-
         final int minCoord = ref - cut;
         final int maxCoord = ref + cut;
 
