@@ -16,6 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListPhotoResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Status;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -76,8 +77,8 @@ public class Service {
             throw new ServiceException(e);
         }
         final ListPhotoResponse listPhotoResponse = parseResponse(response, ListPhotoResponse.class);
-        verifyResponseStatus(listPhotoResponse.getStatus());
-        return listPhotoResponse.getCurrentPageItems();
+        verifyResponseStatus(listPhotoResponse);
+        return listPhotoResponse != null ? listPhotoResponse.getCurrentPageItems() : new ArrayList<>();
 
     }
 
@@ -92,13 +93,14 @@ public class Service {
             throw new ServiceException(e);
         }
         final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
-        verifyResponseStatus(detailsResponse.getStatus());
-        return detailsResponse.getOsv();
+        verifyResponseStatus(detailsResponse);
+        return detailsResponse != null ? detailsResponse.getOsv() : null;
     }
 
-    private void verifyResponseStatus(final Status status) throws ServiceException {
-        if (status != null && status.getHttpCode() != HttpURLConnection.HTTP_OK) {
-            throw new ServiceException(status.getApiMessage());
+    private void verifyResponseStatus(final Response response) throws ServiceException {
+        if (response != null && response.getStatus() != null
+                && response.getStatus().getHttpCode() != HttpURLConnection.HTTP_OK) {
+            throw new ServiceException(response.getStatus().getApiMessage());
         }
     }
 

@@ -85,7 +85,6 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
         pnlBtn.updateUI(photo);
         lblDetails.revalidate();
-        pnlPhoto.revalidate();
         repaint();
     }
 

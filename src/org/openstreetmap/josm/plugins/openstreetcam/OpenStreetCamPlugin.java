@@ -55,7 +55,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-        LocationObserver, SequenceObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -64,7 +64,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     private OpenStreetCamLayer layer;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
-    private static final int SEARCH_DELAY = 600;
+    private static final int SEARCH_DELAY = 700;
 
     private final ThreadPool threadPool = ThreadPool.getInstance();
     private Timer zoomTimer;
