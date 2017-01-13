@@ -113,7 +113,7 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
             }
         } else {
             horizontal = getImageFixedDimension(x, currentView.x, currentView.width, image.getWidth(), wheelRotation);
-            if (horizontal.b == image.getHeight() && horizontal.a == 0) {
+            if (horizontal.b == image.getWidth() && horizontal.a == 0) {
                 vertical = new Pair<>(0, image.getHeight());
             } else {
                 final int newHeight = (horizontal.b - horizontal.a) * getHeight() / getWidth();
@@ -184,8 +184,10 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
         }
         if (maxRef > imgDim) {
             minRef -= maxRef - imgDim;
+            minRef = (minRef < 0) ? 0 : minRef;
             maxRef = imgDim;
         }
+
         return new Pair<>(minRef, maxRef);
     }
 
@@ -281,11 +283,11 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
      * @param graphics a graphic object {@code Graphics} on which the current view will be drawn out
      */
     private void matchImageOnPanel(final Graphics graphics) {
+
         int imageWidth = getWidth();
         int imageHeight = (getWidth() * currentView.height) / currentView.width;
         int marginLeft = 0;
         int marginTop = (getHeight() - imageHeight) / 2;
-
         if (imageHeight > getHeight()) {
             imageHeight = getHeight();
             imageWidth = (getHeight() * currentView.width) / currentView.height;
@@ -293,6 +295,13 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
             marginTop = 0;
         }
 
+
+        /*
+         * int imageWidth; int imageHeight; int marginLeft; int marginTop; if (getHeight() > getWidth()) { marginLeft =
+         * 0; imageWidth = getWidth(); imageHeight = imageWidth * currentView.height / currentView.width; marginTop =
+         * (getHeight() - imageHeight) / 2; } else { marginTop = 0; imageHeight = getHeight(); imageWidth = (getHeight()
+         * * currentView.width) / currentView.height; marginLeft = (getWidth() - imageWidth) / 2; }
+         */
         frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
         graphics.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight,
                 currentView.x, currentView.y, currentView.x + currentView.width, currentView.y + currentView.height,
