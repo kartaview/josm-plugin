@@ -1,10 +1,9 @@
 /*
- *  Copyright Â©2016, Telenav, Inc. All Rights Reserved
- *
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- *  https://creativecommons.org/licenses/by-sa/4.0/ *legalcode.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
+ * Copyright ©2016, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
@@ -74,13 +73,10 @@ final class ServiceHandler {
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Photo>>> futures = new ArrayList<>();
                 for (final Circle circle : areas) {
-                    futures.add(executor.submit(new Callable<List<Photo>>() {
-
-                        @Override
-                        public List<Photo> call() throws ServiceException {
-                            return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
-                        }
-                    }));
+                    final Callable<List<Photo>> callable = () -> {
+                        return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
+                    };
+                    futures.add(executor.submit(callable));
                 }
                 for (final Future<List<Photo>> future : futures) {
                     try {

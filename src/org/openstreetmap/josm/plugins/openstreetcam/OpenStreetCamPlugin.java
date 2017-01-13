@@ -145,12 +145,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            zoomTimer = new Timer(SEARCH_DELAY, new ActionListener() {
-
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
-                }
+            zoomTimer = new Timer(SEARCH_DELAY, event -> {
+                Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
             });
             zoomTimer.setRepeats(false);
             zoomTimer.start();

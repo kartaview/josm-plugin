@@ -57,7 +57,8 @@ class DataUpdateThread implements Runnable {
             if (zoom >= ServiceConfig.getInstance().getPhotoZoom()) {
                 final List<Circle> areas = new ArrayList<>();
                 if (Main.getLayerManager().getEditLayer() != null) {
-                    final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+                    final List<Bounds> osmDataLayerBounds =
+                            Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
                     if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
                         for (final Bounds bounds : osmDataLayerBounds) {
                             areas.add(new Circle(bounds));
@@ -76,16 +77,12 @@ class DataUpdateThread implements Runnable {
     }
 
     private void updateUI(final List<Photo> photos, final boolean checkSelectedPhoto) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                layer.setPhotos(photos, checkSelectedPhoto);
-                if (layer.getSelectedPhoto() == null) {
-                    detailsDialog.updateUI(null);
-                }
-                Main.map.repaint();
+        SwingUtilities.invokeLater(() -> {
+            layer.setPhotos(photos, checkSelectedPhoto);
+            if (layer.getSelectedPhoto() == null) {
+                detailsDialog.updateUI(null);
             }
+            Main.map.repaint();
         });
     }
 }
