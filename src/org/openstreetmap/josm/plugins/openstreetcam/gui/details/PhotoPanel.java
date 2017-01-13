@@ -102,18 +102,24 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
         final Pair<Integer, Integer> vertical;
         final Pair<Integer, Integer> horizontal;
 
-        if (this.getWidth() > this.getHeight()) {
+        if (getWidth() > getHeight()) {
             vertical = getImageFixedDimension(y, currentView.y, currentView.height, image.getHeight(), wheelRotation);
-
-            final int newWidth = (vertical.b - vertical.a) * this.getWidth() / this.getHeight();
-            horizontal = getImageRelativeDimension(x, currentView.x, currentView.width, newWidth, image.getWidth(),
-                    wheelRotation);
+            if (vertical.b == image.getHeight() && vertical.a == 0) {
+                horizontal = new Pair<>(0, image.getWidth());
+            } else {
+                final int newWidth = ((vertical.b - vertical.a) * getWidth()) / getHeight();
+                horizontal = getImageRelativeDimension(x, currentView.x, currentView.width, newWidth, image.getWidth(),
+                        wheelRotation);
+            }
         } else {
             horizontal = getImageFixedDimension(x, currentView.x, currentView.width, image.getWidth(), wheelRotation);
-
-            final int newHeight = (horizontal.b - horizontal.a) * this.getHeight() / this.getWidth();
-            vertical = getImageRelativeDimension(y, currentView.y, currentView.height, newHeight, image.getHeight(),
-                    wheelRotation);
+            if (horizontal.b == image.getHeight() && horizontal.a == 0) {
+                vertical = new Pair<>(0, image.getHeight());
+            } else {
+                final int newHeight = (horizontal.b - horizontal.a) * getHeight() / getWidth();
+                vertical = getImageRelativeDimension(y, currentView.y, currentView.height, newHeight, image.getHeight(),
+                        wheelRotation);
+            }
         }
 
         if ((horizontal.b - horizontal.a > image.getWidth() / MAX_ZOOM)
@@ -125,8 +131,9 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
     private Pair<Integer, Integer> getImageFixedDimension(final int ref, final int currentViewMinCoord,
             final int currentViewDim, final int imgDim, final int wheelRotation) {
         Pair<Integer, Integer> pair;
+
+        // zoom in case
         if (wheelRotation < 0) {
-            // zoom in case
             pair = getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim,
                     (currentViewDim * 4 / 5) / 2);
         } else {
@@ -138,7 +145,7 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
                 minRef = (minRef < 0) ? 0 : minRef;
                 maxRef = (maxRef > imgDim) ? imgDim : maxRef;
 
-                pair = getImagePart(ref, minRef, maxRef, dif);
+                pair = getImagePart(ref, minRef, maxRef, dif + 1);
             } else {
                 pair = new Pair<>(0, imgDim);
             }
@@ -162,27 +169,24 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
      */
     private Pair<Integer, Integer> getImageRelativeDimension(final int ref, final int currentViewMinCoord,
             final int currentViewDim, final int newDim, final int imgDim, final int wheelRotation) {
-        Pair<Integer, Integer> pair;
-        int dimension;
+        // zoom in case
         if (wheelRotation < 0) {
-            dimension = (newDim > currentViewDim) ? currentViewDim : newDim;
-            pair = getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim, dimension / 2);
-        } else {
-            if (currentViewDim != imgDim) {
-                dimension = (newDim > imgDim) ? imgDim : newDim;
-
-                int minRef = currentViewMinCoord - (dimension / 2 - currentViewDim / 2);
-                int maxRef = currentViewMinCoord + currentViewDim + (dimension / 2 - currentViewDim / 2);
-
-                minRef = (minRef < 0) ? 0 : minRef;
-                maxRef = (maxRef > imgDim) ? imgDim : maxRef;
-
-                pair = getImagePart(ref, minRef, maxRef, dimension / 2);
-            } else {
-                pair = new Pair<>(0, imgDim);
-            }
+            final int dimension = (newDim > currentViewDim) ? currentViewDim : newDim;
+            return getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim, dimension / 2);
         }
-        return pair;
+
+        // zoom out case
+        int minRef = ref - (newDim / 2);
+        int maxRef = minRef + newDim;
+        if (minRef < 0) {
+            maxRef -= minRef;
+            minRef = 0;
+        }
+        if (maxRef > imgDim) {
+            minRef -= maxRef - imgDim;
+            maxRef = imgDim;
+        }
+        return new Pair<>(minRef, maxRef);
     }
 
     private Pair<Integer, Integer> getImagePart(final int ref, final int firstRef, final int secondRef, final int cut) {
@@ -288,6 +292,7 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
             marginLeft = (getWidth() - imageWidth) / 2;
             marginTop = 0;
         }
+
         frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
         graphics.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight,
                 currentView.x, currentView.y, currentView.x + currentView.width, currentView.y + currentView.height,
