@@ -21,8 +21,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -44,12 +46,54 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener {
+class PhotoPanel extends JPanel implements MouseWheelListener {
 
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int MAX_ZOOM = 5;
 
-    /** the current image */
+    private final MouseListener mouseListener = new MouseAdapter() {
+
+        @Override
+        public void mousePressed(final MouseEvent e) {
+            if (image != null) {
+                startPoint = getPointOnImage(e.getPoint());
+            }
+        }
+    };
+
+    private final MouseMotionListener mouseMotionListener = new MouseMotionAdapter() {
+
+        @Override
+        public void mouseDragged(final MouseEvent e) {
+            if (image != null) {
+                final Point endPoint = getPointOnImage(e.getPoint());
+                moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
+                repaint();
+            }
+        }
+
+        private void moveCurrentView(final int xDif, final int yDif) {
+            currentView.x = currentView.x + xDif;
+            currentView.y = currentView.y + yDif;
+
+            if (currentView.x < 0) {
+                currentView.x = 0;
+            }
+
+            if (currentView.y < 0) {
+                currentView.y = 0;
+            }
+
+            if (currentView.x + currentView.width > image.getWidth()) {
+                currentView.x = image.getWidth() - currentView.width;
+            }
+
+            if (currentView.y + currentView.height > image.getHeight()) {
+                currentView.y = image.getHeight() - currentView.height;
+            }
+        }
+    };
+
     private BufferedImage image;
 
     /** a rectangle where the image is incorporated related to the outside panel */
@@ -66,8 +110,8 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
         setBackground(Color.white);
         setBorder(BorderFactory.createLineBorder(Color.gray));
         addMouseWheelListener(this);
-        addMouseListener(this);
-        addMouseMotionListener(this);
+        addMouseListener(mouseListener);
+        addMouseMotionListener(mouseMotionListener);
     }
 
     void updateUI(final String photoName) {
@@ -216,43 +260,6 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
         return result;
     }
 
-    @Override
-    public void mousePressed(final MouseEvent e) {
-        if (image != null) {
-            startPoint = getPointOnImage(e.getPoint());
-        }
-    }
-
-    @Override
-    public void mouseDragged(final MouseEvent e) {
-        if (image != null) {
-            final Point endPoint = getPointOnImage(e.getPoint());
-            moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
-            repaint();
-        }
-    }
-
-    private void moveCurrentView(final int xDif, final int yDif) {
-        currentView.x = currentView.x + xDif;
-        currentView.y = currentView.y + yDif;
-
-        if (currentView.x < 0) {
-            currentView.x = 0;
-        }
-
-        if (currentView.y < 0) {
-            currentView.y = 0;
-        }
-
-        if (currentView.x + currentView.width > image.getWidth()) {
-            currentView.x = image.getWidth() - currentView.width;
-        }
-
-        if (currentView.y + currentView.height > image.getHeight()) {
-            currentView.y = image.getHeight() - currentView.height;
-        }
-    }
-
     /**
      * Translate a panel coordinate to an image coordinate (avoid the "empty" space around image).
      *
@@ -283,7 +290,6 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
      * @param graphics a graphic object {@code Graphics} on which the current view will be drawn out
      */
     private void matchImageOnPanel(final Graphics graphics) {
-
         int imageWidth = getWidth();
         int imageHeight = (getWidth() * currentView.height) / currentView.width;
         int marginLeft = 0;
@@ -295,32 +301,12 @@ class PhotoPanel extends JPanel implements MouseListener, MouseWheelListener, Mo
             marginTop = 0;
         }
 
-
-        /*
-         * int imageWidth; int imageHeight; int marginLeft; int marginTop; if (getHeight() > getWidth()) { marginLeft =
-         * 0; imageWidth = getWidth(); imageHeight = imageWidth * currentView.height / currentView.width; marginTop =
-         * (getHeight() - imageHeight) / 2; } else { marginTop = 0; imageHeight = getHeight(); imageWidth = (getHeight()
-         * * currentView.width) / currentView.height; marginLeft = (getWidth() - imageWidth) / 2; }
-         */
-        frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
+        if (imageWidth < getWidth()) {
+            frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
+        }
         graphics.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight,
                 currentView.x, currentView.y, currentView.x + currentView.width, currentView.y + currentView.height,
                 null);
     }
-
-    @Override
-    public void mouseMoved(final MouseEvent e) {}
-
-    @Override
-    public void mouseClicked(final MouseEvent e) {}
-
-    @Override
-    public void mouseReleased(final MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(final MouseEvent e) {}
-
-    @Override
-    public void mouseExited(final MouseEvent e) {}
 
 }
