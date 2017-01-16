@@ -23,9 +23,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -51,49 +49,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int MAX_ZOOM = 5;
 
-    private final MouseListener mouseListener = new MouseAdapter() {
-
-        @Override
-        public void mousePressed(final MouseEvent e) {
-            if (image != null) {
-                startPoint = getPointOnImage(e.getPoint());
-            }
-        }
-    };
-
-    private final MouseMotionListener mouseMotionListener = new MouseMotionAdapter() {
-
-        @Override
-        public void mouseDragged(final MouseEvent e) {
-            if (image != null) {
-                final Point endPoint = getPointOnImage(e.getPoint());
-                moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
-                repaint();
-            }
-        }
-
-        private void moveCurrentView(final int xDif, final int yDif) {
-            currentView.x = currentView.x + xDif;
-            currentView.y = currentView.y + yDif;
-
-            if (currentView.x < 0) {
-                currentView.x = 0;
-            }
-
-            if (currentView.y < 0) {
-                currentView.y = 0;
-            }
-
-            if (currentView.x + currentView.width > image.getWidth()) {
-                currentView.x = image.getWidth() - currentView.width;
-            }
-
-            if (currentView.y + currentView.height > image.getHeight()) {
-                currentView.y = image.getHeight() - currentView.height;
-            }
-        }
-    };
-
     private BufferedImage image;
 
     /** a rectangle where the image is incorporated related to the outside panel */
@@ -110,8 +65,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         setBackground(Color.white);
         setBorder(BorderFactory.createLineBorder(Color.gray));
         addMouseWheelListener(this);
-        addMouseListener(mouseListener);
-        addMouseMotionListener(mouseMotionListener);
+        addMouseListener(new MousePressedAdapater());
+        addMouseMotionListener(new MouseDraggedAdapter());
     }
 
     void updateUI(final String photoName) {
@@ -307,6 +262,49 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         graphics.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight,
                 currentView.x, currentView.y, currentView.x + currentView.width, currentView.y + currentView.height,
                 null);
+    }
+
+    private class MousePressedAdapater extends MouseAdapter {
+
+        @Override
+        public void mousePressed(final MouseEvent e) {
+            if (image != null) {
+                startPoint = getPointOnImage(e.getPoint());
+            }
+        }
+    }
+
+    private class MouseDraggedAdapter extends MouseMotionAdapter {
+
+        @Override
+        public void mouseDragged(final MouseEvent e) {
+            if (image != null) {
+                final Point endPoint = getPointOnImage(e.getPoint());
+                moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
+                repaint();
+            }
+        }
+
+        private void moveCurrentView(final int xDif, final int yDif) {
+            currentView.x = currentView.x + xDif;
+            currentView.y = currentView.y + yDif;
+
+            if (currentView.x < 0) {
+                currentView.x = 0;
+            }
+
+            if (currentView.y < 0) {
+                currentView.y = 0;
+            }
+
+            if (currentView.x + currentView.width > image.getWidth()) {
+                currentView.x = image.getWidth() - currentView.width;
+            }
+
+            if (currentView.y + currentView.height > image.getHeight()) {
+                currentView.y = image.getHeight() - currentView.height;
+            }
+        }
     }
 
 }
