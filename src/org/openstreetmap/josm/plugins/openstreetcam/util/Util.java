@@ -22,6 +22,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.tools.Pair;
 
@@ -149,9 +150,10 @@ public final class Util {
      */
     public static boolean containsLatLon(final MapView mapView, final LatLon latLon) {
         boolean contains = false;
-        if (Main.getLayerManager().getEditLayer() != null
+        if ((Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)
+                && Main.getLayerManager().getEditLayer() != null
                 && !mapView.getLayerManager().getEditLayer().data.getDataSourceBounds().isEmpty()) {
-            for (final Bounds bounds : mapView.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
+            for (final Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
                 if (bounds.contains(latLon)) {
                     contains = true;
                     break;

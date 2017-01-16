@@ -20,13 +20,12 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -53,26 +52,28 @@ class DataUpdateThread implements Runnable {
     @Override
     public void run() {
         if (Main.map != null && Main.map.mapView != null) {
-            final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
-            if (zoom >= ServiceConfig.getInstance().getPhotoZoom()) {
-                final List<Circle> areas = new ArrayList<>();
-                if (Main.getLayerManager().getEditLayer() != null) {
-                    final List<Bounds> osmDataLayerBounds =
-                            Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-                    if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                        for (final Bounds bounds : osmDataLayerBounds) {
-                            areas.add(new Circle(bounds));
+            final List<Circle> areas = new ArrayList<>();
+            if (Main.getLayerManager().getEditLayer() != null
+                    && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+                final List<Bounds> osmDataLayerBounds =
+                        Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+                if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                    for (final Bounds bounds : osmDataLayerBounds) {
+                        if (Main.map.mapView.getRealBounds().intersects(bounds)) {
+                            areas.add(new Circle(Main.map.mapView.getRealBounds()));
+                        } else {
+                            areas.add(new Circle(Main.map.mapView.getRealBounds()));
                         }
-                    } else {
-                        areas.add(new Circle(Main.map.mapView));
                     }
                 } else {
-                    areas.add(new Circle(Main.map.mapView));
+                    areas.add(new Circle(Main.map.mapView.getRealBounds()));
                 }
-                final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
-                final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-                updateUI(photos, checkSelectedPhoto);
+            } else {
+                areas.add(new Circle(Main.map.mapView.getRealBounds()));
             }
+            final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
+            final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+            updateUI(photos, checkSelectedPhoto);
         }
     }
 

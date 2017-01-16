@@ -17,7 +17,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import com.telenav.josm.common.util.EntityUtil;
 
@@ -34,15 +33,6 @@ public class Circle {
     private final LatLon center;
     private final int radius;
 
-
-    /**
-     * Builds a new circle based on the given map view.
-     *
-     * @param mapView represents the currently visible map
-     */
-    public Circle(final MapView mapView) {
-        this(new Bounds(mapView.getLatLon(0, mapView.getHeight()), mapView.getLatLon(mapView.getWidth(), 0)));
-    }
 
     /**
      * Builds a new circle from the given bounds.
