@@ -62,7 +62,7 @@ class DataUpdateThread implements Runnable {
                         if (Main.map.mapView.getRealBounds().intersects(bounds)) {
                             areas.add(new Circle(Main.map.mapView.getRealBounds()));
                         } else {
-                            areas.add(new Circle(Main.map.mapView.getRealBounds()));
+                            areas.add(new Circle(bounds));
                         }
                     }
                 } else {
