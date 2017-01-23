@@ -256,9 +256,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             marginTop = 0;
         }
 
-        if (imageWidth < getWidth()) {
-            frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
-        }
+        frame = new Rectangle(marginLeft, marginTop, imageWidth, imageHeight);
         graphics.drawImage(image, marginLeft, marginTop, marginLeft + imageWidth, marginTop + imageHeight,
                 currentView.x, currentView.y, currentView.x + currentView.width, currentView.y + currentView.height,
                 null);
