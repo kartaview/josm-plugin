@@ -50,11 +50,14 @@ final class HttpContentBuilder {
         if (paging == null) {
             content.put(RequestConstants.PAGE, "" + Paging.DEFAULT.getPage());
             content.put(RequestConstants.PAGE_ITEMS, "" + Paging.DEFAULT.getItemsPerPage());
+        } else {
+            content.put(RequestConstants.PAGE, "" + paging.getPage());
+            content.put(RequestConstants.PAGE_ITEMS, "" + paging.getItemsPerPage());
         }
     }
 
-    
-     HttpContentBuilder(final Long id) {
+
+    HttpContentBuilder(final Long id) {
         content.put(RequestConstants.ID, id.toString());
     }
 
