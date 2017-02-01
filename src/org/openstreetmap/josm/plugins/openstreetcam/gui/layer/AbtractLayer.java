@@ -103,7 +103,7 @@ abstract class AbtractLayer extends Layer {
             new ImageProvider(GuiConfig.getInstance().getDeleteLayerMenuItemImageDirectory(),
                     GuiConfig.getInstance().getDeleteLayerMenuItemImageName()).getResource().attachImageIcon(this,
                             true);
-            putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getDeleteLayerMenuItemShortDesrciption()));
+            putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getDeleteLayerMenuItemShortDescription()));
             putValue(NAME, tr(GuiConfig.getInstance().getDeleteLayerMenuItemTxt()));
         }
 

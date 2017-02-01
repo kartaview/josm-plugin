@@ -132,10 +132,7 @@ public final class PreferenceManager {
      */
     public Boolean loadLayerOpened() {
         final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
-        if (layerOpened == "") {
-            return true;
-        }
-        return Boolean.valueOf(layerOpened);
+        return  layerOpened == ""? true:Boolean.valueOf(layerOpened);
     }
 
     /**
@@ -145,5 +142,17 @@ public final class PreferenceManager {
      */
     public void saveLayerOpened(final Boolean layerIsOpened) {
         Main.pref.put(Keys.LAYER_OPENED, layerIsOpened);
+    }
+    
+    public void saveHighQualityPhotoFlag(final boolean highQualityFlag) {
+        Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, highQualityFlag);
+    }
+    
+    public boolean loadHighQualityPhotoFlag() {
+        return Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
+    }
+    
+    public String getHighQualityPhotoFlag() {
+        return Keys.HIGH_QUALITY_PHOTO_FLAG;
     }
 }

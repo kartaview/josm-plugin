@@ -46,6 +46,7 @@ public final class IconConfig extends BaseConfig {
     private final Icon feedbackIcon;
     private final Icon locationIcon;
     private final Icon webPageIcon;
+    private final Icon warningIcon;
 
 
     private IconConfig() {
@@ -65,6 +66,7 @@ public final class IconConfig extends BaseConfig {
         locationIcon = ImageProvider.get(readProperty("location.icon"));
         feedbackIcon = ImageProvider.get(readProperty("feedback.icon"));
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
+        warningIcon =  ImageProvider.get(readProperty("warning.icon"));
     }
 
 
@@ -128,8 +130,11 @@ public final class IconConfig extends BaseConfig {
         return feedbackIcon;
     }
 
-
     public Icon getWebPageIcon() {
         return webPageIcon;
+    }
+
+    public Icon getWarningIcon() {
+        return warningIcon;
     }
 }

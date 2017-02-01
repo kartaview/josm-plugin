@@ -37,12 +37,14 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
+import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -86,6 +88,11 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
+    }
+
+    @Override
+    public PreferenceSetting getPreferenceSetting() {
+        return new PreferenceEditor();
     }
 
 
@@ -305,6 +312,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
+            } else if (event.getKey().equals(PreferenceManager.getInstance().getHighQualityPhotoFlag())) {
+                selectPhoto(layer.getSelectedPhoto());
             }
         }
     }
