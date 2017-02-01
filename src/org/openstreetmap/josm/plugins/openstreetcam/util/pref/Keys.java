@@ -32,4 +32,5 @@ final class Keys {
     static final String DATE = "openstreetcam.filter.date";
     static final String ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
+    static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
 }

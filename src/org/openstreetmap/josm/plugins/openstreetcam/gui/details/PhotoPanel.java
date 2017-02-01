@@ -27,13 +27,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.net.URL;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.gui.GuiBuilder;
 
@@ -69,25 +65,24 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseMotionListener(new MouseDraggedAdapter());
     }
 
-    void updateUI(final String photoName) {
+
+    void updateUI(final BufferedImage image) {
         removeAll();
-        if (photoName != null) {
-            final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
-            link.append(photoName);
-            try {
-                ImageIO.setUseCache(false);
-                image = ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
-                currentView = new Rectangle(0, 0, image.getWidth(), image.getHeight());
-            } catch (final Exception e) {
-                add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
-                        getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
-            }
-            repaint();
+        this.image = image;
+        if (image != null) {
+            currentView = new Rectangle(0, 0, image.getWidth(), image.getHeight());
         } else {
-            image = null;
             currentView = null;
             frame = null;
         }
+        repaint();
+    }
+
+    void displayErrorMessage() {
+        removeAll();
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
+                getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
+        repaint();
     }
 
     @Override

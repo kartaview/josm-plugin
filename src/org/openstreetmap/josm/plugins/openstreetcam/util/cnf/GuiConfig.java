@@ -33,6 +33,9 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginLongName;
     private final String pluginTlt;
 
+    private final String imagePrefLbl;
+    private final String imageHighQualityPrefLbl;
+
     private final String btnFilterTlt;
     private final String btnPreviousTlt;
     private final String btnNextTlt;
@@ -58,15 +61,17 @@ public final class GuiConfig extends BaseConfig {
     private final String incorrectDateFilterTxt;
     private final String unacceptedDateFilterTxt;
 
+    private final String warningHighQualityPhoto;
+
     private final String confirmDateFilterTitle;
     private final String confirmDateFilterTxt;
 
     private final String maxDateFilterTxt;
 
     private final String deleteLayerMenuItemTxt;
-    private final String deleteLayerMenuItemShortDescr;
-    private final String deleteLayerMenuItemImgDir;
-    private final String deleteLayerMenuItemImgNames;
+    private final String deleteLayerMenuItemShortDescription;
+    private final String deleteLayerMenuItemImageDirectory;
+    private final String deleteLayerMenuItemImageName;
 
 
     private GuiConfig() {
@@ -75,6 +80,10 @@ public final class GuiConfig extends BaseConfig {
         pluginShortName = readProperty("plugin.name.short");
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
+
+        imagePrefLbl = readProperty("preference.image.lbl");
+        imageHighQualityPrefLbl = readProperty("preference.image.highQuality.lbl");
+
         btnFilterTlt = readProperty("btn.filter.tlt");
         btnPreviousTlt = readProperty("btn.previous");
         btnNextTlt = readProperty("btn.next");
@@ -98,15 +107,17 @@ public final class GuiConfig extends BaseConfig {
         unacceptedDateFilterTxt = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterTxt = readProperty("error.dateFilter.incorrect");
 
+        warningHighQualityPhoto = readProperty("warning.photo.highQuality");
+
         confirmDateFilterTitle = readProperty("information.dateFilter.title");
         confirmDateFilterTxt = readProperty("information.dateFilter.text");
 
         maxDateFilterTxt = readProperty("dateFilter.maxDate");
 
         deleteLayerMenuItemTxt = readProperty("layer.menu.delete.text");
-        deleteLayerMenuItemShortDescr = readProperty("layer.menu.delete.shortDescription");
-        deleteLayerMenuItemImgDir = readProperty("layer.menu.delete.image.directory");
-        deleteLayerMenuItemImgNames = readProperty("layer.menu.delete.image.name");
+        deleteLayerMenuItemShortDescription = readProperty("layer.menu.delete.shortDescription");
+        deleteLayerMenuItemImageDirectory = readProperty("layer.menu.delete.image.directory");
+        deleteLayerMenuItemImageName = readProperty("layer.menu.delete.image.name");
     }
 
 
@@ -124,6 +135,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPluginTlt() {
         return pluginTlt;
+    }
+
+    public String getImagePrefLbl() {
+        return imagePrefLbl;
+    }
+
+    public String getImageHighQualityPrefLbl() {
+        return imageHighQualityPrefLbl;
     }
 
     public String getBtnFilterTlt() {
@@ -226,17 +245,20 @@ public final class GuiConfig extends BaseConfig {
         return deleteLayerMenuItemTxt;
     }
 
-
-    public String getDeleteLayerMenuItemShortDesrciption() {
-        return deleteLayerMenuItemShortDescr;
+    public String getDeleteLayerMenuItemShortDescription() {
+        return deleteLayerMenuItemShortDescription;
     }
 
     public String getDeleteLayerMenuItemImageDirectory() {
-        return deleteLayerMenuItemImgDir;
+        return deleteLayerMenuItemImageDirectory;
     }
-
 
     public String getDeleteLayerMenuItemImageName() {
-        return deleteLayerMenuItemImgNames;
+        return deleteLayerMenuItemImageName;
     }
+
+    public String getWarningHighQualityPhoto() {
+        return warningHighQualityPhoto;
+    }
+
 }
