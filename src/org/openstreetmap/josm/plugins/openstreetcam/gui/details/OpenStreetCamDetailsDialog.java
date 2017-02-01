@@ -91,6 +91,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
             BufferedImage image = null;
             String detailsTxt = Formatter.formatPhotoDetails(photo);
             if (PreferenceManager.getInstance().loadHighQualityPhotoFlag()) {
+                // load high quality image
                 try {
                     image = loadImage(photo.getName());
                     updateUI(image, detailsTxt, false);
@@ -104,6 +105,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
                     }
                 }
             } else {
+                // load large thumbnail
                 try {
                     image = loadImage(photo.getLargeThumbnailName());
                     updateUI(image, detailsTxt, false);
@@ -113,6 +115,8 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
             }
         } else {
             lblDetails.setText("");
+            lblDetails.setToolTipText(null);
+            lblDetails.setIcon(null);
             pnlPhoto.updateUI(null);
         }
         pnlBtn.updateUI(photo);
@@ -121,14 +125,14 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
 
-    private BufferedImage loadImage(final String photoName) throws Exception{
+    private BufferedImage loadImage(final String photoName) throws Exception {
         final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
         link.append(photoName);
         ImageIO.setUseCache(false);
         return ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
     }
 
-    private void updateUI(BufferedImage image,String detailsTxt, boolean showWarning) {
+    private void updateUI(BufferedImage image, String detailsTxt, boolean showWarning) {
         lblDetails.setText(detailsTxt);
         if (showWarning) {
             lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
