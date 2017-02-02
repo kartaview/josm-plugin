@@ -130,9 +130,9 @@ public final class PreferenceManager {
      *
      * @return a {@code Boolean}
      */
-    public Boolean loadLayerOpened() {
+    public boolean loadLayerOpened() {
         final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
-        return  layerOpened == ""? true:Boolean.valueOf(layerOpened);
+        return  layerOpened == ""? false:Boolean.valueOf(layerOpened);
     }
 
     /**

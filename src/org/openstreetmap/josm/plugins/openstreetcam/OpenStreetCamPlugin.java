@@ -17,7 +17,6 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.DebugGraphics;
@@ -28,7 +27,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
-import org.openstreetmap.josm.gui.IconToggleButton;
 import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
@@ -63,7 +61,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -105,7 +103,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             detailsDialog = new OpenStreetCamDetailsDialog();
             detailsDialog.registerObservers(this, this);
             newMapFrame.addToggleDialog(detailsDialog);
-            detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
             // read preferences
             if (PreferenceManager.getInstance().loadLayerOpened()) {
@@ -337,34 +334,4 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             }
         }
     }
-
-
-    /*
-     * Listens to toggle dialog button actions.
-     */
-    private class ToggleButtonActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (event.getSource() instanceof IconToggleButton) {
-                final IconToggleButton btn = (IconToggleButton) event.getSource();
-                SwingUtilities.invokeLater(() -> {
-                    if (btn.isSelected()) {
-                        detailsDialog.setVisible(true);
-                        btn.setSelected(true);
-                    } else {
-                        detailsDialog.setVisible(false);
-                        btn.setSelected(false);
-                        btn.setFocusable(false);
-                    }
-                    if (layer == null) {
-                        registerListeners();
-                        layer = new OpenStreetCamLayer();
-                        Main.map.mapView.getLayerManager().addLayer(layer);
-                    }
-                });
-            }
-        }
-    }
-
 }
