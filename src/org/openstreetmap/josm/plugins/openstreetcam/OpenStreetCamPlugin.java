@@ -353,11 +353,6 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                         btn.setSelected(false);
                         btn.setFocusable(false);
                     }
-                    if (layer == null) {
-                        registerListeners();
-                        layer = new OpenStreetCamLayer();
-                        Main.map.mapView.getLayerManager().addLayer(layer);
-                    }
                 });
             }
         }
