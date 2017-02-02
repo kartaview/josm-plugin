@@ -128,9 +128,9 @@ public final class PreferenceManager {
     /**
      * Loads the layer appearance status from the preference file.
      *
-     * @return a {@code Boolean}
+     * @return a boolean
      */
-    public boolean loadLayerOpened() {
+    public boolean loadLayerOpenedFlag() {
         final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
         return  layerOpened == ""? false:Boolean.valueOf(layerOpened);
     }
@@ -138,21 +138,54 @@ public final class PreferenceManager {
     /**
      * Saves the layer appearance status to the preference file.
      *
-     * @param layerIsOpened a {@code Boolean} represents the layer showing/hiding status
+     * @param isLayerOpened  represents the layer showing/hiding status
      */
-    public void saveLayerOpened(final Boolean layerIsOpened) {
-        Main.pref.put(Keys.LAYER_OPENED, layerIsOpened);
+    public void saveLayerOpenedFlag(final boolean isLayerOpened) {
+        Main.pref.put(Keys.LAYER_OPENED, isLayerOpened);
     }
     
+    /**
+     * Loads the panel appearance status from the preference file.
+     * 
+     * @return a boolean
+     */
+    public boolean loadPanelOpenedFlag() {
+        final String layerOpened = Main.pref.get(Keys.PANEL_OPENED);
+        return  layerOpened == ""? false:Boolean.valueOf(layerOpened);
+    }
+
+    /**
+     * Saves the panel appearance status to the preference file
+     * @param isPanelOpened represents the panel showing/hiding status
+     */
+    public void savePanelOpenedFlag(final boolean isPanelOpened) {
+        Main.pref.put(Keys.PANEL_OPENED, isPanelOpened);
+    }
+    
+    /**
+     * Saves the high quality photo flag to the preference file.
+     * 
+     * @param highQualityFlag if true then the high quality photos will be loaded
+     */
     public void saveHighQualityPhotoFlag(final boolean highQualityFlag) {
         Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, highQualityFlag);
     }
     
+    /**
+     * Loads the high quality photo flag from the preference file.
+     * 
+     * @return a boolean value
+     */
     public boolean loadHighQualityPhotoFlag() {
         return Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
     }
     
-    public String getHighQualityPhotoFlag() {
+    /**
+     * Returns the high quality photo flag key.
+     * 
+     * @return a {@code String}
+     */
+    public String getHighQualityPhotoFlagKey() {
         return Keys.HIGH_QUALITY_PHOTO_FLAG;
     }
 }

@@ -109,7 +109,7 @@ abstract class AbtractLayer extends Layer {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            PreferenceManager.getInstance().saveLayerOpened(false);
+            PreferenceManager.getInstance().saveLayerOpenedFlag(false);
             deleteAction.actionPerformed(e);
         }
 

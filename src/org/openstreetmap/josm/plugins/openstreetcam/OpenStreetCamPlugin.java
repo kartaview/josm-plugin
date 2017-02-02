@@ -108,8 +108,15 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
             // read preferences
-            if (PreferenceManager.getInstance().loadLayerOpened()) {
+            if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
                 addLayer();
+            }
+            if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
+                detailsDialog.getButton().setSelected(true);
+                detailsDialog.showDialog();
+            } else {
+                detailsDialog.getButton().setSelected(false);
+                detailsDialog.hideDialog();
             }
         }
 
@@ -166,7 +173,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     @Override
     public void layerAdded(final LayerAddEvent event) {
         if (event.getAddedLayer() instanceof OpenStreetCamLayer) {
-            PreferenceManager.getInstance().saveLayerOpened(true);
+            PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             zoomChanged();
         }
     }
@@ -312,7 +319,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
                 threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
-            } else if (event.getKey().equals(PreferenceManager.getInstance().getHighQualityPhotoFlag())) {
+            } else if (event.getKey().equals(PreferenceManager.getInstance().getHighQualityPhotoFlagKey())) {
                 selectPhoto(layer.getSelectedPhoto());
             }
         }
@@ -333,11 +340,11 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
                 addLayer();
-                PreferenceManager.getInstance().saveLayerOpened(true);
+                PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
         }
     }
-    
+
     private class ToggleButtonActionListener implements ActionListener {
 
         @Override
@@ -346,11 +353,12 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                 final IconToggleButton btn = (IconToggleButton) event.getSource();
                 SwingUtilities.invokeLater(() -> {
                     if (btn.isSelected()) {
+                        PreferenceManager.getInstance().savePanelOpenedFlag(true);
                         detailsDialog.setVisible(true);
-                        btn.setSelected(true);
+                        btn.setFocusable(false);
                     } else {
+                        PreferenceManager.getInstance().savePanelOpenedFlag(false);
                         detailsDialog.setVisible(false);
-                        btn.setSelected(false);
                         btn.setFocusable(false);
                     }
                 });
