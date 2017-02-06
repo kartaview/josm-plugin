@@ -132,18 +132,18 @@ public final class PreferenceManager {
      */
     public boolean loadLayerOpenedFlag() {
         final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
-        return  layerOpened == ""? false:Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
     /**
      * Saves the layer appearance status to the preference file.
      *
-     * @param isLayerOpened  represents the layer showing/hiding status
+     * @param isLayerOpened represents the layer showing/hiding status
      */
     public void saveLayerOpenedFlag(final boolean isLayerOpened) {
         Main.pref.put(Keys.LAYER_OPENED, isLayerOpened);
     }
-    
+
     /**
      * Loads the panel appearance status from the preference file.
      * 
@@ -151,17 +151,18 @@ public final class PreferenceManager {
      */
     public boolean loadPanelOpenedFlag() {
         final String layerOpened = Main.pref.get(Keys.PANEL_OPENED);
-        return  layerOpened == ""? false:Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
     /**
      * Saves the panel appearance status to the preference file
+     * 
      * @param isPanelOpened represents the panel showing/hiding status
      */
     public void savePanelOpenedFlag(final boolean isPanelOpened) {
         Main.pref.put(Keys.PANEL_OPENED, isPanelOpened);
     }
-    
+
     /**
      * Saves the high quality photo flag to the preference file.
      * 
@@ -170,7 +171,7 @@ public final class PreferenceManager {
     public void saveHighQualityPhotoFlag(final boolean highQualityFlag) {
         Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, highQualityFlag);
     }
-    
+
     /**
      * Loads the high quality photo flag from the preference file.
      * 
@@ -179,7 +180,7 @@ public final class PreferenceManager {
     public boolean loadHighQualityPhotoFlag() {
         return Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
     }
-    
+
     /**
      * Returns the high quality photo flag key.
      * 
@@ -187,5 +188,18 @@ public final class PreferenceManager {
      */
     public String getHighQualityPhotoFlagKey() {
         return Keys.HIGH_QUALITY_PHOTO_FLAG;
+    }
+
+    public String getDisplayTrackFlagKey() {
+        return Keys.DISPLAY_TRACK_FLAG;
+    }
+
+    public boolean loadDisplayTrackFlag() {
+        final String displayTrackFlag = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
+        return displayTrackFlag.isEmpty() ? true : Boolean.valueOf(displayTrackFlag);
+    }
+
+    public void saveDisplayTrackFlag(boolean displayTrackFlag) {
+        Main.pref.put(Keys.DISPLAY_TRACK_FLAG, displayTrackFlag);
     }
 }

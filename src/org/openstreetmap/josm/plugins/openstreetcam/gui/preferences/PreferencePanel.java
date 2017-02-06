@@ -27,8 +27,10 @@ import com.telenav.josm.common.gui.GuiBuilder;
 class PreferencePanel extends JPanel {
 
     private static final long serialVersionUID = -8056772228573127238L;
+
     /* photo preference settings */
     private JCheckBox cbHighQualityPhoto;
+    private JCheckBox cbDisplayTrack;
 
 
     PreferencePanel() {
@@ -36,17 +38,29 @@ class PreferencePanel extends JPanel {
         createComponents();
     }
 
+    
     private void createComponents() {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getImagePrefLbl(), getFont().deriveFont(Font.PLAIN),
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
-        boolean selected = PreferenceManager.getInstance().loadHighQualityPhotoFlag();
-        cbHighQualityPhoto = GuiBuilder.buildCheckBox("display high quality image",
-                new JCheckBox().getFont().deriveFont(Font.PLAIN), null, selected, false);
+        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getImageHighQualityPrefLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), null,
+                PreferenceManager.getInstance().loadHighQualityPhotoFlag(), false);
         cbHighQualityPhoto.setBackground(getBackground());
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
+
+        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getDisplayTrackPrefLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), null,
+                PreferenceManager.getInstance().loadDisplayTrackFlag(), false);
+        cbDisplayTrack.setBackground(getBackground());
+        add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
     }
+
 
     boolean getHighQualityFlag() {
         return cbHighQualityPhoto.isSelected();
+    }
+    
+    boolean getDisplayTrackFlag() {
+        return cbDisplayTrack.isSelected();
     }
 }
