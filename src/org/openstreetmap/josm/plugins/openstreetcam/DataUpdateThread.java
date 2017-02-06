@@ -26,6 +26,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -51,7 +53,8 @@ class DataUpdateThread implements Runnable {
 
     @Override
     public void run() {
-        if (Main.map != null && Main.map.mapView != null) {
+        if (Main.map != null && Main.map.mapView != null
+                && Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()) {
             final List<Circle> areas = new ArrayList<>();
             if (Main.getLayerManager().getEditLayer() != null
                     && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {

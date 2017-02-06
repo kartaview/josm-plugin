@@ -32,6 +32,7 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
         pnlPreference = new PreferencePanel();
     }
 
+    
     @Override
     public void addGui(PreferenceTabbedPane pnlParent) {
         final JPanel mainPanel = new JPanel(new BorderLayout());
@@ -43,8 +44,8 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
     public boolean ok() {
         boolean highQualityFlag = pnlPreference.getHighQualityFlag();
         PreferenceManager.getInstance().saveHighQualityPhotoFlag(highQualityFlag);
+        boolean displayTrackFlag = pnlPreference.getDisplayTrackFlag();
+        PreferenceManager.getInstance().saveDisplayTrackFlag(displayTrackFlag);
         return false;
     }
-
-
 }

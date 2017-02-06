@@ -34,4 +34,5 @@ final class Keys {
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
     static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
+    static final String DISPLAY_TRACK_FLAG ="openstreetcam.preferences.trackLoading";
 }

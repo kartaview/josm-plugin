@@ -208,7 +208,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (!layer.isPhotoPartOfSequence(photo)) {
+                    if (PreferenceManager.getInstance().loadDisplayTrackFlag() && !layer.isPhotoPartOfSequence(photo)) {
                         loadSequence(photo);
                     }
                     selectPhoto(photo);
@@ -321,6 +321,17 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                 threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
             } else if (event.getKey().equals(PreferenceManager.getInstance().getHighQualityPhotoFlagKey())) {
                 selectPhoto(layer.getSelectedPhoto());
+            } else if (event.getKey().equals(PreferenceManager.getInstance().getDisplayTrackFlagKey())) {
+                if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
+                        && layer.getSelectedSequence() == null) {
+                    loadSequence(layer.getSelectedPhoto());
+                } else {
+                    if (layer.getSelectedSequence() != null) {
+                        layer.setSelectedSequence(null);
+                        detailsDialog.enableSequenceActions(false, false);
+                        Main.map.repaint();
+                    }
+                }
             }
         }
     }

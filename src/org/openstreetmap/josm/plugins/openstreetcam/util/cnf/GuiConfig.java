@@ -35,6 +35,7 @@ public final class GuiConfig extends BaseConfig {
 
     private final String imagePrefLbl;
     private final String imageHighQualityPrefLbl;
+    private final String displayTrackPrefLbl;
 
     private final String btnFilterTlt;
     private final String btnPreviousTlt;
@@ -83,6 +84,8 @@ public final class GuiConfig extends BaseConfig {
 
         imagePrefLbl = readProperty("preference.image.lbl");
         imageHighQualityPrefLbl = readProperty("preference.image.highQuality.lbl");
+        displayTrackPrefLbl = readProperty("preference.image.displayTrack.lbl");
+
 
         btnFilterTlt = readProperty("btn.filter.tlt");
         btnPreviousTlt = readProperty("btn.previous");
@@ -261,4 +264,7 @@ public final class GuiConfig extends BaseConfig {
         return warningHighQualityPhoto;
     }
 
+    public String getDisplayTrackPrefLbl() {
+        return displayTrackPrefLbl;
+    }
 }
