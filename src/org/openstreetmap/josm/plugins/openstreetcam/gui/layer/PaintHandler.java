@@ -27,11 +27,9 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.T
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.awt.image.ImageObserver;
 import java.util.List;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -70,7 +68,7 @@ class PaintHandler {
         graphics.setComposite(composite);
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto)) {
-                drawPhoto(graphics, mapView, photo, false, false);
+                drawPhoto(graphics, mapView, photo, false);
             }
         }
 
@@ -81,7 +79,7 @@ class PaintHandler {
         }
 
         if (selectedPhoto != null) {
-            drawPhoto(graphics, mapView, selectedPhoto, true, true);
+            drawPhoto(graphics, mapView, selectedPhoto, true);
         }
     }
 
@@ -109,11 +107,11 @@ class PaintHandler {
                 }
             }
 
-            drawPhoto(graphics, mapView, prevPhoto, false, true);
+            drawPhoto(graphics, mapView, prevPhoto, false);
             prevPhoto = currentPhoto;
         }
 
-        drawPhoto(graphics, mapView, prevPhoto, false, true);
+        drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Color getSequenceColor(final MapView mapView) {
@@ -133,7 +131,7 @@ class PaintHandler {
     }
 
     private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
-            final boolean isSelected, final boolean isTrack) {
+            final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getLocation())) {
             final Point point = mapView.getPoint(photo.getLocation());
 
@@ -158,13 +156,9 @@ class PaintHandler {
 
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
-                new ImageObserver() {
+                (img, infoflags, x, y, width, height) -> {
+                    return false;
+                });
 
-            @Override
-            public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y,
-                    final int width, final int height) {
-                return false;
-            }
-        });
     }
 }

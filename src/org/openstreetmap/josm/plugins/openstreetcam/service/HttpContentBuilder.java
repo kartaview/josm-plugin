@@ -32,27 +32,26 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 final class HttpContentBuilder {
 
     private static final String SEPARATOR = ",";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd");
+    private static final String DATE_FORMAT = "YYYY-MM-dd";
 
     private final Map<String, String> content = new HashMap<>();
 
 
     HttpContentBuilder(final Circle circle, final Date date, final Long osmUserId, final Paging paging) {
         content.put(RequestConstants.COORDINATE, circle.getCenter().getY() + SEPARATOR + circle.getCenter().getX());
-        final String radius = "" + (int) circle.getRadius();
-        content.put(RequestConstants.RADIUS, radius);
+        content.put(RequestConstants.RADIUS, Integer.toString((int) circle.getRadius()));
         if (date != null) {
-            content.put(RequestConstants.DATE, DATE_FORMAT.format(date));
+            content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
         if (osmUserId != null && osmUserId > 0) {
             content.put(RequestConstants.USER_ID, "" + osmUserId);
         }
         if (paging == null) {
-            content.put(RequestConstants.PAGE, "" + Paging.DEFAULT.getPage());
-            content.put(RequestConstants.PAGE_ITEMS, "" + Paging.DEFAULT.getItemsPerPage());
+            content.put(RequestConstants.PAGE, Integer.toString(Paging.DEFAULT.getPage()));
+            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(Paging.DEFAULT.getItemsPerPage()));
         } else {
-            content.put(RequestConstants.PAGE, "" + paging.getPage());
-            content.put(RequestConstants.PAGE_ITEMS, "" + paging.getItemsPerPage());
+            content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
+            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
         }
     }
 

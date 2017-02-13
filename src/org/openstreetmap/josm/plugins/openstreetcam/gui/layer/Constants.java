@@ -31,19 +31,7 @@ import java.util.Map;
  * @version $Revision$
  */
 final class Constants {
-
-    private Constants() {}
-
-    static final Map<RenderingHints.Key, Object> RENDERING_MAP = createRenderingMap();
-
-    private static Map<RenderingHints.Key, Object> createRenderingMap() {
-        final Map<RenderingHints.Key, Object> map = new HashMap<RenderingHints.Key, Object>();
-        map.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        map.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        map.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        return map;
-    }
-
+    
     /* constants used for drawing a sequence */
     static final Composite OPAQUE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
     static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f);
@@ -55,4 +43,17 @@ final class Constants {
 
     static final String BING_LAYER_NAME = "Bing aerial imagery";
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";
+    
+
+    static final Map<RenderingHints.Key, Object> RENDERING_MAP = createRenderingMap();
+
+    private Constants() {}
+    
+    private static Map<RenderingHints.Key, Object> createRenderingMap() {
+        final Map<RenderingHints.Key, Object> map = new HashMap<>();
+        map.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        map.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        map.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        return map;
+    }
 }

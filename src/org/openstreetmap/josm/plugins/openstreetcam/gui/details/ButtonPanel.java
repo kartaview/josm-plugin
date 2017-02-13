@@ -163,12 +163,11 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
-        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
-                        ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-                btnFilter.setIcon(icon);
-            }
+        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))
+                && event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
+            final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                    ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
+            btnFilter.setIcon(icon);
         }
     }
 

@@ -57,13 +57,13 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        int zoomLevel = 0;
+        int zoomLevel;
         if (Main.map.mapView.getScale() >= ZOOM1_SCALE) {
             // JOSM does not return the correct bounds for the case when the zoom level is 1
             zoomLevel = 1;
         } else {
-            zoomLevel = ((int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-                    Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2))))));
+            zoomLevel = (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
+                    Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
         }
         return zoomLevel;
     }
@@ -106,7 +106,7 @@ public final class Util {
         final double angle2 = bearing - ANGLE;
         final LatLon point1 = extrapolate(endPoint, angle1, distance);
         final LatLon point2 = extrapolate(endPoint, angle2, distance);
-        return new Pair<LatLon, LatLon>(point1, point2);
+        return new Pair<>(point1, point2);
     }
 
     /**
