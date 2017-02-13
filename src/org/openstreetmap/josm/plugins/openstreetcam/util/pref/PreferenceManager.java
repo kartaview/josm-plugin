@@ -83,7 +83,7 @@ public final class PreferenceManager {
      */
     public void saveFiltersChangedFlag(final boolean changed) {
         Main.pref.put(Keys.FILTERS_CHANGED, "");
-        Main.pref.put(Keys.FILTERS_CHANGED, "" + changed);
+        Main.pref.put(Keys.FILTERS_CHANGED, Boolean.toString(changed));
     }
 
     /**
@@ -107,19 +107,19 @@ public final class PreferenceManager {
             date = new Date(Long.parseLong(dateStr));
         }
         final String onlyUserFlagStr = Main.pref.get(Keys.ONLY_USER_FLAG);
-        final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag()
-                : new Boolean(onlyUserFlagStr).booleanValue();
+        final boolean onlyUserFlag =
+                onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag() : Boolean.parseBoolean(onlyUserFlagStr);
         return new ListFilter(date, onlyUserFlag);
     }
 
     /**
      * Saves the list filter to the preference file.
      *
-     * @param filter a {@code ListFilter} represents the curent filter settings
+     * @param filter a {@code ListFilter} represents the current filter settings
      */
     public void saveListFilter(final ListFilter filter) {
         if (filter != null) {
-            final String dateStr = filter.getDate() != null ? "" + filter.getDate().getTime() : "";
+            final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(Keys.DATE, dateStr);
             Main.pref.put(Keys.ONLY_USER_FLAG, filter.isOnlyUserFlag());
         }

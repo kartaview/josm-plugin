@@ -71,7 +71,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     /* layer associated with this plugin */
     private OpenStreetCamLayer layer;
 
-    private static JMenuItem layerActivatorMenuItem;
+    private JMenuItem layerActivatorMenuItem;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int SEARCH_DELAY = 600;
@@ -134,7 +134,9 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             layerActivatorMenuItem.setEnabled(false);
             try {
                 threadPool.shutdown();
-            } catch (final InterruptedException e) {}
+            } catch (final InterruptedException e) {
+                // nothing to do here
+            }
         }
     }
 
@@ -159,9 +161,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            zoomTimer = new Timer(SEARCH_DELAY, event -> {
-                Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false));
-            });
+            zoomTimer = new Timer(SEARCH_DELAY,
+                    event -> Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false)));
             zoomTimer.setRepeats(false);
             zoomTimer.start();
         }
@@ -325,12 +326,10 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                 if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
                         && layer.getSelectedSequence() == null) {
                     loadSequence(layer.getSelectedPhoto());
-                } else {
-                    if (layer.getSelectedSequence() != null) {
-                        layer.setSelectedSequence(null);
-                        detailsDialog.enableSequenceActions(false, false);
-                        Main.map.repaint();
-                    }
+                } else if (layer.getSelectedSequence() != null) {
+                    layer.setSelectedSequence(null);
+                    detailsDialog.enableSequenceActions(false, false);
+                    Main.map.repaint();
                 }
             }
         }

@@ -28,7 +28,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -45,7 +47,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int MAX_ZOOM = 5;
 
-    private BufferedImage image;
+    private transient BufferedImage image;
 
     /** a rectangle where the image is incorporated related to the outside panel */
     private Rectangle frame;
@@ -56,6 +58,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the image coordinate where the mouse dragging was started */
     private Point startPoint;
 
+    private JLabel lblLoading;
+    
     PhotoPanel() {
         super(new BorderLayout());
         setBackground(Color.white);
@@ -63,6 +67,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseWheelListener(this);
         addMouseListener(new MousePressedAdapater());
         addMouseMotionListener(new MouseDraggedAdapter());
+        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(), getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12),
+                Color.white);
+        lblLoading.setHorizontalAlignment(SwingConstants.CENTER);
+        lblLoading.setVerticalAlignment(SwingConstants.CENTER);
     }
 
 
@@ -80,10 +88,24 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
 
     void displayErrorMessage() {
         removeAll();
+        setBackground(Color.white);
+        image = null;
+        currentView = null;
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
                 getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
+
         repaint();
     }
+
+    void displayLoadingMessage() {
+        removeAll();
+        setBackground(Color.white);
+        image = null;
+        currentView = null;
+        add(lblLoading, BorderLayout.CENTER);
+        repaint();
+    }
+
 
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
@@ -224,11 +246,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
 
     @Override
     public void paintComponent(final Graphics g) {
+        // clean the panel
+        g.setColor(getBackground());
+        g.fillRect(0, 0, getWidth(), getHeight());
         if (image != null) {
-            // clean the panel
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-
             // draw the image
             matchImageOnPanel(g);
         }

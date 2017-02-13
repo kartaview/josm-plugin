@@ -63,6 +63,7 @@ public final class GuiConfig extends BaseConfig {
     private final String unacceptedDateFilterTxt;
 
     private final String warningHighQualityPhoto;
+    private final String warningLoadingPhoto;
 
     private final String confirmDateFilterTitle;
     private final String confirmDateFilterTxt;
@@ -111,6 +112,7 @@ public final class GuiConfig extends BaseConfig {
         incorrectDateFilterTxt = readProperty("error.dateFilter.incorrect");
 
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
+        warningLoadingPhoto = readProperty("warning.photo.loading");
 
         confirmDateFilterTitle = readProperty("information.dateFilter.title");
         confirmDateFilterTxt = readProperty("information.dateFilter.text");
@@ -263,6 +265,11 @@ public final class GuiConfig extends BaseConfig {
     public String getWarningHighQualityPhoto() {
         return warningHighQualityPhoto;
     }
+    
+    public String getWarningLoadingPhoto() {
+        return warningLoadingPhoto;
+    }
+
 
     public String getDisplayTrackPrefLbl() {
         return displayTrackPrefLbl;

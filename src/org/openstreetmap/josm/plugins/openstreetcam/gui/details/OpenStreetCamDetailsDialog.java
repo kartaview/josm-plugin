@@ -19,22 +19,20 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.net.URL;
-import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -59,7 +57,6 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     /* dialog components */
     private final JLabel lblDetails;
-    // private final JPanel pnlDetails;
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
 
@@ -70,9 +67,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
 
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        // pnlDetails = new JPanel(new FlowLayout());
         lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
-        // pnlDetails.add(lblDetails, FlowLayout.LEFT);
         final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
@@ -87,49 +82,56 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void updateUI(final Photo photo) {
         if (photo != null) {
+
+            // display loading text
+            ThreadPool.getInstance().execute(() -> {
+                pnlPhoto.displayLoadingMessage();
+                pnlBtn.updateUI(photo);
+                lblDetails.revalidate();
+                repaint();
+            });
+
             // load image
-            BufferedImage image = null;
-            String detailsTxt = Formatter.formatPhotoDetails(photo);
-            if (PreferenceManager.getInstance().loadHighQualityPhotoFlag()) {
-                // load high quality image
-                try {
-                    image = loadImage(photo.getName());
-                    updateUI(image, detailsTxt, false);
-                } catch (Exception e) {
-                    // try to load large thumbnail
-                    try {
-                        image = loadImage(photo.getLargeThumbnailName());
-                        updateUI(image, detailsTxt, true);
-                    } catch (Exception ex) {
-                        pnlPhoto.displayErrorMessage();
-                    }
-                }
-            } else {
-                // load large thumbnail
-                try {
-                    image = loadImage(photo.getLargeThumbnailName());
-                    updateUI(image, detailsTxt, false);
-                } catch (Exception ex) {
-                    pnlPhoto.displayErrorMessage();
-                }
-            }
+            ThreadPool.getInstance().execute(() -> loadPhoto(photo));
         } else {
             lblDetails.setText("");
             lblDetails.setToolTipText(null);
             lblDetails.setIcon(null);
             pnlPhoto.updateUI(null);
+            repaint();
+        }
+    }
+
+    private void loadPhoto(final Photo photo) {
+        pnlPhoto.displayLoadingMessage();
+        BufferedImage image;
+        String detailsTxt = Formatter.formatPhotoDetails(photo);
+        if (PreferenceManager.getInstance().loadHighQualityPhotoFlag()) {
+            // load high quality image
+            try {
+                image = ServiceHandler.getInstance().loadImage(photo.getName());
+                updateUI(image, detailsTxt, false);
+            } catch (Exception e) {
+                // try to load large thumbnail
+                try {
+                    image = ServiceHandler.getInstance().loadImage(photo.getLargeThumbnailName());
+                    updateUI(image, detailsTxt, true);
+                } catch (Exception ex) {
+                    pnlPhoto.displayErrorMessage();
+                }
+            }
+        } else {
+            // load large thumbnail
+            try {
+                image = ServiceHandler.getInstance().loadImage(photo.getLargeThumbnailName());
+                updateUI(image, detailsTxt, false);
+            } catch (Exception ex) {
+                pnlPhoto.displayErrorMessage();
+            }
         }
         pnlBtn.updateUI(photo);
         lblDetails.revalidate();
         repaint();
-    }
-
-
-    private BufferedImage loadImage(final String photoName) throws Exception {
-        final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
-        link.append(photoName);
-        ImageIO.setUseCache(false);
-        return ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
     }
 
     private void updateUI(BufferedImage image, String detailsTxt, boolean showWarning) {

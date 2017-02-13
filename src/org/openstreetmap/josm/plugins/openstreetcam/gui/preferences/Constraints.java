@@ -18,8 +18,6 @@ import java.awt.Insets;
  */
 final class Constraints {
 
-    private Constraints() {}
-
     static final GridBagConstraints LBL_IMAGE = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
 
@@ -29,4 +27,5 @@ final class Constraints {
     static final GridBagConstraints CB_TRACK_LOADING = new GridBagConstraints(0, 2, 1, 1, 1, 1,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
 
+    private Constraints() {}
 }

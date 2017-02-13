@@ -7,6 +7,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
@@ -28,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -38,7 +44,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @author Beata
  * @version $Revision$
  */
-final class ServiceHandler {
+public final class ServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
     private final Service service;
@@ -49,7 +55,7 @@ final class ServiceHandler {
     }
 
 
-    static ServiceHandler getInstance() {
+    public static ServiceHandler getInstance() {
         return INSTANCE;
     }
 
@@ -69,7 +75,6 @@ final class ServiceHandler {
         List<Photo> finalResult = new ArrayList<>();
         try {
             if (areas.size() > 1) {
-                final Set<Photo> result = new HashSet<>();
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Photo>>> futures = new ArrayList<>();
                 for (final Circle circle : areas) {
@@ -78,14 +83,7 @@ final class ServiceHandler {
                     };
                     futures.add(executor.submit(callable));
                 }
-                for (final Future<List<Photo>> future : futures) {
-                    try {
-                        result.addAll(future.get());
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new ServiceException(e);
-                    }
-                }
-                finalResult.addAll(result);
+                finalResult.addAll(readResult(futures));
                 executor.shutdown();
             } else {
                 finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
@@ -102,6 +100,19 @@ final class ServiceHandler {
         return finalResult;
     }
 
+    
+    private Set<Photo> readResult(final List<Future<List<Photo>>> futures) throws ServiceException{
+        final Set<Photo> result = new HashSet<>();
+        for (final Future<List<Photo>> future : futures) {
+            try {
+                result.addAll(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ServiceException(e);
+            }
+        }
+        return result;
+    }
+    
     public Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
         try {
@@ -116,5 +127,12 @@ final class ServiceHandler {
             }
         }
         return sequence;
+    }
+    
+    public BufferedImage loadImage(final String photoName) throws IOException {
+        final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
+        link.append(photoName);
+        ImageIO.setUseCache(false);
+        return ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
     }
 }

@@ -51,7 +51,7 @@ class FilterPanel extends JPanel {
     /* panel components */
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
-    private JLabel lblLoginWarning;
+    
 
     FilterPanel() {
         super(new GridBagLayout());
@@ -82,7 +82,7 @@ class FilterPanel extends JPanel {
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
         cbbUser.setSelected(isSelected);
-        lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
+       JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
                 getFont().deriveFont(Font.ITALIC), getBackground());
         if (JosmUserIdentityManager.getInstance().asUser().getId() < 0) {
             cbbUser.setEnabled(false);
@@ -180,8 +180,6 @@ class FilterPanel extends JPanel {
     /* Holds UI constraints */
     private static final class Constraints {
 
-        private Constraints() {}
-
         private static final GridBagConstraints LBL_DATE = new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
         private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 2, 1, 1, 0,
@@ -192,5 +190,7 @@ class FilterPanel extends JPanel {
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
         private static final GridBagConstraints LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 1, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
+
+        private Constraints() {}
     }
 }

@@ -24,8 +24,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
  */
 final class RequestConstants {
 
-    private RequestConstants() {}
-
     static final String LIST_NEARBY_PHOTOS = "/list/nearby-photos/";
     static final String SEQUENCE_PHOTO_LIST = "/sequence/photo-list/";
     static final String SEQUENCE_DETAILS = "details";
@@ -37,4 +35,6 @@ final class RequestConstants {
     static final String DATE = "date";
     static final String USER_ID = "externalUserId";
     static final String ID = "sequenceId";
+    
+    private RequestConstants() {}
 }

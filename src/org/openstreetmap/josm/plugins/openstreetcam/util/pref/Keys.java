@@ -24,8 +24,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
  */
 final class Keys {
 
-    private Keys() {}
-
     static final String SUPPRESS_PHOTOS_ERROR = "openstreetcam.error.photos.suppress";
     static final String SUPPRESS_SEQUENCE_ERROR = "openstreetcam.error.sequence.suppress";
     static final String FILTERS_CHANGED = "openstreetcam.filter.changed";
@@ -35,4 +33,7 @@ final class Keys {
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
     static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
     static final String DISPLAY_TRACK_FLAG ="openstreetcam.preferences.trackLoading";
+    
+
+    private Keys() {}
 }
