@@ -84,7 +84,7 @@ class FilterPanel extends JPanel {
         cbbUser.setSelected(isSelected);
        JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
                 getFont().deriveFont(Font.ITALIC), getBackground());
-        if (JosmUserIdentityManager.getInstance().asUser().getId() < 0) {
+        if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             cbbUser.setEnabled(false);
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);

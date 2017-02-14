@@ -69,8 +69,9 @@ public final class ServiceHandler {
      * @return a list of {@code Photo}s
      */
     public List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
-        final Long osmUserId = filter != null && filter.isOnlyUserFlag()
-                ? JosmUserIdentityManager.getInstance().asUser().getId() : null;
+        Long osmUserId =
+                filter != null && filter.isOnlyUserFlag() ? (JosmUserIdentityManager.getInstance().asUser().getId() > 0
+                        ? JosmUserIdentityManager.getInstance().asUser().getId() : null) : null;
         final Date date = filter != null ? filter.getDate() : null;
         List<Photo> finalResult = new ArrayList<>();
         try {
@@ -100,8 +101,8 @@ public final class ServiceHandler {
         return finalResult;
     }
 
-    
-    private Set<Photo> readResult(final List<Future<List<Photo>>> futures) throws ServiceException{
+
+    private Set<Photo> readResult(final List<Future<List<Photo>>> futures) throws ServiceException {
         final Set<Photo> result = new HashSet<>();
         for (final Future<List<Photo>> future : futures) {
             try {
@@ -112,7 +113,7 @@ public final class ServiceHandler {
         }
         return result;
     }
-    
+
     public Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
         try {
@@ -128,7 +129,7 @@ public final class ServiceHandler {
         }
         return sequence;
     }
-    
+
     public BufferedImage loadImage(final String photoName) throws IOException {
         final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
         link.append(photoName);

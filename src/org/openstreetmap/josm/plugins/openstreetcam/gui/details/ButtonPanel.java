@@ -38,6 +38,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -164,7 +165,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))
-                && event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
+                && event.getKey().equals(Keys.FILTERS_CHANGED)) {
             final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                     ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
             btnFilter.setIcon(icon);

@@ -86,14 +86,6 @@ public final class PreferenceManager {
         Main.pref.put(Keys.FILTERS_CHANGED, Boolean.toString(changed));
     }
 
-    /**
-     * Returns the 'filtersChanged' flag key.
-     *
-     * @return a string
-     */
-    public String getFiltersChangedFlagKey() {
-        return Keys.FILTERS_CHANGED;
-    }
 
     /**
      * Loads the list filters from the preference file.
@@ -181,19 +173,6 @@ public final class PreferenceManager {
         return Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
     }
 
-    /**
-     * Returns the high quality photo flag key.
-     * 
-     * @return a {@code String}
-     */
-    public String getHighQualityPhotoFlagKey() {
-        return Keys.HIGH_QUALITY_PHOTO_FLAG;
-    }
-
-    public String getDisplayTrackFlagKey() {
-        return Keys.DISPLAY_TRACK_FLAG;
-    }
-
     public boolean loadDisplayTrackFlag() {
         final String displayTrackFlag = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
         return displayTrackFlag.isEmpty() ? true : Boolean.valueOf(displayTrackFlag);
@@ -201,5 +180,11 @@ public final class PreferenceManager {
 
     public void saveDisplayTrackFlag(boolean displayTrackFlag) {
         Main.pref.put(Keys.DISPLAY_TRACK_FLAG, displayTrackFlag);
+    }
+
+    public boolean hasAuthMethodChanged(String key, String value) {
+        return (Keys.JOSM_AUTH_METHOD.equals(key)
+                && (Keys.JOSM_AUTH_VAL.equals(value) || Keys.JOSM_BASIC_VAL.equals(value))
+                || Keys.JOSM_OAUTH_SECRET.equals(key));
     }
 }

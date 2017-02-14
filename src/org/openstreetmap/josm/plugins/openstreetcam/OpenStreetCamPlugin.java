@@ -51,6 +51,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
@@ -318,19 +319,29 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            if (event.getKey().equals(PreferenceManager.getInstance().getFiltersChangedFlagKey())) {
-                threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
-            } else if (event.getKey().equals(PreferenceManager.getInstance().getHighQualityPhotoFlagKey())) {
-                selectPhoto(layer.getSelectedPhoto());
-            } else if (event.getKey().equals(PreferenceManager.getInstance().getDisplayTrackFlagKey())) {
-                if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
-                        && layer.getSelectedSequence() == null) {
-                    loadSequence(layer.getSelectedPhoto());
-                } else if (layer.getSelectedSequence() != null) {
-                    layer.setSelectedSequence(null);
-                    detailsDialog.enableSequenceActions(false, false);
-                    Main.map.repaint();
-                }
+            switch (event.getKey()) {
+                case Keys.FILTERS_CHANGED:
+                    threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
+                    break;
+                case Keys.HIGH_QUALITY_PHOTO_FLAG:
+                    selectPhoto(layer.getSelectedPhoto());
+                    break;
+                case Keys.DISPLAY_TRACK_FLAG:
+                    if (event.getNewValue().getValue().equals(Boolean.TRUE.toString())
+                            && layer.getSelectedPhoto() != null && layer.getSelectedSequence() == null) {
+                        loadSequence(layer.getSelectedPhoto());
+                    } else if (layer.getSelectedSequence() != null) {
+                        layer.setSelectedSequence(null);
+                        detailsDialog.enableSequenceActions(false, false);
+                        Main.map.repaint();
+                    }
+                    break;
+                default:
+                    if (PreferenceManager.getInstance().hasAuthMethodChanged(event.getKey(),
+                            event.getNewValue().getValue().toString())) {
+                        threadPool.execute(new DataUpdateThread(layer, detailsDialog, true));
+                    }
+                    break;
             }
         }
     }
