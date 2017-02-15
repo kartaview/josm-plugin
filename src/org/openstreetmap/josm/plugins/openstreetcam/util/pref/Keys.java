@@ -31,12 +31,19 @@ public final class Keys {
     static final String ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
-    public static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
-    public static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
+
     static final String JOSM_AUTH_METHOD = "osm-server.auth-method";
     static final String JOSM_OAUTH_SECRET = "oauth.access-token.secret";
     static final String JOSM_AUTH_VAL = "oauth";
     static final String JOSM_BASIC_VAL = "basic";
+
+    /* cache related user preference settings */
+    public static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
+    public static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
+    static final String CACHE_MEMORY_COUNT = "openstreetcam.preferences.cache.memory";
+    static final String CACHE_DISK_COUNT = "openstreetcam.preferences.cache.disk";
+    static final String CACHE_PREV_NEXT_COUNT = "openstreetcam.preferences.cache.prevNext";
+    static final String CACHE_NEARBY_COUNT = "openstreetcam.preferences.cache.nearby";
 
     private Keys() {}
 }

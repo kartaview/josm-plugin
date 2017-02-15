@@ -105,18 +105,18 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
     private void loadPhoto(final Photo photo) {
         pnlPhoto.displayLoadingMessage();
         BufferedImage image;
-        String detailsTxt = Formatter.formatPhotoDetails(photo);
-        if (PreferenceManager.getInstance().loadHighQualityPhotoFlag()) {
+        final String detailsTxt = Formatter.formatPhotoDetails(photo);
+        if (PreferenceManager.getInstance().loadPreferenceSettings().getImageSettings().isDisplayTrackFlag()) {
             // load high quality image
             try {
                 image = ServiceHandler.getInstance().loadImage(photo.getName());
                 updateUI(image, detailsTxt, false);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // try to load large thumbnail
                 try {
                     image = ServiceHandler.getInstance().loadImage(photo.getLargeThumbnailName());
                     updateUI(image, detailsTxt, true);
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     pnlPhoto.displayErrorMessage();
                 }
             }
@@ -125,7 +125,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
             try {
                 image = ServiceHandler.getInstance().loadImage(photo.getLargeThumbnailName());
                 updateUI(image, detailsTxt, false);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 pnlPhoto.displayErrorMessage();
             }
         }
@@ -134,7 +134,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         repaint();
     }
 
-    private void updateUI(BufferedImage image, String detailsTxt, boolean showWarning) {
+    private void updateUI(final BufferedImage image, final String detailsTxt, final boolean showWarning) {
         lblDetails.setText(detailsTxt);
         if (showWarning) {
             lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());

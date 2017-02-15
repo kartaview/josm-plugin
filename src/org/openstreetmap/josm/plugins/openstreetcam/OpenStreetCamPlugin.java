@@ -64,7 +64,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-        LocationObserver, SequenceObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -210,7 +210,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (PreferenceManager.getInstance().loadDisplayTrackFlag() && !layer.isPhotoPartOfSequence(photo)) {
+                    if (PreferenceManager.getInstance().loadPreferenceSettings().getImageSettings().isDisplayTrackFlag()
+                            && !layer.isPhotoPartOfSequence(photo)) {
                         loadSequence(photo);
                     }
                     selectPhoto(photo);
