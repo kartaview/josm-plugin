@@ -51,7 +51,7 @@ class FilterPanel extends JPanel {
     /* panel components */
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
-    
+
 
     FilterPanel() {
         super(new GridBagLayout());
@@ -82,7 +82,7 @@ class FilterPanel extends JPanel {
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
         cbbUser.setSelected(isSelected);
-       JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
+        final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
                 getFont().deriveFont(Font.ITALIC), getBackground());
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             cbbUser.setEnabled(false);
@@ -118,7 +118,7 @@ class FilterPanel extends JPanel {
             }
 
             // the 'uncommitted' date is empty
-            if (!(pickerDate.getDate() == null)) {
+            if ((pickerDate.getDate() != null)) {
                 return getConfirmation(uncommitteddDate, editorText);
             }
 

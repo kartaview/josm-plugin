@@ -48,7 +48,7 @@ class DateVerifier implements KeyListener {
      * tool-tip.
      */
     DateVerifier(final JComponent component) {
-        textField = ((JTextField) component);
+        textField = (JTextField) component;
         this.textField.addKeyListener(this);
     }
 
@@ -98,11 +98,8 @@ class DateVerifier implements KeyListener {
     }
 
     private void autocompleteDateSeparator(final String text, final char key) {
-        if (key != '\b') {
-            if (text.matches(YEAR_PATTERN) || (text.matches(YEAR_PATTERN + SEP + DM_PATTERN))) {
-                textField.setText(text + SEP);
-            }
+        if ((key != '\b') && (text.matches(YEAR_PATTERN) || (text.matches(YEAR_PATTERN + SEP + DM_PATTERN)))) {
+            textField.setText(text + SEP);
         }
     }
-
 }

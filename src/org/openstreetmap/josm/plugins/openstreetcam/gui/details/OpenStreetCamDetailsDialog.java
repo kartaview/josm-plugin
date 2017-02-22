@@ -106,7 +106,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         try {
-            final Pair<BufferedImage, Boolean> imageResult = ImageHandler.getInstance().loadImage(photo);
+            final Pair<BufferedImage, Boolean> imageResult = ImageHandler.getInstance().loadPhoto(photo);
             if (imageResult != null) {
                 lblDetails.setText(detailsTxt);
                 if (imageResult.b) {

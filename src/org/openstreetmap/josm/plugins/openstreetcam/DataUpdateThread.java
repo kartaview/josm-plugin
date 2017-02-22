@@ -55,29 +55,31 @@ class DataUpdateThread implements Runnable {
     public void run() {
         if (Main.map != null && Main.map.mapView != null
                 && Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()) {
-            final List<Circle> areas = new ArrayList<>();
-            if (Main.getLayerManager().getEditLayer() != null
-                    && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-                final List<Bounds> osmDataLayerBounds =
-                        Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-                if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                    for (final Bounds bounds : osmDataLayerBounds) {
-                        if (Main.map.mapView.getRealBounds().intersects(bounds)) {
-                            areas.add(new Circle(Main.map.mapView.getRealBounds()));
-                        } else {
-                            areas.add(new Circle(bounds));
-                        }
-                    }
-                } else {
-                    areas.add(new Circle(Main.map.mapView.getRealBounds()));
-                }
-            } else {
-                areas.add(new Circle(Main.map.mapView.getRealBounds()));
-            }
+            final List<Circle> areas = searchArea();
             final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
             final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
             updateUI(photos, checkSelectedPhoto);
         }
+    }
+
+    private List<Circle> searchArea() {
+        final List<Circle> result = new ArrayList<>();
+        if (Main.getLayerManager().getEditLayer() != null
+                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds bounds : osmDataLayerBounds) {
+                    final Circle circle = Main.map.mapView.getRealBounds().intersects(bounds)
+                            ? new Circle(Main.map.mapView.getRealBounds()) : new Circle(bounds);
+                    result.add(circle);
+                }
+            } else {
+                result.add(new Circle(Main.map.mapView.getRealBounds()));
+            }
+        } else {
+            result.add(new Circle(Main.map.mapView.getRealBounds()));
+        }
+        return result;
     }
 
     private void updateUI(final List<Photo> photos, final boolean checkSelectedPhoto) {

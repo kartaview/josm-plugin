@@ -14,13 +14,13 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @author beataj
  * @version $Revision$
  */
-public class ImageSettings {
+public class PhotoSettings {
 
     private final boolean highQualityFlag;
     private final boolean displayTrackFlag;
 
 
-    public ImageSettings(final boolean highQualityFlag, final boolean displayTrackFlag) {
+    public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag) {
         this.highQualityFlag = highQualityFlag;
         this.displayTrackFlag = displayTrackFlag;
     }

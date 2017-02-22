@@ -67,7 +67,7 @@ public class CacheManager {
      * @param image the image in byte format
      * @param warning a flag indicating if the image loading was successful or not
      */
-    public void putImage(final Long sequenceId, final String imageName, final byte[] image, final boolean warning) {
+    public void putPhoto(final Long sequenceId, final String imageName, final byte[] image, final boolean warning) {
         cache.put(new Key(sequenceId, imageName), new CacheEntry(image, warning));
     }
 
@@ -77,7 +77,7 @@ public class CacheManager {
      * @param imageName the name of the image
      * @return {@code BufferedImage}
      */
-    public CacheEntry getImage(final Long sequenceId, final String imageName) {
+    public CacheEntry getPhoto(final Long sequenceId, final String imageName) {
         return cache.get(new Key(sequenceId, imageName));
     }
 
@@ -87,7 +87,7 @@ public class CacheManager {
      * @param imageName
      * @return
      */
-    public boolean containsImage(final Long sequenceId, final String imageName) {
+    public boolean containsPhoto(final Long sequenceId, final String imageName) {
         final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
         return keySet.contains(new Key(sequenceId, imageName));
     }
@@ -97,7 +97,7 @@ public class CacheManager {
      *
      * @param prefix
      */
-    public void removeImages(final Long sequenceId) {
+    public void removePhotos(final Long sequenceId) {
         final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
         for (final Object key : keySet) {
             if (((Key) key).getSequenceId().equals(sequenceId)) {

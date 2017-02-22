@@ -1,50 +1,37 @@
 /*
- *  Copyright 2016 Telenav, Inc.
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service;
+package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
 
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_HEADING;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LATITUDE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LONGITUDE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LTH_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_IDX;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TH_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TIMESTAMP;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_USERNAME;
 import java.io.IOException;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 
 
 /**
- * Custom type adapter for the {@code Photo} object.
  *
- * @author Beata
+ * @author beataj
  * @version $Revision$
  */
-class PhotoTypeAdapter extends TypeAdapter<Photo> {
+final class PhotoReader {
 
-    private static final String ID = "id";
-    private static final String SEQUENCE_ID = "sequence_id";
-    private static final String SEQUENCE_IDX = "sequence_index";
-    private static final String LATITUDE = "lat";
-    private static final String LONGITUDE = "lng";
-    private static final String NAME = "name";
-    private static final String LTH_NAME = "lth_name";
-    private static final String TH_NAME = "th_name";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String HEADING = "heading";
-    private static final String USERNAME = "username";
-
-
-    @Override
     public Photo read(final JsonReader reader) throws IOException {
         Long id = null;
         Long sequenceId = null;
@@ -61,37 +48,37 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
 
         while (reader.hasNext()) {
             switch (reader.nextName()) {
-                case ID:
+                case PHOTO_ID:
                     id = readLong(reader);
                     break;
-                case SEQUENCE_ID:
+                case PHOTO_SEQUENCE_ID:
                     sequenceId = readLong(reader);
                     break;
-                case SEQUENCE_IDX:
+                case PHOTO_SEQUENCE_IDX:
                     sequenceIdx = readInt(reader);
                     break;
-                case LATITUDE:
+                case PHOTO_LATITUDE:
                     latitude = readDouble(reader);
                     break;
-                case LONGITUDE:
+                case PHOTO_LONGITUDE:
                     longitude = readDouble(reader);
                     break;
-                case NAME:
+                case PHOTO_NAME:
                     name = readString(reader);
                     break;
-                case LTH_NAME:
+                case PHOTO_LTH_NAME:
                     largeThumbnailName = readString(reader);
                     break;
-                case TH_NAME:
+                case PHOTO_TH_NAME:
                     thumbnailName = readString(reader);
                     break;
-                case TIMESTAMP:
+                case PHOTO_TIMESTAMP:
                     timestamp = readLong(reader);
                     break;
-                case HEADING:
+                case PHOTO_HEADING:
                     headingVal = readString(reader);
                     break;
-                case USERNAME:
+                case PHOTO_USERNAME:
                     username = readString(reader);
                     break;
                 default:
@@ -143,24 +130,5 @@ class PhotoTypeAdapter extends TypeAdapter<Photo> {
             value = reader.nextString();
         }
         return value;
-    }
-
-
-    @Override
-    public void write(final JsonWriter writer, final Photo photo) throws IOException {
-        writer.beginObject();
-        writer.name(ID).value(photo.getId());
-        writer.name(SEQUENCE_ID).value(photo.getSequenceId());
-        writer.name(SEQUENCE_IDX).value(photo.getSequenceIndex());
-        if (photo.getLocation() != null) {
-            writer.name(LATITUDE).value(photo.getLocation().getY());
-            writer.name(LONGITUDE).value(photo.getLocation().getX());
-        }
-        writer.name(NAME).value(photo.getName());
-        writer.name(LTH_NAME).value(photo.getLargeThumbnailName());
-        writer.name(TH_NAME).value(photo.getThumbnailName());
-        writer.name(TIMESTAMP).value(photo.getTimestamp());
-        writer.name(HEADING).value(photo.getHeading());
-        writer.endObject();
     }
 }

@@ -209,7 +209,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (PreferenceManager.getInstance().loadPreferenceSettings().getImageSettings().isDisplayTrackFlag()
+                    if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
                             && !layer.isPhotoPartOfSequence(photo)) {
                         loadSequence(photo);
                     }
@@ -223,12 +223,12 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     private void selectPhoto(final Photo photo) {
         SwingUtilities.invokeLater(() -> {
             if (photo == null) {
-                CacheManager.getInstance().removeImages(layer.getSelectedPhoto().getSequenceId());
+                CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
             } else {
                 ThreadPool.getInstance().execute(() -> {
                     final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                    ImageHandler.getInstance().loadImages(
+                    ImageHandler.getInstance().loadPhotos(
                             layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
                 });
             }

@@ -89,9 +89,9 @@ public final class GuiConfig extends BaseConfig {
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
 
-        prefImageLbl = readProperty("preference.image.lbl");
-        prefImageHighQualityLbl = readProperty("preference.image.highQuality.lbl");
-        prefDisplayTrackLbl = readProperty("preference.image.displayTrack.lbl");
+        prefImageLbl = readProperty("preference.photo.lbl");
+        prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
+        prefDisplayTrackLbl = readProperty("preference.photo.displayTrack.lbl");
         prefCacheLbl = readProperty("preference.cache.lbl");
         prefMemoryLbl = readProperty("preference.cache.memory.lbl");
         prefDiskLbl = readProperty("preference.cache.disk.lbl");

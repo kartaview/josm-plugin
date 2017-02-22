@@ -15,13 +15,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import java.util.Date;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 
 
 /**
@@ -36,7 +33,11 @@ public final class PreferenceManager {
 
     private static final PreferenceManager INSTANCE = new PreferenceManager();
 
+    private final LoadManager loadManager = new LoadManager();
+    private final SaveManager saveManager = new SaveManager();
+
     private PreferenceManager() {}
+
 
     public static PreferenceManager getInstance() {
         return INSTANCE;
@@ -49,7 +50,7 @@ public final class PreferenceManager {
      * @return a boolean value
      */
     public boolean loadPhotosErrorSuppressFlag() {
-        return Main.pref.getBoolean(Keys.SUPPRESS_PHOTOS_ERROR);
+        return loadManager.loadPhotosErrorSuppressFlag();
     }
 
     /**
@@ -58,7 +59,7 @@ public final class PreferenceManager {
      * @param flag a boolean value
      */
     public void savePhotosErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(Keys.SUPPRESS_PHOTOS_ERROR, flag);
+        saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
     /**
@@ -68,7 +69,7 @@ public final class PreferenceManager {
      * @return a boolean value
      */
     public boolean loadSequenceErrorSuppressFlag() {
-        return Main.pref.getBoolean(Keys.SUPPRESS_SEQUENCE_ERROR);
+        return loadManager.loadSequenceErrorSuppressFlag();
     }
 
     /**
@@ -77,7 +78,7 @@ public final class PreferenceManager {
      * @param flag a boolean value
      */
     public void saveSequenceErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(Keys.SUPPRESS_SEQUENCE_ERROR, flag);
+        saveManager.saveSequenceErrorSuppressFlag(flag);
     }
 
     /**
@@ -86,10 +87,8 @@ public final class PreferenceManager {
      * @param changed a boolean value
      */
     public void saveFiltersChangedFlag(final boolean changed) {
-        Main.pref.put(Keys.FILTERS_CHANGED, "");
-        Main.pref.put(Keys.FILTERS_CHANGED, Boolean.toString(changed));
+        saveManager.saveFiltersChangedFlag(changed);
     }
-
 
     /**
      * Loads the list filters from the preference file.
@@ -97,15 +96,7 @@ public final class PreferenceManager {
      * @return a {@code ListFilter}
      */
     public ListFilter loadListFilter() {
-        final String dateStr = Main.pref.get(Keys.DATE);
-        Date date = null;
-        if (!dateStr.isEmpty()) {
-            date = new Date(Long.parseLong(dateStr));
-        }
-        final String onlyUserFlagStr = Main.pref.get(Keys.ONLY_USER_FLAG);
-        final boolean onlyUserFlag =
-                onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag() : Boolean.parseBoolean(onlyUserFlagStr);
-        return new ListFilter(date, onlyUserFlag);
+        return loadManager.loadListFilter();
     }
 
     /**
@@ -114,59 +105,46 @@ public final class PreferenceManager {
      * @param filter a {@code ListFilter} represents the current filter settings
      */
     public void saveListFilter(final ListFilter filter) {
-        if (filter != null) {
-            final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
-            Main.pref.put(Keys.DATE, dateStr);
-            Main.pref.put(Keys.ONLY_USER_FLAG, filter.isOnlyUserFlag());
-        }
+        saveManager.saveListFilter(filter);
     }
 
+    /**
+     * Loads the user's OpenStreetCam plugin related preference settings from the preference file.
+     *
+     * @return a {@code PreferenceSettings} object
+     */
+    public PreferenceSettings loadPreferenceSettings() {
+        return new PreferenceSettings(loadPhotoSettings(), loadCacheSettings());
+    }
+
+    /**
+     * Loads the photo settings from the preference file.
+     *
+     * @return a {@code PhotoSettings}
+     */
+    public PhotoSettings loadPhotoSettings() {
+        return loadManager.loadPhotoSettings();
+    }
+
+    /**
+     * Loads the cache preference settings.
+     *
+     * @return a {@code CacheSettings}
+     */
+    public CacheSettings loadCacheSettings() {
+        return loadManager.loadCacheSettings();
+    }
+
+    /**
+     * Saves the user's preference settings to the preference file.
+     *
+     * @param preferenceSettings a {@code PreferenceSettings} represents the newly set preference settings
+     */
     public void savePreferenceSettings(final PreferenceSettings preferenceSettings) {
         if (preferenceSettings != null) {
-            saveImageSettings(preferenceSettings.getImageSettings());
-            saveCacheSettings(preferenceSettings.getCacheSettings());
+            saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
+            saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
-    }
-
-    private void saveImageSettings(final ImageSettings imageSettings) {
-        Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, imageSettings.isHighQualityFlag());
-        Main.pref.put(Keys.DISPLAY_TRACK_FLAG, imageSettings.isDisplayTrackFlag());
-    }
-
-    private void saveCacheSettings(final CacheSettings cacheSettings) {
-        Main.pref.putInteger(Keys.CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
-        Main.pref.putInteger(Keys.CACHE_DISK_COUNT, cacheSettings.getDiskCount());
-        Main.pref.putInteger(Keys.CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
-        Main.pref.putInteger(Keys.CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
-    }
-
-    public PreferenceSettings loadPreferenceSettings() {
-        final ImageSettings imageSettings = loadImageSettings();
-        final CacheSettings cacheSettings = loadCacheSettings();
-        return new PreferenceSettings(imageSettings, cacheSettings);
-    }
-
-    public ImageSettings loadImageSettings() {
-        final boolean highQualityFlag = Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
-        final String displayTrackFlagVal = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
-        final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
-        return new ImageSettings(highQualityFlag, displayTrackFlag);
-    }
-
-    public CacheSettings loadCacheSettings() {
-        final String memoryCountVal = Main.pref.get(Keys.CACHE_MEMORY_COUNT);
-        final int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
-                : CacheConfig.getInstance().getDefaultMemoryCount();
-        final String diskCountVal = Main.pref.get(Keys.CACHE_DISK_COUNT);
-        final int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
-                : CacheConfig.getInstance().getDefaultDiskCount();
-        final String prevNextCountVal = Main.pref.get(Keys.CACHE_PREV_NEXT_COUNT);
-        final int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
-                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-        final String nearbyCountVal = Main.pref.get(Keys.CACHE_NEARBY_COUNT);
-        final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                : CacheConfig.getInstance().getDefaultNearbyCount();
-        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     /**
@@ -175,8 +153,7 @@ public final class PreferenceManager {
      * @return a boolean
      */
     public boolean loadLayerOpenedFlag() {
-        final String layerOpened = Main.pref.get(Keys.LAYER_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return loadManager.loadLayerOpenedFlag();
     }
 
     /**
@@ -185,7 +162,7 @@ public final class PreferenceManager {
      * @param isLayerOpened represents the layer showing/hiding status
      */
     public void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        Main.pref.put(Keys.LAYER_OPENED, isLayerOpened);
+        saveManager.saveLayerOpenedFlag(isLayerOpened);
     }
 
     /**
@@ -194,8 +171,7 @@ public final class PreferenceManager {
      * @return a boolean
      */
     public boolean loadPanelOpenedFlag() {
-        final String layerOpened = Main.pref.get(Keys.PANEL_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return loadManager.loadPanelOpenedFlag();
     }
 
     /**
@@ -204,12 +180,19 @@ public final class PreferenceManager {
      * @param isPanelOpened represents the panel showing/hiding status
      */
     public void savePanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.put(Keys.PANEL_OPENED, isPanelOpened);
+        saveManager.savePanelOpenedFlag(isPanelOpened);
     }
 
+    /**
+     * Verifies if the authentication method has changed or not.
+     *
+     * @param key a {@code String} represents the key associated with the authentication preference change event
+     * @param value a {@code String} represents the value associated with the authentication preference change event
+     * @return true if the authentication method has changed; false otherwise
+     */
     public boolean hasAuthMethodChanged(final String key, final String value) {
-        return (Keys.JOSM_AUTH_METHOD.equals(key)
+        return Keys.JOSM_AUTH_METHOD.equals(key)
                 && (Keys.JOSM_AUTH_VAL.equals(value) || Keys.JOSM_BASIC_VAL.equals(value))
-                || Keys.JOSM_OAUTH_SECRET.equals(key));
+                || Keys.JOSM_OAUTH_SECRET.equals(key);
     }
 }
