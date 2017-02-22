@@ -63,9 +63,7 @@ final class ServiceHandler {
      * @return a list of {@code Photo}s
      */
     List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
-        final Long osmUserId =
-                filter != null && filter.isOnlyUserFlag() ? (JosmUserIdentityManager.getInstance().asUser().getId() > 0
-                        ? JosmUserIdentityManager.getInstance().asUser().getId() : null) : null;
+        final Long osmUserId = osmUserId(filter);
         final Date date = filter != null ? filter.getDate() : null;
         List<Photo> finalResult = new ArrayList<>();
         try {
@@ -94,6 +92,14 @@ final class ServiceHandler {
         return finalResult;
     }
 
+    private Long osmUserId(final ListFilter filter) {
+        Long osmUserId = null;
+        if (filter != null && filter.isOnlyUserFlag() && JosmUserIdentityManager.getInstance().isFullyIdentified()
+                && JosmUserIdentityManager.getInstance().asUser().getId() > 0) {
+            osmUserId = JosmUserIdentityManager.getInstance().asUser().getId();
+        }
+        return osmUserId;
+    }
 
     private Set<Photo> readResult(final List<Future<List<Photo>>> futures) throws ServiceException {
         final Set<Photo> result = new HashSet<>();
