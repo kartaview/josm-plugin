@@ -191,8 +191,7 @@ public final class PreferenceManager {
      * @return true if the authentication method has changed; false otherwise
      */
     public boolean hasAuthMethodChanged(final String key, final String value) {
-        return Keys.JOSM_AUTH_METHOD.equals(key)
-                && (Keys.JOSM_AUTH_VAL.equals(value) || Keys.JOSM_BASIC_VAL.equals(value))
+        return (Keys.JOSM_AUTH_METHOD.equals(key) && Keys.JOSM_BASIC_VAL.equals(value))
                 || Keys.JOSM_OAUTH_SECRET.equals(key);
     }
 }

@@ -34,7 +34,6 @@ public final class Keys {
 
     static final String JOSM_AUTH_METHOD = "osm-server.auth-method";
     static final String JOSM_OAUTH_SECRET = "oauth.access-token.secret";
-    static final String JOSM_AUTH_VAL = "oauth";
     static final String JOSM_BASIC_VAL = "basic";
 
     /* cache related user preference settings */
