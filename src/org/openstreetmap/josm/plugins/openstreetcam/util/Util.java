@@ -17,10 +17,16 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -45,6 +51,9 @@ public final class Util {
 
     private static final double EARTH_DIAMETER = 6371.01 * 1000;
     private static final double ANGLE = Math.toDegrees(45);
+
+    private static final double RADIUS = 0.0003;
+    private static final double MAX_DISTANCE = 2.0;
 
 
     private Util() {}
@@ -77,16 +86,44 @@ public final class Util {
      * @return a {@code Photo} object
      */
     public static Photo nearbyPhoto(final List<Photo> photos, final Point point) {
-        double minDist = Double.MAX_VALUE;
         final double maxDist = Main.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
         Photo result = null;
         for (final Photo photo : photos) {
             final double dist = new Point2D.Double(point.getX(), point.getY())
                     .distance(Main.map.mapView.getPoint(photo.getLocation()));
-            if (dist <= minDist && dist <= maxDist) {
-                minDist = dist;
+            if (dist <= maxDist) {
                 result = photo;
+                break;
             }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the photos that are near to the selected photo.
+     *
+     * @param photos a list of {@code Photo}s
+     * @param selectedPhoto the currently selected {@code Photo}
+     * @param size the number of nearby photos to return
+     * @return a set of {@code Photo}
+     */
+    public static Set<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
+        final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
+        final Map<Double, Photo> candidateMap = new TreeMap<>();
+        for (final Photo photo : photos) {
+            if (!photo.getSequenceId().equals(selectedPhoto.getSequenceId()) && bbox.bounds(photo.getLocation())) {
+                final double dist = selectedPhoto.getLocation().distance(photo.getLocation());
+                if (dist <= MAX_DISTANCE) {
+                    candidateMap.put(dist, photo);
+                }
+            }
+        }
+
+        final Set<Photo> result = new HashSet<>();
+        if (size < candidateMap.size()) {
+            result.addAll(new ArrayList<>(candidateMap.values()).subList(0, size));
+        } else {
+            result.addAll(candidateMap.values());
         }
         return result;
     }

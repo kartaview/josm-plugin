@@ -17,7 +17,11 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
 import java.util.Date;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 
 
 /**
@@ -117,6 +121,54 @@ public final class PreferenceManager {
         }
     }
 
+    public void savePreferenceSettings(final PreferenceSettings preferenceSettings) {
+        if (preferenceSettings != null) {
+            saveImageSettings(preferenceSettings.getImageSettings());
+            saveCacheSettings(preferenceSettings.getCacheSettings());
+        }
+    }
+
+    private void saveImageSettings(final ImageSettings imageSettings) {
+        Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, imageSettings.isHighQualityFlag());
+        Main.pref.put(Keys.DISPLAY_TRACK_FLAG, imageSettings.isDisplayTrackFlag());
+    }
+
+    private void saveCacheSettings(final CacheSettings cacheSettings) {
+        Main.pref.putInteger(Keys.CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
+        Main.pref.putInteger(Keys.CACHE_DISK_COUNT, cacheSettings.getDiskCount());
+        Main.pref.putInteger(Keys.CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
+        Main.pref.putInteger(Keys.CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
+    }
+
+    public PreferenceSettings loadPreferenceSettings() {
+        final ImageSettings imageSettings = loadImageSettings();
+        final CacheSettings cacheSettings = loadCacheSettings();
+        return new PreferenceSettings(imageSettings, cacheSettings);
+    }
+
+    public ImageSettings loadImageSettings() {
+        final boolean highQualityFlag = Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
+        final String displayTrackFlagVal = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
+        final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
+        return new ImageSettings(highQualityFlag, displayTrackFlag);
+    }
+
+    public CacheSettings loadCacheSettings() {
+        final String memoryCountVal = Main.pref.get(Keys.CACHE_MEMORY_COUNT);
+        final int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
+                : CacheConfig.getInstance().getDefaultMemoryCount();
+        final String diskCountVal = Main.pref.get(Keys.CACHE_DISK_COUNT);
+        final int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
+                : CacheConfig.getInstance().getDefaultDiskCount();
+        final String prevNextCountVal = Main.pref.get(Keys.CACHE_PREV_NEXT_COUNT);
+        final int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
+                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
+        final String nearbyCountVal = Main.pref.get(Keys.CACHE_NEARBY_COUNT);
+        final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+                : CacheConfig.getInstance().getDefaultNearbyCount();
+        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+    }
+
     /**
      * Loads the layer appearance status from the preference file.
      *
@@ -138,7 +190,7 @@ public final class PreferenceManager {
 
     /**
      * Loads the panel appearance status from the preference file.
-     * 
+     *
      * @return a boolean
      */
     public boolean loadPanelOpenedFlag() {
@@ -148,41 +200,14 @@ public final class PreferenceManager {
 
     /**
      * Saves the panel appearance status to the preference file
-     * 
+     *
      * @param isPanelOpened represents the panel showing/hiding status
      */
     public void savePanelOpenedFlag(final boolean isPanelOpened) {
         Main.pref.put(Keys.PANEL_OPENED, isPanelOpened);
     }
 
-    /**
-     * Saves the high quality photo flag to the preference file.
-     * 
-     * @param highQualityFlag if true then the high quality photos will be loaded
-     */
-    public void saveHighQualityPhotoFlag(final boolean highQualityFlag) {
-        Main.pref.put(Keys.HIGH_QUALITY_PHOTO_FLAG, highQualityFlag);
-    }
-
-    /**
-     * Loads the high quality photo flag from the preference file.
-     * 
-     * @return a boolean value
-     */
-    public boolean loadHighQualityPhotoFlag() {
-        return Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
-    }
-
-    public boolean loadDisplayTrackFlag() {
-        final String displayTrackFlag = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
-        return displayTrackFlag.isEmpty() ? true : Boolean.valueOf(displayTrackFlag);
-    }
-
-    public void saveDisplayTrackFlag(boolean displayTrackFlag) {
-        Main.pref.put(Keys.DISPLAY_TRACK_FLAG, displayTrackFlag);
-    }
-
-    public boolean hasAuthMethodChanged(String key, String value) {
+    public boolean hasAuthMethodChanged(final String key, final String value) {
         return (Keys.JOSM_AUTH_METHOD.equals(key)
                 && (Keys.JOSM_AUTH_VAL.equals(value) || Keys.JOSM_BASIC_VAL.equals(value))
                 || Keys.JOSM_OAUTH_SECRET.equals(key));

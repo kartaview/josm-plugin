@@ -33,9 +33,15 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginLongName;
     private final String pluginTlt;
 
-    private final String imagePrefLbl;
-    private final String imageHighQualityPrefLbl;
-    private final String displayTrackPrefLbl;
+    private final String prefImageLbl;
+    private final String prefImageHighQualityLbl;
+    private final String prefDisplayTrackLbl;
+    private final String prefCacheLbl;
+    private final String prefMemoryLbl;
+    private final String prefDiskLbl;
+    private final String prefPrevNextLbl;
+    private final String prefNearbyLbl;
+
 
     private final String btnFilterTlt;
     private final String btnPreviousTlt;
@@ -83,10 +89,14 @@ public final class GuiConfig extends BaseConfig {
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
 
-        imagePrefLbl = readProperty("preference.image.lbl");
-        imageHighQualityPrefLbl = readProperty("preference.image.highQuality.lbl");
-        displayTrackPrefLbl = readProperty("preference.image.displayTrack.lbl");
-
+        prefImageLbl = readProperty("preference.image.lbl");
+        prefImageHighQualityLbl = readProperty("preference.image.highQuality.lbl");
+        prefDisplayTrackLbl = readProperty("preference.image.displayTrack.lbl");
+        prefCacheLbl = readProperty("preference.cache.lbl");
+        prefMemoryLbl = readProperty("preference.cache.memory.lbl");
+        prefDiskLbl = readProperty("preference.cache.disk.lbl");
+        prefPrevNextLbl = readProperty("preference.cache.prevNext.lbl");
+        prefNearbyLbl = readProperty("preference.cache.nearby.lbl");
 
         btnFilterTlt = readProperty("btn.filter.tlt");
         btnPreviousTlt = readProperty("btn.previous");
@@ -130,6 +140,7 @@ public final class GuiConfig extends BaseConfig {
         return INSTANCE;
     }
 
+
     public String getPluginShortName() {
         return pluginShortName;
     }
@@ -142,12 +153,36 @@ public final class GuiConfig extends BaseConfig {
         return pluginTlt;
     }
 
-    public String getImagePrefLbl() {
-        return imagePrefLbl;
+    public String getPrefImageLbl() {
+        return prefImageLbl;
     }
 
-    public String getImageHighQualityPrefLbl() {
-        return imageHighQualityPrefLbl;
+    public String getPrefImageHighQualityLbl() {
+        return prefImageHighQualityLbl;
+    }
+
+    public String getPrefDisplayTrackLbl() {
+        return prefDisplayTrackLbl;
+    }
+
+    public String getPrefCacheLbl() {
+        return prefCacheLbl;
+    }
+
+    public String getPrefMemoryLbl() {
+        return prefMemoryLbl;
+    }
+
+    public String getPrefDiskLbl() {
+        return prefDiskLbl;
+    }
+
+    public String getPrefPrevNextLbl() {
+        return prefPrevNextLbl;
+    }
+
+    public String getPrefNearbyLbl() {
+        return prefNearbyLbl;
     }
 
     public String getBtnFilterTlt() {
@@ -202,8 +237,17 @@ public final class GuiConfig extends BaseConfig {
         return btnCancelLbl;
     }
 
+
     public String getErrorTitle() {
         return errorTitle;
+    }
+
+    public String getErrorPhotoListTxt() {
+        return errorPhotoListTxt;
+    }
+
+    public String getErrorSequenceTxt() {
+        return errorSequenceTxt;
     }
 
     public String getErrorPhotoLoadingTxt() {
@@ -218,20 +262,20 @@ public final class GuiConfig extends BaseConfig {
         return errorFeedbackPageTxt;
     }
 
-    public String getErrorPhotoListTxt() {
-        return errorPhotoListTxt;
-    }
-
-    public String getErrorSequenceTxt() {
-        return errorSequenceTxt;
+    public String getIncorrectDateFilterTxt() {
+        return incorrectDateFilterTxt;
     }
 
     public String getUnacceptedDateFilterTxt() {
         return unacceptedDateFilterTxt;
     }
 
-    public String getIncorrectDateFilterTxt() {
-        return incorrectDateFilterTxt;
+    public String getWarningHighQualityPhoto() {
+        return warningHighQualityPhoto;
+    }
+
+    public String getWarningLoadingPhoto() {
+        return warningLoadingPhoto;
     }
 
     public String getConfirmDateFilterTitle() {
@@ -260,18 +304,5 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDeleteLayerMenuItemImageName() {
         return deleteLayerMenuItemImageName;
-    }
-
-    public String getWarningHighQualityPhoto() {
-        return warningHighQualityPhoto;
-    }
-    
-    public String getWarningLoadingPhoto() {
-        return warningLoadingPhoto;
-    }
-
-
-    public String getDisplayTrackPrefLbl() {
-        return displayTrackPrefLbl;
     }
 }

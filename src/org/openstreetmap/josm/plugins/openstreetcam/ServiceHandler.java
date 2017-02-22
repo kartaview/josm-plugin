@@ -7,10 +7,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -21,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
@@ -33,7 +28,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -44,7 +38,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @author Beata
  * @version $Revision$
  */
-public final class ServiceHandler {
+final class ServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
     private final Service service;
@@ -55,7 +49,7 @@ public final class ServiceHandler {
     }
 
 
-    public static ServiceHandler getInstance() {
+    static ServiceHandler getInstance() {
         return INSTANCE;
     }
 
@@ -68,8 +62,8 @@ public final class ServiceHandler {
      * @param filter a {@code Filter} represents the user's search filters. Null values are ignored
      * @return a list of {@code Photo}s
      */
-    public List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
-        Long osmUserId =
+    List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
+        final Long osmUserId =
                 filter != null && filter.isOnlyUserFlag() ? (JosmUserIdentityManager.getInstance().asUser().getId() > 0
                         ? JosmUserIdentityManager.getInstance().asUser().getId() : null) : null;
         final Date date = filter != null ? filter.getDate() : null;
@@ -79,9 +73,8 @@ public final class ServiceHandler {
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Photo>>> futures = new ArrayList<>();
                 for (final Circle circle : areas) {
-                    final Callable<List<Photo>> callable = () -> {
-                        return service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
-                    };
+                    final Callable<List<Photo>> callable =
+                            () -> service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
                     futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
@@ -114,7 +107,7 @@ public final class ServiceHandler {
         return result;
     }
 
-    public Sequence retrieveSequence(final Long id) {
+    Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
         try {
             sequence = service.retrieveSequence(id);
@@ -130,10 +123,7 @@ public final class ServiceHandler {
         return sequence;
     }
 
-    public BufferedImage loadImage(final String photoName) throws IOException {
-        final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
-        link.append(photoName);
-        ImageIO.setUseCache(false);
-        return ImageIO.read(new BufferedInputStream(new URL(link.toString()).openStream()));
+    byte[] retrievePhoto(final String photoName) throws ServiceException {
+        return service.retrievePhoto(photoName);
     }
 }

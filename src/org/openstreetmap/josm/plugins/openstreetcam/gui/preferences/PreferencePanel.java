@@ -1,9 +1,9 @@
 /*
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
- * The collected imagery is protected & available under the CC BY-SA version 4 International license. 
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  *  https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved             
+ * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 
@@ -13,14 +13,20 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.GuiBuilder;
 
 
 /**
- * 
+ * Defines the UI components for the preference settings.
+ *
  * @author beataj
  * @version $Revision$
  */
@@ -31,36 +37,71 @@ class PreferencePanel extends JPanel {
     /* photo preference settings */
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox cbDisplayTrack;
+    private JSpinner spMemoryCount;
+    private JSpinner spDiskCount;
+    private JSpinner spPrevNextCount;
+    private JSpinner spNearbyCount;
 
 
     PreferencePanel() {
         super(new GridBagLayout());
-        createComponents();
+        final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
+        createImageSettingsComponents(preferenceSettings.getImageSettings());
+        createCacheSettingsComponents(preferenceSettings.getCacheSettings());
     }
 
-    
-    private void createComponents() {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getImagePrefLbl(), getFont().deriveFont(Font.PLAIN),
+
+    private void createImageSettingsComponents(final ImageSettings imageSettings) {
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), getFont().deriveFont(Font.PLAIN),
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
-        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getImageHighQualityPrefLbl(),
-                new JCheckBox().getFont().deriveFont(Font.PLAIN), null,
-                PreferenceManager.getInstance().loadHighQualityPhotoFlag(), false);
-        cbHighQualityPhoto.setBackground(getBackground());
+        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), imageSettings.isHighQualityFlag(), getBackground());
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getDisplayTrackPrefLbl(),
-                new JCheckBox().getFont().deriveFont(Font.PLAIN), null,
-                PreferenceManager.getInstance().loadDisplayTrackFlag(), false);
-        cbDisplayTrack.setBackground(getBackground());
+        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), imageSettings.isDisplayTrackFlag(), getBackground());
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
     }
 
+    private void createCacheSettingsComponents(final CacheSettings cacheSettings) {
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefCacheLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_CACHE);
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMemoryLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_MEMORY_COUNT);
+        spMemoryCount = GuiBuilder.buildPositiveNumberSpinner(cacheSettings.getMemoryCount(),
+                CacheConfig.getInstance().getMaxMemoryCount(), false, getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT);
+        add(spMemoryCount, Constraints.SP_MEMORY_COUNT);
 
-    boolean getHighQualityFlag() {
-        return cbHighQualityPhoto.isSelected();
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefDiskLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_DISK_COUNT);
+        spDiskCount = GuiBuilder.buildPositiveNumberSpinner(cacheSettings.getDiskCount(),
+                CacheConfig.getInstance().getMaxDiskCount(), false, getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT);
+        add(spDiskCount, Constraints.SP_DISK_COUNT);
+
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPrevNextLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_PREV_NEXT_COUNT);
+        spPrevNextCount = GuiBuilder.buildPositiveNumberSpinner(cacheSettings.getPrevNextCount(),
+                CacheConfig.getInstance().getMaxPrevNextCount(), false, getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT);
+        add(spPrevNextCount, Constraints.SP_PREV_NEXT_COUNT);
+
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefNearbyLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_NEARBY_COUNT);
+        spNearbyCount = GuiBuilder.buildPositiveNumberSpinner(cacheSettings.getNearbyCount(),
+                CacheConfig.getInstance().getMaxNearbyCount(), false, getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT);
+        add(spNearbyCount, Constraints.SP_NEARBY_COUNT);
     }
-    
-    boolean getDisplayTrackFlag() {
-        return cbDisplayTrack.isSelected();
+
+    PreferenceSettings getSelectedSettings() {
+        return new PreferenceSettings(new ImageSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected()),
+                new CacheSettings((int) spMemoryCount.getValue(), (int) spDiskCount.getValue(),
+                        (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue()));
     }
 }

@@ -50,10 +50,10 @@ public final class ServiceConfig extends BaseConfig {
         serviceUrl = baseUrl + readProperty("service.version");
         photoDetailsUrl = baseUrl + readProperty("service.details");
         feedbackUrl = readProperty("feedback.url");
-        photoZoom = readInt("photoZoom", DEFAULT_PHOTO_ZOOM);
-        minRadius = readInt("minRadius", MIN_RADIUS);
-        maxRadius = readInt("maxRadius", MAX_RADIUS);
-        maxItems = readInt("maxItems", MAX_ITEMS);
+        photoZoom = readIntegerProperty("photoZoom", DEFAULT_PHOTO_ZOOM);
+        minRadius = readIntegerProperty("minRadius", MIN_RADIUS);
+        maxRadius = readIntegerProperty("maxRadius", MAX_RADIUS);
+        maxItems = readIntegerProperty("maxItems", MAX_ITEMS);
     }
 
 
@@ -92,16 +92,5 @@ public final class ServiceConfig extends BaseConfig {
 
     public int getMaxItems() {
         return maxItems;
-    }
-
-    private int readInt(final String key, final int defaultValue) {
-        final String valueStr = readProperty(key);
-        int value;
-        try {
-            value = Integer.parseInt(valueStr);
-        } catch (final NumberFormatException e) {
-            value = defaultValue;
-        }
-        return value;
     }
 }

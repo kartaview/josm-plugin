@@ -87,31 +87,31 @@ class PaintHandler {
         final Double distance =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
 
-        graphics.setColor(getSequenceColor(mapView));
+                graphics.setColor(getSequenceColor(mapView));
 
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
+                Photo prevPhoto = sequence.getPhotos().get(0);
+                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
 
-            // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getLocation())
-                    || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
-                graphics.draw(new Line2D.Double(mapView.getPoint(prevPhoto.getLocation()),
-                        mapView.getPoint(currentPhoto.getLocation())));
-                if (distance != null) {
-                    final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
-                    final Pair<LatLon, LatLon> arrowPair =
-                            Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
+                    // at least one of the photos is in current view draw line
+                    if (Util.containsLatLon(mapView, prevPhoto.getLocation())
+                            || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
+                        graphics.draw(new Line2D.Double(mapView.getPoint(prevPhoto.getLocation()),
+                                mapView.getPoint(currentPhoto.getLocation())));
+                        if (distance != null) {
+                            final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
+                            final Pair<LatLon, LatLon> arrowPair =
+                                    Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
+                            graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
+                            graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
+                        }
+                    }
+
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
                 }
-            }
 
-            drawPhoto(graphics, mapView, prevPhoto, false);
-            prevPhoto = currentPhoto;
-        }
-
-        drawPhoto(graphics, mapView, prevPhoto, false);
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Color getSequenceColor(final MapView mapView) {
@@ -142,10 +142,10 @@ class PaintHandler {
                 final Double heading =
                         photo.getHeading() < 0 ? (photo.getHeading() + ANGLE_360) % ANGLE_360 : photo.getHeading();
 
-                final AffineTransform old = graphics.getTransform();
-                graphics.rotate(Math.toRadians(heading + ANGLE_360), point.x, point.y);
-                drawIcon(graphics, icon, point);
-                graphics.setTransform(old);
+                        final AffineTransform old = graphics.getTransform();
+                        graphics.rotate(Math.toRadians(heading + ANGLE_360), point.x, point.y);
+                        drawIcon(graphics, icon, point);
+                        graphics.setTransform(old);
             } else {
                 final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
                         : IconConfig.getInstance().getPhotoNoHeadingIcon();
@@ -156,9 +156,7 @@ class PaintHandler {
 
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
-                (img, infoflags, x, y, width, height) -> {
-                    return false;
-                });
+                (img, infoflags, x, y, width, height) -> false);
 
     }
 }
