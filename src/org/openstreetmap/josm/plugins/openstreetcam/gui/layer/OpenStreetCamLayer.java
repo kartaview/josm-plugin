@@ -20,7 +20,9 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -84,6 +86,31 @@ public class OpenStreetCamLayer extends AbtractLayer {
     }
 
     /**
+     * Returns the photos that are either previous/next or close to the selected photo.
+     *
+     * @param prevNextCount the number of previous/next photos to be returned
+     * @param nearbyCount the number of nearby photos to be returned
+     * @return a sey of {@code Photo}s
+     */
+    public Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
+        final Set<Photo> result = new HashSet<>();
+        if (selectedPhoto != null) {
+            for (int i = 1; i <= prevNextCount; i++) {
+                final Photo nextPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() + i);
+                if (nextPhoto != null) {
+                    result.add(nextPhoto);
+                }
+                final Photo prevPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() - i);
+                if (prevPhoto != null) {
+                    result.add(prevPhoto);
+                }
+            }
+            result.addAll(Util.nearbyPhotos(photos, selectedPhoto, nearbyCount));
+        }
+        return result;
+    }
+
+    /**
      * Checks if the given photo belongs or not to the selected sequence.
      *
      * @param photo a {@code Photo}
@@ -117,6 +144,15 @@ public class OpenStreetCamLayer extends AbtractLayer {
                     photo = elem;
                     // API issue: does not return username for sequence photos
                     photo.setUsername(selectedPhoto.getUsername());
+                    break;
+                }
+            }
+        } else if (photos != null) {
+            for (final Photo elem : photos) {
+                if (elem.getSequenceIndex().equals(index)
+                        && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
+                    photo = elem;
+                    break;
                 }
             }
         }

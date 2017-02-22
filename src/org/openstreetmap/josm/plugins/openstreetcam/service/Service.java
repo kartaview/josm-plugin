@@ -15,11 +15,15 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -95,6 +99,19 @@ public class Service {
         final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
         verifyResponseStatus(detailsResponse);
         return detailsResponse != null ? detailsResponse.getOsv() : null;
+    }
+
+
+    public byte[] retrievePhoto(final String photoName) throws ServiceException {
+        final StringBuilder url = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
+        url.append(photoName);
+        byte[] image = new byte[0];
+        try {
+            image = IOUtils.toByteArray(new BufferedInputStream(new URL(url.toString()).openStream()));
+        } catch (final IOException e) {
+            throw new ServiceException(e);
+        }
+        return image;
     }
 
     private void verifyResponseStatus(final Response response) throws ServiceException {

@@ -146,14 +146,14 @@ public final class PreferenceManager {
         return new PreferenceSettings(imageSettings, cacheSettings);
     }
 
-    private ImageSettings loadImageSettings() {
+    public ImageSettings loadImageSettings() {
         final boolean highQualityFlag = Main.pref.getBoolean(Keys.HIGH_QUALITY_PHOTO_FLAG);
         final String displayTrackFlagVal = Main.pref.get(Keys.DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
         return new ImageSettings(highQualityFlag, displayTrackFlag);
     }
 
-    private CacheSettings loadCacheSettings() {
+    public CacheSettings loadCacheSettings() {
         final String memoryCountVal = Main.pref.get(Keys.CACHE_MEMORY_COUNT);
         final int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
                 : CacheConfig.getInstance().getDefaultMemoryCount();

@@ -12,6 +12,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
 
 
 /**
+ * Loads cache configuration properties.
  *
  * @author beataj
  * @version $Revision$
@@ -25,11 +26,13 @@ public class CacheConfig extends BaseConfig {
     private static final int DEFAULT_NEARBY_COUNT = 10;
     private static final CacheConfig INSTANCE = new CacheConfig();
 
+    /* default values to use if there is no user specific cache settings */
     private final int defaultMemoryCount;
     private final int defaultDiskCount;
     private final int defaultPrevNextCount;
     private final int defaultNearbyCount;
 
+    /* maximum values for cache settings */
     private final int maxMemoryCount;
     private final int maxDiskCount;
     private final int maxPrevNextCount;
@@ -54,6 +57,7 @@ public class CacheConfig extends BaseConfig {
     public static CacheConfig getInstance() {
         return INSTANCE;
     }
+
 
     public int getDefaultMemoryCount() {
         return defaultMemoryCount;

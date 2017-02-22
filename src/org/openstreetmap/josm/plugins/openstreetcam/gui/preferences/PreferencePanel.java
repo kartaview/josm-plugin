@@ -25,6 +25,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
 
 
 /**
+ * Defines the UI components for the preference settings.
  *
  * @author beataj
  * @version $Revision$
