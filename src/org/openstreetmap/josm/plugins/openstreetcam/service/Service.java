@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,15 +28,19 @@ import org.apache.commons.io.IOUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.PhotoTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListPhotoResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.SegmentTypeAdapter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.ContentType;
 import com.telenav.josm.common.http.HttpConnector;
 import com.telenav.josm.common.http.HttpConnectorException;
@@ -55,6 +60,7 @@ public class Service {
         final GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();
         builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
+        builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
         return builder;
     }
 
@@ -81,12 +87,20 @@ public class Service {
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
         }
-        final ListPhotoResponse listPhotoResponse = parseResponse(response, ListPhotoResponse.class);
+        final ListResponse<Photo> listPhotoResponse =
+                parseResponse(response, new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
         return listPhotoResponse != null ? listPhotoResponse.getCurrentPageItems() : new ArrayList<>();
 
     }
 
+    /**
+     * Retrieves the sequence associated with the given identifier.
+     *
+     * @param id a sequence identifier
+     * @return a {@code Sequence}
+     * @throws ServiceException if the operation failed
+     */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         String response = null;
@@ -102,7 +116,13 @@ public class Service {
         return detailsResponse != null ? detailsResponse.getOsv() : null;
     }
 
-
+    /**
+     * Retrieves the photo with the given name.
+     *
+     * @param photoName represents the full name (contains also the path) of an image
+     * @return the photo in byte format
+     * @throws ServiceException if the operation failed
+     */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
         final StringBuilder url = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
         url.append(photoName);
@@ -115,6 +135,34 @@ public class Service {
         return image;
     }
 
+    /**
+     * Returns a list of segments that has OpenStreetCam coverage from the given area.
+     *
+     * @param area a {@code BoundingBox} represents the current area
+     * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
+     * uploaded by the logged in user
+     * @param paging a {@code Paging} defines pagination arguments
+     * @param zoom represents the current zoom level
+     * @throws ServiceException
+     */
+    public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final Paging paging,
+            final int zoom) throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
+        String response = null;
+        try {
+            final HttpConnector connector =
+                    new HttpConnector(ServiceConfig.getInstance().getBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
+            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
+        } catch (final HttpConnectorException e) {
+            throw new ServiceException(e);
+        }
+        final ListResponse<Segment> listSegmentResponse =
+                parseResponse(response, new TypeToken<ListResponse<Segment>>() {}.getType());
+        verifyResponseStatus(listSegmentResponse);
+        return listSegmentResponse != null ? listSegmentResponse.getCurrentPageItems() : new ArrayList<>();
+    }
+
+
     private void verifyResponseStatus(final Response response) throws ServiceException {
         if (response != null && response.getStatus() != null
                 && response.getStatus().getHttpCode() != HttpURLConnection.HTTP_OK) {
@@ -122,7 +170,7 @@ public class Service {
         }
     }
 
-    private <T> T parseResponse(final String response, final Class<T> responseType) throws ServiceException {
+    private <T> T parseResponse(final String response, final Type responseType) throws ServiceException {
         T root = null;
         if (response != null) {
             try {

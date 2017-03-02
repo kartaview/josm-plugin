@@ -12,6 +12,7 @@ import java.util.List;
 
 
 /**
+ * Defines the sequence business entity.
  *
  * @author beataj
  * @version $Revision$

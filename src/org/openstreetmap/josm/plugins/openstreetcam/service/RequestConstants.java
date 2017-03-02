@@ -26,6 +26,7 @@ final class RequestConstants {
 
     static final String LIST_NEARBY_PHOTOS = "/list/nearby-photos/";
     static final String SEQUENCE_PHOTO_LIST = "/sequence/photo-list/";
+    static final String LIST_MATCHED_TRACKS = "tracks";
     static final String SEQUENCE_DETAILS = "details";
 
     static final String COORDINATE = "coordinate";
@@ -35,6 +36,9 @@ final class RequestConstants {
     static final String DATE = "date";
     static final String USER_ID = "externalUserId";
     static final String ID = "sequenceId";
-    
+    static final String BBOX_TOP_LEFT = "bbTopLeft";
+    static final String BBOX_BOTTOM_RIGHT = "bbBottomRight";
+    static final String ZOOM = "zoom";
+
     private RequestConstants() {}
 }
