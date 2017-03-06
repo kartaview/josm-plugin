@@ -35,8 +35,8 @@ public class PhotoBuilder {
         this.id = id;
     }
 
-    public void sequenceId(final Long id) {
-        this.id = id;
+    public void sequenceId(final Long sequenceId) {
+        this.sequenceId = sequenceId;
     }
 
     public void sequenceIndex(final Integer sequenceIndex) {

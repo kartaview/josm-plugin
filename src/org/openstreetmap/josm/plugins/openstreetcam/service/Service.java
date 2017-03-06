@@ -22,8 +22,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.apache.commons.io.IOUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
@@ -36,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.tools.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -148,6 +156,54 @@ public class Service {
     public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final Paging paging,
             final int zoom) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
+        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(arguments);
+        final Set<Segment> segments = new HashSet<>();
+        segments.addAll(listSegmentResponse.getCurrentPageItems());
+
+        if (listSegmentResponse.getTotalFilteredItems().get(0) > ServiceConfig.getInstance().getMaxItems()) {
+            final int total =
+                    listSegmentResponse.getTotalFilteredItems().get(0) - ServiceConfig.getInstance().getMaxItems();
+            int pages = total > ServiceConfig.getInstance().getMaxItems()
+                    ? total / ServiceConfig.getInstance().getMaxItems() : 1;
+            pages += 2;
+            final ExecutorService executor = Executors.newFixedThreadPool(pages);
+            final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
+
+            for (int i = 2; i <= pages; i++) {
+                final Map<String, String> arguments2 = new HttpContentBuilder(area, osmUserId, zoom,
+                        new Paging(i, ServiceConfig.getInstance().getMaxItems())).getContent();
+                final Callable<ListResponse<Segment>> callable = () -> listMatchedTacks(arguments2);
+                futures.add(executor.submit(callable));
+            }
+            segments.addAll(readResult(futures));
+            executor.shutdown();
+        }
+        return new ArrayList<>(segments);
+    }
+
+
+    public Pair<Integer, List<Segment>> listMatchedTracks2(final BoundingBox area, final Long osmUserId,
+            final Paging paging, final int zoom) throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
+        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(arguments);
+
+        return new Pair<Integer, List<Segment>>(listSegmentResponse.getTotalFilteredItems().get(0),
+                listSegmentResponse.getCurrentPageItems());
+    }
+
+    private Set<Segment> readResult(final List<Future<ListResponse<Segment>>> futures) throws ServiceException {
+        final Set<Segment> result = new HashSet<>();
+        for (final Future<ListResponse<Segment>> future : futures) {
+            try {
+                result.addAll(future.get().getCurrentPageItems());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ServiceException(e);
+            }
+        }
+        return result;
+    }
+
+    private ListResponse<Segment> listMatchedTacks(final Map<String, String> arguments) throws ServiceException {
         String response = null;
         try {
             final HttpConnector connector =
@@ -159,9 +215,8 @@ public class Service {
         final ListResponse<Segment> listSegmentResponse =
                 parseResponse(response, new TypeToken<ListResponse<Segment>>() {}.getType());
         verifyResponseStatus(listSegmentResponse);
-        return listSegmentResponse != null ? listSegmentResponse.getCurrentPageItems() : new ArrayList<>();
+        return listSegmentResponse;
     }
-
 
     private void verifyResponseStatus(final Response response) throws ServiceException {
         if (response != null && response.getStatus() != null

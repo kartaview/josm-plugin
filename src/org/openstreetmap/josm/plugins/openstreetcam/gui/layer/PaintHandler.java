@@ -21,22 +21,30 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.B
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.MAPBOX_LAYER_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.MIN_ARROW_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.OPAQUE_COMPOSITE;
+import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEGMENT_COLOR;
+import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEGMENT_STROKE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEQUENCE_LINE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEQUENCE_LINE_COLOR;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.TRANSPARENT_COMPOSITE;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 import javax.swing.ImageIcon;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -81,6 +89,27 @@ class PaintHandler {
         if (selectedPhoto != null) {
             drawPhoto(graphics, mapView, selectedPhoto, true);
         }
+    }
+
+    void drawSegments(final Graphics2D graphics, final MapView mapView, final List<Segment> segments) {
+        // final AlphaComposite composite = ((AlphaComposite) graphics.getComposite()).derive(alpha);
+        graphics.setColor(SEGMENT_COLOR);
+        graphics.setStroke(SEGMENT_STROKE);
+        for (final Segment segment : segments) {
+            drawSegment(graphics, mapView, segment.getGeometry());
+        }
+
+    }
+
+    private void drawSegment(final Graphics2D graphics, final MapView mapView, final List<LatLon> geometry) {
+        final GeneralPath path = new GeneralPath();
+        Point point = mapView.getPoint(geometry.get(0));
+        path.moveTo(point.getX(), point.getY());
+        for (int i = 1; i < geometry.size(); i++) {
+            point = mapView.getPoint(geometry.get(i));
+            path.lineTo(point.getX(), point.getY());
+        }
+        graphics.draw(path);
     }
 
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
@@ -159,4 +188,20 @@ class PaintHandler {
                 (img, infoflags, x, y, width, height) -> false);
 
     }
+
+    void drawText(final Graphics2D graphics, final MapView mapView) {
+        final Point labelPoint = mapView.getPoint(mapView.getCenter());
+
+        graphics.setFont(mapView.getFont().deriveFont(Font.BOLD, 12));
+        final FontMetrics fontMetrics =
+                mapView.getFontMetrics(mapView.getFont().deriveFont(Font.BOLD, 12));
+        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+        final Rectangle2D rect = fontMetrics.getStringBounds("zoom level:" + zoom, graphics);
+        graphics.setColor(Color.white);
+        graphics.fillRect(labelPoint.x, labelPoint.y - fontMetrics.getAscent(), (int) rect.getWidth(),
+                (int) rect.getHeight());
+        graphics.setColor(Color.black);
+        graphics.drawString("zoom level:" + zoom, labelPoint.x, labelPoint.y);
+    }
+
 }

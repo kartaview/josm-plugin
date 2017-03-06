@@ -24,11 +24,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.Pair;
+import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
@@ -73,7 +76,7 @@ final class ServiceHandler {
                 for (final Circle circle : areas) {
                     final Callable<List<Photo>> callable =
                             () -> service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
@@ -91,6 +94,31 @@ final class ServiceHandler {
         }
         return finalResult;
     }
+
+    List<Segment> listMatchedTracks(final BoundingBox area, final ListFilter filter, final int zoom) {
+        List<Segment> result = new ArrayList<>();
+        final Long osmUserId = osmUserId(filter);
+        try {
+            result = service.listMatchedTracks(area, osmUserId, Paging.DEFAULT, zoom);
+        } catch (final ServiceException e) {
+            // TODO: handle exception
+        }
+        return result;
+    }
+
+
+    Pair<Integer, List<Segment>> listMatchedTracks2(final BoundingBox area, final ListFilter filter, final int zoom,
+            final Paging paging) {
+        Pair<Integer, List<Segment>> result = null;
+        final Long osmUserId = osmUserId(filter);
+        try {
+            result = service.listMatchedTracks2(area, osmUserId, paging, zoom);
+        } catch (final ServiceException e) {
+            // TODO: handle exception
+        }
+        return result;
+    }
+
 
     private Long osmUserId(final ListFilter filter) {
         Long osmUserId = null;

@@ -299,7 +299,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
             SwingUtilities.invokeLater(() -> {
                 final Photo selectedPhoto = layer.getSelectedPhoto();
-                layer.setPhotos(null, false);
+                layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
                 Main.map.repaint();
             });
