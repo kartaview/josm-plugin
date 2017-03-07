@@ -29,9 +29,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.DefaultFormatterFactory;
 import org.jdesktop.swingx.JXDatePicker;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -74,6 +77,9 @@ class FilterPanel extends JPanel {
         pickerDate.getMonthView().setSelectionDate(date);
         pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate.getEditor()));
+        if (Util.zoom(Main.map.mapView.getRealBounds()) < ServiceConfig.getInstance().getPhotoZoom()) {
+            pickerDate.setEnabled(false);
+        }
         add(pickerDate, Constraints.PICKER_DATE);
     }
 
