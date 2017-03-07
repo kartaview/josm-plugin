@@ -118,7 +118,7 @@ class FilterPanel extends JPanel {
             }
 
             // the 'uncommitted' date is empty
-            if ((pickerDate.getDate() != null)) {
+            if (pickerDate.getDate() != null) {
                 return getConfirmation(uncommitteddDate, editorText);
             }
 

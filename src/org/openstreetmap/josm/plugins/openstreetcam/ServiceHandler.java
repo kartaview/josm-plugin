@@ -22,7 +22,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -30,7 +29,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.argument.BoundingBox;
 
 
@@ -45,7 +43,6 @@ final class ServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
     private final Service service;
-
 
     private ServiceHandler() {
         service = new Service();
@@ -71,17 +68,17 @@ final class ServiceHandler {
         List<Photo> finalResult = new ArrayList<>();
         try {
             if (areas.size() > 1) {
+                // special case: there are several different areas visible in the OSM data layer
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Photo>>> futures = new ArrayList<>();
                 for (final Circle circle : areas) {
-                    final Callable<List<Photo>> callable =
-                            () -> service.listNearbyPhotos(circle, date, osmUserId, Paging.DEFAULT);
-                            futures.add(executor.submit(callable));
+                    final Callable<List<Photo>> callable = () -> service.listNearbyPhotos(circle, date, osmUserId);
+                    futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
             } else {
-                finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId, Paging.DEFAULT);
+                finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId);
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
@@ -95,28 +92,40 @@ final class ServiceHandler {
         return finalResult;
     }
 
-    List<Segment> listMatchedTracks(final BoundingBox area, final ListFilter filter, final int zoom) {
-        List<Segment> result = new ArrayList<>();
+    /**
+     *
+     * @param areas
+     * @param filter
+     * @param zoom
+     * @return
+     */
+    List<Segment> listMatchedTracks(final List<BoundingBox> areas, final ListFilter filter, final int zoom) {
+        List<Segment> finalResult = new ArrayList<>();
         final Long osmUserId = osmUserId(filter);
         try {
-            result = service.listMatchedTracks(area, osmUserId, Paging.DEFAULT, zoom);
+            if (areas.size() > 1) {
+                // special case: there are several different areas visible in the OSM data layer
+                final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
+                final List<Future<List<Segment>>> futures = new ArrayList<>();
+                for (final BoundingBox bbox : areas) {
+                    final Callable<List<Segment>> callable = () -> service.listMatchedTracks(bbox, osmUserId, zoom);
+                    futures.add(executor.submit(callable));
+                }
+                finalResult.addAll(readResult(futures));
+                executor.shutdown();
+            } else {
+                finalResult = service.listMatchedTracks(areas.get(0), osmUserId, zoom);
+            }
         } catch (final ServiceException e) {
-            // TODO: handle exception
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+            }
         }
-        return result;
-    }
-
-
-    Pair<Integer, List<Segment>> listMatchedTracks2(final BoundingBox area, final ListFilter filter, final int zoom,
-            final Paging paging) {
-        Pair<Integer, List<Segment>> result = null;
-        final Long osmUserId = osmUserId(filter);
-        try {
-            result = service.listMatchedTracks2(area, osmUserId, paging, zoom);
-        } catch (final ServiceException e) {
-            // TODO: handle exception
-        }
-        return result;
+        return finalResult;
     }
 
 
@@ -129,9 +138,9 @@ final class ServiceHandler {
         return osmUserId;
     }
 
-    private Set<Photo> readResult(final List<Future<List<Photo>>> futures) throws ServiceException {
-        final Set<Photo> result = new HashSet<>();
-        for (final Future<List<Photo>> future : futures) {
+    private <T> Set<T> readResult(final List<Future<List<T>>> futures) throws ServiceException {
+        final Set<T> result = new HashSet<>();
+        for (final Future<List<T>> future : futures) {
             try {
                 result.addAll(future.get());
             } catch (InterruptedException | ExecutionException e) {
@@ -141,6 +150,11 @@ final class ServiceHandler {
         return result;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
         try {
@@ -157,6 +171,12 @@ final class ServiceHandler {
         return sequence;
     }
 
+    /**
+     *
+     * @param photoName
+     * @return
+     * @throws ServiceException
+     */
     byte[] retrievePhoto(final String photoName) throws ServiceException {
         return service.retrievePhoto(photoName);
     }

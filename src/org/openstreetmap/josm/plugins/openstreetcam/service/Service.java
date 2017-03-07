@@ -43,7 +43,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
-import org.openstreetmap.josm.tools.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -80,13 +79,13 @@ public class Service {
      * date
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
-     * @param paging a {@code Paging} defines pagination arguments
      * @return a list of {@code Photo}s
      * @throws ServiceException if the operation failed
      */
-    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId, final Paging paging)
+    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId)
             throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(circle, date, osmUserId, paging).getContent();
+        final Map<String, String> arguments =
+                new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
         String response = null;
         try {
             final HttpConnector connector = new HttpConnector(
@@ -153,57 +152,40 @@ public class Service {
      * @param zoom represents the current zoom level
      * @throws ServiceException
      */
-    public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final Paging paging,
-            final int zoom) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(arguments);
+    public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final int zoom)
+            throws ServiceException {
+        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(area, osmUserId, zoom, Paging.DEFAULT);
         final Set<Segment> segments = new HashSet<>();
-        segments.addAll(listSegmentResponse.getCurrentPageItems());
-
-        if (listSegmentResponse.getTotalFilteredItems().get(0) > ServiceConfig.getInstance().getMaxItems()) {
-            final int total =
-                    listSegmentResponse.getTotalFilteredItems().get(0) - ServiceConfig.getInstance().getMaxItems();
-            int pages = total > ServiceConfig.getInstance().getMaxItems()
-                    ? total / ServiceConfig.getInstance().getMaxItems() : 1;
-            pages += 2;
-            final ExecutorService executor = Executors.newFixedThreadPool(pages);
-            final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
-
-            for (int i = 2; i <= pages; i++) {
-                final Map<String, String> arguments2 = new HttpContentBuilder(area, osmUserId, zoom,
-                        new Paging(i, ServiceConfig.getInstance().getMaxItems())).getContent();
-                final Callable<ListResponse<Segment>> callable = () -> listMatchedTacks(arguments2);
-                futures.add(executor.submit(callable));
+        if (listSegmentResponse != null) {
+            segments.addAll(listSegmentResponse.getCurrentPageItems());
+            if (listSegmentResponse.getTotalItems() > ServiceConfig.getInstance().getMaxItems()) {
+                final int pages = listSegmentResponse.getTotalItems() > ServiceConfig.getInstance().getMaxItems()
+                        ? (listSegmentResponse.getTotalItems() / ServiceConfig.getInstance().getMaxItems()) + 1 : 2;
+                final ExecutorService executor = Executors.newFixedThreadPool(pages);
+                final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
+                for (int i = 2; i <= pages; i++) {
+                    final Paging paging = new Paging(i, ServiceConfig.getInstance().getMaxItems());
+                    final Callable<ListResponse<Segment>> callable =
+                            () -> listMatchedTacks(area, osmUserId, zoom, paging);
+                            futures.add(executor.submit(callable));
+                }
+                for (final Future<ListResponse<Segment>> future : futures) {
+                    try {
+                        segments.addAll(future.get().getCurrentPageItems());
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new ServiceException(e);
+                    }
+                }
+                executor.shutdown();
             }
-            segments.addAll(readResult(futures));
-            executor.shutdown();
         }
         return new ArrayList<>(segments);
     }
 
 
-    public Pair<Integer, List<Segment>> listMatchedTracks2(final BoundingBox area, final Long osmUserId,
-            final Paging paging, final int zoom) throws ServiceException {
+    private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
+            final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(arguments);
-
-        return new Pair<Integer, List<Segment>>(listSegmentResponse.getTotalFilteredItems().get(0),
-                listSegmentResponse.getCurrentPageItems());
-    }
-
-    private Set<Segment> readResult(final List<Future<ListResponse<Segment>>> futures) throws ServiceException {
-        final Set<Segment> result = new HashSet<>();
-        for (final Future<ListResponse<Segment>> future : futures) {
-            try {
-                result.addAll(future.get().getCurrentPageItems());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ServiceException(e);
-            }
-        }
-        return result;
-    }
-
-    private ListResponse<Segment> listMatchedTacks(final Map<String, String> arguments) throws ServiceException {
         String response = null;
         try {
             final HttpConnector connector =

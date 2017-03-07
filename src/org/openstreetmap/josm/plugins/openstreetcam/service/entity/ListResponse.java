@@ -38,4 +38,8 @@ public class ListResponse<T> extends Response {
     public List<Integer> getTotalFilteredItems() {
         return totalFilteredItems;
     }
+
+    public int getTotalItems() {
+        return totalFilteredItems != null ? totalFilteredItems.get(0) : 0;
+    }
 }

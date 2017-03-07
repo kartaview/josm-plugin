@@ -54,6 +54,11 @@ public class Circle {
         }
     }
 
+    public Circle(final LatLon center, final int radius) {
+        this.center = center;
+        this.radius = radius;
+    }
+
     public LatLon getCenter() {
         return center;
     }
@@ -82,5 +87,10 @@ public class Circle {
             result = result && EntityUtil.bothNullOrEqual(center, other.getCenter());
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "center:" + center.toDisplayString() + " radius:" + radius;
     }
 }
