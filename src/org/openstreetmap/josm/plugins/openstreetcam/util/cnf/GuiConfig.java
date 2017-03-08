@@ -33,6 +33,9 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginLongName;
     private final String pluginTlt;
 
+    private final String prefMapViewLbl;
+    private final String prefPhotoZoomLbl;
+    private final String prefManualSwitchLbl;
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
     private final String prefDisplayTrackLbl;
@@ -89,6 +92,9 @@ public final class GuiConfig extends BaseConfig {
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
 
+        prefMapViewLbl = readProperty("preferences.mapView.lbl");
+        prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
+        prefManualSwitchLbl = readProperty("preferences.mapView.switch.lbl");
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefDisplayTrackLbl = readProperty("preference.photo.displayTrack.lbl");
@@ -151,6 +157,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPluginTlt() {
         return pluginTlt;
+    }
+
+    public String getPrefMapViewLbl() {
+        return prefMapViewLbl;
+    }
+
+    public String getPrefPhotoZoomLbl() {
+        return prefPhotoZoomLbl;
+    }
+
+    public String getPrefManualSwitchLbl() {
+        return prefManualSwitchLbl;
     }
 
     public String getPrefImageLbl() {
@@ -236,7 +254,6 @@ public final class GuiConfig extends BaseConfig {
     public String getBtnCancelLbl() {
         return btnCancelLbl;
     }
-
 
     public String getErrorTitle() {
         return errorTitle;

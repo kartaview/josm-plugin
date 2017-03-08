@@ -53,7 +53,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
@@ -330,33 +329,23 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            switch (event.getKey()) {
-                case Keys.FILTERS_CHANGED:
-                    ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
-                    break;
-                case Keys.HIGH_QUALITY_PHOTO_FLAG:
-                    selectPhoto(layer.getSelectedPhoto());
-                    break;
-                case Keys.DISPLAY_TRACK_FLAG:
-                    if (event.getNewValue().getValue().equals(Boolean.TRUE.toString())
-                            && layer.getSelectedPhoto() != null && layer.getSelectedSequence() == null) {
-                        loadSequence(layer.getSelectedPhoto());
-                    } else if (layer.getSelectedSequence() != null) {
-                        layer.setSelectedSequence(null);
-                        detailsDialog.enableSequenceActions(false, false);
-                        Main.map.repaint();
-                    }
-                    break;
-                default:
-                    if (PreferenceManager.getInstance().hasAuthMethodChanged(event.getKey(),
-                            event.getNewValue().getValue().toString())) {
-                        ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
-                    }
-                    break;
+            final PreferenceManager prefManager = PreferenceManager.getInstance();
+            if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
+                ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
+            } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
+                selectPhoto(layer.getSelectedPhoto());
+            } else if (prefManager.isDisplayTackFlag(event.getKey())) {
+                if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
+                        && layer.getSelectedSequence() == null) {
+                    loadSequence(layer.getSelectedPhoto());
+                } else if (layer.getSelectedSequence() != null) {
+                    layer.setSelectedSequence(null);
+                    detailsDialog.enableSequenceActions(false, false);
+                    Main.map.repaint();
+                }
             }
         }
     }
-
 
     private class LayerActivator extends JosmAction {
 

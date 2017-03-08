@@ -15,8 +15,16 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_AUTH_METHOD;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_OAUTH_SECRET;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 
@@ -114,7 +122,11 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadPhotoSettings(), loadCacheSettings());
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadCacheSettings());
+    }
+
+    public MapViewSettings loadMapViewSettings() {
+        return loadManager.loadMapViewSettings();
     }
 
     /**
@@ -142,6 +154,7 @@ public final class PreferenceManager {
      */
     public void savePreferenceSettings(final PreferenceSettings preferenceSettings) {
         if (preferenceSettings != null) {
+            saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
@@ -190,8 +203,27 @@ public final class PreferenceManager {
      * @param value a {@code String} represents the value associated with the authentication preference change event
      * @return true if the authentication method has changed; false otherwise
      */
-    public boolean hasAuthMethodChanged(final String key, final String value) {
-        return (Keys.JOSM_AUTH_METHOD.equals(key) && Keys.JOSM_BASIC_VAL.equals(value))
-                || Keys.JOSM_OAUTH_SECRET.equals(key);
+    private boolean hasAuthMethodChanged(final String key, final String value) {
+        return (JOSM_AUTH_METHOD.equals(key) && JOSM_BASIC_VAL.equals(value)) || JOSM_OAUTH_SECRET.equals(key);
+    }
+
+    public boolean isFiltersChangedKey(final String value) {
+        return FILTERS_CHANGED.equals(value);
+    }
+
+    private boolean isMapViewZoomKey(final String value) {
+        return MAP_VIEW_PHOTO_ZOOM.equals(value);
+    }
+
+    public boolean isHighQualityPhotoFlag(final String value) {
+        return HIGH_QUALITY_PHOTO_FLAG.equals(value);
+    }
+
+    public boolean isDisplayTackFlag(final String value) {
+        return DISPLAY_TRACK_FLAG.equals(value);
+    }
+
+    public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
+        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue);
     }
 }

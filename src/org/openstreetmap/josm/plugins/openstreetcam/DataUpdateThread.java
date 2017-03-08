@@ -57,8 +57,8 @@ class DataUpdateThread implements Runnable {
             // case 1 search for segments
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
             final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
-            if (zoom >= ServiceConfig.getInstance().getSegmentZoom()
-                    && zoom < ServiceConfig.getInstance().getPhotoZoom()) {
+            final int photoZoom = PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom();
+            if (zoom >= ServiceConfig.getInstance().getSegmentZoom() && zoom < photoZoom) {
                 if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
                     // clear view
                     updateUI(null, false);
@@ -66,7 +66,7 @@ class DataUpdateThread implements Runnable {
                 final List<BoundingBox> areas = Util.currentBoundingBoxes();
                 final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
                 updateUI(new DataSet(segments, null), checkSelectedPhoto);
-            } else if (zoom >= ServiceConfig.getInstance().getPhotoZoom()) {
+            } else if (zoom >= photoZoom) {
                 // case 2 search for photos
                 if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
                     // clear view

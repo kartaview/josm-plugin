@@ -28,6 +28,7 @@ public final class ServiceConfig extends BaseConfig {
 
     private static final int DEFAULT_SEGMENT_ZOOM = 10;
     private static final int DEFAULT_PHOTO_ZOOM = 17;
+    private static final int MAX_ZOOM = 21;
     private static final int MAX_RADIUS = 5000;
     private static final int MIN_RADIUS = 1;
     private static final int MAX_ITEMS = 5000;
@@ -39,6 +40,7 @@ public final class ServiceConfig extends BaseConfig {
     private final String photoDetailsUrl;
     private final String feedbackUrl;
     private final int segmentZoom;
+    private final int maxZoom;
     private final int photoZoom;
     private final int minRadius;
     private final int maxRadius;
@@ -52,6 +54,7 @@ public final class ServiceConfig extends BaseConfig {
         photoDetailsUrl = baseUrl + readProperty("service.details");
         feedbackUrl = readProperty("feedback.url");
         segmentZoom = readIntegerProperty("segmentZoom", DEFAULT_SEGMENT_ZOOM);
+        maxZoom = readIntegerProperty("maxZoom", MAX_ZOOM);
         photoZoom = readIntegerProperty("photoZoom", DEFAULT_PHOTO_ZOOM);
         minRadius = readIntegerProperty("minRadius", MIN_RADIUS);
         maxRadius = readIntegerProperty("maxRadius", MAX_RADIUS);
@@ -87,6 +90,11 @@ public final class ServiceConfig extends BaseConfig {
     public int getPhotoZoom() {
         return photoZoom;
     }
+
+    public int getMaxZoom() {
+        return maxZoom;
+    }
+
 
     public int getMinRadius() {
         return minRadius;
