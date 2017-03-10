@@ -18,21 +18,26 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.net.URI;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.gui.dialogs.layer.DeleteLayerAction;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.DisplayFilterDialogAction;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.FilterDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
+import org.openstreetmap.josm.tools.OpenBrowser;
 
 
 /**
@@ -49,7 +54,7 @@ abstract class AbtractLayer extends Layer {
         super(GuiConfig.getInstance().getPluginShortName());
 
         LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
         LayerListDialog.getInstance().getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
     }
 
@@ -67,10 +72,14 @@ abstract class AbtractLayer extends Layer {
     @Override
     public Action[] getMenuEntries() {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
+
+        final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
+
         return new Action[] { layerListDialog.createActivateLayerAction(this),
                 layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
-                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(), SeparatorLayerAction.INSTANCE,
-                new LayerListPopup.InfoAction(this) };
+                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
+                new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
     }
 
     @Override
@@ -100,11 +109,10 @@ abstract class AbtractLayer extends Layer {
         private final DeleteLayerAction deleteAction = LayerListDialog.getInstance().createDeleteLayerAction();
 
         public OpenStreetCamDeleteLayerAction() {
-            new ImageProvider(GuiConfig.getInstance().getDeleteLayerMenuItemImageDirectory(),
-                    GuiConfig.getInstance().getDeleteLayerMenuItemImageName()).getResource().attachImageIcon(this,
-                            true);
-            putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getDeleteLayerMenuItemShortDescription()));
-            putValue(NAME, tr(GuiConfig.getInstance().getDeleteLayerMenuItemTxt()));
+            super(GuiConfig.getInstance().getLayerDeleteMenuItemLbl());
+            new ImageProvider(IconConfig.getInstance().getDeleteIconName()).getResource().attachImageIcon(this, true);
+            putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getLayerDeleteMenuItemTlt()));
+            putValue(NAME, tr(GuiConfig.getInstance().getLayerDeleteMenuItemLbl()));
         }
 
         @Override
@@ -115,4 +123,39 @@ abstract class AbtractLayer extends Layer {
 
     }
 
+
+    private final class DisplayFilterDialogAction extends AbstractAction {
+
+        private static final long serialVersionUID = 8325126526750975651L;
+
+
+        private DisplayFilterDialogAction(final Icon icon) {
+            super(GuiConfig.getInstance().getDlgFilterTitle(), icon);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            final FilterDialog filterDialog = new FilterDialog();
+            filterDialog.setVisible(true);
+        }
+    }
+
+    private final class OpenFeedbackPageAction extends AbstractAction {
+
+        private static final long serialVersionUID = 4196639030623647016L;
+
+        private OpenFeedbackPageAction() {
+            super("Feedback", IconConfig.getInstance().getFeedbackIcon());
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            try {
+                OpenBrowser.displayUrl(new URI(Config.getInstance().getFeedbackUrl()));
+            } catch (final Exception e) {
+                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageTxt(),
+                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 }

@@ -42,7 +42,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.SegmentTypeA
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -89,7 +89,7 @@ public class Service {
         String response = null;
         try {
             final HttpConnector connector = new HttpConnector(
-                    ServiceConfig.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
+                    Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -113,7 +113,7 @@ public class Service {
         String response = null;
         try {
             final HttpConnector connector = new HttpConnector(
-                    ServiceConfig.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
+                    Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -131,7 +131,7 @@ public class Service {
      * @throws ServiceException if the operation failed
      */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
-        final StringBuilder url = new StringBuilder(ServiceConfig.getInstance().getBaseUrl());
+        final StringBuilder url = new StringBuilder(Config.getInstance().getBaseUrl());
         url.append(photoName);
         byte[] image = new byte[0];
         try {
@@ -158,13 +158,13 @@ public class Service {
         final Set<Segment> segments = new HashSet<>();
         if (listSegmentResponse != null) {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
-            if (listSegmentResponse.getTotalItems() > ServiceConfig.getInstance().getMaxItems()) {
-                final int pages = listSegmentResponse.getTotalItems() > ServiceConfig.getInstance().getMaxItems()
-                        ? (listSegmentResponse.getTotalItems() / ServiceConfig.getInstance().getMaxItems()) + 1 : 2;
+            if (listSegmentResponse.getTotalItems() > Config.getInstance().getMaxItems()) {
+                final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getMaxItems()
+                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getMaxItems()) + 1 : 2;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
                 for (int i = 2; i <= pages; i++) {
-                    final Paging paging = new Paging(i, ServiceConfig.getInstance().getMaxItems());
+                    final Paging paging = new Paging(i, Config.getInstance().getMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
                             futures.add(executor.submit(callable));
@@ -189,7 +189,7 @@ public class Service {
         String response = null;
         try {
             final HttpConnector connector =
-                    new HttpConnector(ServiceConfig.getInstance().getBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
+                    new HttpConnector(Config.getInstance().getBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);

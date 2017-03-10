@@ -34,6 +34,9 @@ public final class IconConfig extends BaseConfig {
 
     private final String pluginIconName;
     private final String dialogShortcutName;
+    private final String deleteIconName;
+    private final String layerIconName;
+    private final Icon deleteIcon;
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
@@ -47,14 +50,19 @@ public final class IconConfig extends BaseConfig {
     private final Icon locationIcon;
     private final Icon webPageIcon;
     private final Icon warningIcon;
+    private final Icon manualSwitchSegmentIcon;
+    private final Icon manualSwitchImageIcon;
 
 
     private IconConfig() {
         super(CONFIG_FILE);
 
         pluginIconName = readProperty("plugin.icon");
-        layerIcon = ImageProvider.get(readProperty("layer.icon"));
         dialogShortcutName = readProperty("dialog.shortcut");
+        deleteIconName = readProperty("delete.icon");
+        layerIconName = readProperty("layer.icon");
+        layerIcon = ImageProvider.get(layerIconName);
+        deleteIcon = ImageProvider.get(readProperty("delete.icon"));
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
@@ -66,13 +74,16 @@ public final class IconConfig extends BaseConfig {
         locationIcon = ImageProvider.get(readProperty("location.icon"));
         feedbackIcon = ImageProvider.get(readProperty("feedback.icon"));
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
-        warningIcon =  ImageProvider.get(readProperty("warning.icon"));
+        warningIcon = ImageProvider.get(readProperty("warning.icon"));
+        manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
+        manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
     }
 
 
     public static IconConfig getInstance() {
         return INSTANCE;
     }
+
 
     public String getPluginIconName() {
         return pluginIconName;
@@ -82,12 +93,16 @@ public final class IconConfig extends BaseConfig {
         return dialogShortcutName;
     }
 
-    public Icon getLayerIcon() {
-        return layerIcon;
+    public String getDeleteIconName() {
+        return deleteIconName;
     }
 
-    public String getLayerImagePath() {
-        return readProperty("layer.icon");
+    public String getLayerIconName() {
+        return layerIconName;
+    }
+
+    public Icon getLayerIcon() {
+        return layerIcon;
     }
 
     public ImageIcon getPhotoIcon() {
@@ -122,12 +137,12 @@ public final class IconConfig extends BaseConfig {
         return nextIcon;
     }
 
-    public Icon getLocationIcon() {
-        return locationIcon;
-    }
-
     public Icon getFeedbackIcon() {
         return feedbackIcon;
+    }
+
+    public Icon getLocationIcon() {
+        return locationIcon;
     }
 
     public Icon getWebPageIcon() {
@@ -136,5 +151,17 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWarningIcon() {
         return warningIcon;
+    }
+
+    public Icon getDeleteIcon() {
+        return deleteIcon;
+    }
+
+    public Icon getManualSwitchSegmentIcon() {
+        return manualSwitchSegmentIcon;
+    }
+
+    public Icon getManualSwitchImageIcon() {
+        return manualSwitchImageIcon;
     }
 }

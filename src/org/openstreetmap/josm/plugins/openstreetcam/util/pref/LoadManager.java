@@ -29,7 +29,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 
 
 /**
@@ -64,7 +64,7 @@ final class LoadManager {
     MapViewSettings loadMapViewSettings() {
         final String photoZoomVal = Main.pref.get(MAP_VIEW_PHOTO_ZOOM);
         final int photoZoom = (photoZoomVal != null && !photoZoomVal.isEmpty()) ? Integer.valueOf(photoZoomVal)
-                : ServiceConfig.getInstance().getPhotoZoom();
+                : Config.getInstance().getPhotoZoom();
         final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
         return new MapViewSettings(photoZoom, manualSwitchFlag);
 

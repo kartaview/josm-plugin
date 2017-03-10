@@ -21,6 +21,7 @@ import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
 
@@ -88,7 +89,7 @@ class DateVerifier implements KeyListener {
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            if (newDate.compareTo((Date) formatter.stringToValue(GuiConfig.getInstance().getMaxDateFilterTxt())) > 0) {
+            if (newDate.compareTo(Config.getInstance().getMaxDate()) > 0) {
                 JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return false;

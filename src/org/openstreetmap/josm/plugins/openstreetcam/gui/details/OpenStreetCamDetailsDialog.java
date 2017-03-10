@@ -98,6 +98,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
             lblDetails.setToolTipText(null);
             lblDetails.setIcon(null);
             pnlPhoto.updateUI(null);
+            pnlBtn.updateUI(null);
             repaint();
         }
     }
@@ -145,6 +146,11 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);
+        pnlBtn.repaint();
+    }
+
+    public void enableDataSwitchAction(final int zoom) {
+        pnlBtn.enableDataSwitchAction(zoom);
         pnlBtn.repaint();
     }
 }

@@ -33,8 +33,8 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -77,7 +77,7 @@ class FilterPanel extends JPanel {
         pickerDate.getMonthView().setSelectionDate(date);
         pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate.getEditor()));
-        if (Util.zoom(Main.map.mapView.getRealBounds()) < ServiceConfig.getInstance().getPhotoZoom()) {
+        if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getPhotoZoom()) {
             pickerDate.setEnabled(false);
         }
         add(pickerDate, Constraints.PICKER_DATE);
@@ -88,7 +88,7 @@ class FilterPanel extends JPanel {
                 getBackground()), Constraints.LBL_USER);
         cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
         cbbUser.setSelected(isSelected);
-        final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarning(),
+        final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(),
                 getFont().deriveFont(Font.ITALIC), getBackground());
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             cbbUser.setEnabled(false);
@@ -165,8 +165,7 @@ class FilterPanel extends JPanel {
     }
 
     private boolean checkAcceptance(final Date date) {
-        if (date.compareTo(
-                (Date) (new DateFormatter().stringToValue(GuiConfig.getInstance().getMaxDateFilterTxt()))) > 0) {
+        if (date.compareTo(Config.getInstance().getMaxDate()) > 0) {
             JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             return false;

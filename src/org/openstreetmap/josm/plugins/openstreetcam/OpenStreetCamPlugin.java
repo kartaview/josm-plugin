@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.DebugGraphics;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -50,9 +49,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEd
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
@@ -99,8 +98,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
-            Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
-
             // create the dialog
             detailsDialog = new OpenStreetCamDetailsDialog();
             detailsDialog.registerObservers(this, this);
@@ -118,14 +115,9 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 detailsDialog.getButton().setSelected(false);
                 detailsDialog.hideDialog();
             }
-        }
-
-        if (layerActivatorMenuItem == null) {
-            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
-        }
-
-        // a new map frame is created
-        if (oldMapFrame == null && newMapFrame != null) {
+            if (layerActivatorMenuItem == null) {
+                layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+            }
             layerActivatorMenuItem.setEnabled(true);
         }
 
@@ -199,7 +191,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()
+        if (Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getPhotoZoom()
                 && SwingUtilities.isLeftMouseButton(event)) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
@@ -353,7 +345,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
         private LayerActivator() {
             super(GuiConfig.getInstance().getPluginShortName(),
-                    new ImageProvider(IconConfig.getInstance().getLayerImagePath()), null, null, false, null, false);
+                    new ImageProvider(IconConfig.getInstance().getLayerIconName()), null, null, false, null, false);
             setEnabled(false);
         }
 

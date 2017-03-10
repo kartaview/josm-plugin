@@ -45,19 +45,17 @@ public final class GuiConfig extends BaseConfig {
     private final String prefPrevNextLbl;
     private final String prefNearbyLbl;
 
-
-    private final String btnFilterTlt;
     private final String btnPreviousTlt;
     private final String btnNextTlt;
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
-    private final String btnFeedbackTlt;
-
+    private final String btnManualImageSwitchTlt;
+    private final String btnManualSegmentSwitchTlt;
 
     private final String dlgFilterTitle;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
-    private final String dlgFilterLoginWarning;
+    private final String dlgFilterLoginWarningLbl;
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
@@ -77,12 +75,9 @@ public final class GuiConfig extends BaseConfig {
     private final String confirmDateFilterTitle;
     private final String confirmDateFilterTxt;
 
-    private final String maxDateFilterTxt;
-
-    private final String deleteLayerMenuItemTxt;
-    private final String deleteLayerMenuItemShortDescription;
-    private final String deleteLayerMenuItemImageDirectory;
-    private final String deleteLayerMenuItemImageName;
+    private final String layerDeleteMenuItemLbl;
+    private final String layerDeleteMenuItemTlt;
+    private final String layerFeedbackMenuItemLbl;
 
 
     private GuiConfig() {
@@ -104,16 +99,18 @@ public final class GuiConfig extends BaseConfig {
         prefPrevNextLbl = readProperty("preference.cache.prevNext.lbl");
         prefNearbyLbl = readProperty("preference.cache.nearby.lbl");
 
-        btnFilterTlt = readProperty("btn.filter.tlt");
-        btnPreviousTlt = readProperty("btn.previous");
-        btnNextTlt = readProperty("btn.next");
+        btnPreviousTlt = readProperty("btn.previous.tlt");
+        btnNextTlt = readProperty("btn.next.tlt");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
-        btnFeedbackTlt = readProperty("btn.feedback.tlt");
+        btnManualImageSwitchTlt = readProperty("btn.switch.image.tlt");
+        btnManualSegmentSwitchTlt = readProperty("btn.switch.segment.tlt");
+
         dlgFilterTitle = readProperty("filter.title");
-        dlgFilterDateLbl = readProperty("filter.date");
-        dlgFilterUserLbl = readProperty("filter.user");
-        dlgFilterLoginWarning = readProperty("filter.login.warning");
+        dlgFilterDateLbl = readProperty("filter.date.lbl");
+        dlgFilterUserLbl = readProperty("filter.user.lbl");
+        dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
+
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
         btnCancelLbl = readProperty("btn.cancel.lbl");
@@ -133,12 +130,9 @@ public final class GuiConfig extends BaseConfig {
         confirmDateFilterTitle = readProperty("information.dateFilter.title");
         confirmDateFilterTxt = readProperty("information.dateFilter.text");
 
-        maxDateFilterTxt = readProperty("dateFilter.maxDate");
-
-        deleteLayerMenuItemTxt = readProperty("layer.menu.delete.text");
-        deleteLayerMenuItemShortDescription = readProperty("layer.menu.delete.shortDescription");
-        deleteLayerMenuItemImageDirectory = readProperty("layer.menu.delete.image.directory");
-        deleteLayerMenuItemImageName = readProperty("layer.menu.delete.image.name");
+        layerDeleteMenuItemLbl = readProperty("layer.menu.delete.lbl");
+        layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
+        layerFeedbackMenuItemLbl = readProperty("layer.menu.feedback.lbl");
     }
 
 
@@ -203,10 +197,6 @@ public final class GuiConfig extends BaseConfig {
         return prefNearbyLbl;
     }
 
-    public String getBtnFilterTlt() {
-        return btnFilterTlt;
-    }
-
     public String getBtnPreviousTlt() {
         return btnPreviousTlt;
     }
@@ -223,8 +213,12 @@ public final class GuiConfig extends BaseConfig {
         return btnWebPageTlt;
     }
 
-    public String getBtnFeedbackTlt() {
-        return btnFeedbackTlt;
+    public String getBtnManualImageSwitchTlt() {
+        return btnManualImageSwitchTlt;
+    }
+
+    public String getBtnManualSegmentSwitchTlt() {
+        return btnManualSegmentSwitchTlt;
     }
 
     public String getDlgFilterTitle() {
@@ -239,8 +233,8 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterUserLbl;
     }
 
-    public String getDlgFilterLoginWarning() {
-        return dlgFilterLoginWarning;
+    public String getDlgFilterLoginWarningLbl() {
+        return dlgFilterLoginWarningLbl;
     }
 
     public String getBtnOkLbl() {
@@ -303,23 +297,15 @@ public final class GuiConfig extends BaseConfig {
         return confirmDateFilterTxt;
     }
 
-    public String getMaxDateFilterTxt() {
-        return maxDateFilterTxt;
+    public String getLayerDeleteMenuItemLbl() {
+        return layerDeleteMenuItemLbl;
     }
 
-    public String getDeleteLayerMenuItemTxt() {
-        return deleteLayerMenuItemTxt;
+    public String getLayerDeleteMenuItemTlt() {
+        return layerDeleteMenuItemTlt;
     }
 
-    public String getDeleteLayerMenuItemShortDescription() {
-        return deleteLayerMenuItemShortDescription;
-    }
-
-    public String getDeleteLayerMenuItemImageDirectory() {
-        return deleteLayerMenuItemImageDirectory;
-    }
-
-    public String getDeleteLayerMenuItemImageName() {
-        return deleteLayerMenuItemImageName;
+    public String getLayerFeedbackMenuItemLbl() {
+        return layerFeedbackMenuItemLbl;
     }
 }

@@ -76,6 +76,7 @@ public final class Util {
             zoomLevel = (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
                     Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
         }
+        System.out.println(" map view: " + Main.map.mapView.getScale() + " , zoom: " + zoomLevel);
         return zoomLevel;
     }
 

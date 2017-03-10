@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.GuiBuilder;
 
@@ -63,9 +63,9 @@ class PreferencePanel extends JPanel {
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PHOTO_ZOOM);
         spPhotoZoom = GuiBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
-                ServiceConfig.getInstance().getMaxZoom(), false, getFont().deriveFont(Font.PLAIN),
+                Config.getInstance().getMaxZoom(), false, getFont().deriveFont(Font.PLAIN),
                 ComponentOrientation.LEFT_TO_RIGHT);
-        ((SpinnerNumberModel) spPhotoZoom.getModel()).setMinimum(ServiceConfig.getInstance().getPhotoZoom());
+        ((SpinnerNumberModel) spPhotoZoom.getModel()).setMinimum(Config.getInstance().getPhotoZoom());
         add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
         cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(),
                 new JCheckBox().getFont().deriveFont(Font.PLAIN), mapViewSettings.isManualSwitchFlag(),

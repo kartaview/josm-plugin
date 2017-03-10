@@ -15,16 +15,18 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.cnf;
 
+import java.util.Date;
 import com.telenav.josm.common.cnf.BaseConfig;
+import com.telenav.josm.common.util.DateUtil;
 
 
 /**
- * Loads service related information.
+ * Loads various run-time properties.
  *
  * @author Beata
  * @version $Revision$
  */
-public final class ServiceConfig extends BaseConfig {
+public final class Config extends BaseConfig {
 
     private static final int DEFAULT_SEGMENT_ZOOM = 10;
     private static final int DEFAULT_PHOTO_ZOOM = 17;
@@ -32,8 +34,8 @@ public final class ServiceConfig extends BaseConfig {
     private static final int MAX_RADIUS = 5000;
     private static final int MIN_RADIUS = 1;
     private static final int MAX_ITEMS = 5000;
-    private static final String CONFIG_FILE = "openstreetcam_service.properties";
-    private static final ServiceConfig INSTANCE = new ServiceConfig();
+    private static final String CONFIG_FILE = "openstreetcam.properties";
+    private static final Config INSTANCE = new Config();
 
     private final String baseUrl;
     private final String serviceUrl;
@@ -45,8 +47,9 @@ public final class ServiceConfig extends BaseConfig {
     private final int minRadius;
     private final int maxRadius;
     private final int maxItems;
+    private final Date maxDate;
 
-    private ServiceConfig() {
+    private Config() {
         super(CONFIG_FILE);
 
         baseUrl = readProperty("service.url");
@@ -59,10 +62,11 @@ public final class ServiceConfig extends BaseConfig {
         minRadius = readIntegerProperty("minRadius", MIN_RADIUS);
         maxRadius = readIntegerProperty("maxRadius", MAX_RADIUS);
         maxItems = readIntegerProperty("maxItems", MAX_ITEMS);
+        maxDate = DateUtil.parseDay(readProperty("maxDate"));
     }
 
 
-    public static ServiceConfig getInstance() {
+    public static Config getInstance() {
         return INSTANCE;
     }
 
@@ -95,7 +99,6 @@ public final class ServiceConfig extends BaseConfig {
         return maxZoom;
     }
 
-
     public int getMinRadius() {
         return minRadius;
     }
@@ -106,5 +109,9 @@ public final class ServiceConfig extends BaseConfig {
 
     public int getMaxItems() {
         return maxItems;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
     }
 }

@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
 
@@ -56,9 +56,12 @@ class DataUpdateThread implements Runnable {
         if (Main.map != null && Main.map.mapView != null) {
             // case 1 search for segments
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+
+            detailsDialog.enableDataSwitchAction(zoom);
             final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
             final int photoZoom = PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom();
-            if (zoom >= ServiceConfig.getInstance().getSegmentZoom() && zoom < photoZoom) {
+            if (layer.getSelectedSequence() == null && zoom >= Config.getInstance().getSegmentZoom()
+                    && zoom < photoZoom) {
                 if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
                     // clear view
                     updateUI(null, false);
@@ -66,7 +69,7 @@ class DataUpdateThread implements Runnable {
                 final List<BoundingBox> areas = Util.currentBoundingBoxes();
                 final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
                 updateUI(new DataSet(segments, null), checkSelectedPhoto);
-            } else if (zoom >= photoZoom) {
+            } else if (zoom >= photoZoom || layer.getSelectedPhoto() != null) {
                 // case 2 search for photos
                 if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
                     // clear view

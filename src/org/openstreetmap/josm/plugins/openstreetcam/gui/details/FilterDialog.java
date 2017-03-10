@@ -38,7 +38,7 @@ import com.telenav.josm.common.gui.ModalDialog;
  * @author Beata
  * @version $Revision$
  */
-class FilterDialog extends ModalDialog {
+public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
     private static final Dimension DIM = new Dimension(350, 150);
@@ -46,7 +46,7 @@ class FilterDialog extends ModalDialog {
     private FilterPanel pnlFilter;
 
 
-    FilterDialog() {
+    public FilterDialog() {
         super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon().getImage());
         createComponents();
         setLocationRelativeTo(Main.map.mapView);

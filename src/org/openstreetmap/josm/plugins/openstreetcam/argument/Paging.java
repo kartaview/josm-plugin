@@ -15,7 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 
 
 /**
@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
  */
 public class Paging {
 
-    public static final Paging DEFAULT = new Paging(1, ServiceConfig.getInstance().getMaxItems());
+    public static final Paging DEFAULT = new Paging(1, Config.getInstance().getMaxItems());
 
     private final int page;
     private final int itemsPerPage;
