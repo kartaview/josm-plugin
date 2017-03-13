@@ -17,6 +17,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
@@ -25,6 +26,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import java.util.Date;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -64,7 +66,7 @@ final class LoadManager {
     MapViewSettings loadMapViewSettings() {
         final String photoZoomVal = Main.pref.get(MAP_VIEW_PHOTO_ZOOM);
         final int photoZoom = (photoZoomVal != null && !photoZoomVal.isEmpty()) ? Integer.valueOf(photoZoomVal)
-                : Config.getInstance().getPhotoZoom();
+                : Config.getInstance().getMapPhotoZoom();
         final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
         return new MapViewSettings(photoZoom, manualSwitchFlag);
 
@@ -101,5 +103,16 @@ final class LoadManager {
     boolean loadPanelOpenedFlag() {
         final String layerOpened = Main.pref.get(PANEL_OPENED);
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+    }
+
+    DataType loadManualSwitchDataType() {
+        final String value = Main.pref.get(MANUAL_SWITCH_DATA_TYPE);
+        DataType dataType = null;
+        try {
+            dataType = DataType.valueOf(value);
+        } catch (final RuntimeException e) {
+            dataType = null;
+        }
+        return dataType;
     }
 }

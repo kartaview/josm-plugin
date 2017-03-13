@@ -45,6 +45,7 @@ public final class Keys {
     static final String CACHE_NEARBY_COUNT = "openstreetcam.preferences.cache.nearby";
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
     static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
+    static final String MANUAL_SWITCH_DATA_TYPE = "openstreetcam.mapView.manualSwitch.dataType";
 
     private Keys() {}
 }

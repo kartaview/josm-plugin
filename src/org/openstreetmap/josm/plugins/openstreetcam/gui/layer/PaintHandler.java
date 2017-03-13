@@ -140,22 +140,23 @@ class PaintHandler {
     }
 
     private SortedMap<Integer, Float> generateSegmentTransparencyMap(final List<Segment> segments) {
-        final SortedSet<Integer> coverages = new TreeSet<>();
-        for (final Segment segment : segments) {
-            coverages.add(segment.getCoverage());
-        }
-
         final SortedMap<Integer, Float> map = new TreeMap<>();
-        map.put(coverages.first(), SEGMENT_TRANSPARENCY[0]);
-        map.put(coverages.last(), SEGMENT_TRANSPARENCY[SEGMENT_TRANSPARENCY.length - 1]);
+        if (!segments.isEmpty()) {
+            final SortedSet<Integer> coverages = new TreeSet<>();
+            for (final Segment segment : segments) {
+                coverages.add(segment.getCoverage());
+            }
+            map.put(coverages.first(), SEGMENT_TRANSPARENCY[0]);
+            map.put(coverages.last(), SEGMENT_TRANSPARENCY[SEGMENT_TRANSPARENCY.length - 1]);
 
-        final Integer[] list = coverages.toArray(new Integer[0]);
-        final int count = coverages.size() / SEGMENT_TRANSPARENCY.length;
-        int index = 0;
-        for (int i = 0; i < SEGMENT_TRANSPARENCY.length - 1; i++) {
-            index += count;
-            map.put(list[index], SEGMENT_TRANSPARENCY[i]);
+            final Integer[] list = coverages.toArray(new Integer[0]);
+            final int count = coverages.size() / SEGMENT_TRANSPARENCY.length;
+            int index = 0;
+            for (int i = 0; i < SEGMENT_TRANSPARENCY.length - 1; i++) {
+                index += count;
+                map.put(list[index], SEGMENT_TRANSPARENCY[i]);
 
+            }
         }
         return map;
     }

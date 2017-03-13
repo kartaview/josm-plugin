@@ -88,8 +88,8 @@ public class Service {
                 new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
         String response = null;
         try {
-            final HttpConnector connector = new HttpConnector(
-                    Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
+            final HttpConnector connector =
+                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -112,8 +112,8 @@ public class Service {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         String response = null;
         try {
-            final HttpConnector connector = new HttpConnector(
-                    Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
+            final HttpConnector connector =
+                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -131,7 +131,7 @@ public class Service {
      * @throws ServiceException if the operation failed
      */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
-        final StringBuilder url = new StringBuilder(Config.getInstance().getBaseUrl());
+        final StringBuilder url = new StringBuilder(Config.getInstance().getServiceBaseUrl());
         url.append(photoName);
         byte[] image = new byte[0];
         try {
@@ -154,17 +154,18 @@ public class Service {
      */
     public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final int zoom)
             throws ServiceException {
-        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(area, osmUserId, zoom, Paging.DEFAULT);
+        final ListResponse<Segment> listSegmentResponse =
+                listMatchedTacks(area, osmUserId, zoom, Paging.TRACKS_DEFAULT);
         final Set<Segment> segments = new HashSet<>();
         if (listSegmentResponse != null) {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
-            if (listSegmentResponse.getTotalItems() > Config.getInstance().getMaxItems()) {
-                final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getMaxItems()
-                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getMaxItems()) + 1 : 2;
+            if (listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()) {
+                final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()
+                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1 : 2;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
                 for (int i = 2; i <= pages; i++) {
-                    final Paging paging = new Paging(i, Config.getInstance().getMaxItems());
+                    final Paging paging = new Paging(i, Config.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
                             futures.add(executor.submit(callable));
@@ -189,7 +190,7 @@ public class Service {
         String response = null;
         try {
             final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
+                    new HttpConnector(Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);

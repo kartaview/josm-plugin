@@ -21,8 +21,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_AUTH_METHOD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_OAUTH_SECRET;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -224,6 +226,19 @@ public final class PreferenceManager {
     }
 
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
-        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue);
+        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
+                || hasManualSwitchDataTypeChanged(key, newValue);
+    }
+
+    private boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
+        return MANUAL_SWITCH_DATA_TYPE.equals(key) && newValue != null;
+    }
+
+    public void saveManualSwitchDataType(final DataType dataType) {
+        saveManager.saveManualSwitchDataType(dataType);
+    }
+
+    public DataType loadManualSwitchDataType() {
+        return loadManager.loadManualSwitchDataType();
     }
 }

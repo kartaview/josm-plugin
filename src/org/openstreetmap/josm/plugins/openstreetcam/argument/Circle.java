@@ -43,20 +43,15 @@ public class Circle {
         this.center = bounds.toBBox().getCenter();
         final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
 
-        if (distance > Config.getInstance().getMaxRadius()) {
-            this.radius = Config.getInstance().getMaxRadius();
+        if (distance > Config.getInstance().getNearbyPhotosMaxRadius()) {
+            this.radius = Config.getInstance().getNearbyPhotosMaxRadius();
         } else {
-            if (distance < Config.getInstance().getMinRadius()) {
-                this.radius = Config.getInstance().getMinRadius();
+            if (distance < Config.getInstance().getNearbyPhotosMinRadius()) {
+                this.radius = Config.getInstance().getNearbyPhotosMinRadius();
             } else {
                 this.radius = distance;
             }
         }
-    }
-
-    public Circle(final LatLon center, final int radius) {
-        this.center = center;
-        this.radius = radius;
     }
 
     public LatLon getCenter() {

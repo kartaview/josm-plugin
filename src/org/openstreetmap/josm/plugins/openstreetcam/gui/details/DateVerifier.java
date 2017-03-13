@@ -89,7 +89,7 @@ class DateVerifier implements KeyListener {
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            if (newDate.compareTo(Config.getInstance().getMaxDate()) > 0) {
+            if (newDate.compareTo(Config.getInstance().getFilterMaxDate()) > 0) {
                 JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 return false;

@@ -49,7 +49,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEd
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -87,6 +86,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
+        PreferenceManager.getInstance().saveManualSwitchDataType(null);
     }
 
     @Override
@@ -191,8 +191,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getPhotoZoom()
-                && SwingUtilities.isLeftMouseButton(event)) {
+        if (Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
+                .getPhotoZoom() && SwingUtilities.isLeftMouseButton(event)) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
@@ -205,7 +205,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                         loadSequence(photo);
                     }
                     selectPhoto(photo);
-
                 }
             }
         }
@@ -216,6 +215,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             if (photo == null) {
                 CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
+                detailsDialog.enableManualSwitchButton(true);
             } else {
                 ThreadPool.getInstance().execute(() -> {
                     final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
@@ -234,9 +234,11 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             detailsDialog.updateUI(photo);
             SwingUtilities.invokeLater(() -> {
                 if (layer.getSelectedSequence() != null) {
+                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                 } else {
+                    detailsDialog.enableManualSwitchButton(true);
                     detailsDialog.enableSequenceActions(false, false);
                 }
             });
@@ -251,6 +253,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                 SwingUtilities.invokeLater(() -> {
                     layer.setSelectedSequence(sequence);
+                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                     Main.map.repaint();
@@ -280,7 +283,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     public void mouseExited(final MouseEvent event) {
         // no logic for this action
     }
-
 
     /* implementation of LocationObserver */
 
@@ -378,4 +380,5 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             }
         }
     }
+
 }

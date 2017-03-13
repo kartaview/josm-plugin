@@ -18,6 +18,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
@@ -25,6 +26,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -83,5 +85,10 @@ final class SaveManager {
 
     void savePanelOpenedFlag(final boolean isPanelOpened) {
         Main.pref.put(PANEL_OPENED, isPanelOpened);
+    }
+
+    void saveManualSwitchDataType(final DataType dataType) {
+        final String value = dataType != null ? dataType.name() : "";
+        Main.pref.put(MANUAL_SWITCH_DATA_TYPE, value);
     }
 }

@@ -76,7 +76,6 @@ public final class Util {
             zoomLevel = (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
                     Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
         }
-        System.out.println(" map view: " + Main.map.mapView.getScale() + " , zoom: " + zoomLevel);
         return zoomLevel;
     }
 
@@ -246,6 +245,10 @@ public final class Util {
             }
         } else {
             final Bounds bounds = Main.map.mapView.getRealBounds();
+
+
+            final LatLon latLon = extrapolate(bounds.getMax(), 0, 100);
+            bounds.extend(latLon);
             result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
                     bounds.getMin().lon()));
         }

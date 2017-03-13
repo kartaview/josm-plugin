@@ -28,41 +28,55 @@ import com.telenav.josm.common.util.DateUtil;
  */
 public final class Config extends BaseConfig {
 
-    private static final int DEFAULT_SEGMENT_ZOOM = 10;
-    private static final int DEFAULT_PHOTO_ZOOM = 17;
-    private static final int MAX_ZOOM = 21;
     private static final int MAX_RADIUS = 5000;
     private static final int MIN_RADIUS = 1;
     private static final int MAX_ITEMS = 5000;
+    private static final int SEGMENT_ZOOM = 10;
+    private static final int PHOTO_ZOOM = 15;
+    private static final int MAX_ZOOM = 18;
+
     private static final String CONFIG_FILE = "openstreetcam.properties";
     private static final Config INSTANCE = new Config();
 
-    private final String baseUrl;
+
+    private final String serviceBaseUrl;
     private final String serviceUrl;
     private final String photoDetailsUrl;
     private final String feedbackUrl;
-    private final int segmentZoom;
-    private final int maxZoom;
-    private final int photoZoom;
-    private final int minRadius;
-    private final int maxRadius;
-    private final int maxItems;
-    private final Date maxDate;
+
+    private final int nearbyPhotosMaxRadius;
+    private final int nearbyPhotosMinRadius;
+    private final int nearbyPhotosMaxItems;
+
+    private final int tracksMaxItems;
+    private final int tracksMaxZoom;
+
+    private final Date filterMaxDate;
+    private final int preferencesMaxZoom;
+    private final int mapPhotoZoom;
+    private final int mapSegmentZoom;
+
 
     private Config() {
         super(CONFIG_FILE);
 
-        baseUrl = readProperty("service.url");
-        serviceUrl = baseUrl + readProperty("service.version");
-        photoDetailsUrl = baseUrl + readProperty("service.details");
+        serviceBaseUrl = readProperty("service.url");
+        serviceUrl = serviceBaseUrl + readProperty("service.version");
+        photoDetailsUrl = serviceBaseUrl + readProperty("service.details");
         feedbackUrl = readProperty("feedback.url");
-        segmentZoom = readIntegerProperty("segmentZoom", DEFAULT_SEGMENT_ZOOM);
-        maxZoom = readIntegerProperty("maxZoom", MAX_ZOOM);
-        photoZoom = readIntegerProperty("photoZoom", DEFAULT_PHOTO_ZOOM);
-        minRadius = readIntegerProperty("minRadius", MIN_RADIUS);
-        maxRadius = readIntegerProperty("maxRadius", MAX_RADIUS);
-        maxItems = readIntegerProperty("maxItems", MAX_ITEMS);
-        maxDate = DateUtil.parseDay(readProperty("maxDate"));
+
+        nearbyPhotosMaxRadius = readIntegerProperty("nearbyPhotos.maxRadius", MAX_RADIUS);
+        nearbyPhotosMinRadius = readIntegerProperty("nearbyPhotos.minRadius", MIN_RADIUS);
+        nearbyPhotosMaxItems = readIntegerProperty("nearbyPhotos.maxItems", MAX_ITEMS);
+
+        tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
+        tracksMaxZoom = readIntegerProperty("tracks.maxZoom", MAX_ZOOM);
+
+
+        filterMaxDate = DateUtil.parseDay(readProperty("filter.maxDate"));
+        preferencesMaxZoom = readIntegerProperty("preferences.maxZoom", MAX_ZOOM);
+        mapPhotoZoom = readIntegerProperty("map.photoZoom", PHOTO_ZOOM);
+        mapSegmentZoom = readIntegerProperty("map.segmentZoom", SEGMENT_ZOOM);
     }
 
 
@@ -70,9 +84,8 @@ public final class Config extends BaseConfig {
         return INSTANCE;
     }
 
-
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getServiceBaseUrl() {
+        return serviceBaseUrl;
     }
 
     public String getServiceUrl() {
@@ -87,31 +100,39 @@ public final class Config extends BaseConfig {
         return feedbackUrl;
     }
 
-    public int getSegmentZoom() {
-        return segmentZoom;
+    public int getNearbyPhotosMaxRadius() {
+        return nearbyPhotosMaxRadius;
     }
 
-    public int getPhotoZoom() {
-        return photoZoom;
+    public int getNearbyPhotosMinRadius() {
+        return nearbyPhotosMinRadius;
     }
 
-    public int getMaxZoom() {
-        return maxZoom;
+    public int getNearbyPhotosMaxItems() {
+        return nearbyPhotosMaxItems;
     }
 
-    public int getMinRadius() {
-        return minRadius;
+    public int getTracksMaxItems() {
+        return tracksMaxItems;
     }
 
-    public int getMaxRadius() {
-        return maxRadius;
+    public int getTracksMaxZoom() {
+        return tracksMaxZoom;
     }
 
-    public int getMaxItems() {
-        return maxItems;
+    public Date getFilterMaxDate() {
+        return filterMaxDate;
     }
 
-    public Date getMaxDate() {
-        return maxDate;
+    public int getPreferencesMaxZoom() {
+        return preferencesMaxZoom;
+    }
+
+    public int getMapPhotoZoom() {
+        return mapPhotoZoom;
+    }
+
+    public int getMapSegmentZoom() {
+        return mapSegmentZoom;
     }
 }

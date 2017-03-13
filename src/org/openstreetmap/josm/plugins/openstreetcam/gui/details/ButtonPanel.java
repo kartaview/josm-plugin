@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
@@ -80,8 +81,9 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
 
-        btnManualSwitch = GuiBuilder.buildButton(null, iconConfig.getManualSwitchImageIcon(),
+        btnManualSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
                 guiConfig.getBtnManualImageSwitchTlt(), false);
+        btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
         btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
                 guiConfig.getBtnPreviousTlt(), false);
         btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
@@ -125,29 +127,36 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         if (photo != null) {
             btnLocation.setEnabled(true);
             btnWebPage.setEnabled(true);
-            btnManualSwitch.setEnabled(false);
         } else {
             enableSequenceActions(false, false);
-            btnManualSwitch.setEnabled(true);
             btnLocation.setEnabled(false);
             btnWebPage.setEnabled(false);
         }
     }
 
-    void enableDataSwitchAction(final int zoom) {
-        if (zoom < PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom()) {
-            btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
-        } else {
+    /**
+     * Enables or disables the manual data switch button.
+     *
+     * @param true/false
+     */
+    void enableManualSwitchButton(final boolean enabled) {
+        btnManualSwitch.setEnabled(enabled);
+    }
+
+    void updateManualSwitchButton(final DataType dataType, final int zoom) {
+        if (dataType.equals(DataType.PHOTO)) {
             btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
             btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualSegmentSwitchTlt());
-        }
-        if (zoom >= Config.getInstance().getPhotoZoom()) {
-            btnManualSwitch.setEnabled(true);
+            btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
-            btnManualSwitch.setEnabled(false);
+            btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
+            btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
         }
+        final boolean enabled = zoom >= Config.getInstance().getMapPhotoZoom();
+        btnManualSwitch.setEnabled(enabled);
     }
+
 
     /**
      * Enables or disables the "OpenStreetCam Sequence" related action buttons.
@@ -178,6 +187,31 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     @Override
     public void notifyObserver(final int index) {
         this.sequenceObserver.selectSequencePhoto(index);
+    }
+
+
+    private final class ManualDataSwitchAction extends AbstractAction {
+
+        private static final long serialVersionUID = -6266140137863469921L;
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (event.getActionCommand().equals(DataType.PHOTO.toString())) {
+                // request segments
+                PreferenceManager.getInstance().saveManualSwitchDataType(DataType.PHOTO);
+                btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
+                btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualSegmentSwitchTlt());
+                btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
+            } else {
+                // request images
+                PreferenceManager.getInstance().saveManualSwitchDataType(DataType.SEGMENT);
+                btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+                btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
+                btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
+
+            }
+
+        }
     }
 
 
@@ -213,7 +247,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-
             if (photo != null) {
                 notifyObserver();
             }
@@ -241,4 +274,5 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             }
         }
     }
+
 }

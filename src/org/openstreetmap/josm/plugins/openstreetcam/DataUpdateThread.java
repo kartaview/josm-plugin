@@ -19,7 +19,9 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
@@ -51,35 +53,51 @@ class DataUpdateThread implements Runnable {
         this.checkSelectedPhoto = checkSelectedPhoto;
     }
 
+
     @Override
     public void run() {
         if (Main.map != null && Main.map.mapView != null) {
             // case 1 search for segments
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
 
-            detailsDialog.enableDataSwitchAction(zoom);
-            final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
-            final int photoZoom = PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom();
-            if (layer.getSelectedSequence() == null && zoom >= Config.getInstance().getSegmentZoom()
-                    && zoom < photoZoom) {
-                if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
-                    // clear view
-                    updateUI(null, false);
+            final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+            final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
+            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+            if (layer.getSelectedSequence() == null && (zoom >= Config.getInstance().getMapSegmentZoom()
+                    && (zoom < mapViewSettings.getPhotoZoom() || mapViewSettings.isManualSwitchFlag())
+                    && dataType == null) || (dataType != null && dataType.equals(DataType.SEGMENT))) {
+                detailsDialog.updateManualSwitchButton(DataType.SEGMENT, zoom);
+                updateSegments(listFilter, zoom);
+            } else if ((zoom >= mapViewSettings.getPhotoZoom() && !mapViewSettings.isManualSwitchFlag())
+                    || (dataType != null && dataType.equals(DataType.PHOTO)
+                    && zoom >= Config.getInstance().getMapPhotoZoom())) {
+                if (layer.getSelectedSequence() == null) {
+                    detailsDialog.updateManualSwitchButton(DataType.PHOTO, zoom);
                 }
-                final List<BoundingBox> areas = Util.currentBoundingBoxes();
-                final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
-                updateUI(new DataSet(segments, null), checkSelectedPhoto);
-            } else if (zoom >= photoZoom || layer.getSelectedPhoto() != null) {
-                // case 2 search for photos
-                if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
-                    // clear view
-                    updateUI(null, false);
-                }
-                final List<Circle> areas = Util.currentCircles();
-                final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-                updateUI(new DataSet(null, photos), checkSelectedPhoto);
+                updatePhotos(listFilter);
             }
         }
+    }
+
+    private void updateSegments(final ListFilter filter, final int zoom) {
+        if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
+            // clear view
+            updateUI(null, false);
+        }
+        final List<BoundingBox> areas = Util.currentBoundingBoxes();
+        final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
+        updateUI(new DataSet(segments, null), checkSelectedPhoto);
+
+    }
+
+    private void updatePhotos(final ListFilter filter) {
+        if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
+            // clear view
+            updateUI(null, false);
+        }
+        final List<Circle> areas = Util.currentCircles();
+        final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+        updateUI(new DataSet(null, photos), checkSelectedPhoto);
     }
 
 

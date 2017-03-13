@@ -77,7 +77,7 @@ class FilterPanel extends JPanel {
         pickerDate.getMonthView().setSelectionDate(date);
         pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate.getEditor()));
-        if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getPhotoZoom()) {
+        if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
             pickerDate.setEnabled(false);
         }
         add(pickerDate, Constraints.PICKER_DATE);
@@ -165,7 +165,7 @@ class FilterPanel extends JPanel {
     }
 
     private boolean checkAcceptance(final Date date) {
-        if (date.compareTo(Config.getInstance().getMaxDate()) > 0) {
+        if (date.compareTo(Config.getInstance().getFilterMaxDate()) > 0) {
             JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             return false;

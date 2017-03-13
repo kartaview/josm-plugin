@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import com.telenav.josm.common.argument.BoundingBox;
 
 
@@ -45,15 +46,31 @@ final class HttpContentBuilder {
             content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
         addOsmUserId(osmUserId);
-        addPaging(paging);
+        if (paging == null) {
+
+            addPaging(Paging.NEARBY_PHOTOS_DEAFULT);
+        } else {
+            addPaging(paging);
+        }
     }
 
     HttpContentBuilder(final BoundingBox area, final Long osmUserId, final int zoom, final Paging paging) {
         content.put(RequestConstants.BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
         content.put(RequestConstants.BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
-        content.put(RequestConstants.ZOOM, Integer.toString(zoom));
+
+        // OSC zoom == JOSM zoom -1
+        final int oscZoom = zoom - 1;
+        if (oscZoom >= Config.getInstance().getTracksMaxZoom()) {
+            content.put(RequestConstants.ZOOM, Integer.toString(Config.getInstance().getTracksMaxZoom()));
+        } else {
+            content.put(RequestConstants.ZOOM, Integer.toString(oscZoom));
+        }
         addOsmUserId(osmUserId);
-        addPaging(paging);
+        if (paging == null) {
+            addPaging(Paging.TRACKS_DEFAULT);
+        } else {
+            addPaging(paging);
+        }
     }
 
     HttpContentBuilder(final Long id) {
@@ -71,12 +88,7 @@ final class HttpContentBuilder {
     }
 
     private void addPaging(final Paging paging) {
-        if (paging == null) {
-            content.put(RequestConstants.PAGE, Integer.toString(Paging.DEFAULT.getPage()));
-            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(Paging.DEFAULT.getItemsPerPage()));
-        } else {
-            content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
-            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
-        }
+        content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
+        content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
     }
 }
