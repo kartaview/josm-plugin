@@ -87,7 +87,6 @@ class DataUpdateThread implements Runnable {
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
         updateUI(new DataSet(segments, null), checkSelectedPhoto);
-
     }
 
     private void updatePhotos(final ListFilter filter) {
