@@ -191,8 +191,9 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
-                .getPhotoZoom() && SwingUtilities.isLeftMouseButton(event)) {
+        if ((Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
+                .getPhotoZoom() || (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null))
+                && SwingUtilities.isLeftMouseButton(event)) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
@@ -247,6 +248,20 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     }
 
     private void loadSequence(final Photo photo) {
+        if (layer.getSelectedPhoto() != null && layer.getSelectedSequence() != null) {
+            // clean up old sequence
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
+                    layer.setSelectedSequence(null);
+                    detailsDialog.enableSequenceActions(false, false);
+                    detailsDialog.enableManualSwitchButton(true);
+                    Main.map.repaint();
+                }
+            });
+        }
         ThreadPool.getInstance().execute(() -> {
 
             final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
