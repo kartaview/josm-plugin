@@ -17,7 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import com.telenav.josm.common.util.EntityUtil;
 
 
@@ -43,11 +43,11 @@ public class Circle {
         this.center = bounds.toBBox().getCenter();
         final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
 
-        if (distance > ServiceConfig.getInstance().getMaxRadius()) {
-            this.radius = ServiceConfig.getInstance().getMaxRadius();
+        if (distance > Config.getInstance().getNearbyPhotosMaxRadius()) {
+            this.radius = Config.getInstance().getNearbyPhotosMaxRadius();
         } else {
-            if (distance < ServiceConfig.getInstance().getMinRadius()) {
-                this.radius = ServiceConfig.getInstance().getMinRadius();
+            if (distance < Config.getInstance().getNearbyPhotosMinRadius()) {
+                this.radius = Config.getInstance().getNearbyPhotosMinRadius();
             } else {
                 this.radius = distance;
             }
@@ -82,5 +82,10 @@ public class Circle {
             result = result && EntityUtil.bothNullOrEqual(center, other.getCenter());
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "center:" + center.toDisplayString() + " radius:" + radius;
     }
 }

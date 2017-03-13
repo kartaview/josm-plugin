@@ -14,11 +14,14 @@ import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -35,6 +38,8 @@ class PreferencePanel extends JPanel {
     private static final long serialVersionUID = -8056772228573127238L;
 
     /* photo preference settings */
+    private JSpinner spPhotoZoom;
+    private JCheckBox cbManualSwitch;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox cbDisplayTrack;
     private JSpinner spMemoryCount;
@@ -46,10 +51,27 @@ class PreferencePanel extends JPanel {
     PreferencePanel() {
         super(new GridBagLayout());
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
+        createMapViewSettings(preferenceSettings.getMapViewSettings());
         createPhotoSettingsComponents(preferenceSettings.getPhotoSettings());
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
     }
 
+    private void createMapViewSettings(final MapViewSettings mapViewSettings) {
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMapViewLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_MAP_VIEW);
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPhotoZoomLbl(), getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_PHOTO_ZOOM);
+        spPhotoZoom = GuiBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
+                Config.getInstance().getPreferencesMaxZoom(), false, getFont().deriveFont(Font.PLAIN),
+                ComponentOrientation.LEFT_TO_RIGHT);
+        ((SpinnerNumberModel) spPhotoZoom.getModel()).setMinimum(Config.getInstance().getMapPhotoZoom());
+        add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
+        cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), mapViewSettings.isManualSwitchFlag(),
+                getBackground());
+        add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
+    }
 
     private void createPhotoSettingsComponents(final PhotoSettings settings) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), getFont().deriveFont(Font.PLAIN),
@@ -100,8 +122,12 @@ class PreferencePanel extends JPanel {
     }
 
     PreferenceSettings getSelectedSettings() {
-        return new PreferenceSettings(new PhotoSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected()),
-                new CacheSettings((int) spMemoryCount.getValue(), (int) spDiskCount.getValue(),
-                        (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue()));
+        final MapViewSettings mapViewSettings =
+                new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
+        final PhotoSettings photoSettings =
+                new PhotoSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected());
+        final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
+                (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
+        return new PreferenceSettings(mapViewSettings, photoSettings, cacheSettings);
     }
 }

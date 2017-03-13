@@ -21,24 +21,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.net.URI;
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
-import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -51,7 +48,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, PreferenceChangedListener {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -63,12 +60,11 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     private static final int COLS = 5;
 
     /* the panel's components */
-    private final JButton btnFilter;
+    private final JButton btnManualSwitch;
     private final JButton btnPrevious;
     private final JButton btnNext;
     private final JButton btnLocation;
     private final JButton btnWebPage;
-    private final JButton btnFeedbackPage;
 
     /* notifies the plugin main class, if the user click's on the location button */
     private LocationObserver locationObserver;
@@ -84,9 +80,10 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
-        final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
-                ? iconConfig.getFilterIcon() : iconConfig.getFilterSelectedIcon();
-        btnFilter = GuiBuilder.buildButton(new DisplayFilterDialogAction(), icon, guiConfig.getBtnFilterTlt(), true);
+
+        btnManualSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
+                guiConfig.getBtnManualImageSwitchTlt(), false);
+        btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
         btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
                 guiConfig.getBtnPreviousTlt(), false);
         btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
@@ -95,31 +92,27 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
-        btnFeedbackPage = GuiBuilder.buildButton(new OpenFeedbackPageAction(), iconConfig.getFeedbackIcon(),
-                guiConfig.getBtnFeedbackTlt(), true);
 
-        add(btnFilter);
+        add(btnManualSwitch);
         add(btnPrevious);
         add(btnNext);
         add(btnLocation);
         add(btnWebPage);
-        add(btnFeedbackPage);
 
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
 
         setPreferredSize(DIM);
-        Main.pref.addPreferenceChangeListener(this);
     }
 
 
@@ -140,6 +133,30 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             btnWebPage.setEnabled(false);
         }
     }
+
+    /**
+     * Enables or disables the manual data switch button.
+     *
+     * @param true/false
+     */
+    void enableManualSwitchButton(final boolean enabled) {
+        btnManualSwitch.setEnabled(enabled);
+    }
+
+    void updateManualSwitchButton(final DataType dataType, final int zoom) {
+        if (dataType.equals(DataType.PHOTO)) {
+            btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
+            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualSegmentSwitchTlt());
+            btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
+        } else {
+            btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
+            btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
+        }
+        final boolean enabled = zoom >= Config.getInstance().getMapPhotoZoom();
+        btnManualSwitch.setEnabled(enabled);
+    }
+
 
     /**
      * Enables or disables the "OpenStreetCam Sequence" related action buttons.
@@ -163,16 +180,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
     @Override
-    public void preferenceChanged(final PreferenceChangeEvent event) {
-        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))
-                && event.getKey().equals(Keys.FILTERS_CHANGED)) {
-            final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
-                    ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-            btnFilter.setIcon(icon);
-        }
-    }
-
-    @Override
     public void registerObserver(final SequenceObserver sequenceObserver) {
         this.sequenceObserver = sequenceObserver;
     }
@@ -180,6 +187,31 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     @Override
     public void notifyObserver(final int index) {
         this.sequenceObserver.selectSequencePhoto(index);
+    }
+
+
+    private final class ManualDataSwitchAction extends AbstractAction {
+
+        private static final long serialVersionUID = -6266140137863469921L;
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (event.getActionCommand().equals(DataType.PHOTO.toString())) {
+                // request segments
+                PreferenceManager.getInstance().saveManualSwitchDataType(DataType.PHOTO);
+                btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
+                btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualSegmentSwitchTlt());
+                btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
+            } else {
+                // request images
+                PreferenceManager.getInstance().saveManualSwitchDataType(DataType.SEGMENT);
+                btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+                btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
+                btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
+
+            }
+
+        }
     }
 
 
@@ -215,7 +247,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-
             if (photo != null) {
                 notifyObserver();
             }
@@ -232,7 +263,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final StringBuilder link = new StringBuilder(ServiceConfig.getInstance().getPhotoDetailsUrl());
+                final StringBuilder link = new StringBuilder(Config.getInstance().getPhotoDetailsUrl());
                 link.append(photo.getSequenceId()).append("/").append(photo.getSequenceIndex());
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));
@@ -244,21 +275,4 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         }
     }
 
-
-    /* opens the feedback web page */
-
-    private final class OpenFeedbackPageAction extends AbstractAction {
-
-        private static final long serialVersionUID = 4196639030623647016L;
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            try {
-                OpenBrowser.displayUrl(new URI(ServiceConfig.getInstance().getFeedbackUrl()));
-            } catch (final Exception e) {
-                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageTxt(),
-                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
 }

@@ -21,10 +21,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -39,7 +39,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 public class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
-    private List<Photo> photos;
+    private DataSet dataSet;
     private Photo selectedPhoto;
     private Sequence selectedSequence;
 
@@ -48,26 +48,31 @@ public class OpenStreetCamLayer extends AbtractLayer {
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
-        if (photos != null) {
+        if (dataSet != null) {
             final Composite originalComposite = graphics.getComposite();
             final Stroke originalStorke = graphics.getStroke();
-            paintHandler.drawPhotos(graphics, mapView, photos, selectedPhoto, selectedSequence);
+            if (dataSet.getSegments() != null) {
+                paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
+            } else if (dataSet.getPhotos() != null) {
+                paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, selectedSequence);
+            }
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStorke);
         }
+        paintHandler.drawText(graphics, mapView);
     }
 
     /**
-     * Sets the currently displayed photo list.
+     * Sets the currently displayed data.
      *
-     * @param photos a list of {@code Photo}s
+     * @param dataSet a {@code DataSet} containing a list of photos/segments from the current view
      * @param checkSelectedPhoto is true, verifies if the selected photo is present or not in the given photo list. The
      * selected photo is set to null, if it is not present in the given list.
      */
-    public void setPhotos(final List<Photo> photos, final boolean checkSelectedPhoto) {
-        this.photos = photos;
+    public void setDataSet(final DataSet dataSet, final boolean checkSelectedPhoto) {
+        this.dataSet = dataSet;
         if ((checkSelectedPhoto && this.selectedPhoto != null)
-                && (this.photos == null || !this.photos.contains(selectedPhoto))) {
+                && (this.dataSet.getPhotos() == null || !this.dataSet.getPhotos().contains(selectedPhoto))) {
             this.selectedPhoto = null;
         }
     }
@@ -79,10 +84,14 @@ public class OpenStreetCamLayer extends AbtractLayer {
      * @return a {@code Photo}
      */
     public Photo nearbyPhoto(final Point point) {
-        Photo photo = (selectedSequence != null && selectedSequence.getPhotos() != null)
-                ? Util.nearbyPhoto(selectedSequence.getPhotos(), point) : null;
-                photo = photo == null && photos != null ? Util.nearbyPhoto(photos, point) : photo;
-                return photo;
+        Photo photo = null;
+        if (selectedSequence != null && selectedSequence.getPhotos() != null) {
+            photo = Util.nearbyPhoto(selectedSequence.getPhotos(), point);
+        }
+        if (photo == null && dataSet != null && dataSet.getPhotos() != null) {
+            photo = Util.nearbyPhoto(dataSet.getPhotos(), point);
+        }
+        return photo;
     }
 
     /**
@@ -105,7 +114,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
                     result.add(prevPhoto);
                 }
             }
-            result.addAll(Util.nearbyPhotos(photos, selectedPhoto, nearbyCount));
+            result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
         }
         return result;
     }
@@ -147,8 +156,8 @@ public class OpenStreetCamLayer extends AbtractLayer {
                     break;
                 }
             }
-        } else if (photos != null) {
-            for (final Photo elem : photos) {
+        } else if (dataSet != null && dataSet.getPhotos() != null) {
+            for (final Photo elem : dataSet.getPhotos()) {
                 if (elem.getSequenceIndex().equals(index)
                         && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
                     photo = elem;
@@ -214,5 +223,9 @@ public class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setSelectedSequence(final Sequence selectedSequence) {
         this.selectedSequence = selectedSequence;
+    }
+
+    public DataSet getDataSet() {
+        return dataSet;
     }
 }

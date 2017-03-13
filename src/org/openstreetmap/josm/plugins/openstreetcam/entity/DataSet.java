@@ -1,10 +1,10 @@
 /*
- *  Copyright ©2016, Telenav, Inc. All Rights Reserved
- *
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- *  https://creativecommons.org/licenses/by-sa/4.0/ *legalcode.
  *
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ *
+ * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
@@ -12,32 +12,28 @@ import java.util.List;
 
 
 /**
- * Defines the sequence business entity.
  *
  * @author beataj
  * @version $Revision$
  */
-public class Sequence {
+public class DataSet {
 
-    private final Long id;
+    private final List<Segment> segments;
     private final List<Photo> photos;
 
 
-    public Sequence(final Long id, final List<Photo> photos) {
-        this.id = id;
+    public DataSet(final List<Segment> segments, final List<Photo> photos) {
+        this.segments = segments;
         this.photos = photos;
     }
 
-
-    public Long getId() {
-        return id;
+    public List<Segment> getSegments() {
+        return segments;
     }
 
     public List<Photo> getPhotos() {
         return photos;
     }
 
-    public boolean hasPhotos() {
-        return photos != null && !photos.isEmpty();
-    }
+
 }

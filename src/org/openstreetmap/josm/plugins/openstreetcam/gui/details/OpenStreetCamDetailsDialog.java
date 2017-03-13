@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
@@ -98,6 +99,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
             lblDetails.setToolTipText(null);
             lblDetails.setIcon(null);
             pnlPhoto.updateUI(null);
+            pnlBtn.updateUI(null);
             repaint();
         }
     }
@@ -129,8 +131,8 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
     /**
      * Registers the observers to the button panel.
      *
-     * @param locationObserver the {@code LocationObserver} listens for location button action
-     * @param sequenceObserver the {@code SequenceObserver} listens for next/previous action
+     * @param locationObserver the {@code LocationObserver} listens for the location button's action
+     * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      */
     public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver) {
         pnlBtn.registerObserver(locationObserver);
@@ -145,6 +147,16 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);
+        pnlBtn.repaint();
+    }
+
+    public void updateManualSwitchButton(final DataType dataType, final int zoom) {
+        pnlBtn.updateManualSwitchButton(dataType, zoom);
+        pnlBtn.repaint();
+    }
+
+    public void enableManualSwitchButton(final boolean enabled) {
+        pnlBtn.enableManualSwitchButton(enabled);
         pnlBtn.repaint();
     }
 }

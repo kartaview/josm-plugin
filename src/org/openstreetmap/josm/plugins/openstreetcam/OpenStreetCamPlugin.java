@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.DebugGraphics;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -52,8 +51,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
@@ -89,6 +86,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
+        PreferenceManager.getInstance().saveManualSwitchDataType(null);
     }
 
     @Override
@@ -100,8 +98,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
-            Main.map.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
-
             // create the dialog
             detailsDialog = new OpenStreetCamDetailsDialog();
             detailsDialog.registerObservers(this, this);
@@ -119,14 +115,9 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 detailsDialog.getButton().setSelected(false);
                 detailsDialog.hideDialog();
             }
-        }
-
-        if (layerActivatorMenuItem == null) {
-            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
-        }
-
-        // a new map frame is created
-        if (oldMapFrame == null && newMapFrame != null) {
+            if (layerActivatorMenuItem == null) {
+                layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+            }
             layerActivatorMenuItem.setEnabled(true);
         }
 
@@ -200,8 +191,8 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if (Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()
-                && SwingUtilities.isLeftMouseButton(event)) {
+        if (Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
+                .getPhotoZoom() && SwingUtilities.isLeftMouseButton(event)) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
@@ -214,7 +205,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                         loadSequence(photo);
                     }
                     selectPhoto(photo);
-
                 }
             }
         }
@@ -225,6 +215,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             if (photo == null) {
                 CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
+                detailsDialog.enableManualSwitchButton(true);
             } else {
                 ThreadPool.getInstance().execute(() -> {
                     final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
@@ -243,9 +234,11 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             detailsDialog.updateUI(photo);
             SwingUtilities.invokeLater(() -> {
                 if (layer.getSelectedSequence() != null) {
+                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                 } else {
+                    detailsDialog.enableManualSwitchButton(true);
                     detailsDialog.enableSequenceActions(false, false);
                 }
             });
@@ -260,6 +253,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                 SwingUtilities.invokeLater(() -> {
                     layer.setSelectedSequence(sequence);
+                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                     Main.map.repaint();
@@ -290,7 +284,6 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         // no logic for this action
     }
 
-
     /* implementation of LocationObserver */
 
     @Override
@@ -299,7 +292,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
             SwingUtilities.invokeLater(() -> {
                 final Photo selectedPhoto = layer.getSelectedPhoto();
-                layer.setPhotos(null, false);
+                layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
                 Main.map.repaint();
             });
@@ -330,33 +323,23 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            switch (event.getKey()) {
-                case Keys.FILTERS_CHANGED:
-                    ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
-                    break;
-                case Keys.HIGH_QUALITY_PHOTO_FLAG:
-                    selectPhoto(layer.getSelectedPhoto());
-                    break;
-                case Keys.DISPLAY_TRACK_FLAG:
-                    if (event.getNewValue().getValue().equals(Boolean.TRUE.toString())
-                            && layer.getSelectedPhoto() != null && layer.getSelectedSequence() == null) {
-                        loadSequence(layer.getSelectedPhoto());
-                    } else if (layer.getSelectedSequence() != null) {
-                        layer.setSelectedSequence(null);
-                        detailsDialog.enableSequenceActions(false, false);
-                        Main.map.repaint();
-                    }
-                    break;
-                default:
-                    if (PreferenceManager.getInstance().hasAuthMethodChanged(event.getKey(),
-                            event.getNewValue().getValue().toString())) {
-                        ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
-                    }
-                    break;
+            final PreferenceManager prefManager = PreferenceManager.getInstance();
+            if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
+                ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
+            } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
+                selectPhoto(layer.getSelectedPhoto());
+            } else if (prefManager.isDisplayTackFlag(event.getKey())) {
+                if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
+                        && layer.getSelectedSequence() == null) {
+                    loadSequence(layer.getSelectedPhoto());
+                } else if (layer.getSelectedSequence() != null) {
+                    layer.setSelectedSequence(null);
+                    detailsDialog.enableSequenceActions(false, false);
+                    Main.map.repaint();
+                }
             }
         }
     }
-
 
     private class LayerActivator extends JosmAction {
 
@@ -364,7 +347,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
 
         private LayerActivator() {
             super(GuiConfig.getInstance().getPluginShortName(),
-                    new ImageProvider(IconConfig.getInstance().getLayerImagePath()), null, null, false, null, false);
+                    new ImageProvider(IconConfig.getInstance().getLayerIconName()), null, null, false, null, false);
             setEnabled(false);
         }
 
@@ -397,4 +380,5 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             }
         }
     }
+
 }

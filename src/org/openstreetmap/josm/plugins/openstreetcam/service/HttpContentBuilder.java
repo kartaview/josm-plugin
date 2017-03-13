@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
@@ -43,18 +45,33 @@ final class HttpContentBuilder {
         if (date != null) {
             content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
-        if (osmUserId != null && osmUserId > 0) {
-            content.put(RequestConstants.USER_ID, "" + osmUserId);
-        }
+        addOsmUserId(osmUserId);
         if (paging == null) {
-            content.put(RequestConstants.PAGE, Integer.toString(Paging.DEFAULT.getPage()));
-            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(Paging.DEFAULT.getItemsPerPage()));
+
+            addPaging(Paging.NEARBY_PHOTOS_DEAFULT);
         } else {
-            content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
-            content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
+            addPaging(paging);
         }
     }
 
+    HttpContentBuilder(final BoundingBox area, final Long osmUserId, final int zoom, final Paging paging) {
+        content.put(RequestConstants.BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
+        content.put(RequestConstants.BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
+
+        // OSC zoom == JOSM zoom -1
+        final int oscZoom = zoom - 1;
+        if (oscZoom >= Config.getInstance().getTracksMaxZoom()) {
+            content.put(RequestConstants.ZOOM, Integer.toString(Config.getInstance().getTracksMaxZoom()));
+        } else {
+            content.put(RequestConstants.ZOOM, Integer.toString(oscZoom));
+        }
+        addOsmUserId(osmUserId);
+        if (paging == null) {
+            addPaging(Paging.TRACKS_DEFAULT);
+        } else {
+            addPaging(paging);
+        }
+    }
 
     HttpContentBuilder(final Long id) {
         content.put(RequestConstants.ID, id.toString());
@@ -62,5 +79,16 @@ final class HttpContentBuilder {
 
     Map<String, String> getContent() {
         return content;
+    }
+
+    private void addOsmUserId(final Long osmUserId) {
+        if (osmUserId != null && osmUserId > 0) {
+            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
+        }
+    }
+
+    private void addPaging(final Paging paging) {
+        content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
+        content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
     }
 }

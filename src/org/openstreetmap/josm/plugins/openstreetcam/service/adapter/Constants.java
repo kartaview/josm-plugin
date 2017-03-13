@@ -10,12 +10,14 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
 
 
 /**
+ * Holds object field names.
  *
  * @author beataj
  * @version $Revision$
  */
 final class Constants {
 
+    /* photo object fields */
     static final String PHOTO_ID = "id";
     static final String PHOTO_SEQUENCE_ID = "sequence_id";
     static final String PHOTO_SEQUENCE_IDX = "sequence_index";
@@ -27,6 +29,14 @@ final class Constants {
     static final String PHOTO_TIMESTAMP = "timestamp";
     static final String PHOTO_HEADING = "heading";
     static final String PHOTO_USERNAME = "username";
+
+    /* segment object fields */
+    static final String SEGMENT_ID = "element_id";
+    static final String SEGMENT_FROM = "from";
+    static final String SEGMENT_TO = "to";
+    static final String SEGMENT_WAY_ID = "way_id";
+    static final String SEGMENT_COVERAGE = "coverage";
+    static final String SEGMENT_GEOMETRY = "track";
 
     private Constants() {}
 }

@@ -93,7 +93,7 @@
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
-				<attribute name="Plugin-Early" value="true" />
+			
 				<attribute name="Plugin-Mainversion" value="10580" />
 			</manifest>
 		</jar>

@@ -15,20 +15,22 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
@@ -51,40 +53,56 @@ class DataUpdateThread implements Runnable {
         this.checkSelectedPhoto = checkSelectedPhoto;
     }
 
+
     @Override
     public void run() {
-        if (Main.map != null && Main.map.mapView != null
-                && Util.zoom(Main.map.mapView.getRealBounds()) >= ServiceConfig.getInstance().getPhotoZoom()) {
-            final List<Circle> areas = searchArea();
-            final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
-            final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-            updateUI(photos, checkSelectedPhoto);
-        }
-    }
+        if (Main.map != null && Main.map.mapView != null) {
+            // case 1 search for segments
+            final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
 
-    private List<Circle> searchArea() {
-        final List<Circle> result = new ArrayList<>();
-        if (Main.getLayerManager().getEditLayer() != null
-                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                for (final Bounds bounds : osmDataLayerBounds) {
-                    final Circle circle = Main.map.mapView.getRealBounds().intersects(bounds)
-                            ? new Circle(Main.map.mapView.getRealBounds()) : new Circle(bounds);
-                    result.add(circle);
+            final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+            final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
+            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+            if (layer.getSelectedSequence() == null && (zoom >= Config.getInstance().getMapSegmentZoom()
+                    && (zoom < mapViewSettings.getPhotoZoom() || mapViewSettings.isManualSwitchFlag())
+                    && dataType == null) || (dataType != null && dataType.equals(DataType.SEGMENT))) {
+                detailsDialog.updateManualSwitchButton(DataType.SEGMENT, zoom);
+                updateSegments(listFilter, zoom);
+            } else if ((zoom >= mapViewSettings.getPhotoZoom() && !mapViewSettings.isManualSwitchFlag())
+                    || (dataType != null && dataType.equals(DataType.PHOTO)
+                    && zoom >= Config.getInstance().getMapPhotoZoom())) {
+                if (layer.getSelectedSequence() == null) {
+                    detailsDialog.updateManualSwitchButton(DataType.PHOTO, zoom);
                 }
-            } else {
-                result.add(new Circle(Main.map.mapView.getRealBounds()));
+                updatePhotos(listFilter);
             }
-        } else {
-            result.add(new Circle(Main.map.mapView.getRealBounds()));
         }
-        return result;
     }
 
-    private void updateUI(final List<Photo> photos, final boolean checkSelectedPhoto) {
+    private void updateSegments(final ListFilter filter, final int zoom) {
+        if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
+            // clear view
+            updateUI(null, false);
+        }
+        final List<BoundingBox> areas = Util.currentBoundingBoxes();
+        final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
+        updateUI(new DataSet(segments, null), checkSelectedPhoto);
+    }
+
+    private void updatePhotos(final ListFilter filter) {
+        if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
+            // clear view
+            updateUI(null, false);
+        }
+        final List<Circle> areas = Util.currentCircles();
+        final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+        updateUI(new DataSet(null, photos), checkSelectedPhoto);
+    }
+
+
+    private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto) {
         SwingUtilities.invokeLater(() -> {
-            layer.setPhotos(photos, checkSelectedPhoto);
+            layer.setDataSet(dataSet, checkSelectedPhoto);
             if (layer.getSelectedPhoto() == null) {
                 detailsDialog.updateUI(null);
             }

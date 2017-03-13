@@ -39,36 +39,18 @@ public class Photo {
     private String username;
 
 
-    /**
-     * Builds a new photo with the given arguments.
-     *
-     * @param id the unique identifier
-     * @param sequenceId the identifier of the sequence to which the photo belongs
-     * @param sequenceIndex the index of the photo from the sequence
-     * @param latitude the photo's latitude
-     * @param longitude the photo's longitude
-     * @param name the photo's name
-     * @param largeThumbnailName the large thumbnail name
-     * @param thumbnailName the small thumbnail name
-     * @param timestamp the photo's creation date
-     * @param heading the sequence direction
-     * @param username the owner's username
-     */
-    public Photo(final Long id, final Long sequenceId, final Integer sequenceIndex, final Double latitude,
-            final Double longitude, final String name, final String largeThumbnailName, final String thumbnailName,
-            final Long timestamp, final Double heading, final String username) {
-        this.id = id;
-        this.sequenceId = sequenceId;
-        this.sequenceIndex = sequenceIndex;
-        this.location = new LatLon(latitude, longitude);
-        this.name = name;
-        this.largeThumbnailName = largeThumbnailName;
-        this.thumbnailName = thumbnailName;
-        this.timestamp = timestamp;
-        this.heading = heading;
-        this.username = username;
+    Photo(final PhotoBuilder builder) {
+        this.id = builder.getId();
+        this.sequenceId = builder.getSequenceId();
+        this.sequenceIndex = builder.getSequenceIndex();
+        this.location = builder.getLocation();
+        this.name = builder.getName();
+        this.largeThumbnailName = builder.getLargeThumbnailName();
+        this.thumbnailName = builder.getThumbnailName();
+        this.timestamp = builder.getTimestamp();
+        this.heading = builder.getHeading();
+        this.username = builder.getUsername();
     }
-
 
     public Long getId() {
         return id;

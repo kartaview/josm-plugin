@@ -29,8 +29,10 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.tools.Pair;
+import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
@@ -201,5 +203,55 @@ public final class Util {
             contains = mapView.contains(point);
         }
         return contains;
+    }
+
+    public static List<Circle> currentCircles() {
+        final List<Circle> result = new ArrayList<>();
+        if (Main.getLayerManager().getEditLayer() != null
+                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds bounds : osmDataLayerBounds) {
+                    if (Main.map.mapView.getRealBounds().intersects(bounds)) {
+                        result.add(new Circle(bounds));
+                    }
+                }
+            } else {
+                result.add(new Circle(Main.map.mapView.getRealBounds()));
+            }
+        } else {
+            result.add(new Circle(Main.map.mapView.getRealBounds()));
+        }
+        return result;
+    }
+
+
+    public static List<BoundingBox> currentBoundingBoxes() {
+        final List<BoundingBox> result = new ArrayList<>();
+        if (Main.getLayerManager().getEditLayer() != null
+                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds osmBounds : osmDataLayerBounds) {
+                    if (Main.map.mapView.getRealBounds().intersects(osmBounds)) {
+                        result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
+                                osmBounds.getMax().lon(), osmBounds.getMin().lon()));
+                    }
+                }
+            } else {
+                final Bounds bounds = Main.map.mapView.getRealBounds();
+                result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                        bounds.getMin().lon()));
+            }
+        } else {
+            final Bounds bounds = Main.map.mapView.getRealBounds();
+
+
+            final LatLon latLon = extrapolate(bounds.getMax(), 0, 100);
+            bounds.extend(latLon);
+            result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                    bounds.getMin().lon()));
+        }
+        return result;
     }
 }

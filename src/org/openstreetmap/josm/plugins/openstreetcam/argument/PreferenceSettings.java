@@ -17,15 +17,22 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  */
 public class PreferenceSettings {
 
+    private final MapViewSettings mapViewSettings;
     private final PhotoSettings photoSettings;
     private final CacheSettings cacheSettings;
 
 
-    public PreferenceSettings(final PhotoSettings photoSettings, final CacheSettings cacheSettings) {
+    public PreferenceSettings(final MapViewSettings mapViewSettings, final PhotoSettings photoSettings,
+            final CacheSettings cacheSettings) {
+        this.mapViewSettings = mapViewSettings;
         this.photoSettings = photoSettings;
         this.cacheSettings = cacheSettings;
     }
 
+
+    public MapViewSettings getMapViewSettings() {
+        return mapViewSettings;
+    }
 
     public PhotoSettings getPhotoSettings() {
         return photoSettings;
