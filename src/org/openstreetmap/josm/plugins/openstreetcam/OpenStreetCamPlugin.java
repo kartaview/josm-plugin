@@ -63,7 +63,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-        LocationObserver, SequenceObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -153,7 +153,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             zoomTimer.restart();
         } else {
             zoomTimer = new Timer(SEARCH_DELAY,
-                    event -> Main.worker.execute(new DataUpdateThread(layer, detailsDialog, false)));
+                    event -> ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, false)));
             zoomTimer.setRepeats(false);
             zoomTimer.start();
         }

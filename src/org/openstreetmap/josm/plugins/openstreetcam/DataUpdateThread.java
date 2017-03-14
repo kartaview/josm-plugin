@@ -31,6 +31,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -66,9 +67,22 @@ class DataUpdateThread implements Runnable {
                 final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
 
                 if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
-                    updateSegments(mapViewSettings, listFilter, zoom);
+                    ThreadPool.getInstance().execute(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            updateSegments(mapViewSettings, listFilter, zoom);
+                        }
+                    });
                 } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
-                    updatePhotos(mapViewSettings, listFilter, zoom);
+
+                    ThreadPool.getInstance().execute(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            updatePhotos(mapViewSettings, listFilter, zoom);
+                        }
+                    });
                 }
             }
         }
@@ -113,7 +127,7 @@ class DataUpdateThread implements Runnable {
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
         final boolean enableManualSwitchButton =
                 zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-        updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+                updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
 
     }
 
@@ -127,7 +141,7 @@ class DataUpdateThread implements Runnable {
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
         final boolean enableManualSwitchButton =
                 zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-        updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
+                updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
     }
 
 
