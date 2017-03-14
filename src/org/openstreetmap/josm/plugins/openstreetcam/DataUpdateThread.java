@@ -61,11 +61,9 @@ class DataUpdateThread implements Runnable {
             // case 1 search for segments
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
             if (zoom >= Config.getInstance().getMapSegmentZoom()) {
-
                 final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
                 final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
                 final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-
                 if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
                     ThreadPool.getInstance().execute(new Runnable() {
 
@@ -127,7 +125,7 @@ class DataUpdateThread implements Runnable {
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
         final boolean enableManualSwitchButton =
                 zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-                updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+        updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
 
     }
 
@@ -139,9 +137,12 @@ class DataUpdateThread implements Runnable {
         }
         final List<Circle> areas = Util.currentCircles();
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-        final boolean enableManualSwitchButton =
-                zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-                updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
+
+        if (layer.getDataSet() == null || layer.getDataSet().getSegments() == null) {
+            final boolean enableManualSwitchButton =
+                    zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
+            updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
+        }
     }
 
 

@@ -74,7 +74,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     private JMenuItem layerActivatorMenuItem;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
-    private static final int SEARCH_DELAY = 400;
+    private static final int SEARCH_DELAY = 500;
 
     private Timer zoomTimer;
 

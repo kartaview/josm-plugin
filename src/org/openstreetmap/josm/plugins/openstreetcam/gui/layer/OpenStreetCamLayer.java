@@ -59,7 +59,6 @@ public class OpenStreetCamLayer extends AbtractLayer {
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStorke);
         }
-        paintHandler.drawText(graphics, mapView);
     }
 
     /**

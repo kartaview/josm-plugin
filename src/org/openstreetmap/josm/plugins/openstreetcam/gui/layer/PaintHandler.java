@@ -31,14 +31,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.T
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -46,7 +43,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.ImageIcon;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.ImageryLayer;
@@ -172,23 +168,7 @@ class PaintHandler {
     private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
         graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
                 (img, infoflags, x, y, width, height) -> false);
-
     }
-
-    void drawText(final Graphics2D graphics, final MapView mapView) {
-        final Point labelPoint = mapView.getPoint(mapView.getCenter());
-
-        graphics.setFont(mapView.getFont().deriveFont(Font.BOLD, 12));
-        final FontMetrics fontMetrics = mapView.getFontMetrics(mapView.getFont().deriveFont(Font.BOLD, 12));
-        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
-        final Rectangle2D rect = fontMetrics.getStringBounds("zoom level:" + zoom, graphics);
-        graphics.setColor(Color.white);
-        graphics.fillRect(labelPoint.x, labelPoint.y - fontMetrics.getAscent(), (int) rect.getWidth(),
-                (int) rect.getHeight());
-        graphics.setColor(Color.black);
-        graphics.drawString("zoom level:" + zoom, labelPoint.x, labelPoint.y);
-    }
-
 
     /**
      * Draws a list of segments to the map.
@@ -208,7 +188,6 @@ class PaintHandler {
             drawSegment(graphics, mapView, segment.getGeometry());
         }
     }
-
 
     private SortedMap<Integer, Float> generateSegmentTransparencyMap(final List<Segment> segments) {
         final SortedMap<Integer, Float> map = new TreeMap<>();
