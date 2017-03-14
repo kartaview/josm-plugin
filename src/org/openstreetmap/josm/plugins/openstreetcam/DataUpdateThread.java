@@ -65,21 +65,13 @@ class DataUpdateThread implements Runnable {
                 final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
                 final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
                 if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
-                    ThreadPool.getInstance().execute(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            updateSegments(mapViewSettings, listFilter, zoom);
-                        }
+                    ThreadPool.getInstance().execute(() -> {
+                        updateSegments(mapViewSettings, listFilter, zoom);
                     });
                 } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
 
-                    ThreadPool.getInstance().execute(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            updatePhotos(mapViewSettings, listFilter, zoom);
-                        }
+                    ThreadPool.getInstance().execute(() -> {
+                        updatePhotos(mapViewSettings, listFilter, zoom);
                     });
                 }
             }
@@ -95,7 +87,7 @@ class DataUpdateThread implements Runnable {
             result = true;
         } else if (zoom >= Config.getInstance().getMapPhotoZoom()) {
             if (mapViewSettings.isManualSwitchFlag()) {
-                result = (dataType == null || dataType.equals(DataType.SEGMENT));
+                result = dataType == null || dataType.equals(DataType.SEGMENT);
             } else {
                 result = zoom < mapViewSettings.getPhotoZoom();
             }
@@ -105,7 +97,7 @@ class DataUpdateThread implements Runnable {
 
 
     private boolean shouldUpdatePhotos(final MapViewSettings mapViewSettings, final DataType dataType, final int zoom) {
-        boolean result = false;
+        boolean result;
         if (mapViewSettings.isManualSwitchFlag()) {
             result = zoom >= Config.getInstance().getMapPhotoZoom()
                     && (dataType != null && dataType.equals(DataType.PHOTO));
@@ -118,22 +110,27 @@ class DataUpdateThread implements Runnable {
     private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
         if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
             // clear view
-            detailsDialog.updateManualSwitchButton(DataType.SEGMENT);
-            updateUI(null, false, false);
+            SwingUtilities.invokeLater(() -> {
+                detailsDialog.updateManualSwitchButton(DataType.SEGMENT);
+                updateUI(null, false, false);
+            });
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
-        final boolean enableManualSwitchButton =
-                zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-        updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
-
+        if (layer.getDataSet() == null || layer.getDataSet().getPhotos() == null) {
+            final boolean enableManualSwitchButton =
+                    zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
+            updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+        }
     }
 
     private void updatePhotos(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
         if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
             // clear view
-            detailsDialog.updateManualSwitchButton(DataType.PHOTO);
-            updateUI(null, false, false);
+            SwingUtilities.invokeLater(() -> {
+                detailsDialog.updateManualSwitchButton(DataType.PHOTO);
+                updateUI(null, false, false);
+            });
         }
         final List<Circle> areas = Util.currentCircles();
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
@@ -144,7 +141,6 @@ class DataUpdateThread implements Runnable {
             updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
         }
     }
-
 
     private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto, final boolean enableSwitchButton) {
         SwingUtilities.invokeLater(() -> {
