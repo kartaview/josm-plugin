@@ -63,7 +63,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -74,7 +74,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     private JMenuItem layerActivatorMenuItem;
 
     private static final int UNSELECT_CLICK_COUNT = 2;
-    private static final int SEARCH_DELAY = 600;
+    private static final int SEARCH_DELAY = 400;
 
     private Timer zoomTimer;
 
@@ -139,7 +139,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         Main.pref.addPreferenceChangeListener(this);
         Main.map.mapView.addMouseListener(this);
 
-        // add .layer
+        // add layer
         layer = new OpenStreetCamLayer();
         Main.map.mapView.getLayerManager().addLayer(layer);
     }
@@ -250,16 +250,12 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
     private void loadSequence(final Photo photo) {
         if (layer.getSelectedPhoto() != null && layer.getSelectedSequence() != null) {
             // clean up old sequence
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
-                    layer.setSelectedSequence(null);
-                    detailsDialog.enableSequenceActions(false, false);
-                    detailsDialog.enableManualSwitchButton(true);
-                    Main.map.repaint();
-                }
+            SwingUtilities.invokeLater(() -> {
+                CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
+                layer.setSelectedSequence(null);
+                detailsDialog.enableSequenceActions(false, false);
+                detailsDialog.enableManualSwitchButton(true);
+                Main.map.repaint();
             });
         }
         ThreadPool.getInstance().execute(() -> {
@@ -349,12 +345,14 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                     loadSequence(layer.getSelectedPhoto());
                 } else if (layer.getSelectedSequence() != null) {
                     layer.setSelectedSequence(null);
+                    detailsDialog.enableManualSwitchButton(true);
                     detailsDialog.enableSequenceActions(false, false);
                     Main.map.repaint();
                 }
             }
         }
     }
+
 
     private class LayerActivator extends JosmAction {
 

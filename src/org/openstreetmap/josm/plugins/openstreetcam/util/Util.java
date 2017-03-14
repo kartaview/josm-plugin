@@ -50,13 +50,18 @@ public final class Util {
     private static final int MAX_ZOOM = 22;
     private static final int TILE_SIZE = 1024;
     private static final int ZOOM1_SCALE = 78206;
-
-    private static final double EARTH_DIAMETER = 6371.01 * 1000;
+    public static final double EQUATORIAL_RADIUS = 6378137.0;
     private static final double ANGLE = Math.toDegrees(45);
-
     private static final double RADIUS = 0.0003;
     private static final double MAX_DISTANCE = 2.0;
+    private static final int MAX_ANGLE = 360;
+    private static final int EXTENSION_DISTANCE = 500;
+    private static final double MIN_LON = -180.0;
+    private static final double MAX_LON = 180.0;
 
+    /* latitude interval limits */
+    private static final double MIN_LAT = -90.0;
+    private static final double MAX_LAT = 90.0;
 
     private Util() {}
 
@@ -160,7 +165,7 @@ public final class Util {
         final double rlat1 = Math.toRadians(point.lat());
         final double rlon1 = Math.toRadians(point.lon());
         final double rbearing = Math.toRadians(bearing);
-        final double rdistance = distance / EARTH_DIAMETER;
+        final double rdistance = distance / EQUATORIAL_RADIUS;
         final double lat2 = Math.asin(
                 Math.sin(rlat1) * Math.cos(rdistance) + Math.cos(rlat1) * Math.sin(rdistance) * Math.cos(rbearing));
         final double lon2 = rlon1 + Math.atan2(Math.sin(rbearing) * Math.sin(rdistance) * Math.cos(rlat1),
@@ -205,6 +210,12 @@ public final class Util {
         return contains;
     }
 
+    /**
+     * Returns a list of circles representing the current search area. The method takes into consideration also the edit
+     * layer bounds.
+     *
+     * @return list of {@code Circle}s
+     */
     public static List<Circle> currentCircles() {
         final List<Circle> result = new ArrayList<>();
         if (Main.getLayerManager().getEditLayer() != null
@@ -225,7 +236,12 @@ public final class Util {
         return result;
     }
 
-
+    /**
+     * Returns a list of bounding boxes, representing the current search area. The method takes into consideration also
+     * the edit layer bounds.
+     *
+     * @return a list of {@code BoundingBox}
+     */
     public static List<BoundingBox> currentBoundingBoxes() {
         final List<BoundingBox> result = new ArrayList<>();
         if (Main.getLayerManager().getEditLayer() != null
@@ -240,18 +256,37 @@ public final class Util {
                 }
             } else {
                 final Bounds bounds = Main.map.mapView.getRealBounds();
-                result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
-                        bounds.getMin().lon()));
+                final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
+                        bounds.getMax().lon(), bounds.getMin().lon());
+                final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
+                result.add(extendBoundingBox(bbox, (int) distance));
             }
         } else {
             final Bounds bounds = Main.map.mapView.getRealBounds();
-
-
-            final LatLon latLon = extrapolate(bounds.getMax(), 0, 100);
-            bounds.extend(latLon);
-            result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
-                    bounds.getMin().lon()));
+            final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
+                    bounds.getMax().lon(), bounds.getMin().lon());
+            final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
+            result.add(extendBoundingBox(bbox, (int) distance));
         }
         return result;
+    }
+
+    /**
+     * Extends a bounding box with the given meters in vertical and horizontal direction.
+     *
+     * @param bbox a {@code BoundingBox} represents a searching area
+     * @param meters represents the expansion
+     * @return a {@code BoundingBox}
+     */
+    public static BoundingBox extendBoundingBox(final BoundingBox bbox, final int meters) {
+        final double verticalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS);
+        final double horizontalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS
+                * Math.cos(Math.toRadians(Math.max(Math.abs(bbox.getSouth()), Math.abs(bbox.getNorth())))));
+
+        final double minLat = Math.max(MIN_LAT, bbox.getSouth() - verticalExpansion);
+        final double minLon = Math.max(MIN_LON, bbox.getWest() - horizontalExpansion);
+        final double maxLat = Math.min(MAX_LAT, bbox.getNorth() + verticalExpansion);
+        final double maxLon = Math.min(MAX_LON, bbox.getEast() + horizontalExpansion);
+        return new BoundingBox(maxLat, minLat, maxLon, minLon);
     }
 }

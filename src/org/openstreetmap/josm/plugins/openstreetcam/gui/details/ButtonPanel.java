@@ -81,8 +81,10 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
 
-        btnManualSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
-                guiConfig.getBtnManualImageSwitchTlt(), false);
+        String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                ? guiConfig.getBtnManualImageSwitchTlt() : guiConfig.getBtnManualSwitchTlt();
+        btnManualSwitch =
+                GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(), tlt, false);
         btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
         btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
                 guiConfig.getBtnPreviousTlt(), false);
@@ -100,16 +102,16 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         add(btnWebPage);
 
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
 
         setPreferredSize(DIM);
@@ -143,18 +145,22 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         btnManualSwitch.setEnabled(enabled);
     }
 
-    void updateManualSwitchButton(final DataType dataType, final int zoom) {
+    void updateManualSwitchButton(final DataType dataType) {
         if (dataType.equals(DataType.PHOTO)) {
             btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualSegmentSwitchTlt());
+            String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? GuiConfig.getInstance().getBtnManualSegmentSwitchTlt()
+                    : GuiConfig.getInstance().getBtnManualSwitchTlt();
+            btnManualSwitch.setToolTipText(tlt);
             btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
             btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            btnManualSwitch.setToolTipText(GuiConfig.getInstance().getBtnManualImageSwitchTlt());
+            String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? GuiConfig.getInstance().getBtnManualImageSwitchTlt()
+                    : GuiConfig.getInstance().getBtnManualSwitchTlt();
+            btnManualSwitch.setToolTipText(tlt);
             btnManualSwitch.setActionCommand(DataType.PHOTO.toString());
         }
-        final boolean enabled = zoom >= Config.getInstance().getMapPhotoZoom();
-        btnManualSwitch.setEnabled(enabled);
     }
 
 

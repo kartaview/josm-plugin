@@ -59,53 +59,85 @@ class DataUpdateThread implements Runnable {
         if (Main.map != null && Main.map.mapView != null) {
             // case 1 search for segments
             final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+            if (zoom >= Config.getInstance().getMapSegmentZoom()) {
 
-            final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
-            final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
-            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-            if (layer.getSelectedSequence() == null && (zoom >= Config.getInstance().getMapSegmentZoom()
-                    && (zoom < mapViewSettings.getPhotoZoom() || mapViewSettings.isManualSwitchFlag())
-                    && dataType == null) || (dataType != null && dataType.equals(DataType.SEGMENT))) {
-                detailsDialog.updateManualSwitchButton(DataType.SEGMENT, zoom);
-                updateSegments(listFilter, zoom);
-            } else if ((zoom >= mapViewSettings.getPhotoZoom() && !mapViewSettings.isManualSwitchFlag())
-                    || (dataType != null && dataType.equals(DataType.PHOTO)
-                    && zoom >= Config.getInstance().getMapPhotoZoom())) {
-                if (layer.getSelectedSequence() == null) {
-                    detailsDialog.updateManualSwitchButton(DataType.PHOTO, zoom);
+                final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+                final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
+                final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+
+                if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
+                    updateSegments(mapViewSettings, listFilter, zoom);
+                } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
+                    updatePhotos(mapViewSettings, listFilter, zoom);
                 }
-                updatePhotos(listFilter);
             }
         }
     }
 
-    private void updateSegments(final ListFilter filter, final int zoom) {
+    private boolean shouldUpdateSegments(final MapViewSettings mapViewSettings, final DataType dataType,
+            final int zoom) {
+        boolean result = false;
+
+        // if zoom level < 16 switch automatically to segment view (unless a sequence is displayed)
+        if (zoom < Config.getInstance().getMapPhotoZoom()) {
+            result = true;
+        } else if (zoom >= Config.getInstance().getMapPhotoZoom()) {
+            if (mapViewSettings.isManualSwitchFlag()) {
+                result = (dataType == null || dataType.equals(DataType.SEGMENT));
+            } else {
+                result = zoom < mapViewSettings.getPhotoZoom();
+            }
+        }
+        return result;
+    }
+
+
+    private boolean shouldUpdatePhotos(final MapViewSettings mapViewSettings, final DataType dataType, final int zoom) {
+        boolean result = false;
+        if (mapViewSettings.isManualSwitchFlag()) {
+            result = zoom >= Config.getInstance().getMapPhotoZoom()
+                    && (dataType != null && dataType.equals(DataType.PHOTO));
+        } else {
+            result = zoom >= mapViewSettings.getPhotoZoom();
+        }
+        return result;
+    }
+
+    private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
         if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
             // clear view
-            updateUI(null, false);
+            detailsDialog.updateManualSwitchButton(DataType.SEGMENT);
+            updateUI(null, false, false);
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
-        updateUI(new DataSet(segments, null), checkSelectedPhoto);
+        final boolean enableManualSwitchButton =
+                zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
+        updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+
     }
 
-    private void updatePhotos(final ListFilter filter) {
+    private void updatePhotos(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
         if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
             // clear view
-            updateUI(null, false);
+            detailsDialog.updateManualSwitchButton(DataType.PHOTO);
+            updateUI(null, false, false);
         }
         final List<Circle> areas = Util.currentCircles();
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-        updateUI(new DataSet(null, photos), checkSelectedPhoto);
+        final boolean enableManualSwitchButton =
+                zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
+        updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
     }
 
 
-    private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto) {
+    private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto, final boolean enableSwitchButton) {
         SwingUtilities.invokeLater(() -> {
             layer.setDataSet(dataSet, checkSelectedPhoto);
             if (layer.getSelectedPhoto() == null) {
                 detailsDialog.updateUI(null);
             }
+            detailsDialog.enableManualSwitchButton(enableSwitchButton);
             Main.map.repaint();
         });
     }

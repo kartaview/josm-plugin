@@ -150,8 +150,8 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         pnlBtn.repaint();
     }
 
-    public void updateManualSwitchButton(final DataType dataType, final int zoom) {
-        pnlBtn.updateManualSwitchButton(dataType, zoom);
+    public void updateManualSwitchButton(final DataType dataType) {
+        pnlBtn.updateManualSwitchButton(dataType);
         pnlBtn.repaint();
     }
 

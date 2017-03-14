@@ -58,12 +58,10 @@ final class HttpContentBuilder {
         content.put(RequestConstants.BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
         content.put(RequestConstants.BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
 
-        // OSC zoom == JOSM zoom -1
-        final int oscZoom = zoom - 1;
-        if (oscZoom >= Config.getInstance().getTracksMaxZoom()) {
+        if (zoom >= Config.getInstance().getTracksMaxZoom()) {
             content.put(RequestConstants.ZOOM, Integer.toString(Config.getInstance().getTracksMaxZoom()));
         } else {
-            content.put(RequestConstants.ZOOM, Integer.toString(oscZoom));
+            content.put(RequestConstants.ZOOM, Integer.toString(zoom));
         }
         addOsmUserId(osmUserId);
         if (paging == null) {

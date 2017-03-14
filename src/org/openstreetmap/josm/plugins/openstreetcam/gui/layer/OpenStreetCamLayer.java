@@ -71,8 +71,8 @@ public class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setDataSet(final DataSet dataSet, final boolean checkSelectedPhoto) {
         this.dataSet = dataSet;
-        if ((checkSelectedPhoto && this.selectedPhoto != null)
-                && (this.dataSet.getPhotos() == null || !this.dataSet.getPhotos().contains(selectedPhoto))) {
+        if ((checkSelectedPhoto && this.selectedPhoto != null) && (this.dataSet == null
+                || this.dataSet.getPhotos() == null || !this.dataSet.getPhotos().contains(selectedPhoto))) {
             this.selectedPhoto = null;
         }
     }
@@ -99,7 +99,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
      *
      * @param prevNextCount the number of previous/next photos to be returned
      * @param nearbyCount the number of nearby photos to be returned
-     * @return a sey of {@code Photo}s
+     * @return a set of {@code Photo}s
      */
     public Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
         final Set<Photo> result = new HashSet<>();
@@ -225,6 +225,11 @@ public class OpenStreetCamLayer extends AbtractLayer {
         this.selectedSequence = selectedSequence;
     }
 
+    /**
+     * Returns the currently displayed data set.
+     *
+     * @return a {@code DataSet}
+     */
     public DataSet getDataSet() {
         return dataSet;
     }
