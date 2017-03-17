@@ -39,6 +39,7 @@ final class RequestConstants {
     static final String BBOX_TOP_LEFT = "bbTopLeft";
     static final String BBOX_BOTTOM_RIGHT = "bbBottomRight";
     static final String ZOOM = "zoom";
+    static final String MY_TRACKS = "myTracks";
 
     private RequestConstants() {}
 }

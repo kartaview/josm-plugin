@@ -45,7 +45,11 @@ final class HttpContentBuilder {
         if (date != null) {
             content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
-        addOsmUserId(osmUserId);
+
+        if (osmUserId != null && osmUserId > 0) {
+            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
+        }
+
         if (paging == null) {
 
             addPaging(Paging.NEARBY_PHOTOS_DEAFULT);
@@ -63,7 +67,10 @@ final class HttpContentBuilder {
         } else {
             content.put(RequestConstants.ZOOM, Integer.toString(zoom));
         }
-        addOsmUserId(osmUserId);
+        if (osmUserId != null && osmUserId > 0) {
+            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
+            content.put(RequestConstants.MY_TRACKS, "true");
+        }
         if (paging == null) {
             addPaging(Paging.TRACKS_DEFAULT);
         } else {
@@ -77,12 +84,6 @@ final class HttpContentBuilder {
 
     Map<String, String> getContent() {
         return content;
-    }
-
-    private void addOsmUserId(final Long osmUserId) {
-        if (osmUserId != null && osmUserId > 0) {
-            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
-        }
     }
 
     private void addPaging(final Paging paging) {
