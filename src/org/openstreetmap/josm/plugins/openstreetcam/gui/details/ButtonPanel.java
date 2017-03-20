@@ -29,10 +29,7 @@ import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.*;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -48,7 +45,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestImageObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -65,10 +62,12 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     private final JButton btnNext;
     private final JButton btnLocation;
     private final JButton btnWebPage;
+    private final JButton btnClosestPhoto;
 
-    /* notifies the plugin main class, if the user click's on the location button */
+    /* notifies the plugin main class */
     private LocationObserver locationObserver;
     private SequenceObserver sequenceObserver;
+    private ClosestImageObserver closestImageObserver;
 
 
     /* the currently selected photo */
@@ -81,7 +80,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
 
-        String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+        final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
                 ? guiConfig.getBtnManualImageSwitchTlt() : guiConfig.getBtnManualSwitchTlt();
         btnManualSwitch =
                 GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(), tlt, false);
@@ -94,12 +93,15 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
+        btnClosestPhoto = GuiBuilder.buildButton(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
+                guiConfig.getBtnClosestImageTlt(), true);
 
         add(btnManualSwitch);
         add(btnPrevious);
         add(btnNext);
         add(btnLocation);
         add(btnWebPage);
+        add(btnClosestPhoto);
 
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
@@ -148,14 +150,14 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     void updateManualSwitchButton(final DataType dataType) {
         if (dataType.equals(DataType.PHOTO)) {
             btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-            String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
                     ? GuiConfig.getInstance().getBtnManualSegmentSwitchTlt()
                     : GuiConfig.getInstance().getBtnManualSwitchTlt();
             btnManualSwitch.setToolTipText(tlt);
             btnManualSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
             btnManualSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
                     ? GuiConfig.getInstance().getBtnManualImageSwitchTlt()
                     : GuiConfig.getInstance().getBtnManualSwitchTlt();
             btnManualSwitch.setToolTipText(tlt);
@@ -193,6 +195,16 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     @Override
     public void notifyObserver(final int index) {
         this.sequenceObserver.selectSequencePhoto(index);
+    }
+
+    @Override
+    public void registerObserver(final ClosestImageObserver closestImageObserver) {
+        this.closestImageObserver = closestImageObserver;
+    }
+
+    @Override
+    public void notifyClosestImageObserver() {
+        this.closestImageObserver.goToTheClosestImage();
     }
 
 
@@ -281,4 +293,21 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         }
     }
 
+
+    /* selects the closest photo of the selected photo */
+
+    private final class ClosestPhotoAction extends AbstractAction {
+
+        private static final long serialVersionUID = 191591505362305396L;
+
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (photo != null) {
+                // enableSequenceActions(false, false);
+                notifyClosestImageObserver();
+            }
+        }
+
+    }
 }

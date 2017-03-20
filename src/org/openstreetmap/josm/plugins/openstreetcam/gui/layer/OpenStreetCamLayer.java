@@ -21,6 +21,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
@@ -42,6 +44,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
     private DataSet dataSet;
     private Photo selectedPhoto;
     private Sequence selectedSequence;
+    private Set<Photo> closestPhotosHistory;
 
 
     @Override
@@ -231,5 +234,14 @@ public class OpenStreetCamLayer extends AbtractLayer {
      */
     public DataSet getDataSet() {
         return dataSet;
+    }
+
+    /**
+     * Retrieve the closest image of the currently selected image.
+     *
+     * @return a {@code Photo}
+     */
+    public Photo getClosestSelectedImage() {
+        return null;
     }
 }

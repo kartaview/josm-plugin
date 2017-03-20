@@ -15,25 +15,25 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.thread.ThreadPool;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestImageObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
-import com.telenav.josm.common.gui.GuiBuilder;
-import com.telenav.josm.common.thread.ThreadPool;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -46,13 +46,19 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -8089399825436744652L;
 
-    /** preferred size */
+    /**
+     * preferred size
+     */
     private static final Dimension DIM = new Dimension(150, 150);
 
-    /** dialog default height */
+    /**
+     * dialog default height
+     */
     private static final int DLG_HEIGHT = 150;
 
-    /** the dialog shortcut displayed on the left side slide menu */
+    /**
+     * the dialog shortcut displayed on the left side slide menu
+     */
     private static Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
@@ -134,16 +140,18 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      */
-    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver) {
+    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
+            final ClosestImageObserver closestImageObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
+        pnlBtn.registerObserver(closestImageObserver);
     }
 
     /**
      * Enables/disables the sequence related actions.
      *
      * @param isPrevious if true/false the previous photo action button is enabled
-     * @param isNext is true the next photo action button is enabled
+     * @param isNext     is true the next photo action button is enabled
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);

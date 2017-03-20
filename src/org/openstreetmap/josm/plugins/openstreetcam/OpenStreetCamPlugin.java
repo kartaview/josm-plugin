@@ -46,6 +46,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestImageObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -63,7 +64,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, ClosestImageObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -100,7 +101,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             // create the dialog
             detailsDialog = new OpenStreetCamDetailsDialog();
-            detailsDialog.registerObservers(this, this);
+            detailsDialog.registerObservers(this, this, this);
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
@@ -351,6 +352,14 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 }
             }
         }
+    }
+
+
+    /* implementation of ClosestImageObserver */
+
+    @Override
+    public void goToTheClosestImage() {
+        selectPhoto(layer.getClosestSelectedImage());
     }
 
 
