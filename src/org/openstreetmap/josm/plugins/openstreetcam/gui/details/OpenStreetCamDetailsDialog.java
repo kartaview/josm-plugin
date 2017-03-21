@@ -15,8 +15,12 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
-import com.telenav.josm.common.gui.GuiBuilder;
-import com.telenav.josm.common.thread.ThreadPool;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -29,11 +33,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
+import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -151,7 +152,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      * Enables/disables the sequence related actions.
      *
      * @param isPrevious if true/false the previous photo action button is enabled
-     * @param isNext     is true the next photo action button is enabled
+     * @param isNext is true the next photo action button is enabled
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);

@@ -15,10 +15,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.cnf;
 
-import com.telenav.josm.common.cnf.BaseConfig;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import org.openstreetmap.josm.tools.ImageProvider;
-
-import javax.swing.*;
+import com.telenav.josm.common.cnf.BaseConfig;
 
 
 /**

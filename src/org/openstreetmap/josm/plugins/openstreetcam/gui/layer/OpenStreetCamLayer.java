@@ -20,8 +20,10 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
-import java.util.*;
-
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collection;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
