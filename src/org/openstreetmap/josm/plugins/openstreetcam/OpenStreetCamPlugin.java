@@ -212,8 +212,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     }
 
     private void handlePhotoSelection(final Photo photo) {
-        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag() && !layer
-                .isPhotoPartOfSequence(photo)) {
+        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
+                && !layer.isPhotoPartOfSequence(photo)) {
             loadSequence(photo);
         }
         selectPhoto(photo);
