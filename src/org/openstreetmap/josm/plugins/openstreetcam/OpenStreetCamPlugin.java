@@ -327,6 +327,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         final Photo photo = layer.sequencePhoto(index);
         if (photo != null) {
             selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
             SwingUtilities.invokeLater(() -> {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());

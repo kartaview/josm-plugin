@@ -45,7 +45,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
     private Photo selectedPhoto;
     private Photo startPhoto;
     private Sequence selectedSequence;
-    private Collection<Photo> closestPhotosHistory;
+    private Collection<Photo> closestPhotos;
 
 
     @Override
@@ -240,14 +240,14 @@ public class OpenStreetCamLayer extends AbtractLayer {
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
         if (photo == null) {
-            closestPhotosHistory = Collections.EMPTY_LIST;
+            closestPhotos = Collections.EMPTY_LIST;
         } else {
-            closestPhotosHistory = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
+            closestPhotos = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
         }
     }
 
     public Collection<Photo> getClosestPhotos() {
-        return closestPhotosHistory;
+        return closestPhotos;
     }
 
     /**
@@ -256,12 +256,12 @@ public class OpenStreetCamLayer extends AbtractLayer {
      * @return a {@code Photo}
      */
     public Photo getClosestSelectedPhoto() {
-        if (closestPhotosHistory.isEmpty()) {
-            closestPhotosHistory = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
+        if (closestPhotos.isEmpty()) {
+            closestPhotos = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
         }
 
-        final Photo closestPhoto = closestPhotosHistory.iterator().next();
-        closestPhotosHistory.remove(closestPhoto);
+        final Photo closestPhoto = closestPhotos.iterator().next();
+        closestPhotos.remove(closestPhoto);
 
         return closestPhoto;
     }
