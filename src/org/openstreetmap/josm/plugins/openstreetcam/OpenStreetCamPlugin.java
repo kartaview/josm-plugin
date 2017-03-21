@@ -55,14 +55,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
-
-
 /**
  * Defines the main functionality of the OpenStreetCam plugin.
  *
  * @author Beata
  * @version $Revision$
  */
+
+
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
         LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
 

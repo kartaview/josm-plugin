@@ -20,16 +20,17 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collection;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 
 
 /**
@@ -240,7 +241,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
         if (photo == null) {
-            closestPhotos = Collections.EMPTY_LIST;
+            closestPhotos = Collections.emptyList();
         } else {
             closestPhotos = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
         }
@@ -257,7 +258,8 @@ public class OpenStreetCamLayer extends AbtractLayer {
      */
     public Photo getClosestSelectedPhoto() {
         if (closestPhotos.isEmpty()) {
-            closestPhotos = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 10);
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
         }
 
         final Photo closestPhoto = closestPhotos.iterator().next();

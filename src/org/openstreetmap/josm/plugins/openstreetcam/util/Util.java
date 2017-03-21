@@ -125,11 +125,13 @@ public final class Util {
             }
         }
 
+        final Collection<Photo> result;
         if (size < candidateMap.size()) {
-            return new ArrayList<>(candidateMap.values()).subList(0, size);
+            result = new ArrayList<>(candidateMap.values()).subList(0, size);
         } else {
-            return candidateMap.values();
+            result = candidateMap.values();
         }
+        return result;
     }
 
     /**
