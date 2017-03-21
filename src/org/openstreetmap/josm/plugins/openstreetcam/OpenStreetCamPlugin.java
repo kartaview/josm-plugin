@@ -46,7 +46,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestImageObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -64,7 +64,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, ClosestImageObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -198,18 +198,25 @@ LocationObserver, SequenceObserver, ClosestImageObserver, PreferenceChangedListe
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
+                    layer.selectStartPhotoForClosestAction(null);
                 }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
-                            && !layer.isPhotoPartOfSequence(photo)) {
-                        loadSequence(photo);
-                    }
-                    selectPhoto(photo);
+                    handlePhotoSelection(photo);
+                    layer.selectStartPhotoForClosestAction(photo);
                 }
             }
+            detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
         }
+    }
+
+    private void handlePhotoSelection(final Photo photo) {
+        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag() && !layer
+                .isPhotoPartOfSequence(photo)) {
+            loadSequence(photo);
+        }
+        selectPhoto(photo);
     }
 
     private void selectPhoto(final Photo photo) {
@@ -296,6 +303,7 @@ LocationObserver, SequenceObserver, ClosestImageObserver, PreferenceChangedListe
         // no logic for this action
     }
 
+
     /* implementation of LocationObserver */
 
     @Override
@@ -358,8 +366,8 @@ LocationObserver, SequenceObserver, ClosestImageObserver, PreferenceChangedListe
     /* implementation of ClosestImageObserver */
 
     @Override
-    public void goToTheClosestImage() {
-        selectPhoto(layer.getClosestSelectedImage());
+    public void selectClosestPhoto() {
+        handlePhotoSelection(layer.getClosestSelectedPhoto());
     }
 
 

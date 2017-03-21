@@ -17,12 +17,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -33,6 +29,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.argument.BoundingBox;
+
+import static java.util.Collections.addAll;
 
 
 /**
@@ -73,7 +71,7 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        int zoomLevel;
+        final int zoomLevel;
         if (Main.map.mapView.getScale() >= ZOOM1_SCALE) {
             // JOSM does not return the correct bounds for the case when the zoom level is 1
             zoomLevel = 1;
@@ -114,7 +112,7 @@ public final class Util {
      * @param size the number of nearby photos to return
      * @return a set of {@code Photo}
      */
-    public static Set<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
+    public static Collection<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
         final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
@@ -126,13 +124,26 @@ public final class Util {
             }
         }
 
-        final Set<Photo> result = new HashSet<>();
         if (size < candidateMap.size()) {
-            result.addAll(new ArrayList<>(candidateMap.values()).subList(0, size));
+            return new ArrayList<>(candidateMap.values()).subList(0, size);
         } else {
-            result.addAll(candidateMap.values());
+            return candidateMap.values();
         }
-        return result;
+    }
+
+    public static Collection<Photo> nearbyPhotos2(final List<Photo> photos, final Photo selectedPhoto, final int size) {
+        final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
+        final Map<Double, Photo> candidateMap = new TreeMap<>();
+        for (final Photo photo : photos) {
+            if (!photo.getSequenceId().equals(selectedPhoto.getSequenceId()) && bbox.bounds(photo.getLocation())) {
+                final double dist = selectedPhoto.getLocation().distance(photo.getLocation());
+                if (dist <= MAX_DISTANCE) {
+                    candidateMap.put(dist, photo);
+                }
+            }
+        }
+
+        return candidateMap.values();
     }
 
     /**

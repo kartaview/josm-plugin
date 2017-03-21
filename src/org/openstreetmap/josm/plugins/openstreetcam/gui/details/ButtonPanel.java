@@ -45,7 +45,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestImageObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -67,7 +67,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     /* notifies the plugin main class */
     private LocationObserver locationObserver;
     private SequenceObserver sequenceObserver;
-    private ClosestImageObserver closestImageObserver;
+    private ClosestPhotoObserver closestPhotoObserver;
 
 
     /* the currently selected photo */
@@ -94,7 +94,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
         btnClosestPhoto = GuiBuilder.buildButton(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
-                guiConfig.getBtnClosestImageTlt(), true);
+                guiConfig.getBtnClosestImageTlt(), false);
 
         add(btnManualSwitch);
         add(btnPrevious);
@@ -141,7 +141,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     /**
      * Enables or disables the manual data switch button.
      *
-     * @param true/false
+     * @param enabled is true/false
      */
     void enableManualSwitchButton(final boolean enabled) {
         btnManualSwitch.setEnabled(enabled);
@@ -177,6 +177,10 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         btnNext.setEnabled(isNext);
     }
 
+    void enableClosestPhotoButton(final boolean enabled) {
+        btnClosestPhoto.setEnabled(enabled);
+    }
+
     @Override
     public void registerObserver(final LocationObserver locationObserver) {
         this.locationObserver = locationObserver;
@@ -198,13 +202,13 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
     @Override
-    public void registerObserver(final ClosestImageObserver closestImageObserver) {
-        this.closestImageObserver = closestImageObserver;
+    public void registerObserver(final ClosestPhotoObserver closestOhotoObserver) {
+        this.closestPhotoObserver = closestOhotoObserver;
     }
 
     @Override
-    public void notifyClosestImageObserver() {
-        this.closestImageObserver.goToTheClosestImage();
+    public void notifyClosestPhotoObserver() {
+        closestPhotoObserver.selectClosestPhoto();
     }
 
 
@@ -304,10 +308,8 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                // enableSequenceActions(false, false);
-                notifyClosestImageObserver();
+                notifyClosestPhotoObserver();
             }
         }
-
     }
 }

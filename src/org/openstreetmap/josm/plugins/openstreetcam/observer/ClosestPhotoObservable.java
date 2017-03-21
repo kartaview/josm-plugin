@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Telenav, Inc.
+ *  Copyright 2017 Telenav, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -21,17 +21,17 @@ package org.openstreetmap.josm.plugins.openstreetcam.observer;
  * @author ioanao
  * @version $Revision$
  */
-public interface ClosestImageObservable {
+public interface ClosestPhotoObservable {
 
     /**
      * Registers the given observer.
      *
      * @param observer a {@code ClosestImageObserver}
      */
-    void registerObserver(ClosestImageObserver observer);
+    void registerObserver(ClosestPhotoObserver observer);
 
     /**
      * Notifies the observers listening.
      */
-    void notifyClosestImageObserver();
+    void notifyClosestPhotoObserver();
 }
