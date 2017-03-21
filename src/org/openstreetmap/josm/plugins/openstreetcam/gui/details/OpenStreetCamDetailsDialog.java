@@ -47,19 +47,13 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -8089399825436744652L;
 
-    /**
-     * preferred size
-     */
+    /** preferred size */
     private static final Dimension DIM = new Dimension(150, 150);
 
-    /**
-     * dialog default height
-     */
+    /** dialog default height */
     private static final int DLG_HEIGHT = 150;
 
-    /**
-     * the dialog shortcut displayed on the left side slide menu
-     */
+    /** the dialog shortcut displayed on the left side slide menu */
     private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
