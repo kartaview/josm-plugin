@@ -238,6 +238,11 @@ public class OpenStreetCamLayer extends AbtractLayer {
         return dataSet;
     }
 
+    /**
+     * Sets a start photo from witch a possible closest image action should start.
+     *
+     * @param photo a {@code Photo}
+     */
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
         if (photo == null) {
