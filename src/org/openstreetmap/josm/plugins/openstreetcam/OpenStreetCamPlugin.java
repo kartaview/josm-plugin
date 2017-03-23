@@ -46,6 +46,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -54,16 +55,16 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
-
-
 /**
  * Defines the main functionality of the OpenStreetCam plugin.
  *
  * @author Beata
  * @version $Revision$
  */
+
+
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, PreferenceChangedListener {
+        LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -100,7 +101,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             // create the dialog
             detailsDialog = new OpenStreetCamDetailsDialog();
-            detailsDialog.registerObservers(this, this);
+            detailsDialog.registerObservers(this, this, this);
             newMapFrame.addToggleDialog(detailsDialog);
             detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
 
@@ -197,18 +198,25 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
+                    layer.selectStartPhotoForClosestAction(null);
                 }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
-                            && !layer.isPhotoPartOfSequence(photo)) {
-                        loadSequence(photo);
-                    }
-                    selectPhoto(photo);
+                    handlePhotoSelection(photo);
+                    layer.selectStartPhotoForClosestAction(photo);
                 }
             }
+            detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
         }
+    }
+
+    private void handlePhotoSelection(final Photo photo) {
+        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
+                && !layer.isPhotoPartOfSequence(photo)) {
+            loadSequence(photo);
+        }
+        selectPhoto(photo);
     }
 
     private void selectPhoto(final Photo photo) {
@@ -295,6 +303,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         // no logic for this action
     }
 
+
     /* implementation of LocationObserver */
 
     @Override
@@ -318,6 +327,7 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
         final Photo photo = layer.sequencePhoto(index);
         if (photo != null) {
             selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
             SwingUtilities.invokeLater(() -> {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
@@ -351,6 +361,14 @@ LocationObserver, SequenceObserver, PreferenceChangedListener {
                 }
             }
         }
+    }
+
+
+    /* implementation of ClosestImageObserver */
+
+    @Override
+    public void selectClosestPhoto() {
+        handlePhotoSelection(layer.getClosestSelectedPhoto());
     }
 
 

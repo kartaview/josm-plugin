@@ -18,10 +18,9 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
@@ -73,7 +72,7 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        int zoomLevel;
+        final int zoomLevel;
         if (Main.map.mapView.getScale() >= ZOOM1_SCALE) {
             // JOSM does not return the correct bounds for the case when the zoom level is 1
             zoomLevel = 1;
@@ -114,7 +113,7 @@ public final class Util {
      * @param size the number of nearby photos to return
      * @return a set of {@code Photo}
      */
-    public static Set<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
+    public static Collection<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
         final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
@@ -126,11 +125,11 @@ public final class Util {
             }
         }
 
-        final Set<Photo> result = new HashSet<>();
+        final Collection<Photo> result;
         if (size < candidateMap.size()) {
-            result.addAll(new ArrayList<>(candidateMap.values()).subList(0, size));
+            result = new ArrayList<>(candidateMap.values()).subList(0, size);
         } else {
-            result.addAll(candidateMap.values());
+            result = candidateMap.values();
         }
         return result;
     }

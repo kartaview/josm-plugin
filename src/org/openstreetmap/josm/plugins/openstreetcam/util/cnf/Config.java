@@ -31,6 +31,7 @@ public final class Config extends BaseConfig {
     private static final int MAX_RADIUS = 5000;
     private static final int MIN_RADIUS = 1;
     private static final int MAX_ITEMS = 5000;
+    private static final int MAX_CLOSEST_ITEMS = 10;
     private static final int SEGMENT_ZOOM = 10;
     private static final int PHOTO_ZOOM = 15;
     private static final int MAX_ZOOM = 18;
@@ -47,6 +48,8 @@ public final class Config extends BaseConfig {
     private final int nearbyPhotosMaxRadius;
     private final int nearbyPhotosMinRadius;
     private final int nearbyPhotosMaxItems;
+
+    private final int closestPhotosMaxItems;
 
     private final int tracksMaxItems;
     private final int tracksMaxZoom;
@@ -68,6 +71,8 @@ public final class Config extends BaseConfig {
         nearbyPhotosMaxRadius = readIntegerProperty("nearbyPhotos.maxRadius", MAX_RADIUS);
         nearbyPhotosMinRadius = readIntegerProperty("nearbyPhotos.minRadius", MIN_RADIUS);
         nearbyPhotosMaxItems = readIntegerProperty("nearbyPhotos.maxItems", MAX_ITEMS);
+
+        closestPhotosMaxItems = readIntegerProperty("closestPhotos.maxNumber", MAX_CLOSEST_ITEMS);
 
         tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
         tracksMaxZoom = readIntegerProperty("tracks.maxZoom", MAX_ZOOM);
@@ -134,5 +139,9 @@ public final class Config extends BaseConfig {
 
     public int getMapSegmentZoom() {
         return mapSegmentZoom;
+    }
+
+    public int getClosestPhotosMaxItems() {
+        return closestPhotosMaxItems;
     }
 }

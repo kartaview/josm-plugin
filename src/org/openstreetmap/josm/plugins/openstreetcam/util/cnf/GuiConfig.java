@@ -49,6 +49,7 @@ public final class GuiConfig extends BaseConfig {
     private final String btnNextTlt;
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
+    private final String btnClosestImageTlt;
     private final String btnManualSwitchTlt;
     private final String btnManualImageSwitchTlt;
     private final String btnManualSegmentSwitchTlt;
@@ -104,6 +105,7 @@ public final class GuiConfig extends BaseConfig {
         btnNextTlt = readProperty("btn.next.tlt");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
+        btnClosestImageTlt = readProperty("btn.closestImage.tlt");
         btnManualSwitchTlt = readProperty("btn.switch.tlt");
         btnManualImageSwitchTlt = readProperty("btn.switch.image.tlt");
         btnManualSegmentSwitchTlt = readProperty("btn.switch.segment.tlt");
@@ -213,6 +215,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnWebPageTlt() {
         return btnWebPageTlt;
+    }
+
+    public String getBtnClosestImageTlt() {
+        return btnClosestImageTlt;
     }
 
     public String getBtnManualSwitchTlt() {

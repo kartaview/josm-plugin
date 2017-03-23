@@ -26,6 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -53,7 +54,7 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
     private static final int DLG_HEIGHT = 150;
 
     /** the dialog shortcut displayed on the left side slide menu */
-    private static Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
+    private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
     /* dialog components */
@@ -134,9 +135,11 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      */
-    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver) {
+    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
+            final ClosestPhotoObserver closestPhotoObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
+        pnlBtn.registerObserver(closestPhotoObserver);
     }
 
     /**
@@ -147,6 +150,11 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);
+        pnlBtn.repaint();
+    }
+
+    public void enableClosestPhotoButton(final boolean enabled) {
+        pnlBtn.enableClosestPhotoButton(enabled);
         pnlBtn.repaint();
     }
 

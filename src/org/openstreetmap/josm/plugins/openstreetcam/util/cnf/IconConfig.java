@@ -49,6 +49,7 @@ public final class IconConfig extends BaseConfig {
     private final Icon feedbackIcon;
     private final Icon locationIcon;
     private final Icon webPageIcon;
+    private final Icon closestImageIcon;
     private final Icon warningIcon;
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
@@ -74,6 +75,7 @@ public final class IconConfig extends BaseConfig {
         locationIcon = ImageProvider.get(readProperty("location.icon"));
         feedbackIcon = ImageProvider.get(readProperty("feedback.icon"));
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
+        closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
@@ -147,6 +149,10 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWebPageIcon() {
         return webPageIcon;
+    }
+
+    public Icon getClosestImageIcon() {
+        return closestImageIcon;
     }
 
     public Icon getWarningIcon() {
