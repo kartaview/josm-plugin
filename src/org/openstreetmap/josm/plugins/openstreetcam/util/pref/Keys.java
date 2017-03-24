@@ -31,6 +31,7 @@ public final class Keys {
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
+    static final String PANEL_ICON_VISIBILITY = "openstreetcam_logo_25x25.png.visible";
 
     static final String JOSM_AUTH_METHOD = "osm-server.auth-method";
     static final String JOSM_OAUTH_SECRET = "oauth.access-token.secret";

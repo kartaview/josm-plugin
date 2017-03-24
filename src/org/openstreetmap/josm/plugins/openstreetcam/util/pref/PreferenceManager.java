@@ -21,8 +21,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_AUTH_METHOD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_OAUTH_SECRET;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
@@ -189,13 +191,9 @@ public final class PreferenceManager {
         return loadManager.loadPanelOpenedFlag();
     }
 
-    /**
-     * Saves the panel appearance status to the preference file
-     *
-     * @param isPanelOpened represents the panel showing/hiding status
-     */
-    public void savePanelOpenedFlag(final boolean isPanelOpened) {
-        saveManager.savePanelOpenedFlag(isPanelOpened);
+    public void savePanelOpenedFlag(final String value) {
+        final Boolean panelOpened = Boolean.parseBoolean(value);
+        saveManager.savePanelOpenedFlag(panelOpened);
     }
 
     /**
@@ -227,7 +225,8 @@ public final class PreferenceManager {
 
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
         return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || hasManualSwitchDataTypeChanged(key, newValue);
+                || hasManualSwitchDataTypeChanged(key, newValue)
+                || (LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue));
     }
 
     private boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
@@ -240,5 +239,9 @@ public final class PreferenceManager {
 
     public DataType loadManualSwitchDataType() {
         return loadManager.loadManualSwitchDataType();
+    }
+
+    public boolean isPanelIconVisibilityKey(final String key) {
+        return PANEL_ICON_VISIBILITY.equals(key);
     }
 }

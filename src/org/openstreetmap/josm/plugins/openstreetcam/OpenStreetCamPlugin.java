@@ -17,7 +17,6 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JMenuItem;
@@ -27,7 +26,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
-import org.openstreetmap.josm.gui.IconToggleButton;
 import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
@@ -55,14 +53,16 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
+
+
+
+
 /**
  * Defines the main functionality of the OpenStreetCam plugin.
  *
  * @author Beata
  * @version $Revision$
  */
-
-
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
         LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
 
@@ -99,27 +99,14 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
-            // create the dialog
-            detailsDialog = new OpenStreetCamDetailsDialog();
-            detailsDialog.registerObservers(this, this, this);
-            newMapFrame.addToggleDialog(detailsDialog);
-            detailsDialog.getButton().addActionListener(new ToggleButtonActionListener());
-
-            // read preferences
-            if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
-                addLayer();
-            }
-            if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
-                detailsDialog.getButton().setSelected(true);
-                detailsDialog.showDialog();
-            } else {
-                detailsDialog.getButton().setSelected(false);
-                detailsDialog.hideDialog();
-            }
+            initializeDetailsDialog(newMapFrame);
             if (layerActivatorMenuItem == null) {
                 layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
             }
             layerActivatorMenuItem.setEnabled(true);
+            if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
+                addLayer();
+            }
         }
 
         // all layers are deleted (there is no map frame)
@@ -133,11 +120,23 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
         }
     }
 
+    private void initializeDetailsDialog(final MapFrame newMapFrame) {
+        detailsDialog = new OpenStreetCamDetailsDialog();
+        detailsDialog.registerObservers(this, this, this);
+        newMapFrame.addToggleDialog(detailsDialog);
+        if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
+            detailsDialog.showDialog();
+        } else {
+            detailsDialog.hideDialog();
+        }
+        Main.pref.addPreferenceChangeListener(this);
+    }
+
+
     private void addLayer() {
         // register listeners
         NavigatableComponent.addZoomChangeListener(this);
         Main.getLayerManager().addLayerChangeListener(this);
-        Main.pref.addPreferenceChangeListener(this);
         Main.map.mapView.addMouseListener(this);
 
         // add layer
@@ -359,6 +358,8 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
                     detailsDialog.enableSequenceActions(false, false);
                     Main.map.repaint();
                 }
+            } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
+                PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
             }
         }
     }
@@ -390,26 +391,4 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
             }
         }
     }
-
-    private class ToggleButtonActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (event.getSource() instanceof IconToggleButton) {
-                final IconToggleButton btn = (IconToggleButton) event.getSource();
-                SwingUtilities.invokeLater(() -> {
-                    if (btn.isSelected()) {
-                        PreferenceManager.getInstance().savePanelOpenedFlag(true);
-                        detailsDialog.setVisible(true);
-                        btn.setFocusable(false);
-                    } else {
-                        PreferenceManager.getInstance().savePanelOpenedFlag(false);
-                        detailsDialog.setVisible(false);
-                        btn.setFocusable(false);
-                    }
-                });
-            }
-        }
-    }
-
 }
