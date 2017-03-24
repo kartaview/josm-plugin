@@ -67,7 +67,7 @@ public class ListFilter {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof ListFilter) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final ListFilter other = (ListFilter) obj;
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
             result = result && (onlyUserFlag == other.isOnlyUserFlag());

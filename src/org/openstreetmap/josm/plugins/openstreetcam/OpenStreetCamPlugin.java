@@ -64,7 +64,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-        LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -373,7 +373,7 @@ public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, L
     }
 
 
-    private class LayerActivator extends JosmAction {
+    private final class LayerActivator extends JosmAction {
 
         private static final long serialVersionUID = -1361735274900300621L;
 
