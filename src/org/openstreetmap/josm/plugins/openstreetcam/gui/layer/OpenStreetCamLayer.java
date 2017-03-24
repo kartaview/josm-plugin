@@ -49,6 +49,11 @@ public class OpenStreetCamLayer extends AbtractLayer {
     private Collection<Photo> closestPhotos;
 
 
+    public OpenStreetCamLayer() {
+        super();
+    }
+
+
     @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);

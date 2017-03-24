@@ -17,7 +17,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author beataj
  * @version $Revision$
  */
-public class CacheConfig extends BaseConfig {
+public final class CacheConfig extends BaseConfig {
 
     private static final String CONFIG_FILE = "openstreetcam_cache.properties";
     private static final int DEFAULT_MEMORY_COUNT = 50;

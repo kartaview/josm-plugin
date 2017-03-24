@@ -25,11 +25,18 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
 public class Status {
 
     // setters are not required,since GSON sets the fields directly using reflection.
-    private Integer apiCode;
-    private String apiMessage;
-    private Integer httpCode;
-    private String httpMessage;
+    private final Integer apiCode;
+    private final String apiMessage;
+    private final Integer httpCode;
+    private final String httpMessage;
 
+
+    public Status(final Integer apiCode, final String apiMessage, final Integer httpCode, final String httpMessage) {
+        this.apiCode = apiCode;
+        this.apiMessage = apiMessage;
+        this.httpCode = httpCode;
+        this.httpMessage = httpMessage;
+    }
 
     public Integer getApiCode() {
         return apiCode;

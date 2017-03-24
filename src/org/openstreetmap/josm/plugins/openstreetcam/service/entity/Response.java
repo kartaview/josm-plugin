@@ -16,8 +16,11 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
  */
 public class Response {
 
-    // setters are not required,since GSON sets the fields directly using reflection.
-    private Status status;
+    private final Status status;
+
+    public Response(final Status status) {
+        this.status = status;
+    }
 
     public Status getStatus() {
         return status;

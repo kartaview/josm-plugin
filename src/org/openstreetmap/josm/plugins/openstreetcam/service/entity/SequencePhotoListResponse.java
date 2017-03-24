@@ -19,8 +19,12 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 public class SequencePhotoListResponse extends Response {
 
     // setters are not required,since GSON sets the fields directly using reflection.
-    private Sequence osv;
+    private final Sequence osv;
 
+    public SequencePhotoListResponse(final Status status, final Sequence osv) {
+        super(status);
+        this.osv = osv;
+    }
 
     public Sequence getOsv() {
         return osv;

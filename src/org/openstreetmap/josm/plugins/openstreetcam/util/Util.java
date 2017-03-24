@@ -49,7 +49,7 @@ public final class Util {
     private static final int MAX_ZOOM = 22;
     private static final int TILE_SIZE = 1024;
     private static final int ZOOM1_SCALE = 78206;
-    public static final double EQUATORIAL_RADIUS = 6378137.0;
+    private static final double EQUATORIAL_RADIUS = 6378137.0;
     private static final double ANGLE = Math.toDegrees(45);
     private static final double RADIUS = 0.0003;
     private static final double MAX_DISTANCE = 2.0;
@@ -277,7 +277,7 @@ public final class Util {
      * @param meters represents the expansion
      * @return a {@code BoundingBox}
      */
-    public static BoundingBox extendBoundingBox(final BoundingBox bbox, final int meters) {
+    private static BoundingBox extendBoundingBox(final BoundingBox bbox, final int meters) {
         final double verticalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS);
         final double horizontalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS
                 * Math.cos(Math.toRadians(Math.max(Math.abs(bbox.getSouth()), Math.abs(bbox.getNorth())))));

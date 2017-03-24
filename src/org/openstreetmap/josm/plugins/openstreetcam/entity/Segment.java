@@ -76,7 +76,7 @@ public class Segment {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof Segment) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final Segment other = (Segment) obj;
             result = EntityUtil.bothNullOrEqual(id, other.getId());
         }

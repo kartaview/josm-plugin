@@ -109,7 +109,7 @@ public class Photo {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof Photo) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final Photo other = (Photo) obj;
             result = EntityUtil.bothNullOrEqual(id, other.getId());
         }

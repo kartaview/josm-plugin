@@ -28,7 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @author beataj
  * @version $Revision$
  */
-public class CacheManager {
+public final class CacheManager {
 
     private static final String CACHE_NAME = "openstreetcam";
     private static final String CACHE_LOCATION = "/cache/";
@@ -56,7 +56,7 @@ public class CacheManager {
     }
 
 
-    public static final CacheManager getInstance() {
+    public static CacheManager getInstance() {
         return INSTANCE;
     }
 
