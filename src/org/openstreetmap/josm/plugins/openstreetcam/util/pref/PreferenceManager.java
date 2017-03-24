@@ -207,7 +207,7 @@ public final class PreferenceManager {
         return (JOSM_AUTH_METHOD.equals(key) && JOSM_BASIC_VAL.equals(value)) || JOSM_OAUTH_SECRET.equals(key);
     }
 
-    public boolean isFiltersChangedKey(final String value) {
+    private boolean isFiltersChangedKey(final String value) {
         return FILTERS_CHANGED.equals(value);
     }
 

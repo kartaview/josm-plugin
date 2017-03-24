@@ -65,14 +65,9 @@ class DataUpdateThread implements Runnable {
                 final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
                 final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
                 if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
-                    ThreadPool.getInstance().execute(() -> {
-                        updateSegments(mapViewSettings, listFilter, zoom);
-                    });
+                    ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
                 } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
-
-                    ThreadPool.getInstance().execute(() -> {
-                        updatePhotos(mapViewSettings, listFilter, zoom);
-                    });
+                    ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter, zoom));
                 }
             }
         }
@@ -99,8 +94,7 @@ class DataUpdateThread implements Runnable {
     private boolean shouldUpdatePhotos(final MapViewSettings mapViewSettings, final DataType dataType, final int zoom) {
         boolean result;
         if (mapViewSettings.isManualSwitchFlag()) {
-            result = zoom >= Config.getInstance().getMapPhotoZoom()
-                    && (dataType != null && dataType.equals(DataType.PHOTO));
+            result = zoom >= Config.getInstance().getMapPhotoZoom() && DataType.PHOTO.equals(dataType);
         } else {
             result = zoom >= mapViewSettings.getPhotoZoom();
         }
@@ -120,7 +114,7 @@ class DataUpdateThread implements Runnable {
         if (layer.getDataSet() == null || layer.getDataSet().getPhotos() == null) {
             final boolean enableManualSwitchButton =
                     zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-            updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+                    updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
         }
     }
 
@@ -138,7 +132,7 @@ class DataUpdateThread implements Runnable {
         if (layer.getDataSet() == null || layer.getDataSet().getSegments() == null) {
             final boolean enableManualSwitchButton =
                     zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-            updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
+                    updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
         }
     }
 

@@ -16,5 +16,5 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @version $Revision$
  */
 public enum DataType {
-    SEGMENT, PHOTO;
+    SEGMENT, PHOTO
 }

@@ -107,7 +107,7 @@ final class LoadManager {
 
     DataType loadManualSwitchDataType() {
         final String value = Main.pref.get(MANUAL_SWITCH_DATA_TYPE);
-        DataType dataType = null;
+        DataType dataType;
         try {
             dataType = DataType.valueOf(value);
         } catch (final RuntimeException e) {

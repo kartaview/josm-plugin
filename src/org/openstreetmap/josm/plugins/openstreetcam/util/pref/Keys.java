@@ -22,7 +22,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
  * @author Beata
  * @version $Revision$
  */
-public final class Keys {
+final class Keys {
 
     static final String SUPPRESS_PHOTOS_ERROR = "openstreetcam.error.photos.suppress";
     static final String SUPPRESS_SEQUENCE_ERROR = "openstreetcam.error.sequence.suppress";
