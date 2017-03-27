@@ -55,8 +55,6 @@ import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
-
-
 /**
  * Defines the main functionality of the OpenStreetCam plugin.
  *
@@ -206,7 +204,9 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     layer.selectStartPhotoForClosestAction(photo);
                 }
             }
-            detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            if (layer.getClosestPhotos() != null) {
+                detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            }
         }
     }
 
@@ -354,7 +354,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     loadSequence(layer.getSelectedPhoto());
                 } else if (layer.getSelectedSequence() != null) {
                     layer.setSelectedSequence(null);
-                    detailsDialog.enableManualSwitchButton(true);
+                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(false, false);
                     Main.map.repaint();
                 }

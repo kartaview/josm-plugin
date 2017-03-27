@@ -31,6 +31,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
 /**
@@ -64,6 +65,7 @@ public class OpenStreetCamLayer extends AbtractLayer {
             if (dataSet.getSegments() != null) {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else if (dataSet.getPhotos() != null) {
+                System.out.println(" drawing photos ,  " + PreferenceManager.getInstance().loadManualSwitchDataType());
                 paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, selectedSequence);
             }
             graphics.setComposite(originalComposite);

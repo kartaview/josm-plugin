@@ -15,6 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
+//TODO: refactor this
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
@@ -64,9 +65,17 @@ class DataUpdateThread implements Runnable {
                 final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
                 final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
                 final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+                if (zoom >= Config.getInstance().getMapPhotoZoom()
+                        && PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                    detailsDialog.enableManualSwitchButton(true);
+                } else {
+                    detailsDialog.enableManualSwitchButton(false);
+                }
                 if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
+                    System.out.println("update-ing segments...");
                     ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
                 } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
+                    System.out.println("update-ing photos...");
                     ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter, zoom));
                 }
             }
@@ -80,6 +89,9 @@ class DataUpdateThread implements Runnable {
         // if zoom level < 16 switch automatically to segment view (unless a sequence is displayed)
         if (zoom < Config.getInstance().getMapPhotoZoom()) {
             result = true;
+            if (dataType == DataType.PHOTO) {
+                PreferenceManager.getInstance().saveManualSwitchDataType(DataType.SEGMENT);
+            }
         } else if (zoom >= Config.getInstance().getMapPhotoZoom()) {
             if (mapViewSettings.isManualSwitchFlag()) {
                 result = dataType == null || dataType.equals(DataType.SEGMENT);
@@ -111,6 +123,7 @@ class DataUpdateThread implements Runnable {
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
+        System.out.println(" data type: " + PreferenceManager.getInstance().loadManualSwitchDataType());
         if (layer.getDataSet() == null || layer.getDataSet().getPhotos() == null) {
             final boolean enableManualSwitchButton =
                     zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
@@ -128,8 +141,15 @@ class DataUpdateThread implements Runnable {
         }
         final List<Circle> areas = Util.currentCircles();
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+        try {
+            Thread.sleep(3000);
+        } catch (final InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-        if (layer.getDataSet() == null || layer.getDataSet().getSegments() == null) {
+        System.out.println(" data type: " + PreferenceManager.getInstance().loadManualSwitchDataType());
+        if (PreferenceManager.getInstance().loadManualSwitchDataType() == DataType.PHOTO) {
             final boolean enableManualSwitchButton =
                     zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
                     updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
@@ -142,7 +162,7 @@ class DataUpdateThread implements Runnable {
             if (layer.getSelectedPhoto() == null) {
                 detailsDialog.updateUI(null);
             }
-            detailsDialog.enableManualSwitchButton(enableSwitchButton);
+            // detailsDialog.enableManualSwitchButton(enableSwitchButton);
             Main.map.repaint();
         });
     }
