@@ -119,7 +119,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     }
 
     private void initializeDetailsDialog(final MapFrame newMapFrame) {
-        detailsDialog = new OpenStreetCamDetailsDialog();
+        detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         detailsDialog.registerObservers(this, this, this);
         newMapFrame.addToggleDialog(detailsDialog);
         if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
@@ -138,7 +138,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         Main.map.mapView.addMouseListener(this);
 
         // add layer
-        layer = new OpenStreetCamLayer();
+        layer = OpenStreetCamLayer.getInstance();
         Main.map.mapView.getLayerManager().addLayer(layer);
     }
 
@@ -150,8 +150,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            zoomTimer = new Timer(SEARCH_DELAY,
-                    event -> ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, false)));
+            zoomTimer = new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance().execute(new DataUpdateThread(false)));
             zoomTimer.setRepeats(false);
             zoomTimer.start();
         }
@@ -179,7 +178,9 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
+
             Main.pref.removePreferenceChangeListener(this);
+            layer.destroy();
             layer = null;
         }
     }
@@ -345,7 +346,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             final PreferenceManager prefManager = PreferenceManager.getInstance();
             if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
-                ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
+                ThreadPool.getInstance().execute(new DataUpdateThread(true));
             } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
                 selectPhoto(layer.getSelectedPhoto());
             } else if (prefManager.isDisplayTackFlag(event.getKey())) {
@@ -387,6 +388,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
                 addLayer();
+                Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
         }

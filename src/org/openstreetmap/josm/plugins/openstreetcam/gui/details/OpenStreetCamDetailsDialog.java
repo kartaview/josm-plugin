@@ -43,7 +43,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamDetailsDialog extends ToggleDialog {
+public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -8089399825436744652L;
 
@@ -57,13 +57,15 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
     private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
+    private static final OpenStreetCamDetailsDialog INSTANCE = new OpenStreetCamDetailsDialog();
+
     /* dialog components */
     private final JLabel lblDetails;
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
 
 
-    public OpenStreetCamDetailsDialog() {
+    private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
 
@@ -74,6 +76,10 @@ public class OpenStreetCamDetailsDialog extends ToggleDialog {
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
+    }
+
+    public static OpenStreetCamDetailsDialog getInstance() {
+        return INSTANCE;
     }
 
 

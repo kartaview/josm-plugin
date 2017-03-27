@@ -39,9 +39,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamLayer extends AbtractLayer {
+public final class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
+    private static OpenStreetCamLayer instance;
     private DataSet dataSet;
     private Photo selectedPhoto;
     private Photo startPhoto;
@@ -49,10 +50,24 @@ public class OpenStreetCamLayer extends AbtractLayer {
     private Collection<Photo> closestPhotos;
 
 
-    public OpenStreetCamLayer() {
+    private OpenStreetCamLayer() {
         super();
     }
 
+    public static OpenStreetCamLayer getInstance() {
+        if (instance == null) {
+            instance = new OpenStreetCamLayer();
+
+        }
+        return instance;
+    }
+
+
+    @Override
+    public void destroy() {
+        OpenStreetCamLayer.instance = null;
+        super.destroy();
+    }
 
     @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
