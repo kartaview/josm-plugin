@@ -21,16 +21,20 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DataUpdateObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -81,7 +85,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     public static OpenStreetCamDetailsDialog getInstance() {
         return INSTANCE;
     }
-
 
     /**
      * Updates the details dialog with the details of the given photo.
@@ -142,10 +145,11 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      */
     public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
-            final ClosestPhotoObserver closestPhotoObserver) {
+            final ClosestPhotoObserver closestPhotoObserver, final DataUpdateObserver dataUpdateObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(closestPhotoObserver);
+        pnlBtn.registerObserver(dataUpdateObserver);
     }
 
     /**
@@ -156,21 +160,45 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         pnlBtn.enableSequenceActions(isPrevious, isNext);
-        pnlBtn.repaint();
+        pnlBtn.revalidate();
+        repaint();
     }
 
     public void enableClosestPhotoButton(final boolean enabled) {
         pnlBtn.enableClosestPhotoButton(enabled);
-        pnlBtn.repaint();
+        pnlBtn.revalidate();
+        repaint();
     }
 
     public void updateManualSwitchButton(final DataType dataType) {
         pnlBtn.updateManualSwitchButton(dataType);
-        pnlBtn.repaint();
+        pnlBtn.revalidate();
+        repaint();
     }
 
     public void enableManualSwitchButton(final boolean enabled) {
         pnlBtn.enableManualSwitchButton(enabled);
-        pnlBtn.repaint();
+        pnlBtn.revalidate();
+        repaint();
+    }
+
+    @Override
+    public void preferenceChanged(final PreferenceChangeEvent event) {
+        super.preferenceChanged(event);
+        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+            final PreferenceManager prefManager = PreferenceManager.getInstance();
+            if (prefManager.hasManualSwitchDataTypeChanged(event.getKey(), event.getNewValue().getValue().toString())) {
+                final boolean manualSwitchFlag = Boolean.parseBoolean(event.getNewValue().getValue().toString());
+                SwingUtilities.invokeLater(() -> {
+                    if (manualSwitchFlag) {
+                        pnlBtn.updateManualSwitchButton(true);
+                    } else {
+                        pnlBtn.updateManualSwitchButton(false);
+                    }
+                    pnlBtn.revalidate();
+                    repaint();
+                });
+            }
+        }
     }
 }
