@@ -62,11 +62,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         return instance;
     }
 
-
-    @Override
-    public void destroy() {
+    public static void destroyInstance() {
         OpenStreetCamLayer.instance = null;
-        super.destroy();
     }
 
     @Override

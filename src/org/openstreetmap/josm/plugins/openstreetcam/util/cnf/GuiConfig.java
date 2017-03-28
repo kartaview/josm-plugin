@@ -50,9 +50,8 @@ public final class GuiConfig extends BaseConfig {
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
     private final String btnClosestImageTlt;
-    private final String btnManualSwitchTlt;
-    private final String btnManualImageSwitchTlt;
-    private final String btnManualSegmentSwitchTlt;
+    private final String btnDataSwitchImageTlt;
+    private final String btnDataSwitchSegmentTlt;
 
     private final String dlgFilterTitle;
     private final String dlgFilterDateLbl;
@@ -106,9 +105,8 @@ public final class GuiConfig extends BaseConfig {
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnClosestImageTlt = readProperty("btn.closestImage.tlt");
-        btnManualSwitchTlt = readProperty("btn.switch.tlt");
-        btnManualImageSwitchTlt = readProperty("btn.switch.image.tlt");
-        btnManualSegmentSwitchTlt = readProperty("btn.switch.segment.tlt");
+        btnDataSwitchImageTlt = readProperty("btn.switch.image.tlt");
+        btnDataSwitchSegmentTlt = readProperty("btn.switch.segment.tlt");
 
         dlgFilterTitle = readProperty("filter.title");
         dlgFilterDateLbl = readProperty("filter.date.lbl");
@@ -221,16 +219,12 @@ public final class GuiConfig extends BaseConfig {
         return btnClosestImageTlt;
     }
 
-    public String getBtnManualSwitchTlt() {
-        return btnManualSwitchTlt;
+    public String getBtnDataSwitchImageTlt() {
+        return btnDataSwitchImageTlt;
     }
 
-    public String getBtnManualImageSwitchTlt() {
-        return btnManualImageSwitchTlt;
-    }
-
-    public String getBtnManualSegmentSwitchTlt() {
-        return btnManualSegmentSwitchTlt;
+    public String getBtnDataSwitchSegmentTlt() {
+        return btnDataSwitchSegmentTlt;
     }
 
     public String getDlgFilterTitle() {

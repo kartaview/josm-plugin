@@ -46,7 +46,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDet
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataUpdateObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -65,7 +65,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataUpdateObserver {
+LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChangeObserver {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -88,7 +88,6 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
-        PreferenceManager.getInstance().saveManualSwitchDataType(null);
     }
 
     @Override
@@ -131,8 +130,6 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             detailsDialog.hideDialog();
         }
         Main.pref.addPreferenceChangeListener(this);
-
-        // Main.pref.addPreferenceChangeListener(detailsDialog);
     }
 
 
@@ -188,7 +185,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             Main.map.mapView.removeMouseListener(this);
 
             Main.pref.removePreferenceChangeListener(this);
-            layer.destroy();
+            OpenStreetCamLayer.destroyInstance();
             layer = null;
         }
     }
@@ -196,7 +193,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
 
     @Override
     public void update(final DataType dataType) {
-        PreferenceManager.getInstance().saveManualSwitchDataType(dataType);
+        PreferenceManager.getInstance().saveDataType(dataType);
         ThreadPool.getInstance().execute(new DataUpdateThread(true));
     }
 
@@ -240,7 +237,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             layer.setSelectedSequence(null);
             layer.setSelectedPhoto(null);
             if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                detailsDialog.enableManualSwitchButton(true);
+                detailsDialog.enableDataSwitchButton(true);
             }
             detailsDialog.enableSequenceActions(false, false);
             detailsDialog.updateUI(null);
@@ -289,7 +286,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        detailsDialog.enableManualSwitchButton(false);
+                        detailsDialog.enableDataSwitchButton(false);
                     }
                     Main.map.repaint();
 
@@ -371,7 +368,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     loadSequence(layer.getSelectedPhoto());
                 } else if (layer.getSelectedSequence() != null) {
                     layer.setSelectedSequence(null);
-                    detailsDialog.enableManualSwitchButton(false);
+                    detailsDialog.enableDataSwitchButton(false);
                     detailsDialog.enableSequenceActions(false, false);
                     Main.map.repaint();
                 }

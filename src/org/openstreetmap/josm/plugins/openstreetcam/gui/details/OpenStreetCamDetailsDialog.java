@@ -29,7 +29,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataUpdateObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -145,7 +145,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      */
     public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
-            final ClosestPhotoObserver closestPhotoObserver, final DataUpdateObserver dataUpdateObserver) {
+            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataUpdateObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(closestPhotoObserver);
@@ -170,14 +170,14 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         repaint();
     }
 
-    public void updateManualSwitchButton(final DataType dataType) {
-        pnlBtn.updateManualSwitchButton(dataType);
+    public void updateDataSwitchButton(final DataType dataType) {
+        pnlBtn.updateDataSwitchButton(dataType);
         pnlBtn.revalidate();
         repaint();
     }
 
-    public void enableManualSwitchButton(final boolean enabled) {
-        pnlBtn.enableManualSwitchButton(enabled);
+    public void enableDataSwitchButton(final boolean enabled) {
+        pnlBtn.enableDataSwitchButton(enabled);
         pnlBtn.revalidate();
         repaint();
     }
@@ -191,9 +191,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                 final boolean manualSwitchFlag = Boolean.parseBoolean(event.getNewValue().getValue().toString());
                 SwingUtilities.invokeLater(() -> {
                     if (manualSwitchFlag) {
-                        pnlBtn.updateManualSwitchButton(true);
+                        pnlBtn.enableDataSwitchButton(true);
                     } else {
-                        pnlBtn.updateManualSwitchButton(false);
+                        pnlBtn.enableDataSwitchButton(false);
                     }
                     pnlBtn.revalidate();
                     repaint();

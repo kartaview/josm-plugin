@@ -11,8 +11,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -75,16 +73,12 @@ class PreferencePanel extends JPanel {
         cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(),
                 new JCheckBox().getFont().deriveFont(Font.PLAIN), mapViewSettings.isManualSwitchFlag(),
                 getBackground());
-        cbManualSwitch.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final JCheckBox source = (JCheckBox) event.getSource();
-                if (source.isSelected()) {
-                    spPhotoZoom.setEnabled(false);
-                } else {
-                    spPhotoZoom.setEnabled(true);
-                }
+        cbManualSwitch.addActionListener(event -> {
+            final JCheckBox source = (JCheckBox) event.getSource();
+            if (source.isSelected()) {
+                spPhotoZoom.setEnabled(false);
+            } else {
+                spPhotoZoom.setEnabled(true);
             }
         });
         add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);

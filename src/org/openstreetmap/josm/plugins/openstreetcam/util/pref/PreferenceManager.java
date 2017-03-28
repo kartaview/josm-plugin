@@ -233,12 +233,12 @@ public final class PreferenceManager {
         return MAP_VIEW_MANUAL_SWITCH.equals(key) && newValue != null;
     }
 
-    public void saveManualSwitchDataType(final DataType dataType) {
-        saveManager.saveManualSwitchDataType(dataType);
+    public void saveDataType(final DataType dataType) {
+        saveManager.saveDataType(dataType);
     }
 
-    public DataType loadManualSwitchDataType() {
-        return loadManager.loadManualSwitchDataType();
+    public DataType loadDataType() {
+        return loadManager.loadDataType();
     }
 
     public boolean isPanelIconVisibilityKey(final String key) {

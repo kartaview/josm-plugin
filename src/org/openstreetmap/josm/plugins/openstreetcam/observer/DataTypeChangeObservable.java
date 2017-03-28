@@ -12,11 +12,24 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 
 
 /**
+ * The observable interface for the {@code DataTypeChangeObserver} object.
  *
  * @author beataj
  * @version $Revision$
  */
-public interface DataUpdateObserver {
+public interface DataTypeChangeObservable {
 
-    void update(DataType dataType);
+    /**
+     * Registers the given observer.
+     *
+     * @param observer a {@code DataTypeChangeObserver]
+     */
+    void registerObserver(DataTypeChangeObserver observer);
+
+    /**
+     * Notifies the observer that is listening.
+     *
+     * @param dataType the new {@code DataType} that will be displayed
+     */
+    void notifyDataUpdateObserver(DataType dataType);
 }
