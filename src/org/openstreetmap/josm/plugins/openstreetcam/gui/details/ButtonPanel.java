@@ -172,14 +172,14 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                                    : iconConfig.getManualSwitchImageIcon();
-                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-                                    btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
-                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-                                    add(btnDataSwitch, 0);
+            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                            : iconConfig.getManualSwitchImageIcon();
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+            btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+            add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);

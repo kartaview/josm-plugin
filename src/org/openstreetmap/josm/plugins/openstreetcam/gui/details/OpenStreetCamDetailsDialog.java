@@ -214,9 +214,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                 final boolean manualSwitchFlag = Boolean.parseBoolean(event.getNewValue().getValue().toString());
                 SwingUtilities.invokeLater(() -> {
                     if (manualSwitchFlag) {
-                        pnlBtn.enableDataSwitchButton(true);
+                        pnlBtn.setDataSwitchButtonVisibiliy(true);
                     } else {
-                        pnlBtn.enableDataSwitchButton(false);
+                        pnlBtn.setDataSwitchButtonVisibiliy(false);
                     }
                     pnlBtn.revalidate();
                     repaint();
