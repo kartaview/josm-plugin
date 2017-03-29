@@ -23,13 +23,19 @@ import java.util.List;
  *
  * @author Beata
  * @version $Revision$
+ * @param <T> specifies the current page items type
  */
 public class ListResponse<T> extends Response {
 
-    // setters are not required,since GSON sets the fields directly using reflection.
-    private List<Integer> totalFilteredItems;
-    private List<T> currentPageItems;
+    private final List<Integer> totalFilteredItems;
+    private final List<T> currentPageItems;
 
+
+    public ListResponse(final Status status, final List<Integer> totalFilteredItems, final List<T> currentPageItems) {
+        super(status);
+        this.totalFilteredItems = totalFilteredItems;
+        this.currentPageItems = currentPageItems;
+    }
 
     public List<T> getCurrentPageItems() {
         return currentPageItems;

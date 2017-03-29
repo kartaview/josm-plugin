@@ -20,6 +20,8 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
@@ -28,6 +30,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 
 
 /**
@@ -36,13 +39,32 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamLayer extends AbtractLayer {
+public final class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
+    private static OpenStreetCamLayer instance;
     private DataSet dataSet;
     private Photo selectedPhoto;
+    private Photo startPhoto;
     private Sequence selectedSequence;
+    private Collection<Photo> closestPhotos;
 
+
+    private OpenStreetCamLayer() {
+        super();
+    }
+
+    public static OpenStreetCamLayer getInstance() {
+        if (instance == null) {
+            instance = new OpenStreetCamLayer();
+
+        }
+        return instance;
+    }
+
+    public static void destroyInstance() {
+        OpenStreetCamLayer.instance = null;
+    }
 
     @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
@@ -232,4 +254,41 @@ public class OpenStreetCamLayer extends AbtractLayer {
     public DataSet getDataSet() {
         return dataSet;
     }
+
+    /**
+     * Sets a start photo from witch a possible closest image action should start.
+     *
+     * @param photo a {@code Photo}
+     */
+    public void selectStartPhotoForClosestAction(final Photo photo) {
+        startPhoto = photo;
+        if (photo == null) {
+            closestPhotos = Collections.emptyList();
+        } else {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        }
+    }
+
+    public Collection<Photo> getClosestPhotos() {
+        return closestPhotos;
+    }
+
+    /**
+     * Retrieve the closest image of the currently selected image.
+     *
+     * @return a {@code Photo}
+     */
+    public Photo getClosestSelectedPhoto() {
+        if (closestPhotos.isEmpty()) {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        }
+
+        final Photo closestPhoto = closestPhotos.iterator().next();
+        closestPhotos.remove(closestPhoto);
+
+        return closestPhoto;
+    }
+
 }

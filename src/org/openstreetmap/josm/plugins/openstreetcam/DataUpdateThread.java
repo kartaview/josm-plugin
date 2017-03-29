@@ -42,113 +42,119 @@ import com.telenav.josm.common.thread.ThreadPool;
  */
 class DataUpdateThread implements Runnable {
 
-    private final OpenStreetCamLayer layer;
-    private final OpenStreetCamDetailsDialog detailsDialog;
     private final Boolean checkSelectedPhoto;
 
-
-    DataUpdateThread(final OpenStreetCamLayer layer, final OpenStreetCamDetailsDialog detailsDialog,
-            final Boolean checkSelectedPhoto) {
-        this.layer = layer;
-        this.detailsDialog = detailsDialog;
+    DataUpdateThread(final Boolean checkSelectedPhoto) {
         this.checkSelectedPhoto = checkSelectedPhoto;
     }
 
 
     @Override
     public void run() {
-        if (Main.map != null && Main.map.mapView != null) {
-            // case 1 search for segments
-            final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
-            if (zoom >= Config.getInstance().getMapSegmentZoom()) {
-                final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
-                final DataType dataType = PreferenceManager.getInstance().loadManualSwitchDataType();
-                final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-                if (layer.getSelectedSequence() == null && shouldUpdateSegments(mapViewSettings, dataType, zoom)) {
-                    ThreadPool.getInstance().execute(() -> {
-                        updateSegments(mapViewSettings, listFilter, zoom);
-                    });
-                } else if (shouldUpdatePhotos(mapViewSettings, dataType, zoom)) {
+        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+        if (zoom >= Config.getInstance().getMapSegmentZoom()) {
+            final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
 
-                    ThreadPool.getInstance().execute(() -> {
-                        updatePhotos(mapViewSettings, listFilter, zoom);
-                    });
+            if (OpenStreetCamLayer.getInstance().getSelectedSequence() != null) {
+                // special case, we load always photos
+                ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
+            } else {
+                if (mapViewSettings.isManualSwitchFlag()) {
+                    // change data type only if user changed manually
+                    manualSwitchFlow(mapViewSettings, listFilter, zoom);
+                } else {
+                    // change data type if zoom >= mapViewSettings.photoZoom
+                    normalFlow(mapViewSettings, listFilter, zoom);
                 }
             }
         }
     }
 
-    private boolean shouldUpdateSegments(final MapViewSettings mapViewSettings, final DataType dataType,
-            final int zoom) {
-        boolean result = false;
+    private void manualSwitchFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom) {
+        // enable switch button based on zoom level
+        if (zoom >= Config.getInstance().getMapPhotoZoom()) {
+            OpenStreetCamDetailsDialog.getInstance().enableDataSwitchButton(true);
+        } else {
+            OpenStreetCamDetailsDialog.getInstance().enableDataSwitchButton(false);
+        }
 
-        // if zoom level < 16 switch automatically to segment view (unless a sequence is displayed)
+        final DataType dataType = PreferenceManager.getInstance().loadDataType();
         if (zoom < Config.getInstance().getMapPhotoZoom()) {
-            result = true;
-        } else if (zoom >= Config.getInstance().getMapPhotoZoom()) {
-            if (mapViewSettings.isManualSwitchFlag()) {
-                result = dataType == null || dataType.equals(DataType.SEGMENT);
+            if (dataType == DataType.PHOTO) {
+                // user zoomed out to segment view
+                PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
+            }
+            ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
+        } else {
+            if (dataType == DataType.PHOTO) {
+                ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
             } else {
-                result = zoom < mapViewSettings.getPhotoZoom();
+                ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
             }
         }
-        return result;
     }
 
-
-    private boolean shouldUpdatePhotos(final MapViewSettings mapViewSettings, final DataType dataType, final int zoom) {
-        boolean result;
-        if (mapViewSettings.isManualSwitchFlag()) {
-            result = zoom >= Config.getInstance().getMapPhotoZoom()
-                    && (dataType != null && dataType.equals(DataType.PHOTO));
-        } else {
-            result = zoom >= mapViewSettings.getPhotoZoom();
+    private void normalFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom) {
+        final DataType dataType = PreferenceManager.getInstance().loadDataType();
+        if (zoom < mapViewSettings.getPhotoZoom()) {
+            if (dataType == null || dataType == DataType.PHOTO) {
+                // user zoomed out to segment view
+                PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
+            }
+            ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
+        } else if (zoom >= mapViewSettings.getPhotoZoom()) {
+            if (dataType == null || dataType == DataType.SEGMENT) {
+                // user zoomed in to photo view
+                PreferenceManager.getInstance().saveDataType(DataType.PHOTO);
+            }
+            ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
         }
-        return result;
     }
 
     private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
-        if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
+        if (OpenStreetCamLayer.getInstance().getDataSet() != null
+                && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null) {
             // clear view
             SwingUtilities.invokeLater(() -> {
-                detailsDialog.updateManualSwitchButton(DataType.SEGMENT);
-                updateUI(null, false, false);
+                if (mapViewSettings.isManualSwitchFlag()) {
+                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT);
+                }
+                updateUI(null, false);
             });
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
         final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
-        if (layer.getDataSet() == null || layer.getDataSet().getPhotos() == null) {
-            final boolean enableManualSwitchButton =
-                    zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-            updateUI(new DataSet(segments, null), checkSelectedPhoto, enableManualSwitchButton);
+        if (PreferenceManager.getInstance().loadDataType() == null
+                || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
+            updateUI(new DataSet(segments, null), checkSelectedPhoto);
         }
     }
 
-    private void updatePhotos(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom) {
-        if (layer.getDataSet() != null && layer.getDataSet().getSegments() != null) {
+    private void updatePhotos(final MapViewSettings mapViewSettings, final ListFilter filter) {
+        if (OpenStreetCamLayer.getInstance().getDataSet() != null
+                && OpenStreetCamLayer.getInstance().getDataSet().getSegments() != null) {
             // clear view
             SwingUtilities.invokeLater(() -> {
-                detailsDialog.updateManualSwitchButton(DataType.PHOTO);
-                updateUI(null, false, false);
+                if (mapViewSettings.isManualSwitchFlag()) {
+                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO);
+                }
+                updateUI(null, false);
             });
         }
         final List<Circle> areas = Util.currentCircles();
         final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-
-        if (layer.getDataSet() == null || layer.getDataSet().getSegments() == null) {
-            final boolean enableManualSwitchButton =
-                    zoom >= Config.getInstance().getMapPhotoZoom() && mapViewSettings.isManualSwitchFlag();
-            updateUI(new DataSet(null, photos), checkSelectedPhoto, enableManualSwitchButton);
+        if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
+            updateUI(new DataSet(null, photos), checkSelectedPhoto);
         }
     }
 
-    private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto, final boolean enableSwitchButton) {
+    private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto) {
         SwingUtilities.invokeLater(() -> {
-            layer.setDataSet(dataSet, checkSelectedPhoto);
-            if (layer.getSelectedPhoto() == null) {
-                detailsDialog.updateUI(null);
+            OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelectedPhoto);
+            if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                OpenStreetCamDetailsDialog.getInstance().updateUI(null);
             }
-            detailsDialog.enableManualSwitchButton(enableSwitchButton);
             Main.map.repaint();
         });
     }

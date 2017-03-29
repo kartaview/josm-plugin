@@ -53,7 +53,7 @@ class Key implements Serializable {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof Key) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final Key other = (Key) obj;
             result = EntityUtil.bothNullOrEqual(sequenceId, other.getSequenceId());
             result = result && EntityUtil.bothNullOrEqual(imageName, other.getImageName());

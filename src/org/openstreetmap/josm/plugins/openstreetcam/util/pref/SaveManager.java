@@ -12,13 +12,13 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
@@ -87,8 +87,8 @@ final class SaveManager {
         Main.pref.put(PANEL_OPENED, isPanelOpened);
     }
 
-    void saveManualSwitchDataType(final DataType dataType) {
+    void saveDataType(final DataType dataType) {
         final String value = dataType != null ? dataType.name() : "";
-        Main.pref.put(MANUAL_SWITCH_DATA_TYPE, value);
+        Main.pref.put(DATA_TYPE, value);
     }
 }

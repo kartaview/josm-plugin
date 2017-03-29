@@ -6,15 +6,16 @@
  *
  * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.argument;
+package org.openstreetmap.josm.plugins.openstreetcam.observer;
 
 
 /**
- * Defines the data types that can be displayed on the map.
+ * Observes the closest image user click action.
  *
- * @author beataj
+ * @author ioanao
  * @version $Revision$
  */
-public enum DataType {
-    SEGMENT, PHOTO
+public interface ClosestPhotoObserver {
+
+    void selectClosestPhoto();
 }

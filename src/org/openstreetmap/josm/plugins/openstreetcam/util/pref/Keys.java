@@ -22,7 +22,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
  * @author Beata
  * @version $Revision$
  */
-public final class Keys {
+final class Keys {
 
     static final String SUPPRESS_PHOTOS_ERROR = "openstreetcam.error.photos.suppress";
     static final String SUPPRESS_SEQUENCE_ERROR = "openstreetcam.error.sequence.suppress";
@@ -31,6 +31,7 @@ public final class Keys {
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
+    static final String PANEL_ICON_VISIBILITY = "openstreetcam_logo_25x25.png.visible";
 
     static final String JOSM_AUTH_METHOD = "osm-server.auth-method";
     static final String JOSM_OAUTH_SECRET = "oauth.access-token.secret";
@@ -45,7 +46,7 @@ public final class Keys {
     static final String CACHE_NEARBY_COUNT = "openstreetcam.preferences.cache.nearby";
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
     static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
-    static final String MANUAL_SWITCH_DATA_TYPE = "openstreetcam.mapView.manualSwitch.dataType";
+    static final String DATA_TYPE = "openstreetcam.dataType";
 
     private Keys() {}
 }

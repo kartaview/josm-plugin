@@ -80,13 +80,13 @@ public class Service {
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
      * @return a list of {@code Photo}s
-     * @throws ServiceException if the operation failed
+     * @throws ServiceException if the operation fails
      */
     public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId)
             throws ServiceException {
         final Map<String, String> arguments =
                 new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
-        String response = null;
+        String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
@@ -105,12 +105,12 @@ public class Service {
      * Retrieves the sequence associated with the given identifier.
      *
      * @param id a sequence identifier
-     * @return a {@code Sequence}
-     * @throws ServiceException if the operation failed
+     * @return a {@code Sequence} containg all the photos that belongs to the sequence
+     * @throws ServiceException if the operation fails
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
-        String response = null;
+        String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
@@ -133,7 +133,7 @@ public class Service {
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
         final StringBuilder url = new StringBuilder(Config.getInstance().getServiceBaseUrl());
         url.append(photoName);
-        byte[] image = new byte[0];
+        byte[] image;
         try {
             image = IOUtils.toByteArray(new BufferedInputStream(new URL(url.toString()).openStream()));
         } catch (final IOException e) {
@@ -150,7 +150,8 @@ public class Service {
      * uploaded by the logged in user
      * @param paging a {@code Paging} defines pagination arguments
      * @param zoom represents the current zoom level
-     * @throws ServiceException
+     * @return a list of {@code Segment}s
+     * @throws ServiceException if the operation fails
      */
     public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final int zoom)
             throws ServiceException {
@@ -187,7 +188,7 @@ public class Service {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        String response = null;
+        String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);

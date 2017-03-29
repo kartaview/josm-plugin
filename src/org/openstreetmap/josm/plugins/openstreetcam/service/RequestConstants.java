@@ -27,8 +27,6 @@ final class RequestConstants {
     static final String LIST_NEARBY_PHOTOS = "/list/nearby-photos/";
     static final String SEQUENCE_PHOTO_LIST = "/sequence/photo-list/";
     static final String LIST_MATCHED_TRACKS = "tracks";
-    static final String SEQUENCE_DETAILS = "details";
-
     static final String COORDINATE = "coordinate";
     static final String RADIUS = "radius";
     static final String PAGE = "page";

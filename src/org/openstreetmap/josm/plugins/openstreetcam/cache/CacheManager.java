@@ -28,7 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  * @author beataj
  * @version $Revision$
  */
-public class CacheManager {
+public final class CacheManager {
 
     private static final String CACHE_NAME = "openstreetcam";
     private static final String CACHE_LOCATION = "/cache/";
@@ -56,14 +56,15 @@ public class CacheManager {
     }
 
 
-    public static final CacheManager getInstance() {
+    public static CacheManager getInstance() {
         return INSTANCE;
     }
 
     /**
      * Adds an image to the cache.
      *
-     * @param key the key of the image
+     * @param sequenceId the identifier of the sequence to which the photo belongs
+     * @param imageName the name of the image
      * @param image the image in byte format
      * @param warning a flag indicating if the image loading was successful or not
      */
@@ -74,8 +75,9 @@ public class CacheManager {
     /**
      * Returns the image corresponding to the given name. The method returns null if there is no corresponding image.
      *
+     * @param sequenceId the identifier of the sequence to which the photo belongs
      * @param imageName the name of the image
-     * @return {@code BufferedImage}
+     * @return a {@code CacheEntry} object
      */
     public CacheEntry getPhoto(final Long sequenceId, final String imageName) {
         return cache.get(new Key(sequenceId, imageName));
@@ -84,8 +86,9 @@ public class CacheManager {
     /**
      * Checks if the there is any image associated with the given key in the cache.
      *
-     * @param imageName
-     * @return
+     * @param sequenceId the identifier of the sequence to which the photo belongs
+     * @param imageName the name of the image
+     * @return true if the cache contains the photo, false otherwise
      */
     public boolean containsPhoto(final Long sequenceId, final String imageName) {
         final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
@@ -93,9 +96,9 @@ public class CacheManager {
     }
 
     /**
-     * Removes all the images associated with the given prefix.
+     * Removes all the images associated with the given sequence identifier.
      *
-     * @param prefix
+     * @param sequenceId the identifier of the sequence to which the photo belongs
      */
     public void removePhotos(final Long sequenceId) {
         final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();

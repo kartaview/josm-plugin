@@ -153,24 +153,27 @@ class FilterPanel extends JPanel {
         return getConfirmation(uncommitteddDate, editorText);
     }
 
+
     private ListFilter getConfirmation(final Date date, final String dateAsText) {
+        ListFilter filter = null;
         final int response =
                 JOptionPane.showConfirmDialog(null, GuiConfig.getInstance().getConfirmDateFilterTxt() + dateAsText,
                         GuiConfig.getInstance().getConfirmDateFilterTitle(), JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
         if (response == JOptionPane.YES_OPTION) {
-            return new ListFilter(date, cbbUser.isSelected());
+            filter = new ListFilter(date, cbbUser.isSelected());
         }
-        return null;
+        return filter;
     }
 
     private boolean checkAcceptance(final Date date) {
+        boolean result = true;
         if (date.compareTo(Config.getInstance().getFilterMaxDate()) > 0) {
             JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-            return false;
+            result = false;
         }
-        return true;
+        return result;
     }
 
     /**

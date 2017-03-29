@@ -76,7 +76,7 @@ public class Circle {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof Circle) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final Circle other = (Circle) obj;
             result = EntityUtil.bothNullOrEqual(radius, other.getRadius());
             result = result && EntityUtil.bothNullOrEqual(center, other.getCenter());

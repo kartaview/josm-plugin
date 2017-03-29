@@ -58,8 +58,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the image coordinate where the mouse dragging was started */
     private Point startPoint;
 
-    private JLabel lblLoading;
-    
+    private final JLabel lblLoading;
+
     PhotoPanel() {
         super(new BorderLayout());
         setBackground(Color.white);

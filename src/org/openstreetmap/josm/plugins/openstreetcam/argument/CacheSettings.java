@@ -64,7 +64,7 @@ public class CacheSettings {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (obj instanceof CacheSettings) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final CacheSettings other = (CacheSettings) obj;
             result = EntityUtil.bothNullOrEqual(diskCount, other.getDiskCount());
             result = result && EntityUtil.bothNullOrEqual(memoryCount, other.getMemoryCount());

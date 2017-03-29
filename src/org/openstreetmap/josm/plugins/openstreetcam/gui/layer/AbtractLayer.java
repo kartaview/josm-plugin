@@ -32,9 +32,9 @@ import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.gui.dialogs.layer.DeleteLayerAction;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.FilterDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.OpenBrowser;
@@ -76,10 +76,10 @@ abstract class AbtractLayer extends Layer {
         final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                 ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
 
-        return new Action[] { layerListDialog.createActivateLayerAction(this),
-                layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
-                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
-                new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+                return new Action[] { layerListDialog.createActivateLayerAction(this),
+                        layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
+                        SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
+                        new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
     }
 
     @Override
