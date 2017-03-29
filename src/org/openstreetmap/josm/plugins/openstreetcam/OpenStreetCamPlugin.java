@@ -38,6 +38,7 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -45,16 +46,16 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDet
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.thread.ThreadPool;
-
-
 
 
 /**
@@ -64,7 +65,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, MouseListener,
-LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener {
+LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChangeObserver {
 
     /* details dialog associated with this plugin */
     private OpenStreetCamDetailsDialog detailsDialog;
@@ -87,7 +88,6 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
-        PreferenceManager.getInstance().saveManualSwitchDataType(null);
     }
 
     @Override
@@ -121,8 +121,8 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     }
 
     private void initializeDetailsDialog(final MapFrame newMapFrame) {
-        detailsDialog = new OpenStreetCamDetailsDialog();
-        detailsDialog.registerObservers(this, this, this);
+        detailsDialog = OpenStreetCamDetailsDialog.getInstance();
+        detailsDialog.registerObservers(this, this, this, this);
         newMapFrame.addToggleDialog(detailsDialog);
         if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
             detailsDialog.showDialog();
@@ -140,7 +140,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         Main.map.mapView.addMouseListener(this);
 
         // add layer
-        layer = new OpenStreetCamLayer();
+        layer = OpenStreetCamLayer.getInstance();
         Main.map.mapView.getLayerManager().addLayer(layer);
     }
 
@@ -152,10 +152,12 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            zoomTimer = new Timer(SEARCH_DELAY,
-                    event -> ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, false)));
-            zoomTimer.setRepeats(false);
-            zoomTimer.start();
+            if (Main.map != null && Main.map.mapView != null) {
+                zoomTimer =
+                        new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance().execute(new DataUpdateThread(false)));
+                zoomTimer.setRepeats(false);
+                zoomTimer.start();
+            }
         }
     }
 
@@ -181,23 +183,32 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
+
             Main.pref.removePreferenceChangeListener(this);
+            OpenStreetCamLayer.destroyInstance();
             layer = null;
         }
     }
 
 
+    @Override
+    public void update(final DataType dataType) {
+        PreferenceManager.getInstance().saveDataType(dataType);
+        ThreadPool.getInstance().execute(new DataUpdateThread(true));
+    }
+
     /* Implementation of MouseListener */
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        if ((Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
-                .getPhotoZoom() || (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null))
+        if ((Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom()
+                || (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null))
                 && SwingUtilities.isLeftMouseButton(event)) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
                     layer.selectStartPhotoForClosestAction(null);
+                    ThreadPool.getInstance().execute(new DataUpdateThread(true));
                 }
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
@@ -206,7 +217,9 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     layer.selectStartPhotoForClosestAction(photo);
                 }
             }
-            detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            if (layer.getClosestPhotos() != null) {
+                detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            }
         }
     }
 
@@ -219,39 +232,39 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     }
 
     private void selectPhoto(final Photo photo) {
-        SwingUtilities.invokeLater(() -> {
-            if (photo == null) {
-                CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
-                layer.setSelectedSequence(null);
-                detailsDialog.enableManualSwitchButton(true);
-            } else {
+        if (photo == null) {
+            CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
+            layer.setSelectedSequence(null);
+            layer.setSelectedPhoto(null);
+            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                detailsDialog.enableDataSwitchButton(true);
+            }
+            detailsDialog.enableSequenceActions(false, false);
+            detailsDialog.updateUI(null);
+        } else {
+            SwingUtilities.invokeLater(() -> {
                 ThreadPool.getInstance().execute(() -> {
                     final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                     ImageHandler.getInstance().loadPhotos(
                             layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
                 });
-            }
-            layer.setSelectedPhoto(photo);
-            Main.map.repaint();
-        });
-
-        ThreadPool.getInstance().execute(() -> {
-            if (!detailsDialog.getButton().isSelected()) {
-                detailsDialog.getButton().doClick();
-            }
-            detailsDialog.updateUI(photo);
-            SwingUtilities.invokeLater(() -> {
-                if (layer.getSelectedSequence() != null) {
-                    detailsDialog.enableManualSwitchButton(false);
-                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                            layer.enableNextPhotoAction());
-                } else {
-                    detailsDialog.enableManualSwitchButton(true);
-                    detailsDialog.enableSequenceActions(false, false);
-                }
+                layer.setSelectedPhoto(photo);
+                Main.map.repaint();
             });
-        });
+            ThreadPool.getInstance().execute(() -> {
+                if (!detailsDialog.getButton().isSelected()) {
+                    detailsDialog.getButton().doClick();
+                }
+                detailsDialog.updateUI(photo);
+                SwingUtilities.invokeLater(() -> {
+                    if (layer.getSelectedSequence() != null) {
+                        detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                                layer.enableNextPhotoAction());
 
+                    }
+                });
+            });
+        }
     }
 
     private void loadSequence(final Photo photo) {
@@ -261,7 +274,6 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                 CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
                 detailsDialog.enableSequenceActions(false, false);
-                detailsDialog.enableManualSwitchButton(true);
                 Main.map.repaint();
             });
         }
@@ -271,9 +283,11 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                 SwingUtilities.invokeLater(() -> {
                     layer.setSelectedSequence(sequence);
-                    detailsDialog.enableManualSwitchButton(false);
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
+                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                        detailsDialog.enableDataSwitchButton(false);
+                    }
                     Main.map.repaint();
 
                 });
@@ -345,7 +359,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             final PreferenceManager prefManager = PreferenceManager.getInstance();
             if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
-                ThreadPool.getInstance().execute(new DataUpdateThread(layer, detailsDialog, true));
+                ThreadPool.getInstance().execute(new DataUpdateThread(true));
             } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
                 selectPhoto(layer.getSelectedPhoto());
             } else if (prefManager.isDisplayTackFlag(event.getKey())) {
@@ -354,7 +368,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                     loadSequence(layer.getSelectedPhoto());
                 } else if (layer.getSelectedSequence() != null) {
                     layer.setSelectedSequence(null);
-                    detailsDialog.enableManualSwitchButton(true);
+                    detailsDialog.enableDataSwitchButton(false);
                     detailsDialog.enableSequenceActions(false, false);
                     Main.map.repaint();
                 }
@@ -387,8 +401,10 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
                 addLayer();
+                Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
         }
     }
+
 }

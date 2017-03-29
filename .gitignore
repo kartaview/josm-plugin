@@ -5,3 +5,4 @@ dist/
 .project
 .settings/
 /build-sonar.xml
+/openstreetview-plugin.iml

@@ -45,8 +45,6 @@ class DateVerifier implements KeyListener {
      * Builds a new object based on the given arguments.
      *
      * @param component the {@code JComponent} that is validated
-     * @param message a {@code String} to be displayed if the user input is invalid. This string is displayed as a
-     * tool-tip.
      */
     DateVerifier(final JComponent component) {
         textField = (JTextField) component;

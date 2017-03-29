@@ -49,9 +49,6 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
         final CacheSettings oldCacheSettings =
                 PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
         PreferenceManager.getInstance().savePreferenceSettings(settings);
-        if (!settings.getMapViewSettings().isManualSwitchFlag()) {
-            PreferenceManager.getInstance().saveManualSwitchDataType(null);
-        }
         return !settings.getCacheSettings().equals(oldCacheSettings);
     }
 }

@@ -23,6 +23,7 @@ import java.util.List;
  *
  * @author Beata
  * @version $Revision$
+ * @param <T> specifies the current page items type
  */
 public class ListResponse<T> extends Response {
 

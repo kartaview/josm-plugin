@@ -22,7 +22,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_A
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_OAUTH_SECRET;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MANUAL_SWITCH_DATA_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -229,16 +229,16 @@ public final class PreferenceManager {
                 || (LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue));
     }
 
-    private boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
-        return MANUAL_SWITCH_DATA_TYPE.equals(key) && newValue != null;
+    public boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
+        return MAP_VIEW_MANUAL_SWITCH.equals(key) && newValue != null;
     }
 
-    public void saveManualSwitchDataType(final DataType dataType) {
-        saveManager.saveManualSwitchDataType(dataType);
+    public void saveDataType(final DataType dataType) {
+        saveManager.saveDataType(dataType);
     }
 
-    public DataType loadManualSwitchDataType() {
-        return loadManager.loadManualSwitchDataType();
+    public DataType loadDataType() {
+        return loadManager.loadDataType();
     }
 
     public boolean isPanelIconVisibilityKey(final String key) {

@@ -80,7 +80,7 @@ public class Service {
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
      * @return a list of {@code Photo}s
-     * @throws ServiceException if the operation failed
+     * @throws ServiceException if the operation fails
      */
     public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId)
             throws ServiceException {
@@ -105,8 +105,8 @@ public class Service {
      * Retrieves the sequence associated with the given identifier.
      *
      * @param id a sequence identifier
-     * @return a {@code Sequence}
-     * @throws ServiceException if the operation failed
+     * @return a {@code Sequence} containg all the photos that belongs to the sequence
+     * @throws ServiceException if the operation fails
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
@@ -150,7 +150,8 @@ public class Service {
      * uploaded by the logged in user
      * @param paging a {@code Paging} defines pagination arguments
      * @param zoom represents the current zoom level
-     * @throws ServiceException
+     * @return a list of {@code Segment}s
+     * @throws ServiceException if the operation fails
      */
     public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final int zoom)
             throws ServiceException {
