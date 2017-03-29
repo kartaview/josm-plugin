@@ -22,7 +22,7 @@ public interface DataTypeChangeObservable {
     /**
      * Registers the given observer.
      *
-     * @param observer a {@code DataTypeChangeObserver]
+     * @param observer a {@code DataTypeChangeObserver}
      */
     void registerObserver(DataTypeChangeObserver observer);
 

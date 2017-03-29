@@ -82,6 +82,11 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         pnlPhoto.setSize(getPreferredSize());
     }
 
+    /**
+     * Returns the unique instance of the details dialog window.
+     *
+     * @return a {@code OpenStreetCamDetailsDialog}
+     */
     public static OpenStreetCamDetailsDialog getInstance() {
         return INSTANCE;
     }
@@ -143,13 +148,15 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      *
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
+     * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
+     * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      */
     public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
-            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataUpdateObserver) {
+            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataTypeChangeObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(closestPhotoObserver);
-        pnlBtn.registerObserver(dataUpdateObserver);
+        pnlBtn.registerObserver(dataTypeChangeObserver);
     }
 
     /**
@@ -164,18 +171,34 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    /**
+     * Enables/disables the closest photo button.
+     *
+     * @param enabled enables/disables the closest photo button
+     */
     public void enableClosestPhotoButton(final boolean enabled) {
         pnlBtn.enableClosestPhotoButton(enabled);
         pnlBtn.revalidate();
         repaint();
     }
 
+    /**
+     * Updates the properties of the data switch button.
+     *
+     * @param dataType a {@code DataType} specifies the currently displayed data type
+     */
     public void updateDataSwitchButton(final DataType dataType) {
         pnlBtn.updateDataSwitchButton(dataType);
         pnlBtn.revalidate();
         repaint();
     }
 
+    /**
+     * Enables or disables the data switch button depending on the given argument. The data switch button should be
+     * enabled only if the "manual data switch" preference setting is selected.
+     *
+     * @param enabled enables/disables the data switch button
+     */
     public void enableDataSwitchButton(final boolean enabled) {
         pnlBtn.enableDataSwitchButton(enabled);
         pnlBtn.revalidate();

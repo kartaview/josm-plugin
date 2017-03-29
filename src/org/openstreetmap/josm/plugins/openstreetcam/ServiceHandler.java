@@ -59,7 +59,7 @@ final class ServiceHandler {
      *
      * @param areas a list of {@code Circle}s representing the search areas. If the OsmDataLayer is active, there might
      * be several bounds.
-     * @param filter a {@code Filter} represents the user's search filters. Null values are ignored
+     * @param filter a {@code Filter} represents the user's search filters. Null values are ignored.
      * @return a list of {@code Photo}s
      */
     List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
@@ -93,11 +93,14 @@ final class ServiceHandler {
     }
 
     /**
+     * Lists the segments that have OpenStreetCam coverage from the given area(s) corresponding to the specified zoom
+     * level.
      *
-     * @param areas
-     * @param filter
-     * @param zoom
-     * @return
+     * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
+     * might be several bounding boxes.
+     * @param filter a {@code Filter} represents the user's search filters. Null values are ignored.
+     * @param zoom the current zoom level
+     * @return a list of {@code Segment}s
      */
     List<Segment> listMatchedTracks(final List<BoundingBox> areas, final ListFilter filter, final int zoom) {
         List<Segment> finalResult = new ArrayList<>();
@@ -151,9 +154,10 @@ final class ServiceHandler {
     }
 
     /**
+     * Retries the sequence corresponding to the given identifier
      *
-     * @param id
-     * @return
+     * @param id a sequence identifier
+     * @return a {@code Sequence}
      */
     Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
@@ -172,10 +176,11 @@ final class ServiceHandler {
     }
 
     /**
+     * Retrieves the photo with the given name.
      *
-     * @param photoName
-     * @return
-     * @throws ServiceException
+     * @param photoName the name of a photo
+     * @return the photo content in byte array format
+     * @throws ServiceException if the download operation fails
      */
     byte[] retrievePhoto(final String photoName) throws ServiceException {
         return service.retrievePhoto(photoName);

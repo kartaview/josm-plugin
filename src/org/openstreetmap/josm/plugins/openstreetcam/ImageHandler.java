@@ -48,8 +48,8 @@ public final class ImageHandler {
      * @return a pair of ({@code BufferedImage}, {@code Boolean}) representing the corresponding image and boolean flag.
      * The flag is true if the user requested the high quality image and for some reason the image could not be
      * retrieved and instead the large thumbnail is retrieved.
-     * @throws IOException
-     * @throws ServiceException
+     * @throws IOException if error occurs during the reading of the image data
+     * @throws ServiceException if error occurs during the data download
      */
     public Pair<BufferedImage, Boolean> loadPhoto(final Photo photo) throws IOException, ServiceException {
         Pair<BufferedImage, Boolean> result;
