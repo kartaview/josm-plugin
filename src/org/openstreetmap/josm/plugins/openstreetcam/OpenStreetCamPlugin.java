@@ -359,6 +359,14 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
             final PreferenceManager prefManager = PreferenceManager.getInstance();
             if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
+                // clean up previous data
+                SwingUtilities.invokeLater(() -> {
+                    OpenStreetCamLayer.getInstance().setDataSet(null, false);
+                    if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                        OpenStreetCamDetailsDialog.getInstance().updateUI(null);
+                    }
+                    Main.map.repaint();
+                });
                 ThreadPool.getInstance().execute(new DataUpdateThread(true));
             } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
                 selectPhoto(layer.getSelectedPhoto());
