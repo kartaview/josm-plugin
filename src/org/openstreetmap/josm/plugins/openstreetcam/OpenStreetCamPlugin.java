@@ -79,7 +79,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     private static final int SEARCH_DELAY = 500;
 
     private Timer zoomTimer;
-
+    private boolean isPreferenceListenerRegistered;
 
     /**
      * Builds a new object. This constructor is automatically invoked by JOSM to bootstrap the plugin.
@@ -130,6 +130,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             detailsDialog.hideDialog();
         }
         Main.pref.addPreferenceChangeListener(this);
+        isPreferenceListenerRegistered = true;
     }
 
 
@@ -185,6 +186,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             Main.map.mapView.removeMouseListener(this);
 
             Main.pref.removePreferenceChangeListener(this);
+            isPreferenceListenerRegistered = false;
             OpenStreetCamLayer.destroyInstance();
             layer = null;
         }
@@ -411,7 +413,10 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
                 addLayer();
-                Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
+                if (!isPreferenceListenerRegistered) {
+                    Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
+                    isPreferenceListenerRegistered = true;
+                }
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
         }
