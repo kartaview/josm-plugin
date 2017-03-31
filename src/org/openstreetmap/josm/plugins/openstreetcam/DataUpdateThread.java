@@ -120,7 +120,7 @@ class DataUpdateThread implements Runnable {
                 if (mapViewSettings.isManualSwitchFlag()) {
                     OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT);
                 }
-                updateUI(null, false);
+                updateUI(null, true);
             });
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
