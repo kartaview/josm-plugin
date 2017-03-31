@@ -15,6 +15,19 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.BBOX_BOTTOM_RIGHT;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.BBOX_TOP_LEFT;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.COORDINATE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.EXTERNAL_USER_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS_VAL;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE_ITEMS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.RADIUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.USER_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.USER_TYPE_OSM;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.ZOOM;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,14 +53,15 @@ final class HttpContentBuilder {
 
 
     HttpContentBuilder(final Circle circle, final Date date, final Long osmUserId, final Paging paging) {
-        content.put(RequestConstants.COORDINATE, circle.getCenter().getY() + SEPARATOR + circle.getCenter().getX());
-        content.put(RequestConstants.RADIUS, Integer.toString((int) circle.getRadius()));
+        content.put(COORDINATE, circle.getCenter().getY() + SEPARATOR + circle.getCenter().getX());
+        content.put(RADIUS, Integer.toString((int) circle.getRadius()));
         if (date != null) {
             content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
 
         if (osmUserId != null && osmUserId > 0) {
-            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
+            content.put(EXTERNAL_USER_ID, Long.toString(osmUserId));
+            content.put(USER_TYPE, USER_TYPE_OSM);
         }
 
         if (paging == null) {
@@ -59,17 +73,18 @@ final class HttpContentBuilder {
     }
 
     HttpContentBuilder(final BoundingBox area, final Long osmUserId, final int zoom, final Paging paging) {
-        content.put(RequestConstants.BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
-        content.put(RequestConstants.BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
+        content.put(BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
+        content.put(BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
 
         if (zoom >= Config.getInstance().getTracksMaxZoom()) {
-            content.put(RequestConstants.ZOOM, Integer.toString(Config.getInstance().getTracksMaxZoom()));
+            content.put(ZOOM, Integer.toString(Config.getInstance().getTracksMaxZoom()));
         } else {
-            content.put(RequestConstants.ZOOM, Integer.toString(zoom));
+            content.put(ZOOM, Integer.toString(zoom));
         }
         if (osmUserId != null && osmUserId > 0) {
-            content.put(RequestConstants.USER_ID, Long.toString(osmUserId));
-            content.put(RequestConstants.MY_TRACKS, "true");
+            content.put(EXTERNAL_USER_ID, Long.toString(osmUserId));
+            content.put(USER_TYPE, USER_TYPE_OSM);
+            content.put(MY_TRACKS, MY_TRACKS_VAL);
         }
         if (paging == null) {
             addPaging(Paging.TRACKS_DEFAULT);
@@ -79,7 +94,7 @@ final class HttpContentBuilder {
     }
 
     HttpContentBuilder(final Long id) {
-        content.put(RequestConstants.ID, id.toString());
+        content.put(ID, id.toString());
     }
 
     Map<String, String> getContent() {
@@ -87,7 +102,7 @@ final class HttpContentBuilder {
     }
 
     private void addPaging(final Paging paging) {
-        content.put(RequestConstants.PAGE, Integer.toString(paging.getPage()));
-        content.put(RequestConstants.PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
+        content.put(PAGE, Integer.toString(paging.getPage()));
+        content.put(PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
     }
 }

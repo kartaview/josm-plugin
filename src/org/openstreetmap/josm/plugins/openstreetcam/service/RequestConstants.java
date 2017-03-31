@@ -32,12 +32,15 @@ final class RequestConstants {
     static final String PAGE = "page";
     static final String PAGE_ITEMS = "ipp";
     static final String DATE = "date";
-    static final String USER_ID = "externalUserId";
     static final String ID = "sequenceId";
     static final String BBOX_TOP_LEFT = "bbTopLeft";
     static final String BBOX_BOTTOM_RIGHT = "bbBottomRight";
     static final String ZOOM = "zoom";
     static final String MY_TRACKS = "myTracks";
+    static final String MY_TRACKS_VAL = "true";
+    static final String USER_TYPE = "filterUserType";
+    static final String USER_TYPE_OSM = "osm";
+    static final String EXTERNAL_USER_ID = "filterExternalUserId";
 
     private RequestConstants() {}
 }
