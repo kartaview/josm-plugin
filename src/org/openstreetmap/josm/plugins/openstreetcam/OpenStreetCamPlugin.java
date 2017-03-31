@@ -369,7 +369,9 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
                 });
                 ThreadPool.getInstance().execute(new DataUpdateThread(true));
             } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
-                selectPhoto(layer.getSelectedPhoto());
+                if (layer.getSelectedPhoto() != null) {
+                    selectPhoto(layer.getSelectedPhoto());
+                }
             } else if (prefManager.isDisplayTackFlag(event.getKey())) {
                 if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
                         && layer.getSelectedSequence() == null) {
