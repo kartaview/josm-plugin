@@ -395,7 +395,10 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
 
     @Override
     public void selectClosestPhoto() {
-        handlePhotoSelection(layer.getClosestSelectedPhoto());
+        final Photo photo = layer.getClosestSelectedPhoto();
+        if (photo != null) {
+            handlePhotoSelection(photo);
+        }
     }
 
 
