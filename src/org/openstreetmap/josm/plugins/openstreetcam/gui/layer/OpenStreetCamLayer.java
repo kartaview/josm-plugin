@@ -54,14 +54,21 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         super();
     }
 
+    /**
+     * Returns the unique instance of the layer.
+     *
+     * @return a {@code OpenStreetCamLayer}
+     */
     public static OpenStreetCamLayer getInstance() {
         if (instance == null) {
             instance = new OpenStreetCamLayer();
-
         }
         return instance;
     }
 
+    /**
+     * Destroys the unique instance of the layer.
+     */
     public static void destroyInstance() {
         OpenStreetCamLayer.instance = null;
     }
@@ -279,7 +286,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return a {@code Photo}
      */
-    public Photo getClosestSelectedPhoto() {
+    public Photo closestSelectedPhoto() {
         if (closestPhotos.isEmpty()) {
             closestPhotos =
                     Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());

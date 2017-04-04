@@ -26,6 +26,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
+ * Handles operations associated with OpenStreetCam data selection.
  *
  * @author beataj
  * @version $Revision$
@@ -33,6 +34,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 final class SelectionManager extends MouseAdapter {
 
     private static final int UNSELECT_CLICK_COUNT = 2;
+    private static final int MOUSE_HOVER_DELAY = 100;
     private Timer mouseHoverTimer;
 
     SelectionManager() {}
@@ -40,12 +42,8 @@ final class SelectionManager extends MouseAdapter {
 
     @Override
     public void mouseClicked(final MouseEvent event) {
-        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
-        final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-        if ((Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom()
-                || (OpenStreetCamLayer.getInstance().getDataSet() != null
-                && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null))
-                && SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
+            final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                 if (layer.getSelectedPhoto() != null) {
                     selectPhoto(null);
@@ -55,14 +53,47 @@ final class SelectionManager extends MouseAdapter {
             } else {
                 final Photo photo = layer.nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    handlePhotoSelection(photo);
+                    if (shouldLoadSequence(photo)) {
+                        loadSequence(photo);
+                    }
+                    selectPhoto(photo);
                     layer.selectStartPhotoForClosestAction(photo);
                 }
             }
             if (layer.getClosestPhotos() != null) {
-                detailsDialog.enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
             }
         }
+    }
+
+    /**
+     * Verifies if the user is allowed to select a photo location from the map. A photo location can be selected if:
+     * <ul>
+     * <li>zoom level is at >= minimum map zoom, and</li>
+     * <li>layer has available photo locations, and</li>
+     * </ul>
+     *
+     * @return
+     */
+    private boolean selectionAllowed() {
+        return Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom()
+                || (OpenStreetCamLayer.getInstance().getDataSet() != null
+                && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null);
+    }
+
+    /**
+     * Verifies if the sequence associated with the given photo should be loaded or not. A sequence should be loaded if:
+     * <ul>
+     * <li>the user had selected the display track flag from user preference settings, and</li>
+     * <li>the sequence to which the photo belongs was not yet loaded</li>
+     * </ul>
+     *
+     * @param photo a {@code Photo} the currently selected photo
+     * @return true if the sequence needs to be loaded; false otherwise
+     */
+    private boolean shouldLoadSequence(final Photo photo) {
+        return PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
+                && !OpenStreetCamLayer.getInstance().isPhotoPartOfSequence(photo);
     }
 
     @Override
@@ -71,27 +102,34 @@ final class SelectionManager extends MouseAdapter {
             mouseHoverTimer.restart();
         } else {
             if (Main.map != null && Main.map.mapView != null) {
-                mouseHoverTimer = new Timer(150, event -> ThreadPool.getInstance().execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
-                        if (layer.getDataSet() != null && layer.getDataSet().getPhotos() != null) {
-                            final Photo photo = layer.nearbyPhoto(e.getPoint());
-                            if (photo != null) {
-                                selectPhoto(photo);
-                                System.out.println("mouse moved:" + photo.getThumbnailName());
-                            }
-                        }
-                    }
-                }));
+                mouseHoverTimer = new Timer(MOUSE_HOVER_DELAY,
+                        event -> ThreadPool.getInstance().execute(() -> handleMouseHover(e)));
                 mouseHoverTimer.setRepeats(false);
                 mouseHoverTimer.start();
             }
         }
-
     }
 
+    private void handleMouseHover(final MouseEvent event) {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+        if (PreferenceManager.getInstance().loadPhotoSettings().isMouseHoverFlag() && selectionAllowed()) {
+            final Photo photo = layer.nearbyPhoto(event.getPoint());
+            if (photo != null) {
+                selectPhoto(photo);
+                layer.selectStartPhotoForClosestAction(photo);
+                if (layer.getClosestPhotos() != null) {
+                    OpenStreetCamDetailsDialog.getInstance()
+                    .enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+                }
+            }
+        }
+    }
+
+    /**
+     * Highlights the given photo on the map and displays in the left side panel.
+     *
+     * @param photo a {@code Photo} represents the selected photo
+     */
     void selectPhoto(final Photo photo) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
@@ -130,6 +168,11 @@ final class SelectionManager extends MouseAdapter {
         }
     }
 
+    /**
+     * Loads the sequence to which the given photo belongs.
+     *
+     * @param photo a {@code Photo} represents the selected photo
+     */
     void loadSequence(final Photo photo) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
@@ -158,15 +201,5 @@ final class SelectionManager extends MouseAdapter {
                 });
             }
         });
-
-    }
-
-    void handlePhotoSelection(final Photo photo) {
-        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
-        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()
-                && !layer.isPhotoPartOfSequence(photo)) {
-            loadSequence(photo);
-        }
-        selectPhoto(photo);
     }
 }

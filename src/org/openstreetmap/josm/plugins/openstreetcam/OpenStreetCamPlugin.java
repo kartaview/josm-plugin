@@ -57,22 +57,39 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamPlugin extends Plugin implements ZoomChangeListener, LayerChangeListener, LocationObserver,
-SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChangeObserver {
+public class OpenStreetCamPlugin extends Plugin implements ClosestPhotoObserver, DataTypeChangeObserver,
+LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserver, ZoomChangeListener {
 
-    /* details dialog associated with this plugin */
+    /**
+     * details dialog associated with this plugin.
+     */
     private OpenStreetCamDetailsDialog detailsDialog;
 
-    /* layer associated with this plugin */
+    /**
+     * layer associated with this plugin
+     */
     private OpenStreetCamLayer layer;
 
     private JMenuItem layerActivatorMenuItem;
 
+    /**
+     * Delay used by the zoom timer.
+     */
     private static final int SEARCH_DELAY = 500;
 
+    /**
+     * Timer user for zoom in/out operations.
+     */
     private Timer zoomTimer;
+
+    /**
+     * Flag indicating if the preference listener was registered or not.
+     */
     private boolean isPreferenceListenerRegistered;
 
+    /**
+     * Handles photo selection related logic.
+     */
     private final SelectionManager selectionManager;
 
 
@@ -129,7 +146,6 @@ SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChang
         isPreferenceListenerRegistered = true;
     }
 
-
     private void addLayer() {
         // register listeners
         NavigatableComponent.addZoomChangeListener(this);
@@ -143,20 +159,26 @@ SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChang
     }
 
 
-    /* implementation of ZoomChangeListener */
+    /* implementation of ClosestImageObserver */
 
     @Override
-    public void zoomChanged() {
-        if (zoomTimer != null && zoomTimer.isRunning()) {
-            zoomTimer.restart();
-        } else {
-            if (Main.map != null && Main.map.mapView != null) {
-                zoomTimer =
-                        new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance().execute(new DataUpdateThread(false)));
-                zoomTimer.setRepeats(false);
-                zoomTimer.start();
+    public void selectClosestPhoto() {
+        final Photo photo = layer.closestSelectedPhoto();
+        if (photo != null) {
+            if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()) {
+                selectionManager.loadSequence(photo);
             }
+            selectionManager.selectPhoto(photo);
         }
+    }
+
+
+    /* implementation of DataTypeChangeObserver */
+
+    @Override
+    public void update(final DataType dataType) {
+        PreferenceManager.getInstance().saveDataType(dataType);
+        ThreadPool.getInstance().execute(new DataUpdateThread(true));
     }
 
 
@@ -190,12 +212,6 @@ SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChang
     }
 
 
-    @Override
-    public void update(final DataType dataType) {
-        PreferenceManager.getInstance().saveDataType(dataType);
-        ThreadPool.getInstance().execute(new DataUpdateThread(true));
-    }
-
     /* implementation of LocationObserver */
 
     @Override
@@ -208,25 +224,6 @@ SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChang
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
                 Main.map.repaint();
             });
-        }
-    }
-
-
-    /* implementation of SequenceObserver */
-
-    @Override
-    public void selectSequencePhoto(final int index) {
-        final Photo photo = layer.sequencePhoto(index);
-        if (photo != null) {
-            selectionManager.selectPhoto(photo);
-            layer.selectStartPhotoForClosestAction(photo);
-            SwingUtilities.invokeLater(() -> {
-                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                    Main.map.mapView.zoomTo(photo.getLocation());
-                    Main.map.repaint();
-                }
-            });
-
         }
     }
 
@@ -252,33 +249,68 @@ SequenceObserver, ClosestPhotoObserver, PreferenceChangedListener, DataTypeChang
                     selectionManager.selectPhoto(layer.getSelectedPhoto());
                 }
             } else if (prefManager.isDisplayTackFlag(event.getKey())) {
-                if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
-                        && layer.getSelectedSequence() == null) {
-                    selectionManager.loadSequence(layer.getSelectedPhoto());
-                } else if (layer.getSelectedSequence() != null) {
-                    layer.setSelectedSequence(null);
-                    detailsDialog.enableDataSwitchButton(false);
-                    detailsDialog.enableSequenceActions(false, false);
-                    Main.map.repaint();
-                }
+                displayTrackFlagChanged(event);
             } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
                 PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
             }
         }
     }
 
+    private void displayTrackFlagChanged(final PreferenceChangeEvent event) {
+        if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
+                && layer.getSelectedSequence() == null) {
+            selectionManager.loadSequence(layer.getSelectedPhoto());
+        } else if (layer.getSelectedSequence() != null) {
+            layer.setSelectedSequence(null);
+            detailsDialog.enableDataSwitchButton(false);
+            detailsDialog.enableSequenceActions(false, false);
+            Main.map.repaint();
+        }
+    }
 
-    /* implementation of ClosestImageObserver */
+    /* implementation of SequenceObserver */
 
     @Override
-    public void selectClosestPhoto() {
-        final Photo photo = layer.getClosestSelectedPhoto();
+    public void selectSequencePhoto(final int index) {
+        final Photo photo = layer.sequencePhoto(index);
         if (photo != null) {
-            selectionManager.handlePhotoSelection(photo);
+            selectionManager.selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
+            SwingUtilities.invokeLater(() -> {
+                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
+                    Main.map.mapView.zoomTo(photo.getLocation());
+                    Main.map.repaint();
+                }
+            });
+
         }
     }
 
 
+    /* implementation of ZoomChangeListener */
+
+    @Override
+    public void zoomChanged() {
+        if (zoomTimer != null && zoomTimer.isRunning()) {
+            zoomTimer.restart();
+        } else {
+            if (Main.map != null && Main.map.mapView != null) {
+                zoomTimer =
+                        new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance().execute(new DataUpdateThread(false)));
+                zoomTimer.setRepeats(false);
+                zoomTimer.start();
+            }
+        }
+    }
+
+
+    /**
+     * Activates the OpenStreetCamLayer. This is executed whenever the user selects the OpenStreetCamLayer from the
+     * Imagery menu.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class LayerActivator extends JosmAction {
 
         private static final long serialVersionUID = -1361735274900300621L;
