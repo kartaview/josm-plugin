@@ -39,6 +39,7 @@ public final class GuiConfig extends BaseConfig {
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
     private final String prefDisplayTrackLbl;
+    private final String prefMouseHoverLbl;
     private final String prefCacheLbl;
     private final String prefMemoryLbl;
     private final String prefDiskLbl;
@@ -94,6 +95,7 @@ public final class GuiConfig extends BaseConfig {
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefDisplayTrackLbl = readProperty("preference.photo.displayTrack.lbl");
+        prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefCacheLbl = readProperty("preference.cache.lbl");
         prefMemoryLbl = readProperty("preference.cache.memory.lbl");
         prefDiskLbl = readProperty("preference.cache.disk.lbl");
@@ -178,6 +180,11 @@ public final class GuiConfig extends BaseConfig {
     public String getPrefDisplayTrackLbl() {
         return prefDisplayTrackLbl;
     }
+
+    public String getPrefMouseHoverLbl() {
+        return prefMouseHoverLbl;
+    }
+
 
     public String getPrefCacheLbl() {
         return prefCacheLbl;

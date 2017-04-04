@@ -18,11 +18,13 @@ public class PhotoSettings {
 
     private final boolean highQualityFlag;
     private final boolean displayTrackFlag;
+    private final boolean mouseHoverFlag;
 
 
-    public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag) {
+    public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag, final boolean mouseHoverFlag) {
         this.highQualityFlag = highQualityFlag;
         this.displayTrackFlag = displayTrackFlag;
+        this.mouseHoverFlag = mouseHoverFlag;
     }
 
 
@@ -32,5 +34,9 @@ public class PhotoSettings {
 
     public boolean isDisplayTrackFlag() {
         return displayTrackFlag;
+    }
+
+    public boolean isMouseHoverFlag() {
+        return mouseHoverFlag;
     }
 }

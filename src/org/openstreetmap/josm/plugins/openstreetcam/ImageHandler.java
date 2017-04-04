@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -54,7 +55,11 @@ public final class ImageHandler {
     public Pair<BufferedImage, Boolean> loadPhoto(final Photo photo) throws IOException, ServiceException {
         Pair<BufferedImage, Boolean> result;
         ImageIO.setUseCache(false);
-        if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isHighQualityFlag()) {
+        final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings();
+        if (photoSettings.isMouseHoverFlag()) {
+            final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+            result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
+        } else if (photoSettings.isHighQualityFlag()) {
             // load high quality image
             final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getName());
             if (image == null) {

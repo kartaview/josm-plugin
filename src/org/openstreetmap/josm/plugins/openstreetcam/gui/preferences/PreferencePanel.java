@@ -42,6 +42,7 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbManualSwitch;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox cbDisplayTrack;
+    private JCheckBox cbMouseHover;
     private JSpinner spMemoryCount;
     private JSpinner spDiskCount;
     private JSpinner spPrevNextCount;
@@ -94,6 +95,10 @@ class PreferencePanel extends JPanel {
         cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
                 new JCheckBox().getFont().deriveFont(Font.PLAIN), settings.isDisplayTrackFlag(), getBackground());
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
+
+        cbMouseHover = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefMouseHoverLbl(),
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), false, getBackground());
+        add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
@@ -136,7 +141,8 @@ class PreferencePanel extends JPanel {
         final MapViewSettings mapViewSettings =
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
         final PhotoSettings photoSettings =
-                new PhotoSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected());
+                new PhotoSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected(),
+                        cbMouseHover.isSelected());
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
         return new PreferenceSettings(mapViewSettings, photoSettings, cacheSettings);
