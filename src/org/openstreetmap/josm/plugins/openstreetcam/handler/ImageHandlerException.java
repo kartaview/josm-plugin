@@ -20,28 +20,25 @@ public class ImageHandlerException extends Exception {
     private static final long serialVersionUID = -6666879046927057243L;
 
     /**
-     * Builds a new exception with the given message.
      *
-     * @param msg the exception message
+     * @param msg
      */
     public ImageHandlerException(final String msg) {
         super(msg);
     }
 
     /**
-     * Builds a new exception with the given cause.
      *
-     * @param cause the exception cause
+     * @param cause
      */
     public ImageHandlerException(final Throwable cause) {
         super(cause);
     }
 
     /**
-     * Builds a new exception with the given message and cause.
      *
-     * @param msg the exception message
-     * @param cause the exception cause
+     * @param msg
+     * @param cause
      */
     public ImageHandlerException(final String msg, final Throwable cause) {
         super(msg, cause);

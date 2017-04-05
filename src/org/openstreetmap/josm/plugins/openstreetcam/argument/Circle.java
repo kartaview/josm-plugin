@@ -46,11 +46,8 @@ public class Circle {
         if (distance > Config.getInstance().getNearbyPhotosMaxRadius()) {
             this.radius = Config.getInstance().getNearbyPhotosMaxRadius();
         } else {
-            if (distance < Config.getInstance().getNearbyPhotosMinRadius()) {
-                this.radius = Config.getInstance().getNearbyPhotosMinRadius();
-            } else {
-                this.radius = distance;
-            }
+            this.radius = distance < Config.getInstance().getNearbyPhotosMinRadius()
+                    ? Config.getInstance().getNearbyPhotosMinRadius() : distance;
         }
     }
 
