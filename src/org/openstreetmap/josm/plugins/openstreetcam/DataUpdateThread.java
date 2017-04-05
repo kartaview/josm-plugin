@@ -124,10 +124,12 @@ class DataUpdateThread implements Runnable {
             });
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
-        final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
-        if (PreferenceManager.getInstance().loadDataType() == null
-                || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
-            updateUI(new DataSet(segments, null), checkSelectedPhoto);
+        if (areas.size() > 0) {
+            final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
+            if (PreferenceManager.getInstance().loadDataType() == null
+                    || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
+                updateUI(new DataSet(segments, null), checkSelectedPhoto);
+            }
         }
     }
 
@@ -143,9 +145,11 @@ class DataUpdateThread implements Runnable {
             });
         }
         final List<Circle> areas = Util.currentCircles();
-        final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
-        if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-            updateUI(new DataSet(null, photos), checkSelectedPhoto);
+        if (areas.size() > 0) {
+            final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+            if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
+                updateUI(new DataSet(null, photos), checkSelectedPhoto);
+            }
         }
     }
 
