@@ -108,7 +108,7 @@ abstract class AbtractLayer extends Layer {
         private static final long serialVersionUID = 1569467764140753112L;
         private final DeleteLayerAction deleteAction = LayerListDialog.getInstance().createDeleteLayerAction();
 
-        public OpenStreetCamDeleteLayerAction() {
+        private OpenStreetCamDeleteLayerAction() {
             super(GuiConfig.getInstance().getLayerDeleteMenuItemLbl());
             new ImageProvider(IconConfig.getInstance().getDeleteIconName()).getResource().attachImageIcon(this, true);
             putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getLayerDeleteMenuItemTlt()));
@@ -145,7 +145,7 @@ abstract class AbtractLayer extends Layer {
         private static final long serialVersionUID = 4196639030623647016L;
 
         private OpenFeedbackPageAction() {
-            super("Feedback", IconConfig.getInstance().getFeedbackIcon());
+            super(GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(), IconConfig.getInstance().getFeedbackIcon());
         }
 
         @Override

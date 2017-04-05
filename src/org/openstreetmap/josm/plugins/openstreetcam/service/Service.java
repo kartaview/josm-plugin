@@ -86,7 +86,7 @@ public class Service {
             throws ServiceException {
         final Map<String, String> arguments =
                 new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
@@ -110,7 +110,7 @@ public class Service {
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
@@ -148,7 +148,6 @@ public class Service {
      * @param area a {@code BoundingBox} represents the current area
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
-     * @param paging a {@code Paging} defines pagination arguments
      * @param zoom represents the current zoom level
      * @return a list of {@code Segment}s
      * @throws ServiceException if the operation fails
@@ -188,7 +187,7 @@ public class Service {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);

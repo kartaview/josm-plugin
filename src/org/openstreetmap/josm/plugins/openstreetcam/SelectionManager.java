@@ -73,7 +73,7 @@ final class SelectionManager extends MouseAdapter {
      * <li>layer has available photo locations, and</li>
      * </ul>
      *
-     * @return
+     * @return true if the selection is allowed; false otherwise
      */
     private boolean selectionAllowed() {
         return Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom()

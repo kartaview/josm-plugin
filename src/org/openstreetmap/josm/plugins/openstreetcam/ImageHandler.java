@@ -49,47 +49,56 @@ public final class ImageHandler {
      * @return a pair of ({@code BufferedImage}, {@code Boolean}) representing the corresponding image and boolean flag.
      * The flag is true if the user requested the high quality image and for some reason the image could not be
      * retrieved and instead the large thumbnail is retrieved.
-     * @throws IOException if error occurs during the reading of the image data
-     * @throws ServiceException if error occurs during the data download
+     * @throws ImageHandlerException if the photo could not be loaded or if the photo content could not be read
      */
-    public Pair<BufferedImage, Boolean> loadPhoto(final Photo photo) throws IOException, ServiceException {
+    public Pair<BufferedImage, Boolean> loadPhoto(final Photo photo) throws ImageHandlerException {
         Pair<BufferedImage, Boolean> result;
         ImageIO.setUseCache(false);
         final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings();
-        if (photoSettings.isMouseHoverFlag()) {
-            final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
-            result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
-        } else if (photoSettings.isHighQualityFlag()) {
-            // load high quality image
-            final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getName());
-            if (image == null) {
-                try {
-                    final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getName());
-                    cacheManager.putPhoto(photo.getSequenceId(), photo.getName(), byteImage, false);
-                    result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
-                            false);
-                } catch (final ServiceException e) {
-                    // load large thumbnail
-                    final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
-                    cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, true);
-                    result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
-                            true);
+        try {
+            if (photoSettings.isMouseHoverFlag()) {
+                final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
+            } else if (photoSettings.isHighQualityFlag()) {
+                // load high quality image
+                final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getName());
+                if (image == null) {
+                    try {
+                        final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getName());
+                        cacheManager.putPhoto(photo.getSequenceId(), photo.getName(), byteImage, false);
+                        result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                                false);
+                    } catch (final ServiceException e) {
+                        // load large thumbnail
+                        final byte[] byteImage =
+                                ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
+                        cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, true);
+                        result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                                true);
+                    }
+                } else {
+                    result = new Pair<>(
+                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
+                            image.isWarning());
                 }
             } else {
-                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
-                        image.isWarning());
+                // load large thumbnail
+                final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getLargeThumbnailName());
+                if (image == null) {
+                    final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
+                    cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, false);
+                    result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                            false);
+                } else {
+                    result = new Pair<>(
+                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
+                            image.isWarning());
+                }
             }
-        } else {
-            // load large thumbnail
-            final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getLargeThumbnailName());
-            if (image == null) {
-                final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
-                cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, false);
-                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
-            } else {
-                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
-                        image.isWarning());
-            }
+        } catch (final ServiceException e) {
+            throw new ImageHandlerException("Could not load photo from server.", e);
+        } catch (final IOException e) {
+            throw new ImageHandlerException("Could not read photo content.", e);
         }
         return result;
     }

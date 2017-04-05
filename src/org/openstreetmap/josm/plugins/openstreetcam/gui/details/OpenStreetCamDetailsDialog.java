@@ -15,6 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
+import static com.telenav.josm.common.gui.GuiBuilder.FONT_SIZE_12;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
@@ -25,6 +26,7 @@ import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.ImageHandlerException;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
@@ -75,7 +77,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
+        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(FONT_SIZE_12), Color.white);
         final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
@@ -135,7 +137,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                 }
                 pnlPhoto.updateUI(imageResult.a);
             }
-        } catch (final Exception e) {
+        } catch (final ImageHandlerException e) {
             pnlPhoto.displayErrorMessage();
         }
         pnlBtn.updateUI(photo);
@@ -208,7 +210,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
         super.preferenceChanged(event);
-        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+        if (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue())) {
             final PreferenceManager prefManager = PreferenceManager.getInstance();
             if (prefManager.hasManualSwitchDataTypeChanged(event.getKey(), event.getNewValue().getValue().toString())) {
                 final boolean manualSwitchFlag = Boolean.parseBoolean(event.getNewValue().getValue().toString());

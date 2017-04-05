@@ -36,7 +36,6 @@ public final class IconConfig extends BaseConfig {
     private final String dialogShortcutName;
     private final String deleteIconName;
     private final String layerIconName;
-    private final Icon deleteIcon;
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
@@ -63,7 +62,6 @@ public final class IconConfig extends BaseConfig {
         deleteIconName = readProperty("delete.icon");
         layerIconName = readProperty("layer.icon");
         layerIcon = ImageProvider.get(layerIconName);
-        deleteIcon = ImageProvider.get(readProperty("delete.icon"));
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
@@ -157,10 +155,6 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWarningIcon() {
         return warningIcon;
-    }
-
-    public Icon getDeleteIcon() {
-        return deleteIcon;
     }
 
     public Icon getManualSwitchSegmentIcon() {

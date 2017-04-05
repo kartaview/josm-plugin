@@ -233,7 +233,7 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
 
     @Override
     public void preferenceChanged(final PreferenceChangeEvent event) {
-        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+        if (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue())) {
             final PreferenceManager prefManager = PreferenceManager.getInstance();
             if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
                 // clean up previous data
