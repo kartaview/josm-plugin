@@ -207,6 +207,7 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
             Main.pref.removePreferenceChangeListener(this);
             isPreferenceListenerRegistered = false;
             OpenStreetCamLayer.destroyInstance();
+            detailsDialog.updateUI(null);
             layer = null;
         }
     }
