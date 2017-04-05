@@ -188,6 +188,7 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             Main.pref.removePreferenceChangeListener(this);
             isPreferenceListenerRegistered = false;
             OpenStreetCamLayer.destroyInstance();
+            detailsDialog.updateUI(null);
             layer = null;
         }
     }
