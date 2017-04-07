@@ -27,7 +27,6 @@ public class SegmentBuilder {
     private Integer coverage;
     private List<LatLon> geometry;
 
-    public SegmentBuilder() {}
 
     public void id(final String id) {
         this.id = id;

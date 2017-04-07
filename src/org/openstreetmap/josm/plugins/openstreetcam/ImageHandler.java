@@ -20,7 +20,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Pair;
+import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.thread.ThreadPool;
 
 

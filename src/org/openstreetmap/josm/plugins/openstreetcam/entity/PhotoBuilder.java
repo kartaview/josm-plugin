@@ -30,7 +30,6 @@ public class PhotoBuilder {
     private Double heading;
     private String username;
 
-    public PhotoBuilder() {}
 
     public void id(final Long id) {
         this.id = id;

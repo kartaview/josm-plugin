@@ -9,7 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.cache;
 
 import org.openstreetmap.josm.data.cache.BufferedImageCacheEntry;
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**

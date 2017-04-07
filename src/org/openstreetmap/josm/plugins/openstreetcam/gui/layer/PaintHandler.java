@@ -15,7 +15,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.ANGLE_360;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.ARROW_LENGTH;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.BING_LAYER_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.MAPBOX_LAYER_NAME;
@@ -33,9 +32,6 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -52,7 +48,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.tools.Pair;
+import com.telenav.josm.common.entity.Coordinate;
+import com.telenav.josm.common.entity.Pair;
+import com.telenav.josm.common.gui.PaintUtil;
+import com.telenav.josm.common.util.GeometryUtil;
 
 
 /**
@@ -62,6 +61,7 @@ import org.openstreetmap.josm.tools.Pair;
  * @version $Revision$
  */
 class PaintHandler {
+
 
     /**
      * Draws a list of photos to the map. A photo is represented by an icon on the map.
@@ -95,10 +95,25 @@ class PaintHandler {
         }
     }
 
-    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
-        final Double distance =
-                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
+    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
+            final boolean isSelected) {
+        if (Util.containsLatLon(mapView, photo.getLocation())) {
+            final Point point = mapView.getPoint(photo.getLocation());
+            if (photo.getHeading() != null) {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
+                        : IconConfig.getInstance().getPhotoIcon();
+                PaintUtil.drawIcon(graphics, icon, point, photo.getHeading());
+            } else {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
+                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
+                PaintUtil.drawIcon(graphics, icon, point);
+            }
+        }
+    }
 
+    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
+        final Double length =
+                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
         graphics.setColor(getSequenceColor(mapView));
 
         Photo prevPhoto = sequence.getPhotos().get(0);
@@ -108,14 +123,14 @@ class PaintHandler {
             // at least one of the photos is in current view draw line
             if (Util.containsLatLon(mapView, prevPhoto.getLocation())
                     || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
-                graphics.draw(new Line2D.Double(mapView.getPoint(prevPhoto.getLocation()),
-                        mapView.getPoint(currentPhoto.getLocation())));
-                if (distance != null) {
-                    final LatLon midPoint = Util.midPoint(prevPhoto.getLocation(), currentPhoto.getLocation());
-                    final Pair<LatLon, LatLon> arrowPair =
-                            Util.arrowEndPoints(prevPhoto.getLocation(), midPoint, -distance);
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.a)));
-                    graphics.draw(new Line2D.Double(mapView.getPoint(midPoint), mapView.getPoint(arrowPair.b)));
+                final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
+                        mapView.getPoint(currentPhoto.getLocation()));
+                if (length == null) {
+                    PaintUtil.drawLine(graphics, lineGeometry);
+                } else {
+                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                            getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
+                    PaintUtil.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
                 }
             }
 
@@ -142,32 +157,17 @@ class PaintHandler {
                 ? SEQUENCE_LINE_COLOR.brighter() : SEQUENCE_LINE_COLOR.darker();
     }
 
-    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
-            final boolean isSelected) {
-        if (Util.containsLatLon(mapView, photo.getLocation())) {
-            final Point point = mapView.getPoint(photo.getLocation());
-            if (photo.getHeading() != null) {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
-                        : IconConfig.getInstance().getPhotoIcon();
-                // rotate icon based on heading
-                final Double heading =
-                        photo.getHeading() < 0 ? (photo.getHeading() + ANGLE_360) % ANGLE_360 : photo.getHeading();
-
-                final AffineTransform old = graphics.getTransform();
-                graphics.rotate(Math.toRadians(heading + ANGLE_360), point.x, point.y);
-                drawIcon(graphics, icon, point);
-                graphics.setTransform(old);
-            } else {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
-                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
-                drawIcon(graphics, icon, point);
-            }
-        }
-    }
-
-    private void drawIcon(final Graphics2D graphics, final ImageIcon icon, final Point p) {
-        graphics.drawImage(icon.getImage(), p.x - (icon.getIconWidth() / 2), p.y - (icon.getIconHeight() / 2),
-                (img, infoflags, x, y, width, height) -> false);
+    private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
+            final LatLon end, final double length) {
+        final LatLon midPoint = new LatLon((start.lat() + end.lat()) / 2, (start.lon() + end.lon()) / 2);
+        final double bearing = Math.toDegrees(start.bearing(midPoint));
+        final Pair<Coordinate, Coordinate> arrowEndCoordinates =
+                GeometryUtil.arrowEndPoints(new Coordinate(start.lat(), start.lon()), bearing, -length);
+        final Pair<Point, Point> arrowLine1 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
+                new LatLon(arrowEndCoordinates.getFirst().getLat(), arrowEndCoordinates.getFirst().getLon())));
+        final Pair<Point, Point> arrowLine2 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
+                new LatLon(arrowEndCoordinates.getSecond().getLat(), arrowEndCoordinates.getSecond().getLon())));
+        return new Pair<>(arrowLine1, arrowLine2);
     }
 
     /**
@@ -185,7 +185,7 @@ class PaintHandler {
         for (final Segment segment : segments) {
             final Float val = segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
             graphics.setComposite(originalComposite.derive(val));
-            drawSegment(graphics, mapView, segment.getGeometry());
+            PaintUtil.drawSegment(graphics, Util.toPoints(mapView, segment.getGeometry()));
         }
     }
 
@@ -231,16 +231,5 @@ class PaintHandler {
                     OPAQUE_ALPHA.equals(transparency) ? originalTransparency : (originalTransparency * transparency);
         }
         return transparency;
-    }
-
-    private void drawSegment(final Graphics2D graphics, final MapView mapView, final List<LatLon> geometry) {
-        final GeneralPath path = new GeneralPath();
-        Point point = mapView.getPoint(geometry.get(0));
-        path.moveTo(point.getX(), point.getY());
-        for (int i = 1; i < geometry.size(); i++) {
-            point = mapView.getPoint(geometry.get(i));
-            path.lineTo(point.getX(), point.getY());
-        }
-        graphics.draw(path);
     }
 }

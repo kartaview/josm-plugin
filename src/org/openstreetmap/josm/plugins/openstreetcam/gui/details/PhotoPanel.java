@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import org.openstreetmap.josm.tools.Pair;
+import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.GuiBuilder;
 
 
@@ -67,8 +67,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseWheelListener(this);
         addMouseListener(new MousePressedAdapater());
         addMouseMotionListener(new MouseDraggedAdapter());
-        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(), getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12),
-                Color.white);
+        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(),
+                getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white);
         lblLoading.setHorizontalAlignment(SwingConstants.CENTER);
         lblLoading.setVerticalAlignment(SwingConstants.CENTER);
     }
@@ -122,33 +122,34 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
 
         if (getWidth() > getHeight()) {
             vertical = getImageFixedDimension(y, currentView.y, currentView.height, image.getHeight(), wheelRotation);
-            if (vertical.b == image.getHeight() && vertical.a == 0) {
+            if (vertical.getSecond() == image.getHeight() && vertical.getFirst() == 0) {
                 horizontal = new Pair<>(0, image.getWidth());
             } else {
-                final int newWidth = ((vertical.b - vertical.a) * getWidth()) / getHeight();
+                final int newWidth = ((vertical.getSecond() - vertical.getFirst()) * getWidth()) / getHeight();
                 horizontal = getImageRelativeDimension(x, currentView.x, currentView.width, newWidth, image.getWidth(),
                         wheelRotation);
             }
         } else {
             horizontal = getImageFixedDimension(x, currentView.x, currentView.width, image.getWidth(), wheelRotation);
-            if (horizontal.b == image.getWidth() && horizontal.a == 0) {
+            if (horizontal.getSecond() == image.getWidth() && horizontal.getFirst() == 0) {
                 vertical = new Pair<>(0, image.getHeight());
             } else {
-                final int newHeight = (horizontal.b - horizontal.a) * getHeight() / getWidth();
+                final int newHeight = (horizontal.getSecond() - horizontal.getFirst()) * getHeight() / getWidth();
                 vertical = getImageRelativeDimension(y, currentView.y, currentView.height, newHeight, image.getHeight(),
                         wheelRotation);
             }
         }
 
-        if ((horizontal.b - horizontal.a > image.getWidth() / MAX_ZOOM)
-                && (vertical.b - vertical.a > image.getHeight() / MAX_ZOOM)) {
-            currentView = new Rectangle(horizontal.a, vertical.a, horizontal.b - horizontal.a, vertical.b - vertical.a);
+        if ((horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM)
+                && (vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
+            currentView = new Rectangle(horizontal.getFirst(), vertical.getFirst(),
+                    horizontal.getSecond() - horizontal.getFirst(), vertical.getSecond() - vertical.getFirst());
         }
     }
 
     private Pair<Integer, Integer> getImageFixedDimension(final int ref, final int currentViewMinCoord,
             final int currentViewDim, final int imgDim, final int wheelRotation) {
-        Pair<Integer, Integer> pair;
+        final Pair<Integer, Integer> pair;
 
         // zoom in case
         if (wheelRotation < 0) {
@@ -212,24 +213,23 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         final int minCoord = ref - cut;
         final int maxCoord = ref + cut;
 
-        final Pair<Integer, Integer> result = new Pair<>(minCoord, maxCoord);
-        result.a = minCoord;
-        result.b = maxCoord;
+        int modifiedFirstRef = minCoord;
+        int modifiedSecondRef = maxCoord;
+
 
         if (minCoord < firstRef) {
-            result.a = firstRef;
-            result.b = result.b - minCoord + firstRef;
+            modifiedFirstRef = firstRef;
+            modifiedSecondRef = modifiedSecondRef - minCoord + firstRef;
         }
 
         if (maxCoord > secondRef) {
-            result.a = result.a - maxCoord + secondRef;
-            result.b = secondRef;
+            modifiedFirstRef = modifiedFirstRef - maxCoord + secondRef;
+            modifiedSecondRef = secondRef;
+
         }
-
-        result.a = (result.a < firstRef) ? firstRef : result.a;
-        result.b = (result.b > secondRef) ? secondRef : result.b;
-
-        return result;
+        modifiedFirstRef = modifiedFirstRef < firstRef ? firstRef : modifiedFirstRef;
+        modifiedSecondRef = (modifiedSecondRef > secondRef) ? secondRef : modifiedSecondRef;
+        return new Pair<>(modifiedFirstRef, modifiedSecondRef);
     }
 
     /**
@@ -320,5 +320,4 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             }
         }
     }
-
 }

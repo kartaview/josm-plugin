@@ -16,7 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import java.util.Date;
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**

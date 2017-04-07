@@ -35,8 +35,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
+import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.GuiBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
 
@@ -126,14 +126,14 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             final Pair<BufferedImage, Boolean> imageResult = ImageHandler.getInstance().loadPhoto(photo);
             if (imageResult != null) {
                 lblDetails.setText(detailsTxt);
-                if (imageResult.b) {
+                if (imageResult.getSecond()) {
                     lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
                     lblDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {
                     lblDetails.setToolTipText(null);
                     lblDetails.setIcon(null);
                 }
-                pnlPhoto.updateUI(imageResult.a);
+                pnlPhoto.updateUI(imageResult.getFirst());
             }
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();

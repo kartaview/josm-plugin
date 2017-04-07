@@ -30,7 +30,6 @@ import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.tools.Pair;
 import com.telenav.josm.common.argument.BoundingBox;
 
 
@@ -49,21 +48,20 @@ public final class Util {
     private static final int MAX_ZOOM = 22;
     private static final int TILE_SIZE = 1024;
     private static final int ZOOM1_SCALE = 78206;
-    private static final double EQUATORIAL_RADIUS = 6378137.0;
-    private static final double ANGLE = Math.toDegrees(45);
     private static final double RADIUS = 0.0003;
     private static final double MAX_DISTANCE = 2.0;
-    private static final int MAX_ANGLE = 360;
     private static final int EXTENSION_DISTANCE = 500;
-    private static final double MIN_LON = -180.0;
-    private static final double MAX_LON = 180.0;
-
-    /* latitude interval limits */
-    private static final double MIN_LAT = -90.0;
-    private static final double MAX_LAT = 90.0;
 
     private Util() {}
 
+
+    public static List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {
+        final List<Point> points = new ArrayList<>();
+        for (final LatLon latLon : geometry) {
+            points.add(mapView.getPoint(latLon));
+        }
+        return points;
+    }
 
     /**
      * Returns the zoom level based on the given bounds.
@@ -134,54 +132,6 @@ public final class Util {
         return result;
     }
 
-    /**
-     * Computes the end points of an arrow for the startPoint->endPoint direction.
-     *
-     * @param startPoint the start {@code Point} of the line
-     * @param endPoint the end {@code Point} of the line
-     * @param distance the distance between the endPoint and arrow points.
-     * @return the arrow end points
-     */
-    public static Pair<LatLon, LatLon> arrowEndPoints(final LatLon startPoint, final LatLon endPoint,
-            final double distance) {
-        final double bearing = Math.toDegrees(startPoint.bearing(endPoint));
-        final double angle1 = bearing + ANGLE;
-        final double angle2 = bearing - ANGLE;
-        final LatLon point1 = extrapolate(endPoint, angle1, distance);
-        final LatLon point2 = extrapolate(endPoint, angle2, distance);
-        return new Pair<>(point1, point2);
-    }
-
-    /**
-     * Returns the coordinates of a point which is "distance" away from standPoint in the direction of "bearing".
-     *
-     * @param point the origin {@code Point}
-     * @param bearing the direction of degrees
-     * @param distance the distance in meters
-     * @return a {@code Point}
-     */
-    private static LatLon extrapolate(final LatLon point, final double bearing, final double distance) {
-        final double rlat1 = Math.toRadians(point.lat());
-        final double rlon1 = Math.toRadians(point.lon());
-        final double rbearing = Math.toRadians(bearing);
-        final double rdistance = distance / EQUATORIAL_RADIUS;
-        final double lat2 = Math.asin(
-                Math.sin(rlat1) * Math.cos(rdistance) + Math.cos(rlat1) * Math.sin(rdistance) * Math.cos(rbearing));
-        final double lon2 = rlon1 + Math.atan2(Math.sin(rbearing) * Math.sin(rdistance) * Math.cos(rlat1),
-                Math.cos(rdistance) - Math.sin(rlat1) * Math.sin(lat2));
-        return new LatLon(Math.toDegrees(lat2), Math.toDegrees(lon2));
-    }
-
-    /**
-     * Returns the middle point between start and end location.
-     *
-     * @param start the start location
-     * @param end the end location
-     * @return a {@code LatLon}
-     */
-    public static LatLon midPoint(final LatLon start, final LatLon end) {
-        return new LatLon((end.lat() + start.lat()) / 2, (end.lon() + start.lon()) / 2);
-    }
 
     /**
      * Verifies if the given mapView contains or not the given coordinate. If the {@code OsmDataLayer} is active and has
@@ -258,34 +208,15 @@ public final class Util {
                 final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
                         bounds.getMax().lon(), bounds.getMin().lon());
                 final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
-                result.add(extendBoundingBox(bbox, (int) distance));
+                result.add(bbox.extendBoundingBox((int) distance));
             }
         } else {
             final Bounds bounds = Main.map.mapView.getRealBounds();
             final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
                     bounds.getMax().lon(), bounds.getMin().lon());
             final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
-            result.add(extendBoundingBox(bbox, (int) distance));
+            result.add(bbox.extendBoundingBox((int) distance));
         }
         return result;
-    }
-
-    /**
-     * Extends a bounding box with the given meters in vertical and horizontal direction.
-     *
-     * @param bbox a {@code BoundingBox} represents a searching area
-     * @param meters represents the expansion
-     * @return a {@code BoundingBox}
-     */
-    private static BoundingBox extendBoundingBox(final BoundingBox bbox, final int meters) {
-        final double verticalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS);
-        final double horizontalExpansion = (meters * MAX_ANGLE) / (2 * Math.PI * EQUATORIAL_RADIUS
-                * Math.cos(Math.toRadians(Math.max(Math.abs(bbox.getSouth()), Math.abs(bbox.getNorth())))));
-
-        final double minLat = Math.max(MIN_LAT, bbox.getSouth() - verticalExpansion);
-        final double minLon = Math.max(MIN_LON, bbox.getWest() - horizontalExpansion);
-        final double maxLat = Math.min(MAX_LAT, bbox.getNorth() + verticalExpansion);
-        final double maxLon = Math.min(MAX_LON, bbox.getEast() + horizontalExpansion);
-        return new BoundingBox(maxLat, minLat, maxLon, minLon);
     }
 }

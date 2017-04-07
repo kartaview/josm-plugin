@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
 
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import com.telenav.josm.common.entity.Status;
 
 
 /**

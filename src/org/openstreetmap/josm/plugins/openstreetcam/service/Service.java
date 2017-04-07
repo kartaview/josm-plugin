@@ -18,7 +18,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,7 +85,7 @@ public class Service {
             throws ServiceException {
         final Map<String, String> arguments =
                 new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
@@ -110,7 +109,7 @@ public class Service {
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
@@ -188,7 +187,7 @@ public class Service {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        String response;
+        final String response;
         try {
             final HttpConnector connector =
                     new HttpConnector(Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
@@ -203,8 +202,7 @@ public class Service {
     }
 
     private void verifyResponseStatus(final Response response) throws ServiceException {
-        if (response != null && response.getStatus() != null
-                && response.getStatus().getHttpCode() != HttpURLConnection.HTTP_OK) {
+        if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
             throw new ServiceException(response.getStatus().getApiMessage());
         }
     }
