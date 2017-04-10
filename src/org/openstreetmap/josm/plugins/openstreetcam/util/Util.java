@@ -43,6 +43,7 @@ public final class Util {
 
     private static final double POZ_DIST_DATA_LAYER = 5.0;
     private static final double POZ_DIST = 10.0;
+    private static final double LOG = Math.log(2);
 
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 22;
@@ -52,16 +53,9 @@ public final class Util {
     private static final double MAX_DISTANCE = 2.0;
     private static final int EXTENSION_DISTANCE = 500;
 
+
     private Util() {}
 
-
-    public static List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {
-        final List<Point> points = new ArrayList<>();
-        for (final LatLon latLon : geometry) {
-            points.add(mapView.getPoint(latLon));
-        }
-        return points;
-    }
 
     /**
      * Returns the zoom level based on the given bounds.
@@ -75,8 +69,8 @@ public final class Util {
             // JOSM does not return the correct bounds for the case when the zoom level is 1
             zoomLevel = 1;
         } else {
-            zoomLevel = (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-                    Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
+            zoomLevel = (int) Math.min(MAX_ZOOM,
+                    Math.max(MIN_ZOOM, Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / LOG))));
         }
         return zoomLevel;
     }
@@ -167,17 +161,12 @@ public final class Util {
      */
     public static List<Circle> currentCircles() {
         final List<Circle> result = new ArrayList<>();
-        if (Main.getLayerManager().getEditLayer() != null
-                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                for (final Bounds bounds : osmDataLayerBounds) {
-                    if (Main.map.mapView.getRealBounds().intersects(bounds)) {
-                        result.add(new Circle(bounds));
-                    }
+        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+            for (final Bounds bounds : osmDataLayerBounds) {
+                if (Main.map.mapView.getRealBounds().intersects(bounds)) {
+                    result.add(new Circle(bounds));
                 }
-            } else {
-                result.add(new Circle(Main.map.mapView.getRealBounds()));
             }
         } else {
             result.add(new Circle(Main.map.mapView.getRealBounds()));
@@ -193,22 +182,13 @@ public final class Util {
      */
     public static List<BoundingBox> currentBoundingBoxes() {
         final List<BoundingBox> result = new ArrayList<>();
-        if (Main.getLayerManager().getEditLayer() != null
-                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                for (final Bounds osmBounds : osmDataLayerBounds) {
-                    if (Main.map.mapView.getRealBounds().intersects(osmBounds)) {
-                        result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
-                                osmBounds.getMax().lon(), osmBounds.getMin().lon()));
-                    }
+        final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+            for (final Bounds osmBounds : osmDataLayerBounds) {
+                if (Main.map.mapView.getRealBounds().intersects(osmBounds)) {
+                    result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
+                            osmBounds.getMax().lon(), osmBounds.getMin().lon()));
                 }
-            } else {
-                final Bounds bounds = Main.map.mapView.getRealBounds();
-                final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
-                        bounds.getMax().lon(), bounds.getMin().lon());
-                final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
-                result.add(bbox.extendBoundingBox((int) distance));
             }
         } else {
             final Bounds bounds = Main.map.mapView.getRealBounds();
@@ -218,5 +198,14 @@ public final class Util {
             result.add(bbox.extendBoundingBox((int) distance));
         }
         return result;
+    }
+
+    private static List<Bounds> editLayerDataBounds() {
+        List<Bounds> osmDataLayerBounds = null;
+        if (Main.getLayerManager().getEditLayer() != null
+                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+        }
+        return osmDataLayerBounds;
     }
 }
