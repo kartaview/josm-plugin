@@ -54,8 +54,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel
-        implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
+    DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -91,7 +91,6 @@ class ButtonPanel extends JPanel
         createComponents();
         registerShortcuts();
         setPreferredSize(DIM);
-
     }
 
     private void createComponents() {
@@ -284,7 +283,6 @@ class ButtonPanel extends JPanel
                 btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
                 btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             }
-
         }
     }
 
@@ -364,5 +362,4 @@ class ButtonPanel extends JPanel
             }
         }
     }
-
 }

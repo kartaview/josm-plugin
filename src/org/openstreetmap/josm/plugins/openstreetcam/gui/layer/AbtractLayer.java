@@ -50,12 +50,14 @@ abstract class AbtractLayer extends Layer {
 
     private static final String DELETE_ACTION = "delete";
 
+
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
 
-        LayerListDialog.getInstance().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
-        LayerListDialog.getInstance().getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
+        final LayerListDialog layerListDialog = LayerListDialog.getInstance();
+        layerListDialog.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        layerListDialog.getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
     }
 
 
@@ -72,14 +74,12 @@ abstract class AbtractLayer extends Layer {
     @Override
     public Action[] getMenuEntries() {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
-
         final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
                 ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-
-                return new Action[] { layerListDialog.createActivateLayerAction(this),
-                        layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
-                        SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
-                        new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+        return new Action[] { layerListDialog.createActivateLayerAction(this),
+                layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
+                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
+                new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
     }
 
     @Override
@@ -145,7 +145,7 @@ abstract class AbtractLayer extends Layer {
         private static final long serialVersionUID = 4196639030623647016L;
 
         private OpenFeedbackPageAction() {
-            super("Feedback", IconConfig.getInstance().getFeedbackIcon());
+            super(GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(), IconConfig.getInstance().getFeedbackIcon());
         }
 
         @Override
