@@ -31,6 +31,8 @@ public class PhotoBuilder {
     private String username;
 
 
+    public PhotoBuilder() {}
+
     public void id(final Long id) {
         this.id = id;
     }

@@ -28,6 +28,8 @@ public class SegmentBuilder {
     private List<LatLon> geometry;
 
 
+    public SegmentBuilder() {}
+
     public void id(final String id) {
         this.id = id;
     }
