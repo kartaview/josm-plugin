@@ -147,7 +147,6 @@ public class Service {
      * @param area a {@code BoundingBox} represents the current area
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
-     * @param paging a {@code Paging} defines pagination arguments
      * @param zoom represents the current zoom level
      * @return a list of {@code Segment}s
      * @throws ServiceException if the operation fails

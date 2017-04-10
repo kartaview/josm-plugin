@@ -182,7 +182,7 @@ public final class Util {
      */
     public static List<BoundingBox> currentBoundingBoxes() {
         final List<BoundingBox> result = new ArrayList<>();
-        final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
             for (final Bounds osmBounds : osmDataLayerBounds) {
                 if (Main.map.mapView.getRealBounds().intersects(osmBounds)) {

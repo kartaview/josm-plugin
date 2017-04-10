@@ -10,7 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 /**
  * Defines the user configurable preference settings attributes. The plugin's preference settings can be modified by the
- * users via JOSM->Preferences->OSC preference settings.
+ * users via JOSM OSC reference settings.
  *
  * @author beataj
  * @version $Revision$
