@@ -18,6 +18,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 import static com.telenav.josm.common.gui.GuiBuilder.FONT_SIZE_12;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
@@ -82,7 +84,31 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
+        addComponentListener(new ComponentListener() {
+
+            @Override
+            public void componentShown(final ComponentEvent e) {
+                System.out.println(" component shown");
+            }
+
+            @Override
+            public void componentResized(final ComponentEvent e) {
+                System.out.println(" component resized : " + e.getComponent());
+            }
+
+            @Override
+            public void componentMoved(final ComponentEvent e) {
+                System.out.println(" component moved");
+            }
+
+            @Override
+            public void componentHidden(final ComponentEvent e) {
+                System.out.println(" component hidden");
+
+            }
+        });
     }
+
 
     /**
      * Returns the unique instance of the details dialog window.
@@ -226,4 +252,5 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             }
         }
     }
+
 }

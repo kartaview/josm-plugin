@@ -97,7 +97,7 @@ class PreferencePanel extends JPanel {
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
 
         cbMouseHover = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefMouseHoverLbl(),
-                new JCheckBox().getFont().deriveFont(Font.PLAIN), false, getBackground());
+                new JCheckBox().getFont().deriveFont(Font.PLAIN), settings.isMouseHoverFlag(), getBackground());
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
     }
 
