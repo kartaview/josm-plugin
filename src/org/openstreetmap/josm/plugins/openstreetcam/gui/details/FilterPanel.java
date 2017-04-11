@@ -65,8 +65,8 @@ class FilterPanel extends JPanel {
 
 
     private void addDateFitler(final Date date) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), getFont().deriveFont(Font.BOLD),
-                getBackground()), Constraints.LBL_DATE);
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD, null, getBackground()),
+                Constraints.LBL_DATE);
         pickerDate = GuiBuilder.buildDatePicker(date, Calendar.getInstance().getTime(), PICKER_SIZE);
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
         if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
@@ -76,12 +76,12 @@ class FilterPanel extends JPanel {
     }
 
     private void addUserFilter(final boolean isSelected) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD, null,
                 getBackground()), Constraints.LBL_USER);
-        cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
+        cbbUser = GuiBuilder.buildCheckBox(null, Font.PLAIN, getBackground(), isSelected);
         cbbUser.setSelected(isSelected);
         final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(),
-                getFont().deriveFont(Font.ITALIC), getBackground());
+                Font.ITALIC, null, getBackground());
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             cbbUser.setEnabled(false);
             lblLoginWarning.setForeground(Color.red);

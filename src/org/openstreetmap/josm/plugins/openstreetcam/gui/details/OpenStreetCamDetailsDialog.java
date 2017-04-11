@@ -75,7 +75,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
+        lblDetails = GuiBuilder.buildLabel(null, null, GuiBuilder.FONT_SIZE_12, Color.white);
         final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);

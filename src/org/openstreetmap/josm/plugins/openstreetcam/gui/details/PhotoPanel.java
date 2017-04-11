@@ -67,8 +67,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseWheelListener(this);
         addMouseListener(new MousePressedAdapater());
         addMouseMotionListener(new MouseDraggedAdapter());
-        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(),
-                getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white);
+        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(), Font.BOLD,
+                GuiBuilder.FONT_SIZE_12, Color.white);
         lblLoading.setHorizontalAlignment(SwingConstants.CENTER);
         lblLoading.setVerticalAlignment(SwingConstants.CENTER);
     }
@@ -91,8 +91,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         setBackground(Color.white);
         image = null;
         currentView = null;
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(),
-                getFont().deriveFont(Font.BOLD, GuiBuilder.FONT_SIZE_12), Color.white), BorderLayout.CENTER);
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(), Font.BOLD, GuiBuilder.FONT_SIZE_12,
+                Color.white), BorderLayout.CENTER);
 
         repaint();
     }
