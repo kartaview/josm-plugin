@@ -135,7 +135,9 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                     result.add(prevPhoto);
                 }
             }
-            result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
+            if (dataSet != null && dataSet.getPhotos() != null) {
+                result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
+            }
         }
         return result;
     }
