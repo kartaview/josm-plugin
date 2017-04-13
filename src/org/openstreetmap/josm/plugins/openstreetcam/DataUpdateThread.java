@@ -154,12 +154,14 @@ class DataUpdateThread implements Runnable {
     }
 
     private void updateUI(final DataSet dataSet, final boolean checkSelectedPhoto) {
-        SwingUtilities.invokeLater(() -> {
-            OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelectedPhoto);
-            if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                OpenStreetCamDetailsDialog.getInstance().updateUI(null);
-            }
-            Main.map.repaint();
-        });
+        if (Main.map != null && Main.map.mapView != null) {
+            SwingUtilities.invokeLater(() -> {
+                OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelectedPhoto);
+                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null);
+                }
+                Main.map.repaint();
+            });
+        }
     }
 }
