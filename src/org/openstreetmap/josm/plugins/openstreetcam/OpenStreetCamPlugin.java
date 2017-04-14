@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JMenuItem;
@@ -26,6 +27,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
+import org.openstreetmap.josm.gui.IconToggleButton;
 import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
@@ -55,6 +57,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
+import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -88,6 +91,9 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
+        if (layerActivatorMenuItem == null) {
+            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+        }
     }
 
     @Override
@@ -100,17 +106,17 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             initializeDetailsDialog(newMapFrame);
-            if (layerActivatorMenuItem == null) {
-                layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
-            }
             layerActivatorMenuItem.setEnabled(true);
             if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
                 addLayer();
             }
+            Main.pref.addPreferenceChangeListener(this);
         }
 
         // all layers are deleted (there is no map frame)
         if (oldMapFrame != null && newMapFrame == null) {
+            Main.pref.removePreferenceChangeListener(this);
+            Main.getLayerManager().removeLayerChangeListener(this);
             layerActivatorMenuItem.setEnabled(false);
             try {
                 ThreadPool.getInstance().shutdown();
@@ -123,14 +129,14 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     private void initializeDetailsDialog(final MapFrame newMapFrame) {
         detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         detailsDialog.registerObservers(this, this, this, this);
-        newMapFrame.addToggleDialog(detailsDialog);
+        newMapFrame.addToggleDialog(detailsDialog, true);
+
+        detailsDialog.getButton().setAction(new ToggleButtonActionListener());
         if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
             detailsDialog.showDialog();
         } else {
             detailsDialog.hideDialog();
         }
-        Main.pref.addPreferenceChangeListener(this);
-        isPreferenceListenerRegistered = true;
     }
 
 
@@ -182,11 +188,8 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
     public void layerRemoving(final LayerRemoveEvent event) {
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
-            Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
 
-            Main.pref.removePreferenceChangeListener(this);
-            isPreferenceListenerRegistered = false;
             OpenStreetCamLayer.destroyInstance();
             detailsDialog.updateUI(null);
             layer = null;
@@ -417,13 +420,48 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         public void actionPerformed(final ActionEvent e) {
             if (layer == null) {
                 addLayer();
-                if (!isPreferenceListenerRegistered) {
-                    Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
-                    isPreferenceListenerRegistered = true;
-                }
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
         }
     }
 
+    private class ToggleButtonActionListener extends JosmAction {
+
+        private boolean destroyed;
+
+        private ToggleButtonActionListener() {
+            super("", IconConfig.getInstance().getLayerIconName(), "OpenStreetCam details dialog",
+                    Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
+                            GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE),
+                    true, true);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (event.getSource() instanceof IconToggleButton) {
+                final IconToggleButton btn = (IconToggleButton) event.getSource();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (btn.isSelected()) {
+                            detailsDialog.setVisible(true);
+                            btn.setSelected(true);
+                        } else {
+                            detailsDialog.setVisible(false);
+                            btn.setSelected(false);
+                            btn.setFocusable(false);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void destroy() {
+            if (!destroyed) {
+                super.destroy();
+            }
+        }
+    }
 }

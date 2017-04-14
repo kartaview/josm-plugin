@@ -68,6 +68,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
 
+    private boolean destroyed = false;
 
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
@@ -89,6 +90,16 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public static OpenStreetCamDetailsDialog getInstance() {
         return INSTANCE;
+    }
+
+
+    @Override
+    public void destroy() {
+        if (!destroyed) {
+            super.destroy();
+            destroyed = true;
+            // Main.unregisterShortcut(shortcut);
+        }
     }
 
     /**
@@ -224,4 +235,5 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             }
         }
     }
+
 }
