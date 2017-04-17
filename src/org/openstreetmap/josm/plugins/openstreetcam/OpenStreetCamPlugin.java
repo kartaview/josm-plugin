@@ -129,8 +129,10 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
         } else {
             detailsDialog.hideDialog();
         }
-        Main.pref.addPreferenceChangeListener(this);
-        isPreferenceListenerRegistered = true;
+        if (!isPreferenceListenerRegistered) {
+            Main.pref.addPreferenceChangeListener(this);
+            isPreferenceListenerRegistered = true;
+        }
     }
 
 
@@ -184,9 +186,10 @@ LocationObserver, SequenceObserver, ClosestPhotoObserver, PreferenceChangedListe
             NavigatableComponent.removeZoomChangeListener(this);
             Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(this);
-
-            Main.pref.removePreferenceChangeListener(this);
-            isPreferenceListenerRegistered = false;
+            if (isPreferenceListenerRegistered) {
+                Main.pref.removePreferenceChangeListener(this);
+                isPreferenceListenerRegistered = false;
+            }
             OpenStreetCamLayer.destroyInstance();
             detailsDialog.updateUI(null);
             layer = null;
