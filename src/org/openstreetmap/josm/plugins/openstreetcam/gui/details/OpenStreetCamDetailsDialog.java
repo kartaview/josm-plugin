@@ -21,8 +21,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -34,7 +32,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -61,7 +58,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
             GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
-    private static final OpenStreetCamDetailsDialog INSTANCE = new OpenStreetCamDetailsDialog();
+    private static OpenStreetCamDetailsDialog instance = new OpenStreetCamDetailsDialog();
 
     /* dialog components */
     private final JLabel lblDetails;
@@ -73,7 +70,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
-
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
         lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
@@ -89,18 +85,27 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @return a {@code OpenStreetCamDetailsDialog}
      */
     public static OpenStreetCamDetailsDialog getInstance() {
-        return INSTANCE;
+        if (instance == null) {
+            instance = new OpenStreetCamDetailsDialog();
+        }
+        return instance;
     }
-
 
     @Override
     public void destroy() {
         if (!destroyed) {
             super.destroy();
             destroyed = true;
-            // Main.unregisterShortcut(shortcut);
         }
     }
+
+    /**
+     * Destroys the instance of the dialog.
+     */
+    public static void destroyInstance() {
+        instance = null;
+    }
+
 
     /**
      * Updates the details dialog with the details of the given photo.
@@ -194,46 +199,23 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     /**
-     * Updates the properties of the data switch button.
+     * Updates the properties of the data switch button. Null properties are ignored.
      *
      * @param dataType a {@code DataType} specifies the currently displayed data type
+     * @param isEnabled enables/disables the data switch button
+     * @param isVisible specifies the button visibility
      */
-    public void updateDataSwitchButton(final DataType dataType) {
-        pnlBtn.updateDataSwitchButton(dataType);
-        pnlBtn.revalidate();
-        repaint();
-    }
-
-    /**
-     * Enables or disables the data switch button depending on the given argument. The data switch button should be
-     * enabled only if the "manual data switch" preference setting is selected.
-     *
-     * @param enabled enables/disables the data switch button
-     */
-    public void enableDataSwitchButton(final boolean enabled) {
-        pnlBtn.enableDataSwitchButton(enabled);
-        pnlBtn.revalidate();
-        repaint();
-    }
-
-    @Override
-    public void preferenceChanged(final PreferenceChangeEvent event) {
-        super.preferenceChanged(event);
-        if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
-            final PreferenceManager prefManager = PreferenceManager.getInstance();
-            if (prefManager.hasManualSwitchDataTypeChanged(event.getKey(), event.getNewValue().getValue().toString())) {
-                final boolean manualSwitchFlag = Boolean.parseBoolean(event.getNewValue().getValue().toString());
-                SwingUtilities.invokeLater(() -> {
-                    if (manualSwitchFlag) {
-                        pnlBtn.setDataSwitchButtonVisibiliy(true);
-                    } else {
-                        pnlBtn.setDataSwitchButtonVisibiliy(false);
-                    }
-                    pnlBtn.revalidate();
-                    repaint();
-                });
-            }
+    public void updateDataSwitchButton(final DataType dataType, final Boolean isEnabled, final Boolean isVisible) {
+        if (dataType != null) {
+            pnlBtn.updateDataSwitchButton(dataType);
         }
+        if (isEnabled != null) {
+            pnlBtn.enableDataSwitchButton(isEnabled);
+        }
+        if (isVisible) {
+            pnlBtn.setDataSwitchButtonVisibiliy(isVisible);
+        }
+        pnlBtn.revalidate();
+        repaint();
     }
-
 }

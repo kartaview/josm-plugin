@@ -74,9 +74,9 @@ class DataUpdateThread implements Runnable {
     private void manualSwitchFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom) {
         // enable switch button based on zoom level
         if (zoom >= Config.getInstance().getMapPhotoZoom()) {
-            OpenStreetCamDetailsDialog.getInstance().enableDataSwitchButton(true);
+            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, true, null);
         } else {
-            OpenStreetCamDetailsDialog.getInstance().enableDataSwitchButton(false);
+            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
         }
 
         final DataType dataType = PreferenceManager.getInstance().loadDataType();
@@ -118,13 +118,13 @@ class DataUpdateThread implements Runnable {
             // clear view
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT);
+                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT, null, null);
                 }
                 updateUI(null, true);
             });
         }
         final List<BoundingBox> areas = Util.currentBoundingBoxes();
-        if (areas.size() > 0) {
+        if (!areas.isEmpty()) {
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
             if (PreferenceManager.getInstance().loadDataType() == null
                     || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
@@ -139,13 +139,13 @@ class DataUpdateThread implements Runnable {
             // clear view
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO);
+                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO, null, null);
                 }
                 updateUI(null, false);
             });
         }
         final List<Circle> areas = Util.currentCircles();
-        if (areas.size() > 0) {
+        if (!areas.isEmpty()) {
             final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
                 updateUI(new DataSet(null, photos), checkSelectedPhoto);
