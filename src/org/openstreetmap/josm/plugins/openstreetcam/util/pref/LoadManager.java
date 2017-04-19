@@ -8,7 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -78,7 +78,10 @@ final class LoadManager {
         final String displayTrackFlagVal = Main.pref.get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
         final boolean mouseHoverFlag = Main.pref.getBoolean(MOUSE_HOVER_FLAG);
-        return new PhotoSettings(highQualityFlag, displayTrackFlag, mouseHoverFlag);
+        final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
+        final int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
+                ? Integer.valueOf(mouseHoverDelayValue) : Config.getInstance().getMouseHoverMinDelay();
+        return new PhotoSettings(highQualityFlag, displayTrackFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     CacheSettings loadCacheSettings() {

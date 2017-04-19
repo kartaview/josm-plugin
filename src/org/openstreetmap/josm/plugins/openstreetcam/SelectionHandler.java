@@ -36,7 +36,6 @@ import com.telenav.josm.common.thread.ThreadPool;
 final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserver, SequenceObserver {
 
     private static final int UNSELECT_CLICK_COUNT = 2;
-    private static final int MOUSE_HOVER_DELAY = 100;
     private Timer mouseHoverTimer;
 
     SelectionHandler() {}
@@ -100,11 +99,11 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
 
     @Override
     public void mouseMoved(final MouseEvent e) {
-        if (mouseHoverTimer != null && mouseHoverTimer.isRunning()) {
-            mouseHoverTimer.restart();
-        } else {
-            if (Main.map != null && Main.map.mapView != null) {
-                mouseHoverTimer = new Timer(MOUSE_HOVER_DELAY,
+        if (PreferenceManager.getInstance().loadPhotoSettings().isMouseHoverFlag() && selectionAllowed()) {
+            if (mouseHoverTimer != null && mouseHoverTimer.isRunning()) {
+                mouseHoverTimer.restart();
+            } else {
+                mouseHoverTimer = new Timer(PreferenceManager.getInstance().loadPhotoSettings().getMouseHoverDelay(),
                         event -> ThreadPool.getInstance().execute(() -> handleMouseHover(e)));
                 mouseHoverTimer.setRepeats(false);
                 mouseHoverTimer.start();
@@ -112,17 +111,23 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
         }
     }
 
+    void changeMouseHoverTimerDelay() {
+        if (mouseHoverTimer != null) {
+            mouseHoverTimer.setDelay(PreferenceManager.getInstance().loadPhotoSettings().getMouseHoverDelay());
+            if (mouseHoverTimer.isRunning()) {
+                mouseHoverTimer.restart();
+            }
+        }
+    }
+
     private void handleMouseHover(final MouseEvent event) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
-        if (PreferenceManager.getInstance().loadPhotoSettings().isMouseHoverFlag() && selectionAllowed()) {
-            final Photo photo = layer.nearbyPhoto(event.getPoint());
-            if (photo != null) {
-                selectPhoto(photo);
-                layer.selectStartPhotoForClosestAction(photo);
-                if (layer.getClosestPhotos() != null) {
-                    OpenStreetCamDetailsDialog.getInstance()
-                    .enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
-                }
+        final Photo photo = layer.nearbyPhoto(event.getPoint());
+        if (photo != null) {
+            selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
+            if (layer.getClosestPhotos() != null) {
+                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
             }
         }
     }

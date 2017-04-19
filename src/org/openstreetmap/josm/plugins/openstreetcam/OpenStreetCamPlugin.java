@@ -126,6 +126,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         NavigatableComponent.addZoomChangeListener(this);
         Main.getLayerManager().addLayerChangeListener(this);
         Main.map.mapView.addMouseListener(selectionManager);
+        Main.map.mapView.addMouseMotionListener(selectionManager);
 
         // add layer
         Main.map.mapView.getLayerManager().addLayer(OpenStreetCamLayer.getInstance());
@@ -161,6 +162,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
             Main.map.mapView.removeMouseListener(selectionManager);
+            Main.map.mapView.removeMouseMotionListener(selectionManager);
 
             Main.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
@@ -250,6 +252,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     handleDisplayTrack(newValue);
                 } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
                     PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
+                } else if (PreferenceManager.getInstance().isMouseHoverDelayKey(event.getKey())) {
+                    selectionManager.changeMouseHoverTimerDelay();
                 }
             }
         }

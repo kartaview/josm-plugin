@@ -24,6 +24,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_O
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -242,5 +243,9 @@ public final class PreferenceManager {
 
     public boolean isPanelIconVisibilityKey(final String key) {
         return PANEL_ICON_VISIBILITY.equals(key);
+    }
+
+    public boolean isMouseHoverDelayKey(final String key) {
+        return MOUSE_HOVER_DELAY.equals(key);
     }
 }

@@ -41,6 +41,7 @@ final class Keys {
     static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
     static final String MOUSE_HOVER_FLAG = "openstreetcam.preferences.mouseHover";
+    static final String MOUSE_HOVER_DELAY = "openstreetcam.preferences.mouseHover.delay";
 
     /* cache related user preference settings */
     static final String CACHE_MEMORY_COUNT = "openstreetcam.preferences.cache.memory";

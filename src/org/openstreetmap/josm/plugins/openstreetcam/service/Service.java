@@ -63,7 +63,6 @@ public class Service {
 
     private final Gson gson = createGsonBuilder().create();
 
-    public static int totalTracks = 0;
     private GsonBuilder createGsonBuilder() {
         final GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();
@@ -163,7 +162,6 @@ public class Service {
             if (listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()) {
                 final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()
                         ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1 : 2;
-                System.out.println(" listMatchedTracks - pages " + pages);
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
                 for (int i = 2; i <= pages; i++) {
@@ -182,7 +180,6 @@ public class Service {
                 executor.shutdown();
             }
         }
-        totalTracks++;
         return new ArrayList<>(segments);
     }
 
