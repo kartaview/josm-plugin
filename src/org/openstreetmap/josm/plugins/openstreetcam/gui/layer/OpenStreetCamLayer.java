@@ -57,7 +57,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     /**
      * Returns the unique instance of the layer.
      *
-     * @return a {@code OpenStreetCamLayer}
+     * @return a {@code OpenStreetCamLayer} object
      */
     public static OpenStreetCamLayer getInstance() {
         if (instance == null) {
@@ -67,10 +67,10 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     }
 
     /**
-     * Destroys the unique instance of the layer.
+     * Destroys the instance of the layer.
      */
     public static void destroyInstance() {
-        OpenStreetCamLayer.instance = null;
+        instance = null;
     }
 
     @Override
@@ -142,7 +142,9 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                     result.add(prevPhoto);
                 }
             }
-            result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
+            if (dataSet != null && dataSet.getPhotos() != null) {
+                result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
+            }
         }
         return result;
     }
@@ -269,8 +271,12 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
-        closestPhotos = photo == null ? closestPhotos = Collections.emptyList() : Util.nearbyPhotos(dataSet.getPhotos(), 
-                startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        if (photo == null) {
+            closestPhotos = Collections.emptyList();
+        } else {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        }
     }
 
     public Collection<Photo> getClosestPhotos() {
@@ -282,10 +288,10 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return a {@code Photo}
      */
-    public Photo closestSelectedPhoto() {
+    public Photo getClosestSelectedPhoto() {
         if (closestPhotos.isEmpty()) {
-            closestPhotos = Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, 
-                    Config.getInstance().getClosestPhotosMaxItems());
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
         }
 
         Photo closestPhoto = null;

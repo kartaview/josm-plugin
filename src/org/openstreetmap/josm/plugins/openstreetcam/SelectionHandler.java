@@ -19,6 +19,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -31,13 +33,13 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-final class SelectionManager extends MouseAdapter {
+final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserver, SequenceObserver {
 
     private static final int UNSELECT_CLICK_COUNT = 2;
     private static final int MOUSE_HOVER_DELAY = 100;
     private Timer mouseHoverTimer;
 
-    SelectionManager() {}
+    SelectionHandler() {}
 
 
     @Override
@@ -138,7 +140,7 @@ final class SelectionManager extends MouseAdapter {
             layer.setSelectedSequence(null);
             layer.setSelectedPhoto(null);
             if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                detailsDialog.enableDataSwitchButton(true);
+                detailsDialog.updateDataSwitchButton(null, true, null);
             }
             detailsDialog.enableSequenceActions(false, false);
             detailsDialog.updateUI(null);
@@ -194,12 +196,38 @@ final class SelectionManager extends MouseAdapter {
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        detailsDialog.enableDataSwitchButton(false);
+                        detailsDialog.updateDataSwitchButton(null, false, null);
                     }
                     Main.map.repaint();
 
                 });
             }
         });
+    }
+
+    @Override
+    public void selectClosestPhoto() {
+        final Photo photo = OpenStreetCamLayer.getInstance().getClosestSelectedPhoto();
+        if (photo != null) {
+            selectPhoto(photo);
+        }
+    }
+
+    /* implementation of SequenceObserver */
+
+    @Override
+    public void selectSequencePhoto(final int index) {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+        final Photo photo = layer.sequencePhoto(index);
+        if (photo != null) {
+            selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
+            SwingUtilities.invokeLater(() -> {
+                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
+                    Main.map.mapView.zoomTo(photo.getLocation());
+                    Main.map.repaint();
+                }
+            });
+        }
     }
 }

@@ -40,10 +40,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -57,40 +55,16 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamPlugin extends Plugin implements ClosestPhotoObserver, DataTypeChangeObserver,
-LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserver, ZoomChangeListener {
-
-    /**
-     * details dialog associated with this plugin.
-     */
-    private OpenStreetCamDetailsDialog detailsDialog;
-
-    /**
-     * layer associated with this plugin
-     */
-    private OpenStreetCamLayer layer;
+public class OpenStreetCamPlugin extends Plugin
+implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
 
     private JMenuItem layerActivatorMenuItem;
+    private final SelectionHandler selectionManager;
+    private final PreferenceChangedHandler preferenceChangedHandler;
 
-    /**
-     * Delay used by the zoom timer.
-     */
     private static final int SEARCH_DELAY = 500;
 
-    /**
-     * Timer user for zoom in/out operations.
-     */
     private Timer zoomTimer;
-
-    /**
-     * Flag indicating if the preference listener was registered or not.
-     */
-    private boolean isPreferenceListenerRegistered;
-
-    /**
-     * Handles photo selection related logic.
-     */
-    private final SelectionManager selectionManager;
 
 
     /**
@@ -100,7 +74,11 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
-        this.selectionManager = new SelectionManager();
+        if (layerActivatorMenuItem == null) {
+            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+        }
+        this.selectionManager = new SelectionHandler();
+        this.preferenceChangedHandler = new PreferenceChangedHandler();
     }
 
     @Override
@@ -108,23 +86,33 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
         return new PreferenceEditor();
     }
 
-
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
-            initializeDetailsDialog(newMapFrame);
-            if (layerActivatorMenuItem == null) {
-                layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+            // initialize details dialog
+            final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
+            detailsDialog.registerObservers(this, selectionManager, selectionManager, this);
+            newMapFrame.addToggleDialog(detailsDialog, true);
+            if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
+                detailsDialog.showDialog();
+            } else {
+                detailsDialog.hideDialog();
             }
+
+            // initialize layer menu item & layer
             layerActivatorMenuItem.setEnabled(true);
             if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
                 addLayer();
             }
+
+            Main.pref.addPreferenceChangeListener(preferenceChangedHandler);
         }
 
-        // all layers are deleted (there is no map frame)
         if (oldMapFrame != null && newMapFrame == null) {
+            // clean-up
+            Main.pref.removePreferenceChangeListener(preferenceChangedHandler);
             layerActivatorMenuItem.setEnabled(false);
+            OpenStreetCamDetailsDialog.destroyInstance();
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
@@ -133,43 +121,14 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
         }
     }
 
-    private void initializeDetailsDialog(final MapFrame newMapFrame) {
-        detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-        detailsDialog.registerObservers(this, this, this, this);
-        newMapFrame.addToggleDialog(detailsDialog);
-        if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
-            detailsDialog.showDialog();
-        } else {
-            detailsDialog.hideDialog();
-        }
-        Main.pref.addPreferenceChangeListener(this);
-        isPreferenceListenerRegistered = true;
-    }
-
     private void addLayer() {
-        // register listeners
+        // register listeners that needs to be registered only if the layer is created
         NavigatableComponent.addZoomChangeListener(this);
         Main.getLayerManager().addLayerChangeListener(this);
         Main.map.mapView.addMouseListener(selectionManager);
-        Main.map.mapView.addMouseMotionListener(selectionManager);
 
         // add layer
-        layer = OpenStreetCamLayer.getInstance();
-        Main.map.mapView.getLayerManager().addLayer(layer);
-    }
-
-
-    /* implementation of ClosestImageObserver */
-
-    @Override
-    public void selectClosestPhoto() {
-        final Photo photo = layer.closestSelectedPhoto();
-        if (photo != null) {
-            if (PreferenceManager.getInstance().loadPreferenceSettings().getPhotoSettings().isDisplayTrackFlag()) {
-                selectionManager.loadSequence(photo);
-            }
-            selectionManager.selectPhoto(photo);
-        }
+        Main.map.mapView.getLayerManager().addLayer(OpenStreetCamLayer.getInstance());
     }
 
 
@@ -201,14 +160,11 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
     public void layerRemoving(final LayerRemoveEvent event) {
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
-            Main.getLayerManager().removeLayerChangeListener(this);
             Main.map.mapView.removeMouseListener(selectionManager);
-            Main.map.mapView.removeMouseMotionListener(selectionManager);
-            Main.pref.removePreferenceChangeListener(this);
-            isPreferenceListenerRegistered = false;
+
+            Main.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
-            detailsDialog.updateUI(null);
-            layer = null;
+            OpenStreetCamDetailsDialog.getInstance().updateUI(null);
         }
     }
 
@@ -217,76 +173,16 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
 
     @Override
     public void zoomToSelectedPhoto() {
-        if (layer.getSelectedPhoto() != null
-                && !Main.map.mapView.getRealBounds().contains(layer.getSelectedPhoto().getLocation())) {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+        final Photo selectedPhoto = layer.getSelectedPhoto();
+        if (selectedPhoto != null && !Main.map.mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
             SwingUtilities.invokeLater(() -> {
-                final Photo selectedPhoto = layer.getSelectedPhoto();
                 layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
                 Main.map.repaint();
             });
         }
     }
-
-
-    /* implementation of PreferenceChangedListener */
-
-    @Override
-    public void preferenceChanged(final PreferenceChangeEvent event) {
-        if (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue())) {
-            final PreferenceManager prefManager = PreferenceManager.getInstance();
-            if (prefManager.dataDownloadPreferencesChanged(event.getKey(), event.getNewValue().getValue().toString())) {
-                // clean up previous data
-                SwingUtilities.invokeLater(() -> {
-                    OpenStreetCamLayer.getInstance().setDataSet(null, false);
-                    if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                        OpenStreetCamDetailsDialog.getInstance().updateUI(null);
-                    }
-                    Main.map.repaint();
-                });
-                ThreadPool.getInstance().execute(new DataUpdateThread(true));
-            } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
-                if (layer.getSelectedPhoto() != null) {
-                    selectionManager.selectPhoto(layer.getSelectedPhoto());
-                }
-            } else if (prefManager.isDisplayTackFlag(event.getKey())) {
-                displayTrackFlagChanged(event);
-            } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
-                PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
-            }
-        }
-    }
-
-    private void displayTrackFlagChanged(final PreferenceChangeEvent event) {
-        if (event.getNewValue().getValue().equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
-                && layer.getSelectedSequence() == null) {
-            selectionManager.loadSequence(layer.getSelectedPhoto());
-        } else if (layer.getSelectedSequence() != null) {
-            layer.setSelectedSequence(null);
-            detailsDialog.enableDataSwitchButton(false);
-            detailsDialog.enableSequenceActions(false, false);
-            Main.map.repaint();
-        }
-    }
-
-    /* implementation of SequenceObserver */
-
-    @Override
-    public void selectSequencePhoto(final int index) {
-        final Photo photo = layer.sequencePhoto(index);
-        if (photo != null) {
-            selectionManager.selectPhoto(photo);
-            layer.selectStartPhotoForClosestAction(photo);
-            SwingUtilities.invokeLater(() -> {
-                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                    Main.map.mapView.zoomTo(photo.getLocation());
-                    Main.map.repaint();
-                }
-            });
-
-        }
-    }
-
 
     /* implementation of ZoomChangeListener */
 
@@ -304,10 +200,8 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
         }
     }
 
-
     /**
-     * Activates the OpenStreetCamLayer. This is executed whenever the user selects the OpenStreetCamLayer from the
-     * Imagery menu.
+     * Activates the layer.
      *
      * @author beataj
      * @version $Revision$
@@ -324,13 +218,86 @@ LayerChangeListener, LocationObserver, PreferenceChangedListener, SequenceObserv
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            if (layer == null) {
+            if (!Main.map.mapView.getLayerManager().containsLayer(OpenStreetCamLayer.getInstance())) {
                 addLayer();
-                if (!isPreferenceListenerRegistered) {
-                    Main.pref.addPreferenceChangeListener(OpenStreetCamPlugin.this);
-                    isPreferenceListenerRegistered = true;
-                }
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
+            }
+        }
+    }
+
+
+    /**
+     * Handles preference change events.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
+
+    private final class PreferenceChangedHandler implements PreferenceChangedListener {
+
+        @Override
+        public void preferenceChanged(final PreferenceChangeEvent event) {
+            if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
+                final PreferenceManager prefManager = PreferenceManager.getInstance();
+                final String newValue = event.getNewValue().getValue().toString();
+                if (prefManager.hasManualSwitchDataTypeChanged(event.getKey(), newValue)) {
+                    handleManualDataSwitch(newValue);
+                } else if (prefManager.dataDownloadPreferencesChanged(event.getKey(), newValue)) {
+                    handleDataDownload();
+                } else if (prefManager.isHighQualityPhotoFlag(event.getKey())) {
+                    handleHighQualityPhotoSelection();
+                } else if (prefManager.isDisplayTackFlag(event.getKey())) {
+                    handleDisplayTrack(newValue);
+                } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
+                    PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
+                }
+            }
+        }
+
+        private void handleManualDataSwitch(final String newValue) {
+            final boolean manualSwitchFlag = Boolean.parseBoolean(newValue);
+            SwingUtilities.invokeLater(() -> {
+                OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
+                OpenStreetCamLayer.getInstance().setDataSet(null, false);
+                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null);
+                }
+                Main.map.repaint();
+            });
+            ThreadPool.getInstance().execute(new DataUpdateThread(true));
+        }
+
+
+        private void handleDataDownload() {
+            // clean up previous data
+            SwingUtilities.invokeLater(() -> {
+                OpenStreetCamLayer.getInstance().setDataSet(null, false);
+                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null);
+                }
+                Main.map.repaint();
+            });
+            ThreadPool.getInstance().execute(new DataUpdateThread(true));
+        }
+
+        private void handleHighQualityPhotoSelection() {
+            final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
+            if (selectedPhoto != null) {
+                selectionManager.selectPhoto(selectedPhoto);
+            }
+        }
+
+        private void handleDisplayTrack(final String newValue) {
+            final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+            if (newValue.equals(Boolean.TRUE.toString()) && layer.getSelectedPhoto() != null
+                    && layer.getSelectedSequence() == null) {
+                selectionManager.loadSequence(layer.getSelectedPhoto());
+            } else if (layer.getSelectedSequence() != null) {
+                layer.setSelectedSequence(null);
+                final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
+                detailsDialog.updateDataSwitchButton(null, false, null);
+                detailsDialog.enableSequenceActions(false, false);
+                Main.map.repaint();
             }
         }
     }

@@ -54,8 +54,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
-    DataTypeChangeObservable {
+class ButtonPanel extends JPanel
+        implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -195,9 +195,9 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
     void updateDataSwitchButton(final DataType dataType) {
-        final Icon icon;
-        final String tlt;
-        final String actionCommand;
+        Icon icon;
+        String tlt;
+        String actionCommand;
 
         if (dataType.equals(DataType.PHOTO)) {
             icon = IconConfig.getInstance().getManualSwitchSegmentIcon();
@@ -372,5 +372,4 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             }
         }
     }
-
 }
