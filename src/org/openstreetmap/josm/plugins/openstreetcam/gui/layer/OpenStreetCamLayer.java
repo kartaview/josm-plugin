@@ -54,16 +54,23 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         super();
     }
 
+    /**
+     * Returns the unique instance of the layer.
+     *
+     * @return a {@code OpenStreetCamLayer} object
+     */
     public static OpenStreetCamLayer getInstance() {
         if (instance == null) {
             instance = new OpenStreetCamLayer();
-
         }
         return instance;
     }
 
+    /**
+     * Destroys the instance of the layer.
+     */
     public static void destroyInstance() {
-        OpenStreetCamLayer.instance = null;
+        instance = null;
     }
 
     @Override

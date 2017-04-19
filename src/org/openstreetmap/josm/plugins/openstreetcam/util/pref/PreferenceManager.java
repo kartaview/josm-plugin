@@ -225,7 +225,6 @@ public final class PreferenceManager {
 
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
         return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || hasManualSwitchDataTypeChanged(key, newValue)
                 || (LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue));
     }
 

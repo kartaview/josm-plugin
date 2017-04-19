@@ -55,7 +55,7 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel
-implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
+        implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -126,22 +126,22 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
 
     private void registerShortcuts() {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
 
     }
@@ -180,14 +180,14 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                                    : iconConfig.getManualSwitchImageIcon();
-                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-                                    btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
-                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-                                    add(btnDataSwitch, 0);
+            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                            : iconConfig.getManualSwitchImageIcon();
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+            btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+            add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);
