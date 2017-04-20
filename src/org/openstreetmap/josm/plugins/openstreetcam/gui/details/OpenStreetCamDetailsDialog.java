@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
@@ -32,6 +34,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -67,6 +70,10 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private boolean destroyed = false;
 
+    private Dimension size;
+    private Pair<Photo, PhotoType> selectedElement;
+
+
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
@@ -77,6 +84,21 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
+        size = DIM;
+    }
+
+    @Override
+    protected void paintComponent(final Graphics graphics) {
+        if (shouldReLoadImage()) {
+            loadPhoto(selectedElement.a, PhotoType.LARGE_THUMBNAIL);
+            size = getSize();
+        }
+        super.paintComponent(graphics);
+    }
+
+    private boolean shouldReLoadImage() {
+        return selectedElement != null && selectedElement.b.equals(PhotoType.THUMBNAIL) && (!size.equals(getSize())
+                && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()));
     }
 
     /**
@@ -114,7 +136,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void updateUI(final Photo photo) {
         if (photo != null) {
-
             // display loading text
             ThreadPool.getInstance().execute(() -> {
                 pnlPhoto.displayLoadingMessage();
@@ -124,7 +145,8 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             });
 
             // load image
-            ThreadPool.getInstance().execute(() -> loadPhoto(photo));
+            final PhotoType photoType = PhotoType.getPhotoType(PreferenceManager.getInstance().loadPhotoSettings());
+            ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
             lblDetails.setText("");
             lblDetails.setToolTipText(null);
@@ -135,14 +157,16 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
     }
 
-    private void loadPhoto(final Photo photo) {
+    private void loadPhoto(final Photo photo, final PhotoType photoType) {
         pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         try {
-            final Pair<BufferedImage, Boolean> imageResult = ImageHandler.getInstance().loadPhoto(photo);
-            if (imageResult != null) {
+            final Pair<BufferedImage, PhotoType> imageResult = ImageHandler.getInstance().loadPhoto(photo, photoType);
+            selectedElement = new Pair<>(photo, imageResult.b);
+            if (imageResult.a != null) {
                 lblDetails.setText(detailsTxt);
-                if (imageResult.b) {
+                if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        && !imageResult.b.equals(PhotoType.HIGH_QUALITY)) {
                     lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
                     lblDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {

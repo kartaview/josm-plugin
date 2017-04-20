@@ -372,5 +372,4 @@ class ButtonPanel extends JPanel
             }
         }
     }
-
 }

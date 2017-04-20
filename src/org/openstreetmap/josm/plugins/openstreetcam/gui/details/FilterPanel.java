@@ -38,6 +38,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.util.DateUtil;
 
 
 /**
@@ -105,16 +106,9 @@ class FilterPanel extends JPanel {
      */
     ListFilter selectedFilters() {
         final String editorText = pickerDate.getEditor().getText();
-        final DateFormatter formatter = new DateFormatter();
+        final Date uncommitteddDate = DateUtil.parseDay(editorText);
 
-        Date uncommitteddDate;
-        final Object uncommitteddDateObject = formatter.stringToValue(editorText);
-        if (uncommitteddDateObject == null) {
-            uncommitteddDate = null;
-        } else {
-            uncommitteddDate = (Date) formatter.stringToValue(editorText);
-        }
-
+        // TODO: eliminate multiple returns
         if (uncommitteddDate == null) {
             // the 'uncommitted' date is invalid
             if (!editorText.trim().isEmpty()) {

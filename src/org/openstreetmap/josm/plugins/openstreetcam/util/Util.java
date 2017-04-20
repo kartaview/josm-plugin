@@ -72,17 +72,9 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        final int zoomLevel;
-        if (Main.map.mapView.getScale() >= ZOOM1_SCALE) {
-            // JOSM does not return the correct bounds for the case when the zoom level is 1
-            zoomLevel = 1;
-        } else {
-            zoomLevel = (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-                    Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
-        }
-        return zoomLevel;
+        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
+                Math.max(MIN_ZOOM, Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
     }
-
 
     /**
      * Returns the photo near to the given location. The method returns null if there is no photo nearby.
@@ -124,14 +116,8 @@ public final class Util {
                 }
             }
         }
-
-        final Collection<Photo> result;
-        if (size < candidateMap.size()) {
-            result = new ArrayList<>(candidateMap.values()).subList(0, size);
-        } else {
-            result = candidateMap.values();
-        }
-        return result;
+        return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size)
+                : candidateMap.values();
     }
 
     /**

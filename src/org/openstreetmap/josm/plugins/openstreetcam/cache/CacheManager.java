@@ -84,18 +84,6 @@ public final class CacheManager {
     }
 
     /**
-     * Checks if the there is any image associated with the given key in the cache.
-     *
-     * @param sequenceId the identifier of the sequence to which the photo belongs
-     * @param imageName the name of the image
-     * @return true if the cache contains the photo, false otherwise
-     */
-    public boolean containsPhoto(final Long sequenceId, final String imageName) {
-        final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
-        return keySet.contains(new Key(sequenceId, imageName));
-    }
-
-    /**
      * Removes all the images associated with the given sequence identifier.
      *
      * @param sequenceId the identifier of the sequence to which the photo belongs
