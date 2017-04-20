@@ -224,6 +224,9 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
     public void selectClosestPhoto() {
         final Photo photo = OpenStreetCamLayer.getInstance().getClosestSelectedPhoto();
         if (photo != null) {
+            if (shouldLoadSequence(photo)) {
+                loadSequence(photo);
+            }
             selectPhoto(photo);
         }
     }

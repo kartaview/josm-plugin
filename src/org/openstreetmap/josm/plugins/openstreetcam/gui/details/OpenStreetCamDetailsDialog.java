@@ -71,7 +71,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private boolean destroyed = false;
 
     private Dimension size;
-    private Pair<Photo, Boolean> selectedElement;
+    private Pair<Photo, PhotoType> selectedElement;
 
 
     private OpenStreetCamDetailsDialog() {
@@ -89,16 +89,16 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     @Override
     protected void paintComponent(final Graphics graphics) {
-        if (!size.equals(getSize())) {
-            if (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()) {
-                if (selectedElement != null && selectedElement.b) {
-                    System.out.println(" need to load bigger image");
-                    loadPhoto(selectedElement.a, PhotoType.LARGE_THUMBNAIL);
-                }
-            }
+        if (shouldReLoadImage()) {
+            loadPhoto(selectedElement.a, PhotoType.LARGE_THUMBNAIL);
             size = getSize();
         }
         super.paintComponent(graphics);
+    }
+
+    private boolean shouldReLoadImage() {
+        return selectedElement != null && selectedElement.b.equals(PhotoType.THUMBNAIL) && (!size.equals(getSize())
+                && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()));
     }
 
     /**
@@ -161,19 +161,19 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         try {
-            final Pair<Pair<BufferedImage, Boolean>, Boolean> imageResult =
-                    ImageHandler.getInstance().loadPhoto(photo, photoType);
-            selectedElement = new Pair<>(photo, imageResult.a.b);
+            final Pair<BufferedImage, PhotoType> imageResult = ImageHandler.getInstance().loadPhoto(photo, photoType);
+            selectedElement = new Pair<>(photo, imageResult.b);
             if (imageResult.a != null) {
                 lblDetails.setText(detailsTxt);
-                if (imageResult.b) {
+                if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        && !imageResult.b.equals(PhotoType.HIGH_QUALITY)) {
                     lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
                     lblDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {
                     lblDetails.setToolTipText(null);
                     lblDetails.setIcon(null);
                 }
-                pnlPhoto.updateUI(imageResult.a.a);
+                pnlPhoto.updateUI(imageResult.a);
             }
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();

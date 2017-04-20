@@ -52,17 +52,15 @@ public final class ImageHandler {
      * retrieved and instead the large thumbnail is retrieved.
      * @throws ImageHandlerException if the photo could not be loaded or if the photo content could not be read
      */
-    public Pair<Pair<BufferedImage, Boolean>, Boolean> loadPhoto(final Photo photo, final PhotoType type)
+    public Pair<BufferedImage, PhotoType> loadPhoto(final Photo photo, final PhotoType type)
             throws ImageHandlerException {
-        System.out.println("loading " + type + " image");
-        Pair<Pair<BufferedImage, Boolean>, Boolean> result;
+        Pair<BufferedImage, PhotoType> result;
         ImageIO.setUseCache(false);
         try {
             if (type.equals(PhotoType.THUMBNAIL)) {
                 final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
-                final Pair<BufferedImage, Boolean> content =
-                        new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), true);
-                result = new Pair<>(content, false);
+                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                        PhotoType.THUMBNAIL);
             } else if (type.equals(PhotoType.HIGH_QUALITY)) {
                 // load high quality image
                 final CacheEntry image = cacheManager.getPhoto(photo.getSequenceId(), photo.getName());
@@ -70,22 +68,20 @@ public final class ImageHandler {
                     try {
                         final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getName());
                         cacheManager.putPhoto(photo.getSequenceId(), photo.getName(), byteImage, false);
-                        final Pair<BufferedImage, Boolean> content = new Pair<>(
-                                ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
-                        result = new Pair<>(content, false);
+                        result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                                PhotoType.HIGH_QUALITY);
                     } catch (final ServiceException e) {
                         // load large thumbnail
                         final byte[] byteImage =
                                 ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
                         cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, true);
-                        final Pair<BufferedImage, Boolean> content = new Pair<>(
-                                ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
-                        result = new Pair<>(content, true);
+                        result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                                PhotoType.LARGE_THUMBNAIL);
                     }
                 } else {
-                    final Pair<BufferedImage, Boolean> content = new Pair<>(
-                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))), false);
-                    result = new Pair<>(content, image.isWarning());
+                    result = new Pair<>(
+                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
+                            PhotoType.HIGH_QUALITY);
                 }
             } else {
                 // load large thumbnail
@@ -93,13 +89,12 @@ public final class ImageHandler {
                 if (image == null) {
                     final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getLargeThumbnailName());
                     cacheManager.putPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), byteImage, false);
-                    final Pair<BufferedImage, Boolean> content = new Pair<>(
-                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), false);
-                    result = new Pair<>(content, false);
+                    result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                            PhotoType.LARGE_THUMBNAIL);
                 } else {
-                    final Pair<BufferedImage, Boolean> content = new Pair<>(
-                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))), false);
-                    result = new Pair<>(content, image.isWarning());
+                    result = new Pair<>(
+                            ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
+                            PhotoType.LARGE_THUMBNAIL);
                 }
             }
         } catch (final ServiceException e) {
