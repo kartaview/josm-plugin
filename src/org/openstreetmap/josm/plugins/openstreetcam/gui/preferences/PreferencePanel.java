@@ -116,7 +116,7 @@ class PreferencePanel extends JPanel {
         spMouseHoverDelay = GuiBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
                 Config.getInstance().getMouseHoverMaxDelay(),
                 true, getFont().deriveFont(Font.PLAIN), ComponentOrientation.LEFT_TO_RIGHT);
-        ((SpinnerNumberModel) spPhotoZoom.getModel()).setMinimum(Config.getInstance().getMouseHoverMinDelay());
+        ((SpinnerNumberModel) spMouseHoverDelay.getModel()).setMinimum(Config.getInstance().getMouseHoverMinDelay());
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
