@@ -37,13 +37,19 @@ final class Keys {
     static final String JOSM_OAUTH_SECRET = "oauth.access-token.secret";
     static final String JOSM_BASIC_VAL = "basic";
 
-    /* cache related user preference settings */
+    /* photo related user preference settings */
     static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
+    static final String MOUSE_HOVER_FLAG = "openstreetcam.preferences.mouseHover";
+    static final String MOUSE_HOVER_DELAY = "openstreetcam.preferences.mouseHover.delay";
+
+    /* cache related user preference settings */
     static final String CACHE_MEMORY_COUNT = "openstreetcam.preferences.cache.memory";
     static final String CACHE_DISK_COUNT = "openstreetcam.preferences.cache.disk";
     static final String CACHE_PREV_NEXT_COUNT = "openstreetcam.preferences.cache.prevNext";
     static final String CACHE_NEARBY_COUNT = "openstreetcam.preferences.cache.nearby";
+
+    /* map view related user preference settings */
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
     static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
     static final String DATA_TYPE = "openstreetcam.dataType";

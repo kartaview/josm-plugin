@@ -91,6 +91,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         createComponents();
         registerShortcuts();
         setPreferredSize(DIM);
+
     }
 
     private void createComponents() {
@@ -125,22 +126,22 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
     private void registerShortcuts() {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
 
     }
@@ -187,6 +188,7 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
             btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
             btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             add(btnDataSwitch, 0);
+
         } else {
             remove(btnDataSwitch);
         }
@@ -204,8 +206,8 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         }
         revalidate();
         repaint();
-    }
 
+    }
 
     /**
      * Enables or disables the "OpenStreetCam Sequence" related action buttons.
@@ -283,12 +285,17 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
                 btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             }
+
         }
     }
 
 
-    /* selects the previous/next photo from the displayed sequence */
-
+    /**
+     * Selects the previous/next photo from the displayed sequence
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class SelectPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
@@ -307,7 +314,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 notifyObserver(index);
             }
         }
-
     }
 
 
@@ -326,8 +332,12 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
 
-    /* opens the selected photo's web page */
-
+    /**
+     * Opens the selected photo's web page
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class OpenWebPageAction extends AbstractAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
@@ -348,8 +358,12 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
 
-    /* selects the closest photo of the selected photo */
-
+    /**
+     * Selects the closest photo of the selected photo.
+     *
+     * @author ioanao
+     * @version $Revision$
+     */
     private final class ClosestPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;

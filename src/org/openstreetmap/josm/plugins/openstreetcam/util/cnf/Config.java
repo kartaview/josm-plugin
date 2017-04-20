@@ -33,6 +33,8 @@ public final class Config extends BaseConfig {
     private static final int SEGMENT_ZOOM = 10;
     private static final int PHOTO_ZOOM = 15;
     private static final int MAX_ZOOM = 18;
+    private static final int MIN_DELAY = 500;
+    private static final int MAX_DELAY = 30000;
 
     private static final String CONFIG_FILE = "openstreetcam.properties";
     private static final Config INSTANCE = new Config();
@@ -47,6 +49,7 @@ public final class Config extends BaseConfig {
     private final int nearbyPhotosMinRadius;
     private final int nearbyPhotosMaxItems;
 
+
     private final int closestPhotosMaxItems;
 
     private final int tracksMaxItems;
@@ -56,6 +59,8 @@ public final class Config extends BaseConfig {
     private final int mapPhotoZoom;
     private final int mapSegmentZoom;
 
+    private final int mouseHoverMinDelay;
+    private final int mouseHoverMaxDelay;
 
     private Config() {
         super(CONFIG_FILE);
@@ -78,6 +83,9 @@ public final class Config extends BaseConfig {
         preferencesMaxZoom = readIntegerProperty("preferences.maxZoom", MAX_ZOOM);
         mapPhotoZoom = readIntegerProperty("map.photoZoom", PHOTO_ZOOM);
         mapSegmentZoom = readIntegerProperty("map.segmentZoom", SEGMENT_ZOOM);
+
+        mouseHoverMinDelay = readIntegerProperty("mouseHover.minDelay", MIN_DELAY);
+        mouseHoverMaxDelay = readIntegerProperty("mouseHover.maxDelay", MAX_DELAY);
     }
 
 
@@ -135,5 +143,13 @@ public final class Config extends BaseConfig {
 
     public int getClosestPhotosMaxItems() {
         return closestPhotosMaxItems;
+    }
+
+    public int getMouseHoverMinDelay() {
+        return mouseHoverMinDelay;
+    }
+
+    public int getMouseHoverMaxDelay() {
+        return mouseHoverMaxDelay;
     }
 }

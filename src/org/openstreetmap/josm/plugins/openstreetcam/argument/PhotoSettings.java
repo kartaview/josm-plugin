@@ -18,11 +18,16 @@ public class PhotoSettings {
 
     private final boolean highQualityFlag;
     private final boolean displayTrackFlag;
+    private final boolean mouseHoverFlag;
+    private final int mouseHoverDelay;
 
 
-    public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag) {
+    public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag, final boolean mouseHoverFlag,
+            final int mouseHoverDelay) {
         this.highQualityFlag = highQualityFlag;
         this.displayTrackFlag = displayTrackFlag;
+        this.mouseHoverFlag = mouseHoverFlag;
+        this.mouseHoverDelay = mouseHoverDelay;
     }
 
 
@@ -32,5 +37,13 @@ public class PhotoSettings {
 
     public boolean isDisplayTrackFlag() {
         return displayTrackFlag;
+    }
+
+    public boolean isMouseHoverFlag() {
+        return mouseHoverFlag;
+    }
+
+    public int getMouseHoverDelay() {
+        return mouseHoverDelay;
     }
 }

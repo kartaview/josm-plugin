@@ -63,7 +63,6 @@ class FilterPanel extends JPanel {
         addUserFilter(filter.isOnlyUserFlag());
     }
 
-
     private void addDateFitler(final Date date) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD, null, getBackground()),
                 Constraints.LBL_DATE);
@@ -76,20 +75,19 @@ class FilterPanel extends JPanel {
     }
 
     private void addUserFilter(final boolean isSelected) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD, null,
-                getBackground()), Constraints.LBL_USER);
-        cbbUser = GuiBuilder.buildCheckBox(null, Font.PLAIN, getBackground(), isSelected);
-        cbbUser.setSelected(isSelected);
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD, null, getBackground()),
+                Constraints.LBL_USER);
+
         final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(),
                 Font.ITALIC, null, getBackground());
+        final boolean enabled = true;
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
-            cbbUser.setEnabled(false);
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
         }
+        cbbUser = GuiBuilder.buildCheckBox(null, null, Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.CBB_USER);
     }
-
 
     /**
      * Returns the currently selected filters, considering also the uncommitted date case.
@@ -103,7 +101,6 @@ class FilterPanel extends JPanel {
             filter = new ListFilter(null, cbbUser.isSelected());
         } else {
             final Date date = DateFormatter.parseDay(dateValue.trim());
-
             if (date == null) {
                 // date value was invalid
                 JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
@@ -119,7 +116,6 @@ class FilterPanel extends JPanel {
         return filter;
     }
 
-
     /**
      * Clears the filters.
      */
@@ -128,7 +124,6 @@ class FilterPanel extends JPanel {
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
     }
-
 
     private final class DateVerifier extends AbstractDateVerifier {
 

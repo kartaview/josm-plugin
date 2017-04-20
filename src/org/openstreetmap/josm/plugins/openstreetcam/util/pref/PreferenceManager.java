@@ -24,6 +24,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_O
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -34,9 +35,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 
 
 /**
- * Utility class, manages save and load operations of the preference variables. The preference variables are saved into
- * a global preference file. Preference variables are static variables which can be accessed from any plugin class.
- * Values saved in this global file, can be accessed also after a JOSM restart.
+ * Utility class, manages save and load (put & get) operations of the preference variables. The preference variables are
+ * saved into a global preference file. Preference variables are static variables which can be accessed from any plugin
+ * class. Values saved in this global file, can be accessed also after a JOSM restart.
  *
  * @author Beata
  * @version $Revision$
@@ -225,11 +226,7 @@ public final class PreferenceManager {
 
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
         return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || hasManualSwitchDataTypeChanged(key, newValue) || hasLayerOpened(key, newValue);
-    }
-
-    private boolean hasLayerOpened(final String key, final String newValue) {
-        return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
+                || (LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue));
     }
 
     public boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
@@ -246,5 +243,9 @@ public final class PreferenceManager {
 
     public boolean isPanelIconVisibilityKey(final String key) {
         return PANEL_ICON_VISIBILITY.equals(key);
+    }
+
+    public boolean isMouseHoverDelayKey(final String key) {
+        return MOUSE_HOVER_DELAY.equals(key);
     }
 }

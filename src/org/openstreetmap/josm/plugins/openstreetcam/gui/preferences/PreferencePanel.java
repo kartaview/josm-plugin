@@ -11,6 +11,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -42,6 +43,8 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbManualSwitch;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox cbDisplayTrack;
+    private JCheckBox cbMouseHover;
+    private JSpinner spMouseHoverDelay;
     private JSpinner spMemoryCount;
     private JSpinner spDiskCount;
     private JSpinner spPrevNextCount;
@@ -78,18 +81,34 @@ class PreferencePanel extends JPanel {
         cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener,
                 Font.PLAIN, getBackground(), mapViewSettings.isManualSwitchFlag());
         add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
+
     }
 
     private void createPhotoSettingsComponents(final PhotoSettings settings) {
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
-        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(), Font.PLAIN,
-                getBackground(), settings.isHighQualityFlag());
+        final boolean enabled = !settings.isMouseHoverFlag();
+        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isHighQualityFlag(), enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(), Font.PLAIN,
-                getBackground(), settings.isDisplayTrackFlag());
+        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayTrackFlag(), enabled);
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
+
+        final boolean selectedMouseHoverFlag =
+                settings.isDisplayTrackFlag() || settings.isHighQualityFlag() ? false : settings.isMouseHoverFlag();
+        cbMouseHover = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
+                Font.PLAIN, selectedMouseHoverFlag, selectedMouseHoverFlag);
+        add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
+
+        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_MOUSE_HOVER_DELAY);
+        spMouseHoverDelay = GuiBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
+                Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, false, selectedMouseHoverFlag);
+        add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
@@ -131,10 +150,31 @@ class PreferencePanel extends JPanel {
     PreferenceSettings getSelectedSettings() {
         final MapViewSettings mapViewSettings =
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
-        final PhotoSettings photoSettings =
-                new PhotoSettings(cbHighQualityPhoto.isSelected(), cbDisplayTrack.isSelected());
+        final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
+                cbDisplayTrack.isSelected(), cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
         return new PreferenceSettings(mapViewSettings, photoSettings, cacheSettings);
+    }
+
+
+    private final class SelectionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            final JCheckBox cb = (JCheckBox) event.getSource();
+            final String text = cb.getText();
+            if (text.equals(GuiConfig.getInstance().getPrefDisplayTrackLbl())
+                    || text.equals(GuiConfig.getInstance().getPrefImageHighQualityLbl())) {
+                final boolean enabled =
+                        !cb.isSelected() && (!cbDisplayTrack.isSelected() && !cbHighQualityPhoto.isSelected());
+                cbMouseHover.setEnabled(enabled);
+                spMouseHoverDelay.setEnabled(enabled);
+            } else if (text.equals(GuiConfig.getInstance().getPrefMouseHoverLbl())) {
+                final boolean enabled = !cb.isSelected();
+                cbDisplayTrack.setEnabled(enabled);
+                cbHighQualityPhoto.setEnabled(enabled);
+            }
+        }
     }
 }

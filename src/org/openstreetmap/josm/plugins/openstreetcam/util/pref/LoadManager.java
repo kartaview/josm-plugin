@@ -8,6 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -60,7 +61,7 @@ final class LoadManager {
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag =
                 onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag() : Boolean.parseBoolean(onlyUserFlagStr);
-                return new ListFilter(date, onlyUserFlag);
+        return new ListFilter(date, onlyUserFlag);
     }
 
     MapViewSettings loadMapViewSettings() {
@@ -76,7 +77,11 @@ final class LoadManager {
         final boolean highQualityFlag = Main.pref.getBoolean(HIGH_QUALITY_PHOTO_FLAG);
         final String displayTrackFlagVal = Main.pref.get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
-        return new PhotoSettings(highQualityFlag, displayTrackFlag);
+        final boolean mouseHoverFlag = Main.pref.getBoolean(MOUSE_HOVER_FLAG);
+        final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
+        final int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
+                ? Integer.valueOf(mouseHoverDelayValue) : Config.getInstance().getMouseHoverMinDelay();
+        return new PhotoSettings(highQualityFlag, displayTrackFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     CacheSettings loadCacheSettings() {
@@ -89,10 +94,10 @@ final class LoadManager {
         final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
         final int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
                 ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-                final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-                final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                        : CacheConfig.getInstance().getDefaultNearbyCount();
-                return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
+        final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+                : CacheConfig.getInstance().getDefaultNearbyCount();
+        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     boolean loadLayerOpenedFlag() {

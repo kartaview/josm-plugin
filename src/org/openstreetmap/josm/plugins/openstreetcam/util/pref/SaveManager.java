@@ -21,6 +21,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
@@ -70,6 +72,8 @@ final class SaveManager {
     void savePhotoSettings(final PhotoSettings photoSettings) {
         Main.pref.put(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
         Main.pref.put(DISPLAY_TRACK_FLAG, photoSettings.isDisplayTrackFlag());
+        Main.pref.put(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
+        Main.pref.putInteger(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
     void saveCacheSettings(final CacheSettings cacheSettings) {

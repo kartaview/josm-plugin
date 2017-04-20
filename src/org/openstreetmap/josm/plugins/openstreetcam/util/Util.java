@@ -43,7 +43,6 @@ public final class Util {
 
     private static final double POZ_DIST_DATA_LAYER = 5.0;
     private static final double POZ_DIST = 10.0;
-    private static final double LOG = Math.log(2);
 
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 22;
@@ -64,17 +63,9 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        final int zoomLevel;
-        if (Main.map.mapView.getScale() >= ZOOM1_SCALE) {
-            // JOSM does not return the correct bounds for the case when the zoom level is 1
-            zoomLevel = 1;
-        } else {
-            zoomLevel = (int) Math.min(MAX_ZOOM,
-                    Math.max(MIN_ZOOM, Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / LOG))));
-        }
-        return zoomLevel;
+        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
+                Math.max(MIN_ZOOM, Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
     }
-
 
     /**
      * Returns the photo near to the given location. The method returns null if there is no photo nearby.
@@ -116,16 +107,9 @@ public final class Util {
                 }
             }
         }
-
-        final Collection<Photo> result;
-        if (size < candidateMap.size()) {
-            result = new ArrayList<>(candidateMap.values()).subList(0, size);
-        } else {
-            result = candidateMap.values();
-        }
-        return result;
+        return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size)
+                : candidateMap.values();
     }
-
 
     /**
      * Verifies if the given mapView contains or not the given coordinate. If the {@code OsmDataLayer} is active and has
@@ -161,12 +145,17 @@ public final class Util {
      */
     public static List<Circle> currentCircles() {
         final List<Circle> result = new ArrayList<>();
-        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
-        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-            for (final Bounds bounds : osmDataLayerBounds) {
-                if (Main.map.mapView.getRealBounds().intersects(bounds)) {
-                    result.add(new Circle(bounds));
+        if (Main.getLayerManager().getEditLayer() != null
+                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds bounds : osmDataLayerBounds) {
+                    if (Main.map.mapView.getRealBounds().intersects(bounds)) {
+                        result.add(new Circle(bounds));
+                    }
                 }
+            } else {
+                result.add(new Circle(Main.map.mapView.getRealBounds()));
             }
         } else {
             result.add(new Circle(Main.map.mapView.getRealBounds()));

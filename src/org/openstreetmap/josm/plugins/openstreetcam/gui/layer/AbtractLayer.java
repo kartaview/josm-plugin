@@ -108,7 +108,7 @@ abstract class AbtractLayer extends Layer {
         private static final long serialVersionUID = 1569467764140753112L;
         private final DeleteLayerAction deleteAction = LayerListDialog.getInstance().createDeleteLayerAction();
 
-        public OpenStreetCamDeleteLayerAction() {
+        private OpenStreetCamDeleteLayerAction() {
             super(GuiConfig.getInstance().getLayerDeleteMenuItemLbl());
             new ImageProvider(IconConfig.getInstance().getDeleteIconName()).getResource().attachImageIcon(this, true);
             putValue(SHORT_DESCRIPTION, tr(GuiConfig.getInstance().getLayerDeleteMenuItemTlt()));
