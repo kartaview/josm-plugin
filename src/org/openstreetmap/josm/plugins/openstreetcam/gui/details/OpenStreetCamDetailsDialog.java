@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
@@ -32,6 +34,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.GuiBuilder;
@@ -67,6 +70,10 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private boolean destroyed = false;
 
+    private Dimension size;
+    private Pair<Photo, Boolean> selectedElement;
+
+
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
@@ -77,6 +84,21 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
+        size = DIM;
+    }
+
+    @Override
+    protected void paintComponent(final Graphics graphics) {
+        if (!size.equals(getSize())) {
+            if (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()) {
+                if (selectedElement != null && selectedElement.b) {
+                    System.out.println(" need to load bigger image");
+                    loadPhoto(selectedElement.a, PhotoType.LARGE_THUMBNAIL);
+                }
+            }
+            size = getSize();
+        }
+        super.paintComponent(graphics);
     }
 
     /**
@@ -114,7 +136,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      */
     public void updateUI(final Photo photo) {
         if (photo != null) {
-
             // display loading text
             ThreadPool.getInstance().execute(() -> {
                 pnlPhoto.displayLoadingMessage();
@@ -124,7 +145,8 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             });
 
             // load image
-            ThreadPool.getInstance().execute(() -> loadPhoto(photo));
+            final PhotoType photoType = PhotoType.getPhotoType(PreferenceManager.getInstance().loadPhotoSettings());
+            ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
             lblDetails.setText("");
             lblDetails.setToolTipText(null);
@@ -135,12 +157,14 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
     }
 
-    private void loadPhoto(final Photo photo) {
+    private void loadPhoto(final Photo photo, final PhotoType photoType) {
         pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         try {
-            final Pair<BufferedImage, Boolean> imageResult = ImageHandler.getInstance().loadPhoto(photo);
-            if (imageResult != null) {
+            final Pair<Pair<BufferedImage, Boolean>, Boolean> imageResult =
+                    ImageHandler.getInstance().loadPhoto(photo, photoType);
+            selectedElement = new Pair<>(photo, imageResult.a.b);
+            if (imageResult.a != null) {
                 lblDetails.setText(detailsTxt);
                 if (imageResult.b) {
                     lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
@@ -149,7 +173,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                     lblDetails.setToolTipText(null);
                     lblDetails.setIcon(null);
                 }
-                pnlPhoto.updateUI(imageResult.a);
+                pnlPhoto.updateUI(imageResult.a.a);
             }
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();
@@ -212,7 +236,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         if (isEnabled != null) {
             pnlBtn.enableDataSwitchButton(isEnabled);
         }
-        if (isVisible) {
+        if (isVisible != null) {
             pnlBtn.setDataSwitchButtonVisibiliy(isVisible);
         }
         pnlBtn.revalidate();

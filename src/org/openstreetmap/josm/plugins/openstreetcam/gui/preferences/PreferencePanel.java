@@ -88,15 +88,19 @@ class PreferencePanel extends JPanel {
     }
 
     private void createPhotoSettingsComponents(final PhotoSettings settings) {
+
         add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), getFont().deriveFont(Font.PLAIN),
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
+        final boolean enabled = !settings.isMouseHoverFlag();
         cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
                 new JCheckBox().getFont().deriveFont(Font.PLAIN), new SelectionListener(),
                 settings.isHighQualityFlag());
+        cbHighQualityPhoto.setEnabled(enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
         cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
                 getFont().deriveFont(Font.PLAIN), new SelectionListener(), settings.isDisplayTrackFlag());
+        cbDisplayTrack.setEnabled(enabled);
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
 
         final boolean selectedMouseHoverFlag =
