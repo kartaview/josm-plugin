@@ -46,24 +46,34 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
         if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
             final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
-                if (layer.getSelectedPhoto() != null) {
-                    selectPhoto(null);
-                    layer.selectStartPhotoForClosestAction(null);
-                    ThreadPool.getInstance().execute(new DataUpdateThread(true));
-                }
+                handleUnSelection();
             } else {
-                final Photo photo = layer.nearbyPhoto(event.getPoint());
-                if (photo != null) {
-                    if (shouldLoadSequence(photo)) {
-                        loadSequence(photo);
-                    }
-                    selectPhoto(photo);
-                    layer.selectStartPhotoForClosestAction(photo);
-                }
+                handlePhotoSelection(event);
             }
             if (layer.getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
             }
+        }
+    }
+
+    private void handleUnSelection() {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+        if (layer.getSelectedPhoto() != null) {
+            selectPhoto(null);
+            layer.selectStartPhotoForClosestAction(null);
+            ThreadPool.getInstance().execute(new DataUpdateThread(true));
+        }
+    }
+
+    private void handlePhotoSelection(final MouseEvent event) {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
+        final Photo photo = layer.nearbyPhoto(event.getPoint());
+        if (photo != null) {
+            if (shouldLoadSequence(photo)) {
+                loadSequence(photo);
+            }
+            selectPhoto(photo);
+            layer.selectStartPhotoForClosestAction(photo);
         }
     }
 
