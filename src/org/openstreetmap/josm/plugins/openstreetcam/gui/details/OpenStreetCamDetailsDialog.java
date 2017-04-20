@@ -212,7 +212,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         if (isEnabled != null) {
             pnlBtn.enableDataSwitchButton(isEnabled);
         }
-        if (isVisible) {
+        if (isVisible != null) {
             pnlBtn.setDataSwitchButtonVisibiliy(isVisible);
         }
         pnlBtn.revalidate();
