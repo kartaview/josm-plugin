@@ -128,7 +128,6 @@ public final class ImageHandler {
         for (final Photo photo : photos) {
             ThreadPool.getInstance().execute(() -> loadPhotoToCache(photo, highQualityFlag));
         }
-
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
