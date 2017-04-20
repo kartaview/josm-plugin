@@ -168,21 +168,26 @@ public class Service {
                     final Paging paging = new Paging(i, Config.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
-                            futures.add(executor.submit(callable));
+                    futures.add(executor.submit(callable));
                 }
-                for (final Future<ListResponse<Segment>> future : futures) {
-                    try {
-                        segments.addAll(future.get().getCurrentPageItems());
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new ServiceException(e);
-                    }
-                }
+                segments.addAll(readResult(futures));
                 executor.shutdown();
             }
         }
         return new ArrayList<>(segments);
     }
 
+    private Set<Segment> readResult(final List<Future<ListResponse<Segment>>> futures) throws ServiceException {
+        final Set<Segment> segments = new HashSet<>();
+        for (final Future<ListResponse<Segment>> future : futures) {
+            try {
+                segments.addAll(future.get().getCurrentPageItems());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ServiceException(e);
+            }
+        }
+        return segments;
+    }
 
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
