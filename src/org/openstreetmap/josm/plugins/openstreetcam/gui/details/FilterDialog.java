@@ -68,7 +68,12 @@ public class FilterDialog extends ModalDialog {
     }
 
 
-    /* applies the selected filters */
+    /**
+     * Applies the selected filters.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class OkAction extends AbstractAction {
 
         private static final long serialVersionUID = -1573801969230451122L;
@@ -90,7 +95,13 @@ public class FilterDialog extends ModalDialog {
         }
     }
 
-    /* clears the selected filters */
+
+    /**
+     * Clears the selected filters
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class ClearAction extends AbstractAction {
 
         private static final long serialVersionUID = -8589369992232950474L;

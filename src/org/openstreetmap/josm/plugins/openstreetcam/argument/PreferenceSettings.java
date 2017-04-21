@@ -22,6 +22,13 @@ public class PreferenceSettings {
     private final CacheSettings cacheSettings;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param mapViewSettings specifies the map view user configurable settings
+     * @param photoSettings specifies the photo loading user configurable settings
+     * @param cacheSettings specifies the cache user configurable settings
+     */
     public PreferenceSettings(final MapViewSettings mapViewSettings, final PhotoSettings photoSettings,
             final CacheSettings cacheSettings) {
         this.mapViewSettings = mapViewSettings;

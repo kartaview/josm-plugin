@@ -28,10 +28,17 @@ public class CacheEntry extends BufferedImageCacheEntry {
     private final boolean warning;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param image the image content in byte array format
+     * @param warning specifies if there was or not any warning durring the image loading
+     */
     public CacheEntry(final byte[] image, final boolean warning) {
         super(image);
         this.warning = warning;
     }
+
 
     public boolean isWarning() {
         return warning;

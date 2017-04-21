@@ -70,13 +70,10 @@ class PreferencePanel extends JPanel {
                 Config.getInstance().getMapPhotoZoom(), Config.getInstance().getPreferencesMaxZoom(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, false, enabled);
         add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
-        final ActionListener listener = (event) -> {
+        final ActionListener listener = event -> {
             final JCheckBox source = (JCheckBox) event.getSource();
-            if (source.isSelected()) {
-                spPhotoZoom.setEnabled(false);
-            } else {
-                spPhotoZoom.setEnabled(true);
-            }
+            final boolean spPhotoZoomEnabled = !source.isSelected();
+            spPhotoZoom.setEnabled(spPhotoZoomEnabled);
         };
         cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener,
                 Font.PLAIN, getBackground(), mapViewSettings.isManualSwitchFlag());

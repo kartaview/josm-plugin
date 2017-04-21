@@ -220,6 +220,36 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     }
 
     /**
+     * Sets a start photo from witch a possible closest image action should start.
+     *
+     * @param photo a {@code Photo}
+     */
+    public void selectStartPhotoForClosestAction(final Photo photo) {
+        startPhoto = photo;
+        closestPhotos = photo == null ? Collections.emptyList()
+                : Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+    }
+
+
+    /**
+     * Retrieve the closest image of the currently selected image.
+     *
+     * @return a {@code Photo}
+     */
+    public Photo closestSelectedPhoto() {
+        if (closestPhotos.isEmpty()) {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        }
+        Photo closestPhoto = null;
+        if (!closestPhotos.isEmpty()) {
+            closestPhoto = closestPhotos.iterator().next();
+            closestPhotos.remove(closestPhoto);
+        }
+        return closestPhoto;
+    }
+
+    /**
      * Returns the currently selected photo.
      *
      * @return a {@code Photo}
@@ -265,36 +295,11 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     }
 
     /**
-     * Sets a start photo from witch a possible closest image action should start.
+     * Returns the list of closest photos to the currently selected photo.
      *
-     * @param photo a {@code Photo}
+     * @return a {@code Photo} collection
      */
-    public void selectStartPhotoForClosestAction(final Photo photo) {
-        startPhoto = photo;
-        closestPhotos = photo == null ? Collections.emptyList()
-                : Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
-    }
-
     public Collection<Photo> getClosestPhotos() {
         return closestPhotos;
-    }
-
-    /**
-     * Retrieve the closest image of the currently selected image.
-     *
-     * @return a {@code Photo}
-     */
-    public Photo getClosestSelectedPhoto() {
-        if (closestPhotos.isEmpty()) {
-            closestPhotos =
-                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
-        }
-
-        Photo closestPhoto = null;
-        if (!closestPhotos.isEmpty()) {
-            closestPhoto = closestPhotos.iterator().next();
-            closestPhotos.remove(closestPhoto);
-        }
-        return closestPhoto;
     }
 }

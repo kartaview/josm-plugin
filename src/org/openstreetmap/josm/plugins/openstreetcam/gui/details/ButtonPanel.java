@@ -54,8 +54,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
-    DataTypeChangeObservable {
+class ButtonPanel extends JPanel
+implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -128,22 +128,23 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
         .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
         .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
         .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
         .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
-
     }
 
     /**
@@ -174,6 +175,11 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         btnDataSwitch.setEnabled(enabled);
     }
 
+    /**
+     * Sets the data switch button visibility.
+     *
+     * @param isVisible if true/false the button is added to the button panel/removed from the button panel
+     */
     void setDataSwitchButtonVisibiliy(final boolean isVisible) {
         if (isVisible) {
             final GuiConfig guiConfig = GuiConfig.getInstance();
@@ -194,6 +200,11 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         }
     }
 
+    /**
+     * Updates the data switch button icon, tool-tip and action command.
+     *
+     * @param dataType a {@code DataType} specifies the currently displayed data type
+     */
     void updateDataSwitchButton(final DataType dataType) {
         if (dataType.equals(DataType.PHOTO)) {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
@@ -206,7 +217,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         }
         revalidate();
         repaint();
-
     }
 
     /**
@@ -220,6 +230,11 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         btnNext.setEnabled(isNext);
     }
 
+    /**
+     * Enables or disables the closest photo button.
+     *
+     * @param enabled if true then the button is enabled; if false then the button is disabled
+     */
     void enableClosestPhotoButton(final boolean enabled) {
         btnClosestPhoto.setEnabled(enabled);
     }
@@ -254,18 +269,23 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         closestPhotoObserver.selectClosestPhoto();
     }
 
-
     @Override
     public void registerObserver(final DataTypeChangeObserver dataUpdateObserver) {
         this.dataUpdateObserver = dataUpdateObserver;
     }
-
 
     @Override
     public void notifyDataUpdateObserver(final DataType dataType) {
         dataUpdateObserver.update(dataType);
     }
 
+    
+    /**
+     * Defines the functionality of the manual data switch button.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class ManualDataSwitchAction extends AbstractAction {
 
         private static final long serialVersionUID = -6266140137863469921L;
@@ -285,7 +305,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
                 btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             }
-
         }
     }
 
@@ -317,8 +336,12 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     }
 
 
-    /* centers the map to the selected photo's location */
-
+    /**
+     * Centers the map to the selected photo's location.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class JumpToLocationAction extends AbstractAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
@@ -367,7 +390,6 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     private final class ClosestPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
-
 
         @Override
         public void actionPerformed(final ActionEvent event) {

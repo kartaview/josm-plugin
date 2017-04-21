@@ -53,10 +53,9 @@ abstract class AbtractLayer extends Layer {
 
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
-
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
         layerListDialog.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
         layerListDialog.getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
     }
 
@@ -102,7 +101,12 @@ abstract class AbtractLayer extends Layer {
         // no logic to add here
     }
 
-
+    /**
+     * Deletes the OpenStreetCam layer.
+     *
+     * @author ioanao
+     * @version $Revision$
+     */
     private final class OpenStreetCamDeleteLayerAction extends AbstractAction {
 
         private static final long serialVersionUID = 1569467764140753112L;
@@ -120,10 +124,15 @@ abstract class AbtractLayer extends Layer {
             PreferenceManager.getInstance().saveLayerOpenedFlag(false);
             deleteAction.actionPerformed(e);
         }
-
     }
 
 
+    /**
+     * Displays the filter dialog window.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class DisplayFilterDialogAction extends AbstractAction {
 
         private static final long serialVersionUID = 8325126526750975651L;
@@ -140,6 +149,13 @@ abstract class AbtractLayer extends Layer {
         }
     }
 
+
+    /**
+     * Opens the feedback page.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class OpenFeedbackPageAction extends AbstractAction {
 
         private static final long serialVersionUID = 4196639030623647016L;

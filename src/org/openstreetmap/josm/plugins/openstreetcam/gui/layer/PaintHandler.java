@@ -63,7 +63,6 @@ import com.telenav.josm.common.util.GeometryUtil;
  */
 class PaintHandler {
 
-
     /**
      * Draws a list of photos to the map. A photo is represented by an icon on the map.
      *
@@ -115,31 +114,31 @@ class PaintHandler {
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
         final Double length =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-        graphics.setColor(getSequenceColor(mapView));
+                graphics.setColor(getSequenceColor(mapView));
 
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
+                Photo prevPhoto = sequence.getPhotos().get(0);
+                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
 
-            // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getLocation())
-                    || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
-                final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
-                        mapView.getPoint(currentPhoto.getLocation()));
-                if (length == null) {
-                    PaintUtil.drawLine(graphics, lineGeometry);
-                } else {
-                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
-                    PaintUtil.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                    // at least one of the photos is in current view draw line
+                    if (Util.containsLatLon(mapView, prevPhoto.getLocation())
+                            || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
+                        final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
+                                mapView.getPoint(currentPhoto.getLocation()));
+                        if (length == null) {
+                            PaintUtil.drawLine(graphics, lineGeometry);
+                        } else {
+                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                                    getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
+                            PaintUtil.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                        }
+                    }
+
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
                 }
-            }
 
-            drawPhoto(graphics, mapView, prevPhoto, false);
-            prevPhoto = currentPhoto;
-        }
-
-        drawPhoto(graphics, mapView, prevPhoto, false);
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Color getSequenceColor(final MapView mapView) {
@@ -197,6 +196,7 @@ class PaintHandler {
         }
         return points;
     }
+
     private SortedMap<Integer, Float> generateSegmentTransparencyMap(final List<Segment> segments) {
         final SortedMap<Integer, Float> map = new TreeMap<>();
         if (!segments.isEmpty()) {
