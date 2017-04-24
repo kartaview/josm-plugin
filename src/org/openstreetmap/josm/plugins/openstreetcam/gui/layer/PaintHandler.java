@@ -51,7 +51,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import com.telenav.josm.common.entity.Coordinate;
 import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.PaintUtil;
+import com.telenav.josm.common.gui.PaintManager;
 import com.telenav.josm.common.util.GeometryUtil;
 
 
@@ -102,11 +102,11 @@ class PaintHandler {
             if (photo.getHeading() != null) {
                 final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
                         : IconConfig.getInstance().getPhotoIcon();
-                PaintUtil.drawIcon(graphics, icon, point, photo.getHeading());
+                PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
             } else {
                 final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
                         : IconConfig.getInstance().getPhotoNoHeadingIcon();
-                PaintUtil.drawIcon(graphics, icon, point);
+                PaintManager.drawIcon(graphics, icon, point);
             }
         }
     }
@@ -126,11 +126,11 @@ class PaintHandler {
                         final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
                                 mapView.getPoint(currentPhoto.getLocation()));
                         if (length == null) {
-                            PaintUtil.drawLine(graphics, lineGeometry);
+                    PaintManager.drawLine(graphics, lineGeometry);
                         } else {
                             final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
                                     getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
-                            PaintUtil.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                    PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
                         }
                     }
 
@@ -185,7 +185,7 @@ class PaintHandler {
         for (final Segment segment : segments) {
             final Float val = segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
             graphics.setComposite(originalComposite.derive(val));
-            PaintUtil.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
+            PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
         }
     }
 
