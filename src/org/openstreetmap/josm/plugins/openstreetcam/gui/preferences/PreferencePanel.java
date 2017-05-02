@@ -25,7 +25,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**
@@ -60,13 +62,13 @@ class PreferencePanel extends JPanel {
     }
 
     private void createMapViewSettings(final MapViewSettings mapViewSettings) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMapViewLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMapViewLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_MAP_VIEW);
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPhotoZoomLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefPhotoZoomLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PHOTO_ZOOM);
         final boolean enabled = !mapViewSettings.isManualSwitchFlag();
-        spPhotoZoom = GuiBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
+        spPhotoZoom = TextComponentBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
                 Config.getInstance().getMapPhotoZoom(), Config.getInstance().getPreferencesMaxZoom(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, false, enabled);
         add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
@@ -75,70 +77,69 @@ class PreferencePanel extends JPanel {
             final boolean spPhotoZoomEnabled = !source.isSelected();
             spPhotoZoom.setEnabled(spPhotoZoomEnabled);
         };
-        cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener,
-                Font.PLAIN, getBackground(), mapViewSettings.isManualSwitchFlag());
+        cbManualSwitch = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener, Font.PLAIN,
+                getBackground(), mapViewSettings.isManualSwitchFlag());
         add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
 
     }
 
     private void createPhotoSettingsComponents(final PhotoSettings settings) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefImageLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
         final boolean enabled = !settings.isMouseHoverFlag();
-        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
+        cbHighQualityPhoto = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
                 new SelectionListener(), Font.PLAIN, settings.isHighQualityFlag(), enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
+        cbDisplayTrack = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
                 new SelectionListener(), Font.PLAIN, settings.isDisplayTrackFlag(), enabled);
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
 
         final boolean selectedMouseHoverFlag =
                 settings.isDisplayTrackFlag() || settings.isHighQualityFlag() ? false : settings.isMouseHoverFlag();
-        cbMouseHover = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
+        cbMouseHover = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
                 Font.PLAIN, selectedMouseHoverFlag, selectedMouseHoverFlag);
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MOUSE_HOVER_DELAY);
-        spMouseHoverDelay = GuiBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
+        spMouseHoverDelay = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
                 Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, false, selectedMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefCacheLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefCacheLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_CACHE);
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMemoryLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMemoryLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MEMORY_COUNT);
-        spMemoryCount = GuiBuilder.buildPositiveNumberSpinner(settings.getMemoryCount(), null,
+        spMemoryCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMemoryCount(), null,
                 CacheConfig.getInstance().getMaxMemoryCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
                 true);
         add(spMemoryCount, Constraints.SP_MEMORY_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefDiskLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
-                Constraints.LBL_DISK_COUNT);
-        spDiskCount = GuiBuilder.buildPositiveNumberSpinner(settings.getDiskCount(), null,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefDiskLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
+                SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_DISK_COUNT);
+        spDiskCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getDiskCount(), null,
                 CacheConfig.getInstance().getMaxDiskCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
                 true);
         add(spDiskCount, Constraints.SP_DISK_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPrevNextLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefPrevNextLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PREV_NEXT_COUNT);
-        spPrevNextCount = GuiBuilder.buildPositiveNumberSpinner(settings.getPrevNextCount(), null,
+        spPrevNextCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getPrevNextCount(), null,
                 CacheConfig.getInstance().getMaxPrevNextCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
                 true);
         add(spPrevNextCount, Constraints.SP_PREV_NEXT_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefNearbyLbl(), Font.PLAIN,
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefNearbyLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_NEARBY_COUNT);
-        spNearbyCount = GuiBuilder.buildPositiveNumberSpinner(settings.getNearbyCount(), null,
+        spNearbyCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getNearbyCount(), null,
                 CacheConfig.getInstance().getMaxNearbyCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
                 true);
         add(spNearbyCount, Constraints.SP_NEARBY_COUNT);

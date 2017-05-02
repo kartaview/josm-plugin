@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 
 
 /**
@@ -67,8 +67,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseWheelListener(this);
         addMouseListener(new MousePressedAdapater());
         addMouseMotionListener(new MouseDraggedAdapter());
-        lblLoading = GuiBuilder.buildLabel(GuiConfig.getInstance().getWarningLoadingPhoto(), Font.BOLD,
-                GuiBuilder.FONT_SIZE_12, Color.white);
+        lblLoading = LabelBuilder.build(GuiConfig.getInstance().getWarningLoadingPhoto(), Font.BOLD, Color.white);
         lblLoading.setHorizontalAlignment(SwingConstants.CENTER);
         lblLoading.setVerticalAlignment(SwingConstants.CENTER);
     }
@@ -91,8 +90,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         setBackground(Color.white);
         image = null;
         currentView = null;
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getErrorPhotoLoadingTxt(), Font.BOLD, GuiBuilder.FONT_SIZE_12,
-                Color.white), BorderLayout.CENTER);
+        add(LabelBuilder.build(GuiConfig.getInstance().getErrorPhotoLoadingTxt(), Font.BOLD, Color.white),
+                BorderLayout.CENTER);
 
         repaint();
     }

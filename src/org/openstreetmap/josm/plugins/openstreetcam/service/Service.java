@@ -60,6 +60,7 @@ import com.telenav.josm.common.http.HttpConnectorException;
  */
 public class Service {
 
+    private final static int SECOND_PAGE = 2;
     private final Gson gson = createGsonBuilder().create();
 
     private GsonBuilder createGsonBuilder() {
@@ -160,14 +161,15 @@ public class Service {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
             if (listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()) {
                 final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()
-                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1 : 2;
+                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1
+                                : SECOND_PAGE;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
-                for (int i = 2; i <= pages; i++) {
+                for (int i = SECOND_PAGE; i <= pages; i++) {
                     final Paging paging = new Paging(i, Config.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 segments.addAll(readResult(futures));
                 executor.shutdown();

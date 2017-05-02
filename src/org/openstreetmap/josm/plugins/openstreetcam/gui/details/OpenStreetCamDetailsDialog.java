@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -37,7 +38,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -79,8 +81,8 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        lblDetails = GuiBuilder.buildLabel(null, null, GuiBuilder.FONT_SIZE_12, Color.white);
-        final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn, null);
+        lblDetails = LabelBuilder.build(null, Font.PLAIN, Color.white);
+        final JPanel pnlMain = ContainerBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn, null);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
@@ -109,17 +111,16 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     @Override
     protected void paintComponent(final Graphics graphics) {
-        if (shouldReLoadImage()) {
+        if (selectedElement != null && selectedElement.getSecond().equals(PhotoType.THUMBNAIL) && isPanelMaximized()) {
             loadPhoto(selectedElement.getFirst(), PhotoType.LARGE_THUMBNAIL);
             size = getSize();
         }
         super.paintComponent(graphics);
     }
 
-    private boolean shouldReLoadImage() {
-        return selectedElement != null && selectedElement.getSecond().equals(PhotoType.THUMBNAIL)
-                && (!size.equals(getSize())
-                        && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()));
+    private boolean isPanelMaximized() {
+        return !size.equals(getSize())
+                && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth());
     }
 
     @Override

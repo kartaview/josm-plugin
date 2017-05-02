@@ -145,17 +145,12 @@ public final class Util {
      */
     public static List<Circle> currentCircles() {
         final List<Circle> result = new ArrayList<>();
-        if (Main.getLayerManager().getEditLayer() != null
-                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-            final List<Bounds> osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
-            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-                for (final Bounds bounds : osmDataLayerBounds) {
-                    if (Main.map.mapView.getRealBounds().intersects(bounds)) {
-                        result.add(new Circle(bounds));
-                    }
+        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+            for (final Bounds bounds : osmDataLayerBounds) {
+                if (Main.map.mapView.getRealBounds().intersects(bounds)) {
+                    result.add(new Circle(bounds));
                 }
-            } else {
-                result.add(new Circle(Main.map.mapView.getRealBounds()));
             }
         } else {
             result.add(new Circle(Main.map.mapView.getRealBounds()));

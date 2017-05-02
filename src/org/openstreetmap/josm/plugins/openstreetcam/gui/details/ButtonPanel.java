@@ -44,7 +44,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 
 /**
@@ -54,8 +54,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel
-implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
+    DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -98,17 +98,17 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
 
-        btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
+        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
                 guiConfig.getBtnPreviousTlt(), false);
-        btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
-                guiConfig.getBtnNextTlt(), false);
-        btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
+        btnNext = ButtonBuilder.build(new SelectPhotoAction(true), iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(),
+                false);
+        btnLocation = ButtonBuilder.build(new JumpToLocationAction(), iconConfig.getLocationIcon(),
                 guiConfig.getBtnLocationTlt(), false);
-        btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
+        btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
-        btnClosestPhoto = GuiBuilder.buildButton(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
+        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
                 guiConfig.getBtnClosestImageTlt(), false);
-        btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
+        btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
                 guiConfig.getBtnDataSwitchImageTlt(), false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
 
@@ -191,7 +191,7 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
                             : iconConfig.getManualSwitchImageIcon();
             final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
                     ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-            btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
             btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             add(btnDataSwitch, 0);
 
@@ -279,7 +279,7 @@ implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataT
         dataUpdateObserver.update(dataType);
     }
 
-    
+
     /**
      * Defines the functionality of the manual data switch button.
      *

@@ -36,8 +36,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.gui.AbstractDateVerifier;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.DatePickerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
 /**
@@ -64,9 +66,8 @@ class FilterPanel extends JPanel {
     }
 
     private void addDateFitler(final Date date) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD, null, getBackground()),
-                Constraints.LBL_DATE);
-        pickerDate = GuiBuilder.buildDatePicker(date, Calendar.getInstance().getTime(), PICKER_SIZE);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD), Constraints.LBL_DATE);
+        pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
         if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
             pickerDate.setEnabled(false);
@@ -75,17 +76,16 @@ class FilterPanel extends JPanel {
     }
 
     private void addUserFilter(final boolean isSelected) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD, null, getBackground()),
-                Constraints.LBL_USER);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD), Constraints.LBL_USER);
 
-        final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(),
-                Font.ITALIC, null, getBackground());
+        final JLabel lblLoginWarning =
+                LabelBuilder.build(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(), Font.ITALIC);
         final boolean enabled = true;
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
         }
-        cbbUser = GuiBuilder.buildCheckBox(null, null, Font.PLAIN, isSelected, enabled);
+        cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.CBB_USER);
     }
 
