@@ -18,7 +18,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +60,7 @@ import com.telenav.josm.common.http.HttpConnectorException;
  */
 public class Service {
 
+    private final static int SECOND_PAGE = 2;
     private final Gson gson = createGsonBuilder().create();
 
     private GsonBuilder createGsonBuilder() {
@@ -161,14 +161,15 @@ public class Service {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
             if (listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()) {
                 final int pages = listSegmentResponse.getTotalItems() > Config.getInstance().getTracksMaxItems()
-                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1 : 2;
+                        ? (listSegmentResponse.getTotalItems() / Config.getInstance().getTracksMaxItems()) + 1
+                                : SECOND_PAGE;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
-                for (int i = 2; i <= pages; i++) {
+                for (int i = SECOND_PAGE; i <= pages; i++) {
                     final Paging paging = new Paging(i, Config.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 segments.addAll(readResult(futures));
                 executor.shutdown();
@@ -207,8 +208,7 @@ public class Service {
     }
 
     private void verifyResponseStatus(final Response response) throws ServiceException {
-        if (response != null && response.getStatus() != null
-                && response.getStatus().getHttpCode() != HttpURLConnection.HTTP_OK) {
+        if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
             throw new ServiceException(response.getStatus().getApiMessage());
         }
     }

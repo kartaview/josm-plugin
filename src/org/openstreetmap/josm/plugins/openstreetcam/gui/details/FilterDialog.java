@@ -28,8 +28,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.CancelAction;
-import com.telenav.josm.common.gui.GuiBuilder;
 import com.telenav.josm.common.gui.ModalDialog;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.telenav.josm.common.gui.builder.ContainerBuilder;
 
 
 /**
@@ -58,17 +59,22 @@ public class FilterDialog extends ModalDialog {
     @Override
     protected void createComponents() {
         pnlFilter = new FilterPanel();
-        final JButton btnOk = GuiBuilder.buildButton(new OkAction(), GuiConfig.getInstance().getBtnOkLbl());
-        final JButton btnClear = GuiBuilder.buildButton(new ClearAction(), GuiConfig.getInstance().getBtnClearLbl());
+        final JButton btnOk = ButtonBuilder.build(new OkAction(), GuiConfig.getInstance().getBtnOkLbl());
+        final JButton btnClear = ButtonBuilder.build(new ClearAction(), GuiConfig.getInstance().getBtnClearLbl());
         final JButton btnCancel =
-                GuiBuilder.buildButton(new CancelAction(this), GuiConfig.getInstance().getBtnCancelLbl());
-        final JPanel pnlButton = GuiBuilder.buildFlowLayoutPanel(FlowLayout.RIGHT, btnOk, btnClear, btnCancel);
+                ButtonBuilder.build(new CancelAction(this), GuiConfig.getInstance().getBtnCancelLbl());
+        final JPanel pnlButton = ContainerBuilder.buildFlowLayoutPanel(FlowLayout.RIGHT, btnOk, btnClear, btnCancel);
         add(pnlFilter, BorderLayout.CENTER);
         add(pnlButton, BorderLayout.SOUTH);
     }
 
 
-    /* applies the selected filters */
+    /**
+     * Applies the selected filters.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class OkAction extends AbstractAction {
 
         private static final long serialVersionUID = -1573801969230451122L;
@@ -90,7 +96,13 @@ public class FilterDialog extends ModalDialog {
         }
     }
 
-    /* clears the selected filters */
+
+    /**
+     * Clears the selected filters
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class ClearAction extends AbstractAction {
 
         private static final long serialVersionUID = -8589369992232950474L;

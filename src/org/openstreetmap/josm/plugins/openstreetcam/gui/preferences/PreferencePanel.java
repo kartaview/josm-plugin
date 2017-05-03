@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
@@ -26,7 +25,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**
@@ -61,98 +62,86 @@ class PreferencePanel extends JPanel {
     }
 
     private void createMapViewSettings(final MapViewSettings mapViewSettings) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMapViewLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMapViewLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_MAP_VIEW);
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPhotoZoomLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefPhotoZoomLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PHOTO_ZOOM);
-        spPhotoZoom = GuiBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
-                Config.getInstance().getPreferencesMaxZoom(), false, getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT);
-        ((SpinnerNumberModel) spPhotoZoom.getModel()).setMinimum(Config.getInstance().getMapPhotoZoom());
+        final boolean enabled = !mapViewSettings.isManualSwitchFlag();
+        spPhotoZoom = TextComponentBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
+                Config.getInstance().getMapPhotoZoom(), Config.getInstance().getPreferencesMaxZoom(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, false, enabled);
         add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
-        if (mapViewSettings.isManualSwitchFlag()) {
-            spPhotoZoom.setEnabled(false);
-        }
-        cbManualSwitch = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefManualSwitchLbl(),
-                getFont().deriveFont(Font.PLAIN), null, mapViewSettings.isManualSwitchFlag());
-        cbManualSwitch.addActionListener(event -> {
+        final ActionListener listener = event -> {
             final JCheckBox source = (JCheckBox) event.getSource();
-            if (source.isSelected()) {
-                spPhotoZoom.setEnabled(false);
-            } else {
-                spPhotoZoom.setEnabled(true);
-            }
-        });
+            final boolean spPhotoZoomEnabled = !source.isSelected();
+            spPhotoZoom.setEnabled(spPhotoZoomEnabled);
+        };
+        cbManualSwitch = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener, Font.PLAIN,
+                getBackground(), mapViewSettings.isManualSwitchFlag());
         add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
+
     }
 
     private void createPhotoSettingsComponents(final PhotoSettings settings) {
-
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefImageLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefImageLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
         final boolean enabled = !settings.isMouseHoverFlag();
-        cbHighQualityPhoto = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
-                new JCheckBox().getFont().deriveFont(Font.PLAIN), new SelectionListener(),
-                settings.isHighQualityFlag());
-        cbHighQualityPhoto.setEnabled(enabled);
+        cbHighQualityPhoto = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isHighQualityFlag(), enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        cbDisplayTrack = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
-                getFont().deriveFont(Font.PLAIN), new SelectionListener(), settings.isDisplayTrackFlag());
-        cbDisplayTrack.setEnabled(enabled);
+        cbDisplayTrack = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayTrackFlag(), enabled);
         add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
 
         final boolean selectedMouseHoverFlag =
                 settings.isDisplayTrackFlag() || settings.isHighQualityFlag() ? false : settings.isMouseHoverFlag();
-        cbMouseHover = GuiBuilder.buildCheckBox(GuiConfig.getInstance().getPrefMouseHoverLbl(),
-                getFont().deriveFont(Font.PLAIN), new SelectionListener(), selectedMouseHoverFlag);
-        cbMouseHover.setEnabled(selectedMouseHoverFlag);
+        cbMouseHover = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
+                Font.PLAIN, selectedMouseHoverFlag, selectedMouseHoverFlag);
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MOUSE_HOVER_DELAY);
-        spMouseHoverDelay = GuiBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
-                Config.getInstance().getMouseHoverMaxDelay(),
-                true, getFont().deriveFont(Font.PLAIN), ComponentOrientation.LEFT_TO_RIGHT);
-        ((SpinnerNumberModel) spMouseHoverDelay.getModel()).setMinimum(Config.getInstance().getMouseHoverMinDelay());
+        spMouseHoverDelay = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
+                Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, false, selectedMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefCacheLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefCacheLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_CACHE);
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefMemoryLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefMemoryLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MEMORY_COUNT);
-        spMemoryCount = GuiBuilder.buildPositiveNumberSpinner(settings.getMemoryCount(),
-                CacheConfig.getInstance().getMaxMemoryCount(), false, getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT);
+        spMemoryCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMemoryCount(), null,
+                CacheConfig.getInstance().getMaxMemoryCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
+                true);
         add(spMemoryCount, Constraints.SP_MEMORY_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefDiskLbl(), getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
-                Constraints.LBL_DISK_COUNT);
-        spDiskCount = GuiBuilder.buildPositiveNumberSpinner(settings.getDiskCount(),
-                CacheConfig.getInstance().getMaxDiskCount(), false, getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefDiskLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
+                SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_DISK_COUNT);
+        spDiskCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getDiskCount(), null,
+                CacheConfig.getInstance().getMaxDiskCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
+                true);
         add(spDiskCount, Constraints.SP_DISK_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefPrevNextLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefPrevNextLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PREV_NEXT_COUNT);
-        spPrevNextCount = GuiBuilder.buildPositiveNumberSpinner(settings.getPrevNextCount(),
-                CacheConfig.getInstance().getMaxPrevNextCount(), false, getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT);
+        spPrevNextCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getPrevNextCount(), null,
+                CacheConfig.getInstance().getMaxPrevNextCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
+                true);
         add(spPrevNextCount, Constraints.SP_PREV_NEXT_COUNT);
 
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getPrefNearbyLbl(), getFont().deriveFont(Font.PLAIN),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefNearbyLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_NEARBY_COUNT);
-        spNearbyCount = GuiBuilder.buildPositiveNumberSpinner(settings.getNearbyCount(),
-                CacheConfig.getInstance().getMaxNearbyCount(), false, getFont().deriveFont(Font.PLAIN),
-                ComponentOrientation.LEFT_TO_RIGHT);
+        spNearbyCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getNearbyCount(), null,
+                CacheConfig.getInstance().getMaxNearbyCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
+                true);
         add(spNearbyCount, Constraints.SP_NEARBY_COUNT);
     }
 

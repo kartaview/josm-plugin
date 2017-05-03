@@ -55,7 +55,11 @@ public final class CacheManager {
         }
     }
 
-
+    /**
+     * Returns the unique instance of the cache manager.
+     *
+     * @return a {@code CacheManager} object
+     */
     public static CacheManager getInstance() {
         return INSTANCE;
     }

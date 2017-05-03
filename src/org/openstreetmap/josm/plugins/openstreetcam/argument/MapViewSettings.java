@@ -21,6 +21,12 @@ public class MapViewSettings {
     private final boolean manualSwitchFlag;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param photoZoom the zoom level from which photo locations are displayed
+     * @param manualSwitchFlag specifies if the map view data is changed manually or automatically based on current zoom
+     */
     public MapViewSettings(final Integer photoZoom, final boolean manualSwitchFlag) {
         this.photoZoom = photoZoom;
         this.manualSwitchFlag = manualSwitchFlag;

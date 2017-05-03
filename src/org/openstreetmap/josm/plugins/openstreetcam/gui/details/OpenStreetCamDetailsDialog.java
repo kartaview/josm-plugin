@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -35,9 +36,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Pair;
 import org.openstreetmap.josm.tools.Shortcut;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.entity.Pair;
+import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -79,26 +81,12 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                 GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        lblDetails = GuiBuilder.buildLabel(null, getFont().deriveFont(GuiBuilder.FONT_SIZE_12), Color.white);
-        final JPanel pnlMain = GuiBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn);
+        lblDetails = LabelBuilder.build(null, Font.PLAIN, Color.white);
+        final JPanel pnlMain = ContainerBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn, null);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
         size = DIM;
-    }
-
-    @Override
-    protected void paintComponent(final Graphics graphics) {
-        if (shouldReLoadImage()) {
-            loadPhoto(selectedElement.a, PhotoType.LARGE_THUMBNAIL);
-            size = getSize();
-        }
-        super.paintComponent(graphics);
-    }
-
-    private boolean shouldReLoadImage() {
-        return selectedElement != null && selectedElement.b.equals(PhotoType.THUMBNAIL) && (!size.equals(getSize())
-                && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth()));
     }
 
     /**
@@ -113,14 +101,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         return instance;
     }
 
-    @Override
-    public void destroy() {
-        if (!destroyed) {
-            super.destroy();
-            destroyed = true;
-        }
-    }
-
     /**
      * Destroys the instance of the dialog.
      */
@@ -128,6 +108,28 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         instance = null;
     }
 
+
+    @Override
+    protected void paintComponent(final Graphics graphics) {
+        if (selectedElement != null && selectedElement.getSecond().equals(PhotoType.THUMBNAIL) && isPanelMaximized()) {
+            loadPhoto(selectedElement.getFirst(), PhotoType.LARGE_THUMBNAIL);
+            size = getSize();
+        }
+        super.paintComponent(graphics);
+    }
+
+    private boolean isPanelMaximized() {
+        return !size.equals(getSize())
+                && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth());
+    }
+
+    @Override
+    public void destroy() {
+        if (!destroyed) {
+            super.destroy();
+            destroyed = true;
+        }
+    }
 
     /**
      * Updates the details dialog with the details of the given photo.
@@ -162,18 +164,18 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         try {
             final Pair<BufferedImage, PhotoType> imageResult = ImageHandler.getInstance().loadPhoto(photo, photoType);
-            selectedElement = new Pair<>(photo, imageResult.b);
-            if (imageResult.a != null) {
+            selectedElement = new Pair<>(photo, imageResult.getSecond());
+            if (imageResult.getFirst() != null) {
                 lblDetails.setText(detailsTxt);
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        && !imageResult.b.equals(PhotoType.HIGH_QUALITY)) {
+                        && !imageResult.getSecond().equals(PhotoType.HIGH_QUALITY)) {
                     lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
                     lblDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {
                     lblDetails.setToolTipText(null);
                     lblDetails.setIcon(null);
                 }
-                pnlPhoto.updateUI(imageResult.a);
+                pnlPhoto.updateUI(imageResult.getFirst());
             }
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();

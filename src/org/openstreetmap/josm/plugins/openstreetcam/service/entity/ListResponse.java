@@ -16,6 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
 
 import java.util.List;
+import com.telenav.josm.common.entity.Status;
 
 
 /**

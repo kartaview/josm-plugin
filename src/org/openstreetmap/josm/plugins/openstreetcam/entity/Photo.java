@@ -16,7 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.data.coor.LatLon;
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**

@@ -18,7 +18,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**

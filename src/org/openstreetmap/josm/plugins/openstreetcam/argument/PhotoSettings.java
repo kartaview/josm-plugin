@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 
 /**
+ * Defines the user configurable photo settings.
  *
  * @author beataj
  * @version $Revision$
@@ -22,6 +23,14 @@ public class PhotoSettings {
     private final int mouseHoverDelay;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param highQualityFlag specifies if the high quality should e loaded or not
+     * @param displayTrackFlag specifies if also the track associated with the selected photo should be displayed
+     * @param mouseHoverFlag specifies if photos should be loaded on mouse hover event
+     * @param mouseHoverDelay specifies the delay between selecting a photo on mouse hover event
+     */
     public PhotoSettings(final boolean highQualityFlag, final boolean displayTrackFlag, final boolean mouseHoverFlag,
             final int mouseHoverDelay) {
         this.highQualityFlag = highQualityFlag;

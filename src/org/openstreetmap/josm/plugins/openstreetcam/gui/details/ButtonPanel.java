@@ -44,7 +44,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
-import com.telenav.josm.common.gui.GuiBuilder;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 
 /**
@@ -54,8 +54,8 @@ import com.telenav.josm.common.gui.GuiBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel
-        implements LocationObservable, SequenceObservable, ClosestPhotoObservable, DataTypeChangeObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
+    DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -98,17 +98,17 @@ class ButtonPanel extends JPanel
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
 
-        btnPrevious = GuiBuilder.buildButton(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
+        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
                 guiConfig.getBtnPreviousTlt(), false);
-        btnNext = GuiBuilder.buildButton(new SelectPhotoAction(true), iconConfig.getNextIcon(),
-                guiConfig.getBtnNextTlt(), false);
-        btnLocation = GuiBuilder.buildButton(new JumpToLocationAction(), iconConfig.getLocationIcon(),
+        btnNext = ButtonBuilder.build(new SelectPhotoAction(true), iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(),
+                false);
+        btnLocation = ButtonBuilder.build(new JumpToLocationAction(), iconConfig.getLocationIcon(),
                 guiConfig.getBtnLocationTlt(), false);
-        btnWebPage = GuiBuilder.buildButton(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
+        btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
-        btnClosestPhoto = GuiBuilder.buildButton(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
+        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
                 guiConfig.getBtnClosestImageTlt(), false);
-        btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
+        btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
                 guiConfig.getBtnDataSwitchImageTlt(), false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
 
@@ -126,24 +126,25 @@ class ButtonPanel extends JPanel
 
     private void registerShortcuts() {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
         Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
         Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
         getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
-
     }
 
     /**
@@ -174,6 +175,11 @@ class ButtonPanel extends JPanel
         btnDataSwitch.setEnabled(enabled);
     }
 
+    /**
+     * Sets the data switch button visibility.
+     *
+     * @param isVisible if true/false the button is added to the button panel/removed from the button panel
+     */
     void setDataSwitchButtonVisibiliy(final boolean isVisible) {
         if (isVisible) {
             final GuiConfig guiConfig = GuiConfig.getInstance();
@@ -185,7 +191,7 @@ class ButtonPanel extends JPanel
                             : iconConfig.getManualSwitchImageIcon();
             final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
                     ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-            btnDataSwitch = GuiBuilder.buildButton(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
             btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             add(btnDataSwitch, 0);
 
@@ -194,27 +200,24 @@ class ButtonPanel extends JPanel
         }
     }
 
+    /**
+     * Updates the data switch button icon, tool-tip and action command.
+     *
+     * @param dataType a {@code DataType} specifies the currently displayed data type
+     */
     void updateDataSwitchButton(final DataType dataType) {
-        Icon icon;
-        String tlt;
-        String actionCommand;
-
         if (dataType.equals(DataType.PHOTO)) {
-            icon = IconConfig.getInstance().getManualSwitchSegmentIcon();
-            tlt = GuiConfig.getInstance().getBtnDataSwitchSegmentTlt();
-            actionCommand = DataType.SEGMENT.toString();
+            btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
+            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchSegmentTlt());
+            btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
-            icon = IconConfig.getInstance().getManualSwitchImageIcon();
-            tlt = GuiConfig.getInstance().getBtnDataSwitchImageTlt();
-            actionCommand = DataType.PHOTO.toString();
+            btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
+            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
         }
-        btnDataSwitch.setIcon(icon);
-        btnDataSwitch.setToolTipText(tlt);
-        btnDataSwitch.setActionCommand(actionCommand);
         revalidate();
         repaint();
     }
-
 
     /**
      * Enables or disables the "OpenStreetCam Sequence" related action buttons.
@@ -227,6 +230,11 @@ class ButtonPanel extends JPanel
         btnNext.setEnabled(isNext);
     }
 
+    /**
+     * Enables or disables the closest photo button.
+     *
+     * @param enabled if true then the button is enabled; if false then the button is disabled
+     */
     void enableClosestPhotoButton(final boolean enabled) {
         btnClosestPhoto.setEnabled(enabled);
     }
@@ -261,18 +269,23 @@ class ButtonPanel extends JPanel
         closestPhotoObserver.selectClosestPhoto();
     }
 
-
     @Override
     public void registerObserver(final DataTypeChangeObserver dataUpdateObserver) {
         this.dataUpdateObserver = dataUpdateObserver;
     }
-
 
     @Override
     public void notifyDataUpdateObserver(final DataType dataType) {
         dataUpdateObserver.update(dataType);
     }
 
+
+    /**
+     * Defines the functionality of the manual data switch button.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class ManualDataSwitchAction extends AbstractAction {
 
         private static final long serialVersionUID = -6266140137863469921L;
@@ -292,13 +305,16 @@ class ButtonPanel extends JPanel
                 btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
                 btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             }
-
         }
     }
 
 
-    /* selects the previous/next photo from the displayed sequence */
-
+    /**
+     * Selects the previous/next photo from the displayed sequence
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class SelectPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
@@ -317,12 +333,15 @@ class ButtonPanel extends JPanel
                 notifyObserver(index);
             }
         }
-
     }
 
 
-    /* centers the map to the selected photo's location */
-
+    /**
+     * Centers the map to the selected photo's location.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class JumpToLocationAction extends AbstractAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
@@ -336,8 +355,12 @@ class ButtonPanel extends JPanel
     }
 
 
-    /* opens the selected photo's web page */
-
+    /**
+     * Opens the selected photo's web page
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class OpenWebPageAction extends AbstractAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
@@ -358,12 +381,15 @@ class ButtonPanel extends JPanel
     }
 
 
-    /* selects the closest photo of the selected photo */
-
+    /**
+     * Selects the closest photo of the selected photo.
+     *
+     * @author ioanao
+     * @version $Revision$
+     */
     private final class ClosestPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
-
 
         @Override
         public void actionPerformed(final ActionEvent event) {

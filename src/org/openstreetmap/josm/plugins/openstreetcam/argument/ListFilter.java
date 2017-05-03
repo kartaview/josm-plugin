@@ -16,7 +16,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import java.util.Date;
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
@@ -53,6 +53,10 @@ public class ListFilter {
         return onlyUserFlag;
     }
 
+    public boolean isDefaultFilter() {
+        return DEFAULT.equals(this);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -73,9 +77,5 @@ public class ListFilter {
             result = result && (onlyUserFlag == other.isOnlyUserFlag());
         }
         return result;
-    }
-
-    public boolean isDefaultFilter() {
-        return DEFAULT.equals(this);
     }
 }

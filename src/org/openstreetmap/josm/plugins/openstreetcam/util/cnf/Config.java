@@ -15,9 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.cnf;
 
-import java.util.Date;
 import com.telenav.josm.common.cnf.BaseConfig;
-import com.telenav.josm.common.util.DateUtil;
 
 
 /**
@@ -57,7 +55,6 @@ public final class Config extends BaseConfig {
     private final int tracksMaxItems;
     private final int tracksMaxZoom;
 
-    private final Date filterMaxDate;
     private final int preferencesMaxZoom;
     private final int mapPhotoZoom;
     private final int mapSegmentZoom;
@@ -83,7 +80,6 @@ public final class Config extends BaseConfig {
         tracksMaxZoom = readIntegerProperty("tracks.maxZoom", MAX_ZOOM);
 
 
-        filterMaxDate = DateUtil.parseDay(readProperty("filter.maxDate"));
         preferencesMaxZoom = readIntegerProperty("preferences.maxZoom", MAX_ZOOM);
         mapPhotoZoom = readIntegerProperty("map.photoZoom", PHOTO_ZOOM);
         mapSegmentZoom = readIntegerProperty("map.segmentZoom", SEGMENT_ZOOM);
@@ -131,10 +127,6 @@ public final class Config extends BaseConfig {
 
     public int getTracksMaxZoom() {
         return tracksMaxZoom;
-    }
-
-    public Date getFilterMaxDate() {
-        return filterMaxDate;
     }
 
     public int getPreferencesMaxZoom() {

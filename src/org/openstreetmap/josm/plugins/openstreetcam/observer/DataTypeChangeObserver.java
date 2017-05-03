@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
  * and clicks on the 'data switch' button then, if previously:
  * <ul>
  * <li>segments were displayed, the map view should display photo locations</li>
- * <li><photo locations were displayed, the map view should display segments/li>
+ * <li>photo locations were displayed, the map view should display segments</li>
  * </ul>
  *
  * @author beataj

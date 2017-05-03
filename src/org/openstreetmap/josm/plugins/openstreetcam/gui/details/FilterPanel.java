@@ -27,7 +27,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.text.DefaultFormatterFactory;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
@@ -37,8 +36,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.gui.GuiBuilder;
-import com.telenav.josm.common.util.DateUtil;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.DatePickerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
 /**
@@ -64,20 +65,10 @@ class FilterPanel extends JPanel {
         addUserFilter(filter.isOnlyUserFlag());
     }
 
-
     private void addDateFitler(final Date date) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterDateLbl(), getFont().deriveFont(Font.BOLD),
-                getBackground()), Constraints.LBL_DATE);
-
-        pickerDate = new JXDatePicker();
-        pickerDate.setPreferredSize(PICKER_SIZE);
-        pickerDate.getMonthView().setTodayBackground(Color.darkGray);
-        pickerDate.getMonthView().setDayForeground(Calendar.SATURDAY, Color.red);
-        pickerDate.getMonthView().setShowingLeadingDays(true);
-        pickerDate.getMonthView().setShowingTrailingDays(true);
-        pickerDate.getMonthView().setSelectionDate(date);
-        pickerDate.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DateFormatter()));
-        pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate.getEditor()));
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD), Constraints.LBL_DATE);
+        pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
+        pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
         if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
             pickerDate.setEnabled(false);
         }
@@ -85,17 +76,16 @@ class FilterPanel extends JPanel {
     }
 
     private void addUserFilter(final boolean isSelected) {
-        add(GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterUserLbl(), getFont().deriveFont(Font.BOLD),
-                getBackground()), Constraints.LBL_USER);
-        cbbUser = GuiBuilder.buildCheckBox(null, getFont().deriveFont(Font.PLAIN));
-        cbbUser.setSelected(isSelected);
-        final JLabel lblLoginWarning = GuiBuilder.buildLabel(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(),
-                getFont().deriveFont(Font.ITALIC), getBackground());
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD), Constraints.LBL_USER);
+
+        final JLabel lblLoginWarning =
+                LabelBuilder.build(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(), Font.ITALIC);
+        final boolean enabled = true;
         if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
-            cbbUser.setEnabled(false);
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
         }
+        cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.CBB_USER);
     }
 
@@ -105,69 +95,25 @@ class FilterPanel extends JPanel {
      * @return a {@code ListFilter} object
      */
     ListFilter selectedFilters() {
-        final String editorText = pickerDate.getEditor().getText();
-        final Date uncommitteddDate = DateUtil.parseDay(editorText);
-
-        // TODO: eliminate multiple returns
-        if (uncommitteddDate == null) {
-            // the 'uncommitted' date is invalid
-            if (!editorText.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
-                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
-
-            // the 'uncommitted' date is empty
-            if (pickerDate.getDate() != null) {
-                return getConfirmation(uncommitteddDate, editorText);
-            }
-
-            // the date from the date picker editor was already committed
-            return new ListFilter(pickerDate.getDate(), cbbUser.isSelected());
-        }
-
-        // the 'uncommitted' date is valid
-        // the date from the date picker editor was already committed
-        if (uncommitteddDate.equals(pickerDate.getDate())) {
-            // the 'uncommitted' date is greater than the accepted value
-            if (!checkAcceptance(uncommitteddDate)) {
-                return null;
-            }
-
-            // the 'uncommitted' date is committed and valid
-            return new ListFilter(pickerDate.getDate(), cbbUser.isSelected());
-        }
-
-        // the date from the date picker editor was not committed
-        if (!checkAcceptance(uncommitteddDate)) {
-            return null;
-        }
-
-        // the uncommitted date need an extra confirmation
-        return getConfirmation(uncommitteddDate, editorText);
-    }
-
-
-    private ListFilter getConfirmation(final Date date, final String dateAsText) {
         ListFilter filter = null;
-        final int response =
-                JOptionPane.showConfirmDialog(null, GuiConfig.getInstance().getConfirmDateFilterTxt() + dateAsText,
-                        GuiConfig.getInstance().getConfirmDateFilterTitle(), JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
-        if (response == JOptionPane.YES_OPTION) {
-            filter = new ListFilter(date, cbbUser.isSelected());
+        final String dateValue = pickerDate.getEditor().getText();
+        if (dateValue == null || dateValue.trim().isEmpty()) {
+            filter = new ListFilter(null, cbbUser.isSelected());
+        } else {
+            final Date date = DateFormatter.parseDay(dateValue.trim());
+            if (date == null) {
+                // date value was invalid
+                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
+                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+            } else if (date.compareTo(Calendar.getInstance().getTime()) > 0) {
+                // date is to big
+                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
+                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+            } else {
+                filter = new ListFilter(date, cbbUser.isSelected());
+            }
         }
         return filter;
-    }
-
-    private boolean checkAcceptance(final Date date) {
-        boolean result = true;
-        if (date.compareTo(Config.getInstance().getFilterMaxDate()) > 0) {
-            JOptionPane.showMessageDialog(null, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
-                    GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-            result = false;
-        }
-        return result;
     }
 
     /**
@@ -177,6 +123,33 @@ class FilterPanel extends JPanel {
         pickerDate.getEditor().setText("");
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
+    }
+
+    private final class DateVerifier extends AbstractDateVerifier {
+
+        private DateVerifier(final JXDatePicker component) {
+            super(component);
+        }
+
+        @Override
+        public boolean validate() {
+            boolean isValid = true;
+            final String valueStr = getTextFieldValue();
+            if (!valueStr.isEmpty()) {
+                final Date newDate = DateFormatter.parseDay(valueStr);
+                if (newDate == null) {
+                    JOptionPane.showMessageDialog(FilterPanel.this, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
+                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                    isValid = false;
+                } else if (newDate.compareTo(Calendar.getInstance().getTime()) > 0) {
+                    JOptionPane.showMessageDialog(FilterPanel.this,
+                            GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
+                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
     }
 
     /* Holds UI constraints */

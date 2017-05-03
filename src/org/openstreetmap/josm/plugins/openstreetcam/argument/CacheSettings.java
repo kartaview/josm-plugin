@@ -8,7 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
-import com.telenav.josm.common.util.EntityUtil;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
@@ -25,6 +25,14 @@ public class CacheSettings {
     private final Integer nearbyCount;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param memoryCount the number objects to keep in memory
+     * @param diskCount the number of objects to keep in disk
+     * @param prevNextCount the number of next and previous objects to cache
+     * @param nearbyCount the number of nearby objects to cache
+     */
     public CacheSettings(final Integer memoryCount, final Integer diskCount, final Integer prevNextCount,
             final Integer nearbyCount) {
         this.memoryCount = memoryCount;
