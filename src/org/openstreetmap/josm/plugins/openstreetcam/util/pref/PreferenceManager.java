@@ -254,7 +254,7 @@ public final class PreferenceManager {
      * @param key a {@code String} value
      * @return boolean value
      */
-    public boolean isDisplayTackFlag(final String key) {
+    public boolean isDisplayTrackFlag(final String key) {
         return DISPLAY_TRACK_FLAG.equals(key);
     }
 
