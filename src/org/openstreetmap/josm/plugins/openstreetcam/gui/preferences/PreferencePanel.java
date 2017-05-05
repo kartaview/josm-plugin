@@ -97,8 +97,9 @@ class PreferencePanel extends JPanel {
 
         final boolean selectedMouseHoverFlag =
                 settings.isDisplayTrackFlag() || settings.isHighQualityFlag() ? false : settings.isMouseHoverFlag();
+        final boolean enabledMouseHoverFlag = !(settings.isDisplayTrackFlag() || settings.isHighQualityFlag());
         cbMouseHover = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
-                Font.PLAIN, selectedMouseHoverFlag, selectedMouseHoverFlag);
+                Font.PLAIN, selectedMouseHoverFlag, enabledMouseHoverFlag);
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
 
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
@@ -106,7 +107,7 @@ class PreferencePanel extends JPanel {
                 Constraints.LBL_MOUSE_HOVER_DELAY);
         spMouseHoverDelay = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
                 Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, false, selectedMouseHoverFlag);
+                ComponentOrientation.LEFT_TO_RIGHT, false, enabledMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 

@@ -130,6 +130,11 @@ public final class PreferenceManager {
         return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadCacheSettings());
     }
 
+    /**
+     * Loads the the user's map view related preference settings from the preference file.
+     *
+     * @return a {@code MapViewSettings} object
+     */
     public MapViewSettings loadMapViewSettings() {
         return loadManager.loadMapViewSettings();
     }
@@ -168,7 +173,7 @@ public final class PreferenceManager {
     /**
      * Loads the layer appearance status from the preference file.
      *
-     * @return a boolean
+     * @return a boolean value
      */
     public boolean loadLayerOpenedFlag() {
         return loadManager.loadLayerOpenedFlag();
@@ -184,26 +189,37 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the panel appearance status from the preference file.
+     * Loads the panel appearance status flag from the preference file.
      *
-     * @return a boolean
+     * @return a boolean a boolean value
      */
     public boolean loadPanelOpenedFlag() {
         return loadManager.loadPanelOpenedFlag();
     }
 
+    /**
+     * Saves the panel appearance status flag to the preference file.
+     *
+     * @param value true/false in string format
+     */
     public void savePanelOpenedFlag(final String value) {
         final Boolean panelOpened = Boolean.parseBoolean(value);
         saveManager.savePanelOpenedFlag(panelOpened);
     }
 
     /**
-     * Verifies if the authentication method has changed or not.
+     * Verifies if the data download related preference settings has changed or not.
      *
      * @param key a {@code String} represents the key associated with the authentication preference change event
-     * @param value a {@code String} represents the value associated with the authentication preference change event
-     * @return true if the authentication method has changed; false otherwise
+     * @param newValue a {@code String} represents the new value associated with the authentication preference change
+     * event
+     * @return true if the data download preference settings has been changed; false otherwise
      */
+    public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
+        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
+                || isLayerOpenedFlag(key, newValue);
+    }
+
     private boolean hasAuthMethodChanged(final String key, final String value) {
         return (JOSM_AUTH_METHOD.equals(key) && JOSM_BASIC_VAL.equals(value)) || JOSM_OAUTH_SECRET.equals(key);
     }
@@ -216,35 +232,78 @@ public final class PreferenceManager {
         return MAP_VIEW_PHOTO_ZOOM.equals(value);
     }
 
-    public boolean isHighQualityPhotoFlag(final String value) {
-        return HIGH_QUALITY_PHOTO_FLAG.equals(value);
+    private boolean isLayerOpenedFlag(final String key, final String newValue) {
+        return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
     }
 
-    public boolean isDisplayTackFlag(final String value) {
-        return DISPLAY_TRACK_FLAG.equals(value);
+    /**
+     * Verifies if the high quality photo user preference settings flag has been selected or not.
+     *
+     * @param key a {@code String} represents the key associated with the high quality flag
+     * @param newValue a {@code String} represents the new value associated with the high quality preference change
+     * event
+     * @return true if the flag has been selected, false otherwise
+     */
+    public boolean hasHighQualityPhotoFlagChanged(final String key, final String newValue) {
+        return HIGH_QUALITY_PHOTO_FLAG.equals(key) && Boolean.TRUE.toString().equals(newValue);
     }
 
-    public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
-        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || (LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue));
+    /**
+     * Verifies if the given key represents the display track flag or not.
+     *
+     * @param key a {@code String} value
+     * @return boolean value
+     */
+    public boolean isDisplayTackFlag(final String key) {
+        return DISPLAY_TRACK_FLAG.equals(key);
     }
 
+    /**
+     * Verifies if the manual data switch type has been changed or not.
+     *
+     * @param key a {@code String} represents the key associated with the manual data switch type
+     * @param newValue a {@code String} represents the new value associated with the manual data switch typee change
+     * event
+     * @return boolean value
+     */
     public boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
         return MAP_VIEW_MANUAL_SWITCH.equals(key) && newValue != null;
     }
 
+    /**
+     * Saves the selected data type to the preference file.
+     *
+     * @param dataType the currently selected {@code DataType}
+     */
     public void saveDataType(final DataType dataType) {
         saveManager.saveDataType(dataType);
     }
 
+    /**
+     * Loads the data type.
+     *
+     * @return a {@code DataType} object
+     */
     public DataType loadDataType() {
         return loadManager.loadDataType();
     }
 
+    /**
+     * Verifies if the given key represents the panel visibility icon key.
+     *
+     * @param key a {@code String} value
+     * @return a boolean value
+     */
     public boolean isPanelIconVisibilityKey(final String key) {
         return PANEL_ICON_VISIBILITY.equals(key);
     }
 
+    /**
+     * Verifies if the given key represents the mouse hover delay key.
+     *
+     * @param key a {@code String} value
+     * @return a boolean value
+     */
     public boolean isMouseHoverDelayKey(final String key) {
         return MOUSE_HOVER_DELAY.equals(key);
     }

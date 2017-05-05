@@ -60,7 +60,7 @@ import com.telenav.josm.common.http.HttpConnectorException;
  */
 public class Service {
 
-    private final static int SECOND_PAGE = 2;
+    private static final int SECOND_PAGE = 2;
     private final Gson gson = createGsonBuilder().create();
 
     private GsonBuilder createGsonBuilder() {
@@ -85,7 +85,7 @@ public class Service {
     public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId)
             throws ServiceException {
         final Map<String, String> arguments =
-                new HttpContentBuilder(circle, date, osmUserId, new Paging(1, 2000)).getContent();
+                new HttpContentBuilder(circle, date, osmUserId, Paging.NEARBY_PHOTOS_DEAFULT).getContent();
         final String response;
         try {
             final HttpConnector connector =
