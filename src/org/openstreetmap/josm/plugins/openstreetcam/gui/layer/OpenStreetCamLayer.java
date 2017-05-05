@@ -99,9 +99,14 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setDataSet(final DataSet dataSet, final boolean checkSelectedPhoto) {
         this.dataSet = dataSet;
-        if ((checkSelectedPhoto && this.selectedPhoto != null) && (this.dataSet == null
-                || this.dataSet.getPhotos() == null || !this.dataSet.getPhotos().contains(selectedPhoto))) {
-            this.selectedPhoto = null;
+        if (checkSelectedPhoto && selectedPhoto != null) {
+            if (this.dataSet == null || this.dataSet.getPhotos() == null
+                    || !this.dataSet.getPhotos().contains(selectedPhoto)) {
+                selectedPhoto = null;
+            }
+            if (closestPhotos != null) {
+                selectStartPhotoForClosestAction(selectedPhoto);
+            }
         }
     }
 
@@ -226,8 +231,12 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
-        closestPhotos = photo == null ? Collections.emptyList()
-                : Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        if (photo != null && dataSet.getPhotos() != null) {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
+        } else {
+            closestPhotos = Collections.emptyList();
+        }
     }
 
 

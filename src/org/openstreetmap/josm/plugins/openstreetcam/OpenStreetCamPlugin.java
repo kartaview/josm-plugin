@@ -249,7 +249,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     handleDataDownload();
                 } else if (prefManager.hasHighQualityPhotoFlagChanged(event.getKey(), newValue)) {
                     handleHighQualityPhotoSelection();
-                } else if (prefManager.isDisplayTackFlag(event.getKey())) {
+                } else if (prefManager.isDisplayTrackFlag(event.getKey())) {
                     handleDisplayTrack(newValue);
                 } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
                     PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
