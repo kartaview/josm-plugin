@@ -23,22 +23,5 @@ public enum PhotoType {
     LARGE_THUMBNAIL,
 
     /** high quality image */
-    HIGH_QUALITY;
-
-
-    /**
-     * Returns the photo type based on the given user configured photo settings.
-     *
-     * @param settings a {@code PhotoSettings} represents the photo settings
-     * @return a {@code PhotoType}
-     */
-    public static PhotoType getPhotoType(final PhotoSettings settings) {
-        PhotoType result = LARGE_THUMBNAIL;
-        if (settings.isMouseHoverFlag()) {
-            result = THUMBNAIL;
-        } else if (settings.isHighQualityFlag()) {
-            result = HIGH_QUALITY;
-        }
-        return result;
-    }
+    HIGH_QUALITY
 }

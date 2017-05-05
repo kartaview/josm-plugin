@@ -135,8 +135,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * Updates the details dialog with the details of the given photo.
      *
      * @param photo the currently selected {@code Photo}
+     * @param photoType the type of photo to be loaded
      */
-    public void updateUI(final Photo photo) {
+    public void updateUI(final Photo photo, final PhotoType photoType) {
         if (photo != null) {
             // display loading text
             ThreadPool.getInstance().execute(() -> {
@@ -147,7 +148,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             });
 
             // load image
-            final PhotoType photoType = PhotoType.getPhotoType(PreferenceManager.getInstance().loadPhotoSettings());
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
             lblDetails.setText("");
@@ -162,8 +162,10 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private void loadPhoto(final Photo photo, final PhotoType photoType) {
         pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
+        final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
         try {
-            final Pair<BufferedImage, PhotoType> imageResult = ImageHandler.getInstance().loadPhoto(photo, photoType);
+            final Pair<BufferedImage, PhotoType> imageResult =
+                    ImageHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
             if (imageResult.getFirst() != null) {
                 lblDetails.setText(detailsTxt);
