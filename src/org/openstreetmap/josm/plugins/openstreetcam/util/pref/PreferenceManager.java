@@ -307,4 +307,22 @@ public final class PreferenceManager {
     public boolean isMouseHoverDelayKey(final String key) {
         return MOUSE_HOVER_DELAY.equals(key);
     }
+
+    /**
+     * Saves the plugin's local version to the preference file.
+     *
+     * @param localVersion the plugin's local version
+     */
+    public void savePluginLocalVersion(final String localVersion) {
+        saveManager.savePluginLocalVersion(localVersion);
+    }
+
+    /**
+     * Loads the plugin's local version from the preference file.
+     *
+     * @return a {@code String} value
+     */
+    public String loadPluginLocalVersion() {
+        return loadManager.loadPluginLocalVersion();
+    }
 }

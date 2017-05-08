@@ -8,7 +8,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -21,7 +20,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.Date;
@@ -61,7 +63,7 @@ final class LoadManager {
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag =
                 onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag() : Boolean.parseBoolean(onlyUserFlagStr);
-        return new ListFilter(date, onlyUserFlag);
+                return new ListFilter(date, onlyUserFlag);
     }
 
     MapViewSettings loadMapViewSettings() {
@@ -81,7 +83,7 @@ final class LoadManager {
         final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
         final int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
                 ? Integer.valueOf(mouseHoverDelayValue) : Config.getInstance().getMouseHoverMinDelay();
-        return new PhotoSettings(highQualityFlag, displayTrackFlag, mouseHoverFlag, mouseHoverDelay);
+                return new PhotoSettings(highQualityFlag, displayTrackFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     CacheSettings loadCacheSettings() {
@@ -94,10 +96,10 @@ final class LoadManager {
         final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
         final int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
                 ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-        final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                : CacheConfig.getInstance().getDefaultNearbyCount();
-        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+                final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
+                final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+                        : CacheConfig.getInstance().getDefaultNearbyCount();
+                return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     boolean loadLayerOpenedFlag() {
@@ -119,5 +121,9 @@ final class LoadManager {
             dataType = null;
         }
         return dataType;
+    }
+
+    String loadPluginLocalVersion() {
+        return Main.pref.get(PLUGIN_LOCAL_VERSION);
     }
 }
