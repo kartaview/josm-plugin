@@ -252,11 +252,20 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     handleHighQualityPhotoSelection();
                 } else if (prefManager.isDisplayTrackFlag(event.getKey())) {
                     handleDisplayTrack(newValue);
-                } else if (PreferenceManager.getInstance().isPanelIconVisibilityKey(event.getKey())) {
-                    PreferenceManager.getInstance().savePanelOpenedFlag(event.getNewValue().toString());
-                } else if (PreferenceManager.getInstance().isMouseHoverDelayKey(event.getKey())) {
+                } else if (prefManager.isPanelIconVisibilityKey(event.getKey())) {
+                    prefManager.savePanelOpenedFlag(event.getNewValue().toString());
+                } else if (prefManager.isMouseHoverDelayKey(event.getKey())) {
                     selectionHandler.changeMouseHoverTimerDelay();
+                } else if (prefManager.hasMouseHoverFlagChanged(event.getKey(), newValue)) {
+                    handleMouseHover();
                 }
+            }
+        }
+
+        private void handleMouseHover() {
+            final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
+            if (selectedPhoto != null) {
+                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL);
             }
         }
 

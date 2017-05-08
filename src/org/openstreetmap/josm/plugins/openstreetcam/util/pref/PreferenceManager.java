@@ -25,6 +25,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -246,6 +247,17 @@ public final class PreferenceManager {
      */
     public boolean hasHighQualityPhotoFlagChanged(final String key, final String newValue) {
         return HIGH_QUALITY_PHOTO_FLAG.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    /**
+     * Verifies if the mouse hover user preference settings flag has been selected or not.
+     *
+     * @param key a {@code String} represents the key associated with the mouse hover flag
+     * @param newValue a {@code String} represents the new value associated with the flag
+     * @return true if the flag has been selected, false otherwise
+     */
+    public boolean hasMouseHoverFlagChanged(final String key, final String newValue) {
+        return MOUSE_HOVER_FLAG.equals(key) && Boolean.TRUE.toString().equals(newValue);
     }
 
     /**
