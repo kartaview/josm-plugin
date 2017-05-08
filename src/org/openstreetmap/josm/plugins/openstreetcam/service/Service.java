@@ -71,8 +71,8 @@ public class Service {
         builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
         builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
         gson = builder.create();
-
     }
+
 
     /**
      * Retrieves OpenStreetCam photos from the given area based on the specified filters.
@@ -91,8 +91,8 @@ public class Service {
                 new HttpContentBuilder(circle, date, osmUserId, Paging.NEARBY_PHOTOS_DEAFULT).getContent();
         final String response;
         try {
-            final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS);
+            final HttpConnector connector = new HttpConnector(
+                    Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS, headers);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -108,15 +108,15 @@ public class Service {
      * Retrieves the sequence associated with the given identifier.
      *
      * @param id a sequence identifier
-     * @return a {@code Sequence} containg all the photos that belongs to the sequence
+     * @return a {@code Sequence} that contains all the photos that belongs to the sequence
      * @throws ServiceException if the operation fails
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         final String response;
         try {
-            final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST);
+            final HttpConnector connector = new HttpConnector(
+                    Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST, headers);
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -182,6 +182,23 @@ public class Service {
         return new ArrayList<>(segments);
     }
 
+    private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
+            final Paging paging) throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
+        final String response;
+        try {
+            final HttpConnector connector = new HttpConnector(
+                    Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS, headers);
+            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
+        } catch (final HttpConnectorException e) {
+            throw new ServiceException(e);
+        }
+        final ListResponse<Segment> listSegmentResponse =
+                parseResponse(response, new TypeToken<ListResponse<Segment>>() {}.getType());
+        verifyResponseStatus(listSegmentResponse);
+        return listSegmentResponse;
+    }
+
     private Set<Segment> readResult(final List<Future<ListResponse<Segment>>> futures) throws ServiceException {
         final Set<Segment> segments = new HashSet<>();
         for (final Future<ListResponse<Segment>> future : futures) {
@@ -192,23 +209,6 @@ public class Service {
             }
         }
         return segments;
-    }
-
-    private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
-            final Paging paging) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final String response;
-        try {
-            final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
-        final ListResponse<Segment> listSegmentResponse =
-                parseResponse(response, new TypeToken<ListResponse<Segment>>() {}.getType());
-        verifyResponseStatus(listSegmentResponse);
-        return listSegmentResponse;
     }
 
     private void verifyResponseStatus(final Response response) throws ServiceException {
