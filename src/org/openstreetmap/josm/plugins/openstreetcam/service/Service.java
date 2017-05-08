@@ -15,12 +15,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +28,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.apache.commons.io.IOUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -61,14 +59,19 @@ import com.telenav.josm.common.http.HttpConnectorException;
 public class Service {
 
     private static final int SECOND_PAGE = 2;
-    private final Gson gson = createGsonBuilder().create();
+    private final Gson gson;
+    private final Map<String, String> headers;
 
-    private GsonBuilder createGsonBuilder() {
+
+    public Service() {
+        headers = new HashMap<>();
+        headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
         final GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();
         builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
         builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
-        return builder;
+        gson = builder.create();
+
     }
 
     /**
@@ -135,8 +138,9 @@ public class Service {
         url.append(photoName);
         byte[] image;
         try {
-            image = IOUtils.toByteArray(new BufferedInputStream(new URL(url.toString()).openStream()));
-        } catch (final IOException e) {
+            final HttpConnector connector = new HttpConnector(url.toString(), headers);
+            image = connector.getBytes();
+        } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
         }
         return image;

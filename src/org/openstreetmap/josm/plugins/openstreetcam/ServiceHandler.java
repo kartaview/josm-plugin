@@ -89,6 +89,7 @@ final class ServiceHandler {
                 PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
             }
         }
+
         return finalResult;
     }
 

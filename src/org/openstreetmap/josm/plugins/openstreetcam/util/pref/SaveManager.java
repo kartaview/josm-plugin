@@ -24,6 +24,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import org.openstreetmap.josm.Main;
@@ -94,5 +95,9 @@ final class SaveManager {
     void saveDataType(final DataType dataType) {
         final String value = dataType != null ? dataType.name() : "";
         Main.pref.put(DATA_TYPE, value);
+    }
+
+    void savePluginLocalVersion(final String localVersion) {
+        Main.pref.put(PLUGIN_LOCAL_VERSION, localVersion);
     }
 }

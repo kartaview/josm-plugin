@@ -80,6 +80,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         if (layerActivatorMenuItem == null) {
             layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
+        PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
     }
 
     @Override
