@@ -138,7 +138,7 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
     private void handleMouseHover(final MouseEvent event) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.nearbyPhoto(event.getPoint());
-        if (photo != null) {
+        if (photo != null && !photo.equals(layer.getSelectedPhoto())) {
             selectPhoto(photo, PhotoType.THUMBNAIL);
             layer.selectStartPhotoForClosestAction(photo);
             if (layer.getClosestPhotos() != null) {
