@@ -164,7 +164,6 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
             }
             detailsDialog.enableSequenceActions(false, false);
             detailsDialog.updateUI(null, null);
-            Main.map.repaint();
         } else {
             SwingUtilities.invokeLater(() -> {
                 ThreadPool.getInstance().execute(() -> {
