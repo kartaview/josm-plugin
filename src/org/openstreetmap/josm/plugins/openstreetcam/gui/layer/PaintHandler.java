@@ -162,7 +162,7 @@ class PaintHandler {
         final LatLon midPoint = new LatLon((start.lat() + end.lat()) / 2, (start.lon() + end.lon()) / 2);
         final double bearing = Math.toDegrees(start.bearing(midPoint));
         final Pair<Coordinate, Coordinate> arrowEndCoordinates =
-                GeometryUtil.arrowEndPoints(new Coordinate(start.lat(), start.lon()), bearing, -length);
+                GeometryUtil.arrowEndPoints(new Coordinate(midPoint.lat(), midPoint.lon()), bearing, -length);
         final Pair<Point, Point> arrowLine1 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
                 new LatLon(arrowEndCoordinates.getFirst().getLat(), arrowEndCoordinates.getFirst().getLon())));
         final Pair<Point, Point> arrowLine2 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
