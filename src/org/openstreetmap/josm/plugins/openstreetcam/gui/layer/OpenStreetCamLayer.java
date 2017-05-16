@@ -203,6 +203,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         return photo;
     }
 
+
     /**
      * Checks if the selected photo is the first photo of the sequence.
      *

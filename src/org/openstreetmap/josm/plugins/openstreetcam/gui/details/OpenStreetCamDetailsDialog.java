@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -33,6 +34,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserve
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -137,16 +139,16 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param photo the currently selected {@code Photo}
      * @param photoType the type of photo to be loaded
      */
-    public void updateUI(final Photo photo, final PhotoType photoType) {
+    public void updateUI(final Photo photo, final PhotoType photoType, final boolean displayLoadingMessage) {
         if (photo != null) {
-            // display loading text
-            ThreadPool.getInstance().execute(() -> {
-                pnlPhoto.displayLoadingMessage();
-                pnlBtn.updateUI(photo);
-                lblDetails.revalidate();
-                repaint();
-            });
-
+            if (displayLoadingMessage) {
+                ThreadPool.getInstance().execute(() -> {
+                    pnlPhoto.displayLoadingMessage();
+                    pnlBtn.updateUI(photo);
+                    lblDetails.revalidate();
+                    repaint();
+                });
+            }
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
@@ -160,7 +162,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     private void loadPhoto(final Photo photo, final PhotoType photoType) {
-        pnlPhoto.displayLoadingMessage();
+        // pnlPhoto.displayLoadingMessage();
         final String detailsTxt = Formatter.formatPhotoDetails(photo);
         final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
         try {
@@ -196,11 +198,13 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      */
     public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
-            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataTypeChangeObserver) {
+            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataTypeChangeObserver,
+            final TrackAutoplayObserver trackAutoplayObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
+        pnlBtn.registerObserver(trackAutoplayObserver);
     }
 
     /**
@@ -245,5 +249,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
         pnlBtn.revalidate();
         repaint();
+    }
+
+    public void updateAutoplayButton(final AutoplayAction action) {
+        pnlBtn.updateAutoplayButton(action);
     }
 }

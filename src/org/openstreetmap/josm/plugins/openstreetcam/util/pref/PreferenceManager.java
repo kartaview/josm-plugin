@@ -33,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
 /**
@@ -128,7 +129,8 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadCacheSettings());
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadTrackSettings(),
+                loadCacheSettings());
     }
 
     /**
@@ -149,6 +151,10 @@ public final class PreferenceManager {
         return loadManager.loadPhotoSettings();
     }
 
+    public TrackSettings loadTrackSettings() {
+        return loadManager.loadTrackSettings();
+    }
+
     /**
      * Loads the cache preference settings.
      *
@@ -167,6 +173,7 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
+            saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
     }
