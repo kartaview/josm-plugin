@@ -91,12 +91,16 @@ final class LoadManager {
     TrackSettings loadTrackSettings() {
         final String displayTrackFlagVal = Main.pref.get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
+        return new TrackSettings(displayTrackFlag, loadAutoplaySettings());
+    }
+
+    AutoplaySettings loadAutoplaySettings() {
         final String lengthValue = Main.pref.get(AUTOPLAY_LENGTH);
         final Integer length = lengthValue == null || lengthValue.isEmpty() ? null : Integer.valueOf(lengthValue);
         final String delayValue = Main.pref.get(AUTOPLAY_DELAY);
         final Integer delay = delayValue == null || delayValue.isEmpty() ? Config.getInstance().getAutoplayMinDelay()
                 : Integer.valueOf(delayValue);
-        return new TrackSettings(displayTrackFlag, new AutoplaySettings(length, delay));
+        return new AutoplaySettings(length, delay);
     }
 
     CacheSettings loadCacheSettings() {

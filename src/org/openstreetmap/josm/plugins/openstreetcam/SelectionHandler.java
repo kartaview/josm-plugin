@@ -39,7 +39,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+final class SelectionHandler extends MouseAdapter
+implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -312,8 +313,7 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
     }
 
     private void handleTrackAutoplay() {
-        final AutoplaySettings autoplaySettings =
-                PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
+        final AutoplaySettings autoplaySettings = PreferenceManager.getInstance().loadAutoplaySettings();
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.getSelectedPhoto();
         Photo nextPhoto = layer.sequencePhoto(layer.getSelectedPhoto().getSequenceIndex() + 1);
@@ -327,11 +327,23 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
             // end of sequence
             autoplayTimer.stop();
             OpenStreetCamDetailsDialog.getInstance().updateAutoplayButton(AutoplayAction.STOP);
+            if (layer.getClosestPhotos() != null && !layer.getClosestPhotos().isEmpty()) {
+                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
+            }
             autoplayDistance = 0;
         } else {
             final PhotoType photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                     ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
             selectPhoto(nextPhoto, photoType, false);
+        }
+    }
+
+    void changeAutoplayTimerDelay() {
+        if (autoplayTimer != null) {
+            autoplayTimer.setDelay(PreferenceManager.getInstance().loadAutoplaySettings().getDelay());
+            if (autoplayTimer.isRunning()) {
+                autoplayTimer.restart();
+            }
         }
     }
 }

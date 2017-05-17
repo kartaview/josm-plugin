@@ -258,6 +258,10 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     selectionHandler.changeMouseHoverTimerDelay();
                 } else if (prefManager.hasMouseHoverFlagChanged(event.getKey(), newValue)) {
                     handleMouseHover();
+                } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
+                    System.out.println("new value:" + event.getNewValue());
+                    selectionHandler.changeAutoplayTimerDelay();
+
                 }
             }
         }

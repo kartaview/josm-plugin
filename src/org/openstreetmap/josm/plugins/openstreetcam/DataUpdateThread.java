@@ -159,6 +159,11 @@ class DataUpdateThread implements Runnable {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelectedPhoto);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                } else {
+                    if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
+                            && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()) {
+                        OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                    }
                 }
                 Main.map.repaint();
             });
