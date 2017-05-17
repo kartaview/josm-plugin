@@ -59,13 +59,15 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-SequenceObservable, TrackAutoplayObservable {
+        SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
     private static final String NEXT_PHOTO = "next photo";
     private static final String PREVIOUS_PHOTO = "previous photo";
     private static final String CLOSEST_PHOTO = "closest photo";
+    private static final String PLAY_TRACK = "play track";
+    private static final String STOP_TRACK = "stop track";
 
     private static final Dimension DIM = new Dimension(200, 24);
     private static final int ROWS = 1;
@@ -95,9 +97,12 @@ SequenceObservable, TrackAutoplayObservable {
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
         createComponents();
-        registerShortcuts();
+        registerShortcut(new SelectPhotoAction(false), KeyEvent.VK_LEFT, PREVIOUS_PHOTO);
+        registerShortcut(new SelectPhotoAction(true), KeyEvent.VK_RIGHT, NEXT_PHOTO);
+        registerShortcut(new ClosestPhotoAction(), KeyEvent.VK_N, CLOSEST_PHOTO);
+        registerShortcut(new TrackAutoplayAction(AutoplayAction.START), KeyEvent.VK_P, PLAY_TRACK);
+        registerShortcut(new TrackAutoplayAction(AutoplayAction.STOP), KeyEvent.VK_P, STOP_TRACK);
         setPreferredSize(DIM);
-
     }
 
     private void createComponents() {
@@ -128,35 +133,19 @@ SequenceObservable, TrackAutoplayObservable {
 
         add(btnPrevious);
         add(btnNext);
-        if (PreferenceManager.getInstance().loadTrackSettings().isDisplayTrack()) {
-            add(btnAutoplay);
-        }
+        add(btnAutoplay);
         add(btnClosestPhoto);
         add(btnLocation);
         add(btnWebPage);
     }
 
-    private void registerShortcuts() {
+    private void registerShortcut(final AbstractAction action, final int keyCode, final String actionMapKey) {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
-        Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
-        getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
+                .put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK), actionMapKey);
+        Main.map.mapView.getActionMap().put(actionMapKey, action);
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK),
+                actionMapKey);
+        getActionMap().put(actionMapKey, action);
     }
 
     /**
@@ -198,14 +187,14 @@ SequenceObservable, TrackAutoplayObservable {
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                                    : iconConfig.getManualSwitchImageIcon();
-                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-                                    btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
-                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-                                    add(btnDataSwitch, 0);
+            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                            : iconConfig.getManualSwitchImageIcon();
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+            add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);
@@ -243,6 +232,12 @@ SequenceObservable, TrackAutoplayObservable {
 
         // autoplay should be enabled if there are next photos
         btnAutoplay.setEnabled(isNext);
+        if (!isNext && !isPrevious) {
+            // reset initial state
+            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
+            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
+            btnAutoplay.setActionCommand(AutoplayAction.START.name());
+        }
     }
 
     /**
@@ -372,17 +367,38 @@ SequenceObservable, TrackAutoplayObservable {
         }
     }
 
-
+    /**
+     * Starts/stops to auto-play the currently displayed track.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
     private final class TrackAutoplayAction extends AbstractAction {
 
         private static final long serialVersionUID = -2733397455276087753L;
 
+        private AutoplayAction actionType;
+
+        private TrackAutoplayAction() {}
+
+        private TrackAutoplayAction(final AutoplayAction actionType) {
+            this.actionType = actionType;
+        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final AutoplayAction action = AutoplayAction.valueOf(event.getActionCommand());
+                final AutoplayAction action =
+                        actionType == null ? AutoplayAction.valueOf(event.getActionCommand()) : actionType;
                 updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
+                if (action.equals(AutoplayAction.START)) {
+                    btnClosestPhoto.setEnabled(false);
+                    btnPrevious.setEnabled(false);
+                    btnNext.setEnabled(false);
+                } else {
+                    btnPrevious.setEnabled(true);
+                    btnNext.setEnabled(true);
+                }
                 ThreadPool.getInstance().execute(() -> notifyObserver(action));
 
             }

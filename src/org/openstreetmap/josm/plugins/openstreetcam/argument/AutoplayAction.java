@@ -10,11 +10,16 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 
 /**
- * Specifies the actions supported by the autoplay feature.
+ * Specifies the actions supported by the auto-play feature.
  *
  * @author beataj
  * @version $Revision$
  */
 public enum AutoplayAction {
-    STOP, START
+
+    /** starts track auto-play */
+    START,
+
+    /** stops track auto-play */
+    STOP
 }

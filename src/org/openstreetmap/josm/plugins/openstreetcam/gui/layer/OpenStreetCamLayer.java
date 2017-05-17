@@ -240,7 +240,6 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
     }
 
-
     /**
      * Retrieve the closest image of the currently selected image.
      *

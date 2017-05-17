@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 
 /**
+ * Defines the user configurable auto-play settings.
  *
  * @author beataj
  * @version $Revision$
@@ -20,6 +21,12 @@ public class AutoplaySettings {
     private final Integer delay;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param length the length of the track that should be auto-played
+     * @param delay the number of milliseconds to wait between displaying track photos
+     */
     public AutoplaySettings(final Integer length, final Integer delay) {
         this.length = length;
         this.delay = delay;

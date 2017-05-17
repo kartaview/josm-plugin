@@ -197,9 +197,10 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 detailsDialog.updateUI(photo, photoType, displayLoadingMessage);
                 SwingUtilities.invokeLater(() -> {
                     if (layer.getSelectedSequence() != null) {
-                        detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                                layer.enableNextPhotoAction());
-
+                        if (autoplayTimer == null || !autoplayTimer.isRunning()) {
+                            detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                                    layer.enableNextPhotoAction());
+                        }
                     }
                 });
             });
@@ -280,6 +281,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     @Override
     public void play(final AutoplayAction action) {
+        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         if (AutoplayAction.START.equals(action)) {
             // start autoplay
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
@@ -307,6 +309,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                                         PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                                         ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
                                 selectPhoto(nextPhoto, photoType, false);
+                                layer.selectStartPhotoForClosestAction(photo);
                             } else {
                                 autoplayTimer.stop();
                                 OpenStreetCamDetailsDialog.getInstance().updateAutoplayButton(AutoplayAction.STOP);
@@ -325,6 +328,9 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         } else {
             // stop autoplay
             autoplayTimer.stop();
+            if (layer.getClosestPhotos() != null) {
+                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            }
         }
     }
 }

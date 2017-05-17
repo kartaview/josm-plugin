@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 
 /**
+ * Defines the track display user configurable settings.
  *
  * @author beataj
  * @version $Revision$
@@ -20,6 +21,12 @@ public class TrackSettings {
     private final AutoplaySettings autoplaySettings;
 
 
+    /**
+     * Builds a new object with the given arguments.
+     *
+     * @param displayTrack
+     * @param autoplaySettings
+     */
     public TrackSettings(final boolean displayTrack, final AutoplaySettings autoplaySettings) {
         this.displayTrack = displayTrack;
         this.autoplaySettings = autoplaySettings;

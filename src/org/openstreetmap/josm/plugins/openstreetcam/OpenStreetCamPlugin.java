@@ -93,7 +93,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             // initialize details dialog
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-            detailsDialog.registerObservers(this, selectionHandler, selectionHandler, this, selectionHandler);
+            detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler);
             newMapFrame.addToggleDialog(detailsDialog, true);
             if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
                 detailsDialog.showDialog();
