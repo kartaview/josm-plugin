@@ -225,7 +225,12 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 .equals(selectedPhoto.getSequenceIndex());
     }
 
-    private void selectStartPhotoForClosestAction(final Photo photo) {
+    /**
+     * Sets a start photo from witch a possible closest image action should start.
+     *
+     * @param photo a {@code Photo}
+     */
+    public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
         if (photo != null && dataSet.getPhotos() != null) {
             closestPhotos =
@@ -278,7 +283,6 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
-        selectStartPhotoForClosestAction(selectedPhoto);
     }
 
     /**

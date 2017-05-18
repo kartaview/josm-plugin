@@ -80,6 +80,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             mouseHoverTimer = null;
             autoplayDistance = 0;
             selectPhoto(null, null, false);
+            layer.selectStartPhotoForClosestAction(null);
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
         }
     }
@@ -95,6 +96,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final PhotoType photoType =
                     photoSettings.isHighQualityFlag() ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
+            layer.selectStartPhotoForClosestAction(photo);
         }
     }
 
@@ -158,6 +160,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final Photo photo = layer.nearbyPhoto(event.getPoint());
         if (photo != null && !photo.equals(layer.getSelectedPhoto())) {
             selectPhoto(photo, PhotoType.THUMBNAIL, true);
+            layer.selectStartPhotoForClosestAction(photo);
             if (layer.getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
             }
@@ -277,6 +280,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final PhotoType photoType =
                     photoSettings.isHighQualityFlag() ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
+            layer.selectStartPhotoForClosestAction(photo);
             SwingUtilities.invokeLater(() -> {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
@@ -335,6 +339,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final PhotoType photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                     ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
             selectPhoto(nextPhoto, photoType, false);
+            layer.selectStartPhotoForClosestAction(photo);
         }
     }
 
