@@ -46,6 +46,7 @@ public final class Config extends BaseConfig {
     private final String serviceBaseUrl;
     private final String serviceUrl;
     private final String photoDetailsUrl;
+    private final String userPageUrl;
     private final String feedbackUrl;
 
     private final int nearbyPhotosMaxRadius;
@@ -74,6 +75,7 @@ public final class Config extends BaseConfig {
         serviceBaseUrl = readProperty("service.url");
         serviceUrl = serviceBaseUrl + readProperty("service.version");
         photoDetailsUrl = serviceBaseUrl + readProperty("service.details");
+        userPageUrl = serviceBaseUrl + readProperty("service.userPage");
         feedbackUrl = readProperty("feedback.url");
 
         nearbyPhotosMaxRadius = readIntegerProperty("nearbyPhotos.maxRadius", MAX_RADIUS);
@@ -112,6 +114,10 @@ public final class Config extends BaseConfig {
 
     public String getPhotoDetailsUrl() {
         return photoDetailsUrl;
+    }
+
+    public String getUserPageUrl() {
+        return userPageUrl;
     }
 
     public String getFeedbackUrl() {
