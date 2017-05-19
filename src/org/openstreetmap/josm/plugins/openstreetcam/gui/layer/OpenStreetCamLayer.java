@@ -203,6 +203,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         return photo;
     }
 
+
     /**
      * Checks if the selected photo is the first photo of the sequence.
      *
@@ -238,7 +239,6 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             closestPhotos = Collections.emptyList();
         }
     }
-
 
     /**
      * Retrieve the closest image of the currently selected image.

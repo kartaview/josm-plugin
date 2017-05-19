@@ -38,9 +38,15 @@ public final class GuiConfig extends BaseConfig {
     private final String prefManualSwitchLbl;
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
-    private final String prefDisplayTrackLbl;
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
+
+    private final String prefTrackLbl;
+    private final String prefDisplayTrackLbl;
+    private final String prefAutoplayLbl;
+    private final String prefAutoplayLengthLbl;
+    private final String prefAutoplayDelayLbl;
+
     private final String prefCacheLbl;
     private final String prefMemoryLbl;
     private final String prefDiskLbl;
@@ -49,6 +55,8 @@ public final class GuiConfig extends BaseConfig {
 
     private final String btnPreviousTlt;
     private final String btnNextTlt;
+    private final String btnPlayTlt;
+    private final String btnStopTlt;
     private final String btnLocationTlt;
     private final String btnWebPageTlt;
     private final String btnClosestImageTlt;
@@ -96,9 +104,14 @@ public final class GuiConfig extends BaseConfig {
         prefManualSwitchLbl = readProperty("preferences.mapView.switch.lbl");
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
-        prefDisplayTrackLbl = readProperty("preference.photo.displayTrack.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
+        prefTrackLbl = readProperty("preference.track.lbl");
+        prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
+        prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
+        prefAutoplayLengthLbl = readProperty("preference.track.autoplay.length.lbl");
+        prefAutoplayDelayLbl = readProperty("preference.track.autoplay.delay.lbl");
+
         prefCacheLbl = readProperty("preference.cache.lbl");
         prefMemoryLbl = readProperty("preference.cache.memory.lbl");
         prefDiskLbl = readProperty("preference.cache.disk.lbl");
@@ -107,6 +120,8 @@ public final class GuiConfig extends BaseConfig {
 
         btnPreviousTlt = readProperty("btn.previous.tlt");
         btnNextTlt = readProperty("btn.next.tlt");
+        btnPlayTlt = readProperty("btn.play.tlt");
+        btnStopTlt = readProperty("btn.stop.tlt");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnClosestImageTlt = readProperty("btn.closestImage.tlt");
@@ -193,6 +208,22 @@ public final class GuiConfig extends BaseConfig {
         return prefMouseHoverDelayLbl;
     }
 
+    public String getPrefTrackLbl() {
+        return prefTrackLbl;
+    }
+
+    public String getPrefAutoplayLbl() {
+        return prefAutoplayLbl;
+    }
+
+    public String getPrefAutoplayLengthLbl() {
+        return prefAutoplayLengthLbl;
+    }
+
+    public String getPrefAutoplayDelayLbl() {
+        return prefAutoplayDelayLbl;
+    }
+
     public String getPrefCacheLbl() {
         return prefCacheLbl;
     }
@@ -219,6 +250,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnNextTlt() {
         return btnNextTlt;
+    }
+
+    public String getBtnPlayTlt() {
+        return btnPlayTlt;
+    }
+
+    public String getBtnStopTlt() {
+        return btnStopTlt;
     }
 
     public String getBtnLocationTlt() {

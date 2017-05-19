@@ -8,6 +8,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_LENGTH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -33,6 +35,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
 /**
@@ -72,9 +75,19 @@ final class SaveManager {
 
     void savePhotoSettings(final PhotoSettings photoSettings) {
         Main.pref.put(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
-        Main.pref.put(DISPLAY_TRACK_FLAG, photoSettings.isDisplayTrackFlag());
+
         Main.pref.put(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
         Main.pref.putInteger(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
+    }
+
+    void saveTrackSettings(final TrackSettings trackSettings) {
+        Main.pref.put(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
+        if (trackSettings.getAutoplaySettings() != null) {
+            final String length = trackSettings.getAutoplaySettings().getLength() != null
+                    ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
+            Main.pref.put(AUTOPLAY_LENGTH, length);
+            Main.pref.putInteger(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+        }
     }
 
     void saveCacheSettings(final CacheSettings cacheSettings) {

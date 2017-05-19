@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -30,6 +31,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserve
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -136,16 +138,19 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      *
      * @param photo the currently selected {@code Photo}
      * @param photoType the type of photo to be loaded
+     * @param displayLoadingMessage specifies if the loading message is displayed or not. The loading message is
+     * displayed until the photo is loaded.
      */
-    public void updateUI(final Photo photo, final PhotoType photoType) {
+    public void updateUI(final Photo photo, final PhotoType photoType, final boolean displayLoadingMessage) {
         if (photo != null) {
             // display loading text
-            ThreadPool.getInstance().execute(() -> {
-                pnlPhoto.displayLoadingMessage();
-                pnlBtn.updateUI(photo);
-                repaint();
-            });
-
+            if (displayLoadingMessage) {
+                ThreadPool.getInstance().execute(() -> {
+                    pnlPhoto.displayLoadingMessage();
+                    pnlBtn.updateUI(photo);
+                    repaint();
+                });
+            }
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
@@ -158,7 +163,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     private void loadPhoto(final Photo photo, final PhotoType photoType) {
-        pnlPhoto.displayLoadingMessage();
         final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
         try {
             final Pair<BufferedImage, PhotoType> imageResult =
@@ -185,17 +189,20 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     /**
      * Registers the observers to the button panel.
      *
-     * @param locationObserver the {@code LocationObserver} listens for the location button's action
-     * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
      * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
+     * @param locationObserver the {@code LocationObserver} listens for the location button's action
+     * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
+     * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
      */
-    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
-            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataTypeChangeObserver) {
-        pnlBtn.registerObserver(locationObserver);
-        pnlBtn.registerObserver(sequenceObserver);
+    public void registerObservers(final ClosestPhotoObserver closestPhotoObserver,
+            final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
+            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
+        pnlBtn.registerObserver(locationObserver);
+        pnlBtn.registerObserver(sequenceObserver);
+        pnlBtn.registerObserver(trackAutoplayObserver);
     }
 
     /**
@@ -240,5 +247,18 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
         pnlBtn.revalidate();
         repaint();
+    }
+
+    /**
+     * Updates the properties of the auto-play button. Null properties are ignored.
+     *
+     * @param action a {@code AutoplayAction} specifies the new action associated with the auto-play button.
+     */
+    public void updateAutoplayButton(final AutoplayAction action) {
+        if (action != null) {
+            pnlBtn.updateAutoplayButton(action);
+            pnlBtn.revalidate();
+            repaint();
+        }
     }
 }

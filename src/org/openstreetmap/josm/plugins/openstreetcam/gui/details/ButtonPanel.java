@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObservable;
@@ -38,6 +39,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -45,6 +48,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -54,14 +58,16 @@ import com.telenav.josm.common.gui.builder.ButtonBuilder;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
-    DataTypeChangeObservable {
+class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
+        SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
     private static final String NEXT_PHOTO = "next photo";
     private static final String PREVIOUS_PHOTO = "previous photo";
     private static final String CLOSEST_PHOTO = "closest photo";
+    private static final String PLAY_TRACK = "play track";
+    private static final String STOP_TRACK = "stop track";
 
     private static final Dimension DIM = new Dimension(200, 24);
     private static final int ROWS = 1;
@@ -71,15 +77,17 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     private JButton btnDataSwitch;
     private JButton btnPrevious;
     private JButton btnNext;
+    private JButton btnAutoplay;
     private JButton btnLocation;
     private JButton btnWebPage;
     private JButton btnClosestPhoto;
 
     /* notifies the plugin main class */
-    private LocationObserver locationObserver;
-    private SequenceObserver sequenceObserver;
     private ClosestPhotoObserver closestPhotoObserver;
     private DataTypeChangeObserver dataUpdateObserver;
+    private LocationObserver locationObserver;
+    private SequenceObserver sequenceObserver;
+    private TrackAutoplayObserver trackAutoplayObserver;
 
 
     /* the currently selected photo */
@@ -89,9 +97,12 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
         createComponents();
-        registerShortcuts();
+        registerShortcut(new SelectPhotoAction(false), KeyEvent.VK_LEFT, PREVIOUS_PHOTO);
+        registerShortcut(new SelectPhotoAction(true), KeyEvent.VK_RIGHT, NEXT_PHOTO);
+        registerShortcut(new ClosestPhotoAction(), KeyEvent.VK_N, CLOSEST_PHOTO);
+        registerShortcut(new TrackAutoplayAction(AutoplayAction.START), KeyEvent.VK_P, PLAY_TRACK);
+        registerShortcut(new TrackAutoplayAction(AutoplayAction.STOP), KeyEvent.VK_P, STOP_TRACK);
         setPreferredSize(DIM);
-
     }
 
     private void createComponents() {
@@ -102,6 +113,9 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 guiConfig.getBtnPreviousTlt(), false);
         btnNext = ButtonBuilder.build(new SelectPhotoAction(true), iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(),
                 false);
+        btnAutoplay = ButtonBuilder.build(new TrackAutoplayAction(), iconConfig.getPlayIcon(),
+                guiConfig.getBtnPlayTlt(), false);
+        btnAutoplay.setActionCommand(AutoplayAction.START.name());
         btnLocation = ButtonBuilder.build(new JumpToLocationAction(), iconConfig.getLocationIcon(),
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
@@ -119,32 +133,19 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
 
         add(btnPrevious);
         add(btnNext);
+        add(btnAutoplay);
         add(btnClosestPhoto);
         add(btnLocation);
         add(btnWebPage);
     }
 
-    private void registerShortcuts() {
+    private void registerShortcut(final AbstractAction action, final int keyCode, final String actionMapKey) {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
-        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
-
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
-        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
-
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
-        Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
-        getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
+                .put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK), actionMapKey);
+        Main.map.mapView.getActionMap().put(actionMapKey, action);
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK),
+                actionMapKey);
+        getActionMap().put(actionMapKey, action);
     }
 
     /**
@@ -228,6 +229,15 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
     void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         btnPrevious.setEnabled(isPrevious);
         btnNext.setEnabled(isNext);
+
+        // autoplay should be enabled if there are next photos
+        btnAutoplay.setEnabled(isNext);
+        if (!isNext && !isPrevious) {
+            // reset initial state
+            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
+            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
+            btnAutoplay.setActionCommand(AutoplayAction.START.name());
+        }
     }
 
     /**
@@ -237,6 +247,18 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
      */
     void enableClosestPhotoButton(final boolean enabled) {
         btnClosestPhoto.setEnabled(enabled);
+    }
+
+    void updateAutoplayButton(final AutoplayAction action) {
+        if (action.equals(AutoplayAction.START)) {
+            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
+            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
+            btnAutoplay.setActionCommand(AutoplayAction.STOP.name());
+        } else {
+            btnAutoplay.setIcon(IconConfig.getInstance().getStopIcon());
+            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnStopTlt());
+            btnAutoplay.setActionCommand(AutoplayAction.START.name());
+        }
     }
 
     @Override
@@ -279,6 +301,16 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
         dataUpdateObserver.update(dataType);
     }
 
+    @Override
+    public void registerObserver(final TrackAutoplayObserver trackAutoplayObserver) {
+        this.trackAutoplayObserver = trackAutoplayObserver;
+
+    }
+
+    @Override
+    public void notifyObserver(final AutoplayAction action) {
+        trackAutoplayObserver.play(action);
+    }
 
     /**
      * Defines the functionality of the manual data switch button.
@@ -331,6 +363,44 @@ class ButtonPanel extends JPanel implements LocationObservable, SequenceObservab
                 final int index = isNext ? photo.getSequenceIndex() + 1 : photo.getSequenceIndex() - 1;
                 enableSequenceActions(false, false);
                 notifyObserver(index);
+            }
+        }
+    }
+
+    /**
+     * Starts/stops to auto-play the currently displayed track.
+     *
+     * @author beataj
+     * @version $Revision$
+     */
+    private final class TrackAutoplayAction extends AbstractAction {
+
+        private static final long serialVersionUID = -2733397455276087753L;
+
+        private AutoplayAction actionType;
+
+        private TrackAutoplayAction() {}
+
+        private TrackAutoplayAction(final AutoplayAction actionType) {
+            this.actionType = actionType;
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (photo != null) {
+                final AutoplayAction action =
+                        actionType == null ? AutoplayAction.valueOf(event.getActionCommand()) : actionType;
+                updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
+                if (action.equals(AutoplayAction.START)) {
+                    btnClosestPhoto.setEnabled(false);
+                    btnPrevious.setEnabled(false);
+                    btnNext.setEnabled(false);
+                } else {
+                    btnPrevious.setEnabled(true);
+                    btnNext.setEnabled(true);
+                }
+                ThreadPool.getInstance().execute(() -> notifyObserver(action));
+
             }
         }
     }
