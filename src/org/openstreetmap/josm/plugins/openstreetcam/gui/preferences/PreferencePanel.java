@@ -8,19 +8,23 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 
 
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -47,6 +51,8 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbDisplayTrack;
     private JCheckBox cbMouseHover;
     private JSpinner spMouseHoverDelay;
+    private JFormattedTextField txtAutoplayLength;
+    private JSpinner spAutoplayDelay;
     private JSpinner spMemoryCount;
     private JSpinner spDiskCount;
     private JSpinner spPrevNextCount;
@@ -57,7 +63,8 @@ class PreferencePanel extends JPanel {
         super(new GridBagLayout());
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         createMapViewSettings(preferenceSettings.getMapViewSettings());
-        createPhotoSettingsComponents(preferenceSettings.getPhotoSettings());
+        createPhotoSettingsComponents(preferenceSettings);
+        createTrackVisualizationSettings(preferenceSettings);
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
     }
 
@@ -83,21 +90,19 @@ class PreferencePanel extends JPanel {
 
     }
 
-    private void createPhotoSettingsComponents(final PhotoSettings settings) {
+    private void createPhotoSettingsComponents(final PreferenceSettings settings) {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefImageLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_IMAGE);
-        final boolean enabled = !settings.isMouseHoverFlag();
+        final boolean enabled = !settings.getPhotoSettings().isMouseHoverFlag();
         cbHighQualityPhoto = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
-                new SelectionListener(), Font.PLAIN, settings.isHighQualityFlag(), enabled);
+                new SelectionListener(), Font.PLAIN, settings.getPhotoSettings().isHighQualityFlag(), enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        cbDisplayTrack = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
-                new SelectionListener(), Font.PLAIN, settings.isDisplayTrackFlag(), enabled);
-        add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
-
         final boolean selectedMouseHoverFlag =
-                settings.isDisplayTrackFlag() || settings.isHighQualityFlag() ? false : settings.isMouseHoverFlag();
-        final boolean enabledMouseHoverFlag = !(settings.isDisplayTrackFlag() || settings.isHighQualityFlag());
+                settings.getTrackSettings().isDisplayTrack() || settings.getPhotoSettings().isHighQualityFlag() ? false
+                        : settings.getPhotoSettings().isMouseHoverFlag();
+        final boolean enabledMouseHoverFlag =
+                !(settings.getTrackSettings().isDisplayTrack() || settings.getPhotoSettings().isHighQualityFlag());
         cbMouseHover = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
                 Font.PLAIN, selectedMouseHoverFlag, enabledMouseHoverFlag);
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
@@ -105,10 +110,36 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MOUSE_HOVER_DELAY);
-        spMouseHoverDelay = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMouseHoverDelay(),
-                Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, false, enabledMouseHoverFlag);
+        spMouseHoverDelay =
+                TextComponentBuilder.buildPositiveNumberSpinner(settings.getPhotoSettings().getMouseHoverDelay(),
+                        Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(),
+                        Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false, enabledMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
+    }
+
+    private void createTrackVisualizationSettings(final PreferenceSettings settings) {
+        final boolean enabled = !settings.getPhotoSettings().isMouseHoverFlag();
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefTrackLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_TRACK);
+        cbDisplayTrack = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDisplayTrackLbl(),
+                new SelectionListener(), Font.PLAIN, settings.getTrackSettings().isDisplayTrack(), enabled);
+        add(cbDisplayTrack, Constraints.CB_TRACK_LOADING);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_AUTOPLAY);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayLengthLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_AUTOPLAY_LENGTH);
+        txtAutoplayLength = TextComponentBuilder.buildIntegerTextField(
+                settings.getTrackSettings().getAutoplaySettings().getLength(), 0, null, Font.PLAIN, Color.WHITE, true);
+        add(txtAutoplayLength, Constraints.TXT_AUTOPLAY_LENGTH);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayDelayLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_AUTOPLAY_DELAY);
+        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(
+                settings.getTrackSettings().getAutoplaySettings().getDelay(),
+                Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
+        add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
@@ -150,10 +181,16 @@ class PreferencePanel extends JPanel {
         final MapViewSettings mapViewSettings =
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
-                cbDisplayTrack.isSelected(), cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
+                cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
+
+
+        final String lengthValue = txtAutoplayLength.getText().trim();
+        final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
+        final TrackSettings trackSettings = new TrackSettings(cbDisplayTrack.isSelected(),
+                new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
-        return new PreferenceSettings(mapViewSettings, photoSettings, cacheSettings);
+        return new PreferenceSettings(mapViewSettings, photoSettings, trackSettings, cacheSettings);
     }
 
 

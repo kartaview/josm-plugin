@@ -33,8 +33,11 @@ public final class Config extends BaseConfig {
     private static final int SEGMENT_ZOOM = 10;
     private static final int PHOTO_ZOOM = 15;
     private static final int MAX_ZOOM = 18;
-    private static final int MIN_DELAY = 500;
-    private static final int MAX_DELAY = 30000;
+    private static final int MOUSE_HOVER_MIN_DELAY = 500;
+    private static final int MOUSE_HOVER_MAX_DELAY = 30000;
+
+    private static final int AUTOPLAY_MIN_DELAY = 200;
+    private static final int AUTOPLAY_MAX_DELAY = 2000;
 
     private static final String CONFIG_FILE = "openstreetcam.properties";
     private static final Config INSTANCE = new Config();
@@ -62,6 +65,9 @@ public final class Config extends BaseConfig {
     private final int mouseHoverMinDelay;
     private final int mouseHoverMaxDelay;
 
+    private final int autoplayMinDelay;
+    private final int autoplayMaxDelay;
+
     private Config() {
         super(CONFIG_FILE);
 
@@ -84,8 +90,11 @@ public final class Config extends BaseConfig {
         mapPhotoZoom = readIntegerProperty("map.photoZoom", PHOTO_ZOOM);
         mapSegmentZoom = readIntegerProperty("map.segmentZoom", SEGMENT_ZOOM);
 
-        mouseHoverMinDelay = readIntegerProperty("mouseHover.minDelay", MIN_DELAY);
-        mouseHoverMaxDelay = readIntegerProperty("mouseHover.maxDelay", MAX_DELAY);
+        mouseHoverMinDelay = readIntegerProperty("mouseHover.minDelay", MOUSE_HOVER_MIN_DELAY);
+        mouseHoverMaxDelay = readIntegerProperty("mouseHover.maxDelay", MOUSE_HOVER_MAX_DELAY);
+
+        autoplayMinDelay = readIntegerProperty("autoplay.minDelay", AUTOPLAY_MIN_DELAY);
+        autoplayMaxDelay = readIntegerProperty("autoplay.maxDelay", AUTOPLAY_MAX_DELAY);
     }
 
 
@@ -151,5 +160,13 @@ public final class Config extends BaseConfig {
 
     public int getMouseHoverMaxDelay() {
         return mouseHoverMaxDelay;
+    }
+
+    public int getAutoplayMinDelay() {
+        return autoplayMinDelay;
+    }
+
+    public int getAutoplayMaxDelay() {
+        return autoplayMaxDelay;
     }
 }
