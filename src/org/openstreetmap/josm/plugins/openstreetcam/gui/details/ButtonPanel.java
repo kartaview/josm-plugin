@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -47,6 +48,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
+import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
 
@@ -59,7 +61,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-        SequenceObservable, TrackAutoplayObservable {
+SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -139,9 +141,43 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
         add(btnWebPage);
     }
 
+    private void registerShortcuts() {
+        // Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        // .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+
+        // .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+
+
+        // super("OpenStreetCam:Select photo1", null, "OpenStreetCam:Select photo2",
+        // Shortcut.registerShortcut("OpenStreetCam:Select photo3", "OpenStreetCam:Select photo4",
+        // KeyEvent.VK_LEFT, Shortcut.ALT),
+
+        final JosmAction previousPhotoAction = new SelectPhotoAction("OpenStreetCam:Select previous photo",
+                "OpenStreetCam:Select previous photo", KeyEvent.VK_LEFT, Shortcut.ALT, false);
+        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, previousPhotoAction);
+        getActionMap().put(PREVIOUS_PHOTO, previousPhotoAction);
+
+
+        final JosmAction nextPhotoAction = new SelectPhotoAction("OpenStreetCam:Select next photo",
+                "OpenStreetCam:Select next photo", KeyEvent.VK_RIGHT, Shortcut.ALT, true);
+
+        Main.map.mapView.getActionMap().put(NEXT_PHOTO, nextPhotoAction);
+        getActionMap().put(NEXT_PHOTO, nextPhotoAction);
+
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
+
+
+        // MainMenu.add(Main.main.menu.toolsMenu, new SelectPhotoAction(false), MainMenu.WINDOW_MENU_GROUP.VOLATILE);
+    }
+
     private void registerShortcut(final AbstractAction action, final int keyCode, final String actionMapKey) {
         Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK), actionMapKey);
+        .put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK), actionMapKey);
         Main.map.mapView.getActionMap().put(actionMapKey, action);
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK),
                 actionMapKey);
@@ -187,14 +223,14 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                            : iconConfig.getManualSwitchImageIcon();
-            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
-            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-            add(btnDataSwitch, 0);
+                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                                    : iconConfig.getManualSwitchImageIcon();
+                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+                                    btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
+                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+                                    add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);
@@ -347,15 +383,30 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
      * @author beataj
      * @version $Revision$
      */
-    private final class SelectPhotoAction extends AbstractAction {
+    private final class SelectPhotoAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
 
         private final boolean isNext;
 
+
         private SelectPhotoAction(final boolean isNext) {
             this.isNext = isNext;
         }
+
+        private SelectPhotoAction(final String title, final String tooltip, final int key1, final int key2,
+                final boolean isNext) {
+            super(title, null, tooltip, Shortcut.registerShortcut(title, tooltip, key1, key2), true);
+            this.isNext = isNext;
+        }
+
+        // private SelectPhotoAction(final boolean isNext) {
+        // super("OpenStreetCam:Select photo1", null, "OpenStreetCam:Select photo2",
+        // Shortcut.registerShortcut("OpenStreetCam:Select photo3", "OpenStreetCam:Select photo4",
+        // KeyEvent.VK_LEFT, Shortcut.ALT),
+        // true);
+        // this.isNext = isNext;
+        // }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -366,6 +417,7 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
             }
         }
     }
+
 
     /**
      * Starts/stops to auto-play the currently displayed track.
@@ -390,16 +442,16 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
             if (photo != null) {
                 final AutoplayAction action =
                         actionType == null ? AutoplayAction.valueOf(event.getActionCommand()) : actionType;
-                updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
-                if (action.equals(AutoplayAction.START)) {
-                    btnClosestPhoto.setEnabled(false);
-                    btnPrevious.setEnabled(false);
-                    btnNext.setEnabled(false);
-                } else {
-                    btnPrevious.setEnabled(true);
-                    btnNext.setEnabled(true);
-                }
-                ThreadPool.getInstance().execute(() -> notifyObserver(action));
+                        updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
+                        if (action.equals(AutoplayAction.START)) {
+                            btnClosestPhoto.setEnabled(false);
+                            btnPrevious.setEnabled(false);
+                            btnNext.setEnabled(false);
+                        } else {
+                            btnPrevious.setEnabled(true);
+                            btnNext.setEnabled(true);
+                        }
+                        ThreadPool.getInstance().execute(() -> notifyObserver(action));
 
             }
         }
