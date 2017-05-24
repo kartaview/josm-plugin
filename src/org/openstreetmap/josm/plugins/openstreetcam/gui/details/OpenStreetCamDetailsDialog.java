@@ -17,7 +17,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
@@ -26,6 +25,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
@@ -35,7 +35,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserv
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
@@ -58,8 +57,8 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private static final int DLG_HEIGHT = 150;
 
     /** the dialog shortcut displayed on the left side slide menu */
-    private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
-            GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
+    // private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
+    // GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
 
     private static OpenStreetCamDetailsDialog instance = new OpenStreetCamDetailsDialog();
 
@@ -80,7 +79,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
-                GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
+                GuiConfig.getInstance().getPluginLongName(),
+                ShortcutFactory.getInstance().getShotrcut("OpenStreetCam:Details window"), DLG_HEIGHT, true,
+                PreferenceEditor.class);
         pnlDetails = new DetailsPanel(getBackground());
         pnlDetails.setBackground(getBackground());
         pnlPhoto = new PhotoPanel();

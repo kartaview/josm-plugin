@@ -32,6 +32,8 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginShortName;
     private final String pluginLongName;
     private final String pluginTlt;
+    private final String pluginShortcutText;
+    private final String pluginShortcutLongText;
 
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
@@ -54,16 +56,26 @@ public final class GuiConfig extends BaseConfig {
     private final String prefNearbyLbl;
 
     private final String btnPreviousTlt;
+    private final String btnPreviousShortcutText;
     private final String btnNextTlt;
+    private final String btnNextShortcutText;
+
+    private final String btnClosestTlt;
+    private final String btnClosestShortcutText;
     private final String btnPlayTlt;
+    private final String btnPlayShortcutText;
     private final String btnStopTlt;
+    private final String btnStopShortcutText;
     private final String btnLocationTlt;
+    private final String btnLocationShortcutText;
     private final String btnWebPageTlt;
-    private final String btnClosestImageTlt;
+    private final String btnWebPageShortcutTlt;
     private final String btnDataSwitchImageTlt;
     private final String btnDataSwitchSegmentTlt;
+    private final String btnDataSwitchShortcutTlt;
 
     private final String dlgFilterTitle;
+    private final String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
@@ -90,6 +102,7 @@ public final class GuiConfig extends BaseConfig {
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
     private final String layerFeedbackMenuItemLbl;
+    private final String layerFeedbackShortcutText;
 
 
     private GuiConfig() {
@@ -98,6 +111,8 @@ public final class GuiConfig extends BaseConfig {
         pluginShortName = readProperty("plugin.name.short");
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
+        pluginShortcutText = readProperty("plugin.shortcut.text");
+        pluginShortcutLongText = readProperty("plugin.shortcut.longText");
 
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
@@ -119,16 +134,25 @@ public final class GuiConfig extends BaseConfig {
         prefNearbyLbl = readProperty("preference.cache.nearby.lbl");
 
         btnPreviousTlt = readProperty("btn.previous.tlt");
+        btnPreviousShortcutText = readProperty("btn.previous.shortcut.text");
         btnNextTlt = readProperty("btn.next.tlt");
+        btnNextShortcutText = readProperty("btn.next.shortcut.text");
         btnPlayTlt = readProperty("btn.play.tlt");
+        btnPlayShortcutText = readProperty("btn.play.shortcut.text");
         btnStopTlt = readProperty("btn.stop.tlt");
+        btnStopShortcutText = readProperty("btn.stop.shortcut.text");
         btnLocationTlt = readProperty("btn.location.tlt");
+        btnLocationShortcutText = readProperty("btn.location.shortcut.text");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
-        btnClosestImageTlt = readProperty("btn.closestImage.tlt");
+        btnWebPageShortcutTlt = readProperty("btn.webPage.shortcut.text");
+        btnClosestTlt = readProperty("btn.closest.tlt");
+        btnClosestShortcutText = readProperty("btn.closest.shortcut.text");
         btnDataSwitchImageTlt = readProperty("btn.switch.image.tlt");
         btnDataSwitchSegmentTlt = readProperty("btn.switch.segment.tlt");
+        btnDataSwitchShortcutTlt = readProperty("btn.switch.shortcut.text");
 
         dlgFilterTitle = readProperty("filter.title");
+        dlgFilterShortcutText = readProperty("filter.shortcut.text");
         dlgFilterDateLbl = readProperty("filter.date.lbl");
         dlgFilterUserLbl = readProperty("filter.user.lbl");
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
@@ -156,6 +180,7 @@ public final class GuiConfig extends BaseConfig {
         layerDeleteMenuItemLbl = readProperty("layer.menu.delete.lbl");
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
         layerFeedbackMenuItemLbl = readProperty("layer.menu.feedback.lbl");
+        layerFeedbackShortcutText = readProperty("layer.menu.feedback.shortcut.text");
     }
 
 
@@ -268,10 +293,6 @@ public final class GuiConfig extends BaseConfig {
         return btnWebPageTlt;
     }
 
-    public String getBtnClosestImageTlt() {
-        return btnClosestImageTlt;
-    }
-
     public String getBtnDataSwitchImageTlt() {
         return btnDataSwitchImageTlt;
     }
@@ -370,5 +391,57 @@ public final class GuiConfig extends BaseConfig {
 
     public String getLayerFeedbackMenuItemLbl() {
         return layerFeedbackMenuItemLbl;
+    }
+
+    public String getPluginShortcutText() {
+        return pluginShortcutText;
+    }
+
+    public String getPluginShortcutLongText() {
+        return pluginShortcutLongText;
+    }
+
+    public String getBtnPreviousShortcutText() {
+        return btnPreviousShortcutText;
+    }
+
+    public String getBtnNextShortcutText() {
+        return btnNextShortcutText;
+    }
+
+    public String getBtnClosestTlt() {
+        return btnClosestTlt;
+    }
+
+    public String getBtnClosestShortcutText() {
+        return btnClosestShortcutText;
+    }
+
+    public String getBtnPlayShortcutText() {
+        return btnPlayShortcutText;
+    }
+
+    public String getBtnStopShortcutText() {
+        return btnStopShortcutText;
+    }
+
+    public String getBtnLocationShortcutText() {
+        return btnLocationShortcutText;
+    }
+
+    public String getBtnWebPageShortcutTlt() {
+        return btnWebPageShortcutTlt;
+    }
+
+    public String getBtnDataSwitchShortcutTlt() {
+        return btnDataSwitchShortcutTlt;
+    }
+
+    public String getDlgFilterShortcutText() {
+        return dlgFilterShortcutText;
+    }
+
+    public String getLayerFeedbackShortcutText() {
+        return layerFeedbackShortcutText;
     }
 }
