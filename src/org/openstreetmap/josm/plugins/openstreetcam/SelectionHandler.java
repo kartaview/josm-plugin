@@ -39,8 +39,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-final class SelectionHandler extends MouseAdapter
-implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserver, SequenceObserver, 
+    TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -76,9 +76,15 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
     private void handleUnSelection() {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         if (layer.getSelectedPhoto() != null) {
-            autoplayTimer = null;
-            mouseHoverTimer = null;
-            autoplayDistance = 0;
+            if (autoplayTimer != null) {
+                autoplayTimer.stop();
+                autoplayTimer = null;
+                autoplayDistance = 0;
+            }
+            if (mouseHoverTimer != null) {
+                mouseHoverTimer.stop();
+                mouseHoverTimer = null;
+            }
             selectPhoto(null, null, false);
             layer.selectStartPhotoForClosestAction(null);
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
@@ -89,6 +95,10 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.nearbyPhoto(event.getPoint());
         if (photo != null) {
+            if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                autoplayTimer.stop();
+                autoplayDistance = 0;
+            }
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
             }
@@ -135,13 +145,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         if (PreferenceManager.getInstance().loadPhotoSettings().isMouseHoverFlag() && selectionAllowed()) {
             if (mouseHoverTimer != null && mouseHoverTimer.isRunning()) {
                 mouseHoverTimer.restart();
-            } else if (mouseHoverTimer == null) {
+            } else {
                 mouseHoverTimer = new Timer(PreferenceManager.getInstance().loadPhotoSettings().getMouseHoverDelay(),
                         event -> ThreadPool.getInstance().execute(() -> handleMouseHover(e)));
                 mouseHoverTimer.setRepeats(false);
                 mouseHoverTimer.start();
-            } else {
-                mouseHoverTimer.restart();
             }
         }
     }

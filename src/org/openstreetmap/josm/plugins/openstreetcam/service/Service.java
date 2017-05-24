@@ -136,7 +136,6 @@ public class Service {
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
         final StringBuilder url = new StringBuilder(Config.getInstance().getServiceBaseUrl());
         url.append(photoName);
-        System.out.println(url);
         byte[] image;
         try {
             final HttpConnector connector = new HttpConnector(url.toString(), headers);
