@@ -39,8 +39,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserver, SequenceObserver, 
-    TrackAutoplayObserver {
+final class SelectionHandler extends MouseAdapter
+implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -328,26 +328,30 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
         final AutoplaySettings autoplaySettings = PreferenceManager.getInstance().loadAutoplaySettings();
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.getSelectedPhoto();
-        Photo nextPhoto = layer.sequencePhoto(layer.getSelectedPhoto().getSequenceIndex() + 1);
-        if (nextPhoto != null && autoplaySettings.getLength() != null) {
-            autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
-            if (autoplayDistance > autoplaySettings.getLength()) {
-                nextPhoto = null;
+        if (photo != null) {
+            Photo nextPhoto = layer.sequencePhoto(photo.getSequenceIndex() + 1);
+            if (nextPhoto != null && autoplaySettings.getLength() != null) {
+                autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
+                if (autoplayDistance > autoplaySettings.getLength()) {
+                    nextPhoto = null;
+                }
             }
-        }
-        if (nextPhoto == null) {
-            // end of sequence
-            autoplayTimer.stop();
-            OpenStreetCamDetailsDialog.getInstance().updateAutoplayButton(AutoplayAction.STOP);
-            if (layer.getClosestPhotos() != null && !layer.getClosestPhotos().isEmpty()) {
-                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
+            if (nextPhoto == null) {
+                // end of sequence
+                autoplayTimer.stop();
+                OpenStreetCamDetailsDialog.getInstance().updateAutoplayButton(AutoplayAction.STOP);
+                if (layer.getClosestPhotos() != null && !layer.getClosestPhotos().isEmpty()) {
+                    OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                }
+                autoplayDistance = 0;
+            } else {
+                final PhotoType photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
+                selectPhoto(nextPhoto, photoType, false);
+                layer.selectStartPhotoForClosestAction(photo);
             }
-            autoplayDistance = 0;
         } else {
-            final PhotoType photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                    ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
-            selectPhoto(nextPhoto, photoType, false);
-            layer.selectStartPhotoForClosestAction(photo);
+            autoplayTimer.stop();
         }
     }
 
