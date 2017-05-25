@@ -18,19 +18,17 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.net.URI;
-import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObservable;
@@ -59,15 +57,9 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-        SequenceObservable, TrackAutoplayObservable {
+SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
-
-    private static final String NEXT_PHOTO = "next photo";
-    private static final String PREVIOUS_PHOTO = "previous photo";
-    private static final String CLOSEST_PHOTO = "closest photo";
-    private static final String PLAY_TRACK = "play track";
-    private static final String STOP_TRACK = "stop track";
 
     private static final Dimension DIM = new Dimension(200, 24);
     private static final int ROWS = 1;
@@ -97,22 +89,19 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
         createComponents();
-        registerShortcut(new SelectPhotoAction(false), KeyEvent.VK_LEFT, PREVIOUS_PHOTO);
-        registerShortcut(new SelectPhotoAction(true), KeyEvent.VK_RIGHT, NEXT_PHOTO);
-        registerShortcut(new ClosestPhotoAction(), KeyEvent.VK_N, CLOSEST_PHOTO);
-        registerShortcut(new TrackAutoplayAction(AutoplayAction.START), KeyEvent.VK_P, PLAY_TRACK);
-        registerShortcut(new TrackAutoplayAction(AutoplayAction.STOP), KeyEvent.VK_P, STOP_TRACK);
         setPreferredSize(DIM);
     }
 
     private void createComponents() {
         final GuiConfig guiConfig = GuiConfig.getInstance();
         final IconConfig iconConfig = IconConfig.getInstance();
+        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(guiConfig.getBtnPreviousShortcutText(), false),
+                iconConfig.getPreviousIcon(), guiConfig.getBtnPreviousTlt(), false);
+        btnNext = ButtonBuilder.build(new SelectPhotoAction(guiConfig.getBtnNextShortcutText(), true),
+                iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(), false);
+        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
+                guiConfig.getBtnClosestTlt(), false);
 
-        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
-                guiConfig.getBtnPreviousTlt(), false);
-        btnNext = ButtonBuilder.build(new SelectPhotoAction(true), iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(),
-                false);
         btnAutoplay = ButtonBuilder.build(new TrackAutoplayAction(), iconConfig.getPlayIcon(),
                 guiConfig.getBtnPlayTlt(), false);
         btnAutoplay.setActionCommand(AutoplayAction.START.name());
@@ -120,8 +109,7 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
                 guiConfig.getBtnLocationTlt(), false);
         btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
                 guiConfig.getBtnWebPageTlt(), false);
-        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
-                guiConfig.getBtnClosestImageTlt(), false);
+
         btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
                 guiConfig.getBtnDataSwitchImageTlt(), false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
@@ -137,15 +125,6 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
         add(btnClosestPhoto);
         add(btnLocation);
         add(btnWebPage);
-    }
-
-    private void registerShortcut(final AbstractAction action, final int keyCode, final String actionMapKey) {
-        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK), actionMapKey);
-        Main.map.mapView.getActionMap().put(actionMapKey, action);
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyCode, KeyEvent.ALT_DOWN_MASK),
-                actionMapKey);
-        getActionMap().put(actionMapKey, action);
     }
 
     /**
@@ -187,14 +166,14 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                            : iconConfig.getManualSwitchImageIcon();
-            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
-            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-            add(btnDataSwitch, 0);
+                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                                    : iconConfig.getManualSwitchImageIcon();
+                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+                                    btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
+                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+                                    add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);
@@ -318,9 +297,17 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
      * @author beataj
      * @version $Revision$
      */
-    private final class ManualDataSwitchAction extends AbstractAction {
+    private final class ManualDataSwitchAction extends JosmAction {
 
         private static final long serialVersionUID = -6266140137863469921L;
+
+
+        private ManualDataSwitchAction() {
+            super(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(), null,
+                    GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt()),
+                    true);
+        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -347,13 +334,14 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
      * @author beataj
      * @version $Revision$
      */
-    private final class SelectPhotoAction extends AbstractAction {
+    private final class SelectPhotoAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
 
         private final boolean isNext;
 
-        private SelectPhotoAction(final boolean isNext) {
+        private SelectPhotoAction(final String shortcutText, final boolean isNext) {
+            super(shortcutText, null, shortcutText, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
             this.isNext = isNext;
         }
 
@@ -367,31 +355,59 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
         }
     }
 
+
+    /**
+     * Selects the closest photo of the selected photo.
+     *
+     * @author ioanao
+     * @version $Revision$
+     */
+    private final class ClosestPhotoAction extends JosmAction {
+
+        private static final long serialVersionUID = 191591505362305396L;
+
+
+        private ClosestPhotoAction() {
+            super(GuiConfig.getInstance().getBtnClosestShortcutText(), null,
+                    GuiConfig.getInstance().getBtnClosestShortcutText(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnClosestShortcutText()),
+                    true);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (photo != null) {
+                notifyClosestPhotoObserver();
+            }
+        }
+    }
+
     /**
      * Starts/stops to auto-play the currently displayed track.
      *
      * @author beataj
      * @version $Revision$
      */
-    private final class TrackAutoplayAction extends AbstractAction {
+    private final class TrackAutoplayAction extends JosmAction {
 
         private static final long serialVersionUID = -2733397455276087753L;
 
-        private AutoplayAction actionType;
 
-        private TrackAutoplayAction() {}
-
-        private TrackAutoplayAction(final AutoplayAction actionType) {
-            this.actionType = actionType;
+        private TrackAutoplayAction() {
+            super(GuiConfig.getInstance().getBtnPlayShortcutText(), null,
+                    GuiConfig.getInstance().getBtnPlayShortcutText(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnPlayShortcutText()), true);
         }
+
 
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final AutoplayAction action =
-                        actionType == null ? AutoplayAction.valueOf(event.getActionCommand()) : actionType;
-                updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
-                if (action.equals(AutoplayAction.START)) {
+                final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
+                final AutoplayAction autoplayAction = eventAction != null ? eventAction
+                        : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
+                updateAutoplayButton(autoplayAction);
+                if (autoplayAction.equals(AutoplayAction.START)) {
                     btnClosestPhoto.setEnabled(false);
                     btnPrevious.setEnabled(false);
                     btnNext.setEnabled(false);
@@ -399,12 +415,11 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
                     btnPrevious.setEnabled(true);
                     btnNext.setEnabled(true);
                 }
-                ThreadPool.getInstance().execute(() -> notifyObserver(action));
+                ThreadPool.getInstance().execute(() -> notifyObserver(autoplayAction));
 
             }
         }
     }
-
 
     /**
      * Centers the map to the selected photo's location.
@@ -412,9 +427,16 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
      * @author beataj
      * @version $Revision$
      */
-    private final class JumpToLocationAction extends AbstractAction {
+    private final class JumpToLocationAction extends JosmAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
+
+        private JumpToLocationAction() {
+            super(GuiConfig.getInstance().getBtnLocationShortcutText(), null,
+                    GuiConfig.getInstance().getBtnLocationShortcutText(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnLocationShortcutText()),
+                    true);
+        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -424,16 +446,22 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
         }
     }
 
-
     /**
      * Opens the selected photo's web page
      *
      * @author beataj
      * @version $Revision$
      */
-    private final class OpenWebPageAction extends AbstractAction {
+    private final class OpenWebPageAction extends JosmAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
+
+        private OpenWebPageAction() {
+            super(GuiConfig.getInstance().getBtnWebPageShortcutTlt(), null,
+                    GuiConfig.getInstance().getBtnWebPageShortcutTlt(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnWebPageShortcutTlt()),
+                    true);
+        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -446,25 +474,6 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
                     JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageTxt(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 }
-            }
-        }
-    }
-
-
-    /**
-     * Selects the closest photo of the selected photo.
-     *
-     * @author ioanao
-     * @version $Revision$
-     */
-    private final class ClosestPhotoAction extends AbstractAction {
-
-        private static final long serialVersionUID = 191591505362305396L;
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (photo != null) {
-                notifyClosestPhotoObserver();
             }
         }
     }
