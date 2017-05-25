@@ -19,7 +19,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.net.URI;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,7 +38,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -61,6 +59,7 @@ SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
+    private static final String SHORTCUT = "sc";
     private static final Dimension DIM = new Dimension(200, 24);
     private static final int ROWS = 1;
     private static final int COLS = 5;
@@ -88,42 +87,77 @@ SequenceObservable, TrackAutoplayObservable {
 
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
-        createComponents();
+        addDataSwitchButton();
+        addPreviousButton();
+        addNextButton();
+        addAutoplayButton();
+        addClosestPhotoButton();
+        addLocationButton();
+        addWebPageButton();
         setPreferredSize(DIM);
     }
 
-    private void createComponents() {
-        final GuiConfig guiConfig = GuiConfig.getInstance();
-        final IconConfig iconConfig = IconConfig.getInstance();
-        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(guiConfig.getBtnPreviousShortcutText(), false),
-                iconConfig.getPreviousIcon(), guiConfig.getBtnPreviousTlt(), false);
-        btnNext = ButtonBuilder.build(new SelectPhotoAction(guiConfig.getBtnNextShortcutText(), true),
-                iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(), false);
-        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
-                guiConfig.getBtnClosestTlt(), false);
 
-        btnAutoplay = ButtonBuilder.build(new TrackAutoplayAction(), iconConfig.getPlayIcon(),
-                guiConfig.getBtnPlayTlt(), false);
-        btnAutoplay.setActionCommand(AutoplayAction.START.name());
-        btnLocation = ButtonBuilder.build(new JumpToLocationAction(), iconConfig.getLocationIcon(),
-                guiConfig.getBtnLocationTlt(), false);
-        btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
-                guiConfig.getBtnWebPageTlt(), false);
-
-        btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
-                guiConfig.getBtnDataSwitchImageTlt(), false);
+    private void addDataSwitchButton() {
+        final JosmAction action = new ManualDataSwitchAction();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnDataSwitchImageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnDataSwitch =
+                ButtonBuilder.build(action, IconConfig.getInstance().getManualSwitchImageIcon(), tooltip, false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
             // add manual switch button
             add(btnDataSwitch);
         }
+    }
 
+    private void addPreviousButton() {
+        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnPreviousShortcutText(), false);
+        final String tooltip =
+                GuiConfig.getInstance().getBtnPreviousTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnPrevious = ButtonBuilder.build(action, IconConfig.getInstance().getPreviousIcon(), tooltip, false);
         add(btnPrevious);
+    }
+
+    private void addNextButton() {
+        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true);
+        final String tooltip =
+                GuiConfig.getInstance().getBtnNextTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnNext = ButtonBuilder.build(new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true),
+                IconConfig.getInstance().getNextIcon(), tooltip, false);
         add(btnNext);
-        add(btnAutoplay);
+    }
+
+    private void addClosestPhotoButton() {
+        final JosmAction action = new ClosestPhotoAction();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnClosestTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnClosestPhoto = ButtonBuilder.build(action, IconConfig.getInstance().getClosestImageIcon(), tooltip, false);
         add(btnClosestPhoto);
+    }
+
+    private void addAutoplayButton() {
+        final JosmAction action = new TrackAutoplayAction();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnPlayTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnAutoplay = ButtonBuilder.build(action, IconConfig.getInstance().getPlayIcon(), tooltip, false);
+        btnAutoplay.setActionCommand(AutoplayAction.START.name());
+        add(btnAutoplay);
+    }
+
+    private void addLocationButton() {
+        final JosmAction action = new JumpToLocationAction();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnLocationTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnLocation = ButtonBuilder.build(action, IconConfig.getInstance().getLocationIcon(), tooltip, false);
         add(btnLocation);
+    }
+
+    private void addWebPageButton() {
+        final JosmAction action = new OpenWebPageAction();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnWebPageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnWebPage = ButtonBuilder.build(action, IconConfig.getInstance().getWebPageIcon(), tooltip, false);
         add(btnWebPage);
     }
 
@@ -162,19 +196,7 @@ SequenceObservable, TrackAutoplayObservable {
      */
     void setDataSwitchButtonVisibiliy(final boolean isVisible) {
         if (isVisible) {
-            final GuiConfig guiConfig = GuiConfig.getInstance();
-            final IconConfig iconConfig = IconConfig.getInstance();
-            final boolean enabled =
-                    Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                                    : iconConfig.getManualSwitchImageIcon();
-                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-                                    btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
-                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-                                    add(btnDataSwitch, 0);
-
+            add(btnDataSwitch, 0);
         } else {
             remove(btnDataSwitch);
         }
@@ -188,11 +210,15 @@ SequenceObservable, TrackAutoplayObservable {
     void updateDataSwitchButton(final DataType dataType) {
         if (dataType.equals(DataType.PHOTO)) {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchSegmentTlt());
+            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchSegmentTlt().replaceAll(SHORTCUT,
+                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
+            btnDataSwitch.setToolTipText(tooltip);
             btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
+            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchImageTlt().replaceAll(SHORTCUT,
+                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
+            btnDataSwitch.setToolTipText(tooltip);
             btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
         }
         revalidate();
@@ -214,7 +240,9 @@ SequenceObservable, TrackAutoplayObservable {
         if (!isNext && !isPrevious) {
             // reset initial state
             btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
-            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
+            final String tooltip = GuiConfig.getInstance().getBtnPlayTlt().replaceAll(SHORTCUT,
+                    ((JosmAction) btnAutoplay.getAction()).getShortcut().getKeyText());
+            btnAutoplay.setToolTipText(tooltip);
             btnAutoplay.setActionCommand(AutoplayAction.START.name());
         }
     }
@@ -311,19 +339,10 @@ SequenceObservable, TrackAutoplayObservable {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            if (event.getActionCommand().equals(DataType.PHOTO.toString())) {
-                // request segments
-                notifyDataUpdateObserver(DataType.PHOTO);
-                btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-                btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchSegmentTlt());
-                btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
-            } else {
-                // request images
-                notifyDataUpdateObserver(DataType.SEGMENT);
-                btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-                btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
-                btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-            }
+            DataType dataType = DataType.getDataType(event.getActionCommand());
+            dataType = dataType == null ? DataType.getDataType(btnDataSwitch.getActionCommand()) : dataType;
+            notifyDataUpdateObserver(dataType);
+            updateDataSwitchButton(dataType);
         }
     }
 
