@@ -57,7 +57,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-        SequenceObservable, TrackAutoplayObservable {
+SequenceObservable, TrackAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -166,14 +166,14 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
             final IconConfig iconConfig = IconConfig.getInstance();
             final boolean enabled =
                     Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
-            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
-                            : iconConfig.getManualSwitchImageIcon();
-            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
-                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
-            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
-            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
-            add(btnDataSwitch, 0);
+                    final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                            .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                                    : iconConfig.getManualSwitchImageIcon();
+                            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+                                    btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
+                                    btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+                                    add(btnDataSwitch, 0);
 
         } else {
             remove(btnDataSwitch);
@@ -403,9 +403,11 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final AutoplayAction action = AutoplayAction.valueOf(event.getActionCommand());
-                updateAutoplayButton(AutoplayAction.valueOf(event.getActionCommand()));
-                if (action.equals(AutoplayAction.START)) {
+                final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
+                final AutoplayAction autoplayAction = eventAction != null ? eventAction
+                        : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
+                updateAutoplayButton(autoplayAction);
+                if (autoplayAction.equals(AutoplayAction.START)) {
                     btnClosestPhoto.setEnabled(false);
                     btnPrevious.setEnabled(false);
                     btnNext.setEnabled(false);
@@ -413,7 +415,7 @@ class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChan
                     btnPrevious.setEnabled(true);
                     btnNext.setEnabled(true);
                 }
-                ThreadPool.getInstance().execute(() -> notifyObserver(action));
+                ThreadPool.getInstance().execute(() -> notifyObserver(autoplayAction));
 
             }
         }

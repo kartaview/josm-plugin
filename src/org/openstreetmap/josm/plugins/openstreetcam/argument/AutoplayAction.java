@@ -21,5 +21,10 @@ public enum AutoplayAction {
     START,
 
     /** stops track auto-play */
-    STOP
+    STOP;
+
+
+    public static AutoplayAction getAutoplayAction(final String value) {
+        return START.name().equals(value) ? START : STOP.name().equals(value) ? STOP : null;
+    }
 }
