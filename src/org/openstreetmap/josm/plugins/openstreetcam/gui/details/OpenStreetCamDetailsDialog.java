@@ -56,10 +56,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     /** dialog default height */
     private static final int DLG_HEIGHT = 150;
 
-    /** the dialog shortcut displayed on the left side slide menu */
-    // private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
-    // GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
-
     private static OpenStreetCamDetailsDialog instance = new OpenStreetCamDetailsDialog();
 
     /* dialog components */
@@ -79,9 +75,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
-                GuiConfig.getInstance().getPluginLongName(),
-                ShortcutFactory.getInstance().getShotrcut("OpenStreetCam:Details window"), DLG_HEIGHT, true,
-                PreferenceEditor.class);
+                GuiConfig.getInstance().getPluginShortcutLongText(),
+                ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
+                true, PreferenceEditor.class);
         pnlDetails = new DetailsPanel(getBackground());
         pnlDetails.setBackground(getBackground());
         pnlPhoto = new PhotoPanel();

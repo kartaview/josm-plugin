@@ -16,17 +16,17 @@ import org.openstreetmap.josm.tools.Shortcut;
 
 
 /**
- * Factory for the shotrcuts associated with the plugin.
+ * Factory for the shortcuts associated with the plugin.
  *
  * @author beataj
  * @version $Revision$
  */
-public class ShortcutFactory {
+public final class ShortcutFactory {
 
     private static final Map<String, Shortcut> defaultShortcutMap = initializeDefaultShortcuts();
     private final Map<String, Shortcut> shortcutMap;
 
-    private static ShortcutFactory instance = new ShortcutFactory();
+    private static final ShortcutFactory INSTANCE = new ShortcutFactory();
 
 
     private ShortcutFactory() {
@@ -68,19 +68,22 @@ public class ShortcutFactory {
         return map;
     }
 
-
+    /**
+     * Returns the unique instance of the shortcut factory.
+     *
+     * @return a {@code ShortcutFactory}
+     */
     public static ShortcutFactory getInstance() {
-        if (instance == null) {
-            instance = new ShortcutFactory();
-        }
-        return instance;
+        return INSTANCE;
     }
 
-    public static void destroyInstance() {
-        instance = null;
-    }
-
-
+    /**
+     * Returns the shortcut associated with the given key. The method returns the default shortcut associated with the
+     * key, if the shortcut was not registered in JOSM.
+     *
+     * @param key a {@code String} representing a shortcut key
+     * @return a {@code Shortcut}
+     */
     public Shortcut getShotrcut(final String key) {
         final Shortcut shortcut = shortcutMap.get(key);
         return shortcut != null ? shortcut : defaultShortcutMap.get(shortcut);

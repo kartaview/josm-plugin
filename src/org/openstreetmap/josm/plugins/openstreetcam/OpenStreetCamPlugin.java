@@ -57,14 +57,13 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin
-implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+        implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+
+    private static final int SEARCH_DELAY = 500;
 
     private JMenuItem layerActivatorMenuItem;
     private final SelectionHandler selectionHandler;
     private final PreferenceChangedHandler preferenceChangedHandler;
-
-    private static final int SEARCH_DELAY = 500;
-
     private Timer zoomTimer;
 
 
@@ -81,6 +80,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
+        OpenStreetCamDetailsDialog.getInstance();
     }
 
     @Override
@@ -260,9 +260,6 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     handleMouseHover();
                 } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
                     selectionHandler.changeAutoplayTimerDelay();
-                } else {
-                    System.out.println("some other event:" + event.getKey() + " old value:" + event.getOldValue()
-                            + " , new value:" + event.getNewValue());
                 }
             }
         }
