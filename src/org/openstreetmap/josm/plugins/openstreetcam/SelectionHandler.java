@@ -164,7 +164,8 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
             }
             detailsDialog.enableSequenceActions(false, false);
             detailsDialog.updateUI(null, null);
-            Main.map.repaint();
+            layer.invalidate();
+            Main.map.mapView.repaint();
         } else {
             SwingUtilities.invokeLater(() -> {
                 ThreadPool.getInstance().execute(() -> {
@@ -173,7 +174,8 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
                             layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
                 });
                 layer.setSelectedPhoto(photo);
-                Main.map.repaint();
+                layer.invalidate();
+                Main.map.mapView.repaint();
             });
             ThreadPool.getInstance().execute(() -> {
                 if (!detailsDialog.getButton().isSelected()) {
@@ -205,7 +207,8 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
                 CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
                 detailsDialog.enableSequenceActions(false, false);
-                Main.map.repaint();
+                layer.invalidate();
+                Main.map.mapView.repaint();
             });
         }
         ThreadPool.getInstance().execute(() -> {
@@ -219,8 +222,8 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                         detailsDialog.updateDataSwitchButton(null, false, null);
                     }
-                    Main.map.repaint();
-
+                    layer.invalidate();
+                    Main.map.mapView.repaint();
                 });
             }
         });
@@ -255,7 +258,8 @@ final class SelectionHandler extends MouseAdapter implements ClosestPhotoObserve
             SwingUtilities.invokeLater(() -> {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
-                    Main.map.repaint();
+                    layer.invalidate();
+                    Main.map.mapView.repaint();
                 }
             });
         }

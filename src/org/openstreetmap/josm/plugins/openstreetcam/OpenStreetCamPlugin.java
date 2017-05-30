@@ -182,7 +182,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             SwingUtilities.invokeLater(() -> {
                 layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
-                Main.map.repaint();
+                layer.invalidate();
+                Main.map.mapView.repaint();
             });
         }
     }
@@ -277,7 +278,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
                 }
-                Main.map.repaint();
+                OpenStreetCamLayer.getInstance().invalidate();
+                Main.map.mapView.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
         }
@@ -290,7 +292,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
                 }
-                Main.map.repaint();
+                OpenStreetCamLayer.getInstance().invalidate();
+                Main.map.mapView.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
         }
@@ -312,7 +315,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
-                Main.map.repaint();
+                layer.invalidate();
+                Main.map.mapView.repaint();
             }
         }
     }
