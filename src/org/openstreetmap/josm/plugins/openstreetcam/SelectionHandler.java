@@ -28,7 +28,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserve
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.thread.ThreadPool;
 
@@ -40,7 +39,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 final class SelectionHandler extends MouseAdapter
-implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+        implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -120,7 +119,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      * @return true if the selection is allowed; false otherwise
      */
     private boolean selectionAllowed() {
-        return Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom()
+        return Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
+                .getPhotoZoom()
                 || (OpenStreetCamLayer.getInstance().getDataSet() != null
                 && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null);
     }
@@ -219,6 +219,13 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
+        if (layer.getSelectedSequence() != null && layer.getDataSet() != null
+                && layer.getDataSet().getPhotos() != null) {
+            final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+            if (zoom < PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom()) {
+                layer.setDataSet(null, false);
+            }
+        }
         layer.setSelectedSequence(null);
         layer.setSelectedPhoto(null);
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {

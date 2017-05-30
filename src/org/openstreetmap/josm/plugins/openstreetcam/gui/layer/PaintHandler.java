@@ -65,10 +65,12 @@ class PaintHandler {
                 ? TRANSPARENT_COMPOSITE : graphics.getComposite();
 
         // draw photo locations
-        graphics.setComposite(composite);
-        for (final Photo photo : photos) {
-            if (!photo.equals(selectedPhoto)) {
-                drawPhoto(graphics, mapView, photo, false);
+        if (photos != null) {
+            graphics.setComposite(composite);
+            for (final Photo photo : photos) {
+                if (!photo.equals(selectedPhoto)) {
+                    drawPhoto(graphics, mapView, photo, false);
+                }
             }
         }
 
@@ -102,31 +104,31 @@ class PaintHandler {
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
         final Double length =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-        graphics.setColor(PaintUtil.sequenceColor(mapView));
+                graphics.setColor(PaintUtil.sequenceColor(mapView));
 
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
+                Photo prevPhoto = sequence.getPhotos().get(0);
+                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
 
-            // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getLocation())
-                    || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
-                final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
-                        mapView.getPoint(currentPhoto.getLocation()));
-                if (length == null) {
-                    PaintManager.drawLine(graphics, lineGeometry);
-                } else {
-                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
-                    PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                    // at least one of the photos is in current view draw line
+                    if (Util.containsLatLon(mapView, prevPhoto.getLocation())
+                            || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
+                        final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
+                                mapView.getPoint(currentPhoto.getLocation()));
+                        if (length == null) {
+                            PaintManager.drawLine(graphics, lineGeometry);
+                        } else {
+                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                                    getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
+                            PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                        }
+                    }
+
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
                 }
-            }
 
-            drawPhoto(graphics, mapView, prevPhoto, false);
-            prevPhoto = currentPhoto;
-        }
-
-        drawPhoto(graphics, mapView, prevPhoto, false);
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
 
