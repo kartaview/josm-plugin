@@ -120,6 +120,10 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         Photo photo = null;
         if (selectedSequence != null && selectedSequence.getPhotos() != null) {
             photo = Util.nearbyPhoto(selectedSequence.getPhotos(), point);
+            // // API issue: does not return username for sequence photos
+            if (selectedPhoto != null && photo != null) {
+                photo.setUsername(selectedPhoto.getUsername());
+            }
         }
         if (photo == null && dataSet != null && dataSet.getPhotos() != null) {
             photo = Util.nearbyPhoto(dataSet.getPhotos(), point);
@@ -203,6 +207,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         return photo;
     }
 
+
     /**
      * Checks if the selected photo is the first photo of the sequence.
      *
@@ -238,7 +243,6 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             closestPhotos = Collections.emptyList();
         }
     }
-
 
     /**
      * Retrieve the closest image of the currently selected image.

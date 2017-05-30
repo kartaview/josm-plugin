@@ -57,14 +57,13 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin
-implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+        implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+
+    private static final int SEARCH_DELAY = 500;
 
     private JMenuItem layerActivatorMenuItem;
     private final SelectionHandler selectionHandler;
     private final PreferenceChangedHandler preferenceChangedHandler;
-
-    private static final int SEARCH_DELAY = 500;
-
     private Timer zoomTimer;
 
 
@@ -81,6 +80,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
+        OpenStreetCamDetailsDialog.getInstance();
     }
 
     @Override
@@ -93,7 +93,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             // initialize details dialog
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-            detailsDialog.registerObservers(this, selectionHandler, selectionHandler, this);
+            detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler);
             newMapFrame.addToggleDialog(detailsDialog, true);
             if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
                 detailsDialog.showDialog();
@@ -167,7 +167,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             Main.map.mapView.removeMouseMotionListener(selectionHandler);
             Main.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
-            OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
+            OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
         }
     }
 
@@ -182,8 +182,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             SwingUtilities.invokeLater(() -> {
                 layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
-                layer.invalidate();
-                Main.map.mapView.repaint();
+                Main.map.repaint();
             });
         }
     }
@@ -259,6 +258,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     selectionHandler.changeMouseHoverTimerDelay();
                 } else if (prefManager.hasMouseHoverFlagChanged(event.getKey(), newValue)) {
                     handleMouseHover();
+                } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
+                    selectionHandler.changeAutoplayTimerDelay();
                 }
             }
         }
@@ -266,7 +267,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         private void handleMouseHover() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL, true);
             }
         }
 
@@ -276,10 +277,9 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
-                OpenStreetCamLayer.getInstance().invalidate();
-                Main.map.mapView.repaint();
+                Main.map.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
         }
@@ -290,10 +290,9 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             SwingUtilities.invokeLater(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
-                OpenStreetCamLayer.getInstance().invalidate();
-                Main.map.mapView.repaint();
+                Main.map.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
         }
@@ -301,7 +300,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         private void handleHighQualityPhotoSelection() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.HIGH_QUALITY);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoType.HIGH_QUALITY, true);
             }
         }
 
@@ -315,8 +314,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
-                layer.invalidate();
-                Main.map.mapView.repaint();
+                Main.map.repaint();
             }
         }
     }
