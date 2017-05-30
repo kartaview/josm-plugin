@@ -196,6 +196,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
                 }
+                layer.invalidate();
                 Main.map.repaint();
             });
             ThreadPool.getInstance().execute(() -> {
@@ -225,6 +226,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
         detailsDialog.enableSequenceActions(false, false);
         detailsDialog.updateUI(null, null, false);
+        layer.invalidate();
         Main.map.repaint();
     }
 
@@ -242,11 +244,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
                 detailsDialog.enableSequenceActions(false, false);
+                layer.invalidate();
                 Main.map.repaint();
             });
         }
         ThreadPool.getInstance().execute(() -> {
-
             final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
             if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
                 SwingUtilities.invokeLater(() -> {
@@ -256,6 +258,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                         detailsDialog.updateDataSwitchButton(null, false, null);
                     }
+                    layer.invalidate();
                     Main.map.repaint();
 
                 });
@@ -292,6 +295,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             SwingUtilities.invokeLater(() -> {
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
+                    layer.invalidate();
                     Main.map.repaint();
                 }
             });

@@ -165,6 +165,7 @@ class DataUpdateThread implements Runnable {
                         OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
                     }
                 }
+                OpenStreetCamLayer.getInstance().invalidate();
                 Main.map.repaint();
             });
         }

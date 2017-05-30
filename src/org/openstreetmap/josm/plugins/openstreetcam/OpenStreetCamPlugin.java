@@ -57,7 +57,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin
-        implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -182,6 +182,7 @@ public class OpenStreetCamPlugin extends Plugin
             SwingUtilities.invokeLater(() -> {
                 layer.setDataSet(null, false);
                 Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                layer.invalidate();
                 Main.map.repaint();
             });
         }
@@ -279,6 +280,7 @@ public class OpenStreetCamPlugin extends Plugin
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
+                OpenStreetCamLayer.getInstance().invalidate();
                 Main.map.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
@@ -292,6 +294,7 @@ public class OpenStreetCamPlugin extends Plugin
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
+                OpenStreetCamLayer.getInstance().invalidate();
                 Main.map.repaint();
             });
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
@@ -314,6 +317,7 @@ public class OpenStreetCamPlugin extends Plugin
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
+                layer.invalidate();
                 Main.map.repaint();
             }
         }
