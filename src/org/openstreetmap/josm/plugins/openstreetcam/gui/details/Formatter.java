@@ -36,14 +36,12 @@ final class Formatter {
      * @return a {@code String}
      */
     static String formatPhotoDetails(final Photo photo) {
-        final StringBuilder sb = new StringBuilder("<html>");
+        final StringBuilder sb = new StringBuilder();
         sb.append("Uploaded");
-        sb.append(" on ").append(EntityFormatter.formatTimestamp(photo.getTimestamp()));
         if (photo.getUsername() != null && !photo.getUsername().isEmpty()) {
-            sb.append(" by ").append("<a href='' target='_blank'>");
-            sb.append(photo.getUsername()).append("</a>");
+            sb.append(" by ").append(photo.getUsername()).append(" ");
         }
-        sb.append("</html>");
+        sb.append(" on ").append(EntityFormatter.formatTimestamp(photo.getTimestamp()));
         return sb.toString();
     }
 }

@@ -20,12 +20,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.CancelAction;
 import com.telenav.josm.common.gui.ModalDialog;
@@ -47,8 +47,8 @@ public class FilterDialog extends ModalDialog {
     private FilterPanel pnlFilter;
 
 
-    public FilterDialog(final ImageIcon icon) {
-        super(GuiConfig.getInstance().getDlgFilterTitle(), icon.getImage());
+    public FilterDialog() {
+        super(GuiConfig.getInstance().getDlgFilterTitle(), IconConfig.getInstance().getFilterIcon().getImage());
         createComponents();
         setLocationRelativeTo(Main.map.mapView);
         setSize(DIM);

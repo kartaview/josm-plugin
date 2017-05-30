@@ -15,28 +15,31 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.Shortcut;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -56,33 +59,30 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     /** dialog default height */
     private static final int DLG_HEIGHT = 150;
 
+    /** the dialog shortcut displayed on the left side slide menu */
+    private static final Shortcut shortcut = Shortcut.registerShortcut(GuiConfig.getInstance().getPluginShortName(),
+            GuiConfig.getInstance().getPluginLongName(), KeyEvent.VK_F10, Shortcut.NONE);
+
     private static OpenStreetCamDetailsDialog instance = new OpenStreetCamDetailsDialog();
 
     /* dialog components */
-    private final DetailsPanel pnlDetails;
+    private final JLabel lblDetails;
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
 
-    /** flag that indicates if the dialog window was already destroyed or not */
     private boolean destroyed = false;
 
-    /** the dimension of the dialog window, it is used to detect if the user had maximized or not the dialog window */
     private Dimension size;
-
-    /** the currently selected element */
     private Pair<Photo, PhotoType> selectedElement;
 
 
     private OpenStreetCamDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
-                GuiConfig.getInstance().getPluginShortcutLongText(),
-                ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
-                true, PreferenceEditor.class);
-        pnlDetails = new DetailsPanel(getBackground());
-        pnlDetails.setBackground(getBackground());
+                GuiConfig.getInstance().getPluginLongName(), shortcut, DLG_HEIGHT, true, PreferenceEditor.class);
         pnlPhoto = new PhotoPanel();
         pnlBtn = new ButtonPanel();
-        final JPanel pnlMain = ContainerBuilder.buildBorderLayoutPanel(pnlDetails, pnlPhoto, pnlBtn, null);
+        lblDetails = LabelBuilder.build(null, Font.PLAIN, Color.white);
+        final JPanel pnlMain = ContainerBuilder.buildBorderLayoutPanel(lblDetails, pnlPhoto, pnlBtn, null);
         add(createLayout(pnlMain, false, null));
         setPreferredSize(DIM);
         pnlPhoto.setSize(getPreferredSize());
@@ -107,6 +107,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     public static void destroyInstance() {
         instance = null;
     }
+
 
     @Override
     protected void paintComponent(final Graphics graphics) {
@@ -135,24 +136,23 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      *
      * @param photo the currently selected {@code Photo}
      * @param photoType the type of photo to be loaded
-     * @param displayLoadingMessage specifies if the loading message is displayed or not. The loading message is
-     * displayed until the photo is loaded.
      */
-    public void updateUI(final Photo photo, final PhotoType photoType, final boolean displayLoadingMessage) {
+    public void updateUI(final Photo photo, final PhotoType photoType) {
         if (photo != null) {
             // display loading text
-            if (displayLoadingMessage) {
-                ThreadPool.getInstance().execute(() -> {
-                    pnlPhoto.displayLoadingMessage();
-                    pnlBtn.updateUI(photo);
-                    repaint();
-                });
-            }
+            ThreadPool.getInstance().execute(() -> {
+                pnlPhoto.displayLoadingMessage();
+                pnlBtn.updateUI(photo);
+                lblDetails.revalidate();
+                repaint();
+            });
+
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
-            pnlDetails.updateUI(null, false);
-            pnlDetails.setToolTipText("");
+            lblDetails.setText("");
+            lblDetails.setToolTipText(null);
+            lblDetails.setIcon(null);
             pnlPhoto.updateUI(null);
             pnlBtn.updateUI(null);
             repaint();
@@ -160,19 +160,22 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     private void loadPhoto(final Photo photo, final PhotoType photoType) {
+        pnlPhoto.displayLoadingMessage();
+        final String detailsTxt = Formatter.formatPhotoDetails(photo);
         final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
         try {
             final Pair<BufferedImage, PhotoType> imageResult =
                     ImageHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
             if (imageResult.getFirst() != null) {
+                lblDetails.setText(detailsTxt);
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                         && !imageResult.getSecond().equals(PhotoType.HIGH_QUALITY)) {
-                    pnlDetails.updateUI(photo, true);
-                    pnlDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
+                    lblDetails.setIcon(IconConfig.getInstance().getWarningIcon());
+                    lblDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {
-                    pnlDetails.updateUI(photo, false);
-                    pnlDetails.setToolTipText(null);
+                    lblDetails.setToolTipText(null);
+                    lblDetails.setIcon(null);
                 }
                 pnlPhoto.updateUI(imageResult.getFirst());
             }
@@ -180,26 +183,24 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             pnlPhoto.displayErrorMessage();
         }
         pnlBtn.updateUI(photo);
+        lblDetails.revalidate();
         repaint();
     }
 
     /**
      * Registers the observers to the button panel.
      *
-     * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
-     * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
-     * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
+     * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
+     * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      */
-    public void registerObservers(final ClosestPhotoObserver closestPhotoObserver,
-            final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
-            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver) {
-        pnlBtn.registerObserver(closestPhotoObserver);
-        pnlBtn.registerObserver(dataTypeChangeObserver);
+    public void registerObservers(final LocationObserver locationObserver, final SequenceObserver sequenceObserver,
+            final ClosestPhotoObserver closestPhotoObserver, final DataTypeChangeObserver dataTypeChangeObserver) {
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
-        pnlBtn.registerObserver(trackAutoplayObserver);
+        pnlBtn.registerObserver(closestPhotoObserver);
+        pnlBtn.registerObserver(dataTypeChangeObserver);
     }
 
     /**
@@ -244,18 +245,5 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
         pnlBtn.revalidate();
         repaint();
-    }
-
-    /**
-     * Updates the properties of the auto-play button. Null properties are ignored.
-     *
-     * @param action a {@code AutoplayAction} specifies the new action associated with the auto-play button.
-     */
-    public void updateAutoplayButton(final AutoplayAction action) {
-        if (action != null) {
-            pnlBtn.updateAutoplayButton(action);
-            pnlBtn.revalidate();
-            repaint();
-        }
     }
 }

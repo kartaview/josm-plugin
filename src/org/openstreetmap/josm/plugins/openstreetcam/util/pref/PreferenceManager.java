@@ -15,7 +15,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -28,14 +27,12 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
 /**
@@ -131,8 +128,7 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadTrackSettings(),
-                loadCacheSettings());
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadCacheSettings());
     }
 
     /**
@@ -153,14 +149,6 @@ public final class PreferenceManager {
         return loadManager.loadPhotoSettings();
     }
 
-    public TrackSettings loadTrackSettings() {
-        return loadManager.loadTrackSettings();
-    }
-
-    public AutoplaySettings loadAutoplaySettings() {
-        return loadManager.loadAutoplaySettings();
-    }
-
     /**
      * Loads the cache preference settings.
      *
@@ -179,7 +167,6 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
-            saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
     }
@@ -331,10 +318,6 @@ public final class PreferenceManager {
      */
     public boolean isMouseHoverDelayKey(final String key) {
         return MOUSE_HOVER_DELAY.equals(key);
-    }
-
-    public boolean isAutoplayDelayKey(final String key) {
-        return AUTOPLAY_DELAY.equals(key);
     }
 
     /**

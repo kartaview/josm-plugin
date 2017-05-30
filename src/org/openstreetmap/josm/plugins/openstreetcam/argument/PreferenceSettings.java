@@ -19,7 +19,6 @@ public class PreferenceSettings {
 
     private final MapViewSettings mapViewSettings;
     private final PhotoSettings photoSettings;
-    private final TrackSettings trackSettings;
     private final CacheSettings cacheSettings;
 
 
@@ -28,14 +27,12 @@ public class PreferenceSettings {
      *
      * @param mapViewSettings specifies the map view user configurable settings
      * @param photoSettings specifies the photo loading user configurable settings
-     * @param trackSettings specifies the track display user configurable settings
      * @param cacheSettings specifies the cache user configurable settings
      */
     public PreferenceSettings(final MapViewSettings mapViewSettings, final PhotoSettings photoSettings,
-            final TrackSettings trackSettings, final CacheSettings cacheSettings) {
+            final CacheSettings cacheSettings) {
         this.mapViewSettings = mapViewSettings;
         this.photoSettings = photoSettings;
-        this.trackSettings = trackSettings;
         this.cacheSettings = cacheSettings;
     }
 
@@ -46,10 +43,6 @@ public class PreferenceSettings {
 
     public PhotoSettings getPhotoSettings() {
         return photoSettings;
-    }
-
-    public TrackSettings getTrackSettings() {
-        return trackSettings;
     }
 
     public CacheSettings getCacheSettings() {

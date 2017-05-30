@@ -18,16 +18,18 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.net.URI;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.actions.JosmAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObservable;
@@ -36,15 +38,13 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -54,12 +54,15 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-SequenceObservable, TrackAutoplayObservable {
+class ButtonPanel extends JPanel implements LocationObservable, SequenceObservable, ClosestPhotoObservable, 
+    DataTypeChangeObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
-    private static final String SHORTCUT = "sc";
+    private static final String NEXT_PHOTO = "next photo";
+    private static final String PREVIOUS_PHOTO = "previous photo";
+    private static final String CLOSEST_PHOTO = "closest photo";
+
     private static final Dimension DIM = new Dimension(200, 24);
     private static final int ROWS = 1;
     private static final int COLS = 5;
@@ -68,17 +71,15 @@ SequenceObservable, TrackAutoplayObservable {
     private JButton btnDataSwitch;
     private JButton btnPrevious;
     private JButton btnNext;
-    private JButton btnAutoplay;
     private JButton btnLocation;
     private JButton btnWebPage;
     private JButton btnClosestPhoto;
 
     /* notifies the plugin main class */
-    private ClosestPhotoObserver closestPhotoObserver;
-    private DataTypeChangeObserver dataUpdateObserver;
     private LocationObserver locationObserver;
     private SequenceObserver sequenceObserver;
-    private TrackAutoplayObserver trackAutoplayObserver;
+    private ClosestPhotoObserver closestPhotoObserver;
+    private DataTypeChangeObserver dataUpdateObserver;
 
 
     /* the currently selected photo */
@@ -87,78 +88,63 @@ SequenceObservable, TrackAutoplayObservable {
 
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
-        addDataSwitchButton();
-        addPreviousButton();
-        addNextButton();
-        addAutoplayButton();
-        addClosestPhotoButton();
-        addLocationButton();
-        addWebPageButton();
+        createComponents();
+        registerShortcuts();
         setPreferredSize(DIM);
+
     }
 
+    private void createComponents() {
+        final GuiConfig guiConfig = GuiConfig.getInstance();
+        final IconConfig iconConfig = IconConfig.getInstance();
 
-    private void addDataSwitchButton() {
-        final JosmAction action = new ManualDataSwitchAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnDataSwitchImageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnDataSwitch =
-                ButtonBuilder.build(action, IconConfig.getInstance().getManualSwitchImageIcon(), tooltip, false);
+        btnPrevious = ButtonBuilder.build(new SelectPhotoAction(false), iconConfig.getPreviousIcon(),
+                guiConfig.getBtnPreviousTlt(), false);
+        btnNext = ButtonBuilder.build(new SelectPhotoAction(true), iconConfig.getNextIcon(), guiConfig.getBtnNextTlt(),
+                false);
+        btnLocation = ButtonBuilder.build(new JumpToLocationAction(), iconConfig.getLocationIcon(),
+                guiConfig.getBtnLocationTlt(), false);
+        btnWebPage = ButtonBuilder.build(new OpenWebPageAction(), iconConfig.getWebPageIcon(),
+                guiConfig.getBtnWebPageTlt(), false);
+        btnClosestPhoto = ButtonBuilder.build(new ClosestPhotoAction(), iconConfig.getClosestImageIcon(),
+                guiConfig.getBtnClosestImageTlt(), false);
+        btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), iconConfig.getManualSwitchImageIcon(),
+                guiConfig.getBtnDataSwitchImageTlt(), false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
             // add manual switch button
             add(btnDataSwitch);
         }
-    }
 
-    private void addPreviousButton() {
-        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnPreviousShortcutText(), false);
-        final String tooltip =
-                GuiConfig.getInstance().getBtnPreviousTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnPrevious = ButtonBuilder.build(action, IconConfig.getInstance().getPreviousIcon(), tooltip, false);
         add(btnPrevious);
-    }
-
-    private void addNextButton() {
-        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true);
-        final String tooltip =
-                GuiConfig.getInstance().getBtnNextTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnNext = ButtonBuilder.build(new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true),
-                IconConfig.getInstance().getNextIcon(), tooltip, false);
         add(btnNext);
-    }
-
-    private void addClosestPhotoButton() {
-        final JosmAction action = new ClosestPhotoAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnClosestTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnClosestPhoto = ButtonBuilder.build(action, IconConfig.getInstance().getClosestImageIcon(), tooltip, false);
         add(btnClosestPhoto);
-    }
-
-    private void addAutoplayButton() {
-        final JosmAction action = new TrackAutoplayAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnPlayTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnAutoplay = ButtonBuilder.build(action, IconConfig.getInstance().getPlayIcon(), tooltip, false);
-        btnAutoplay.setActionCommand(AutoplayAction.START.name());
-        add(btnAutoplay);
-    }
-
-    private void addLocationButton() {
-        final JosmAction action = new JumpToLocationAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnLocationTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnLocation = ButtonBuilder.build(action, IconConfig.getInstance().getLocationIcon(), tooltip, false);
         add(btnLocation);
+        add(btnWebPage);
     }
 
-    private void addWebPageButton() {
-        final JosmAction action = new OpenWebPageAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnWebPageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnWebPage = ButtonBuilder.build(action, IconConfig.getInstance().getWebPageIcon(), tooltip, false);
-        add(btnWebPage);
+    private void registerShortcuts() {
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        Main.map.mapView.getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK), PREVIOUS_PHOTO);
+        getActionMap().put(PREVIOUS_PHOTO, new SelectPhotoAction(false));
+
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        Main.map.mapView.getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK), NEXT_PHOTO);
+        getActionMap().put(NEXT_PHOTO, new SelectPhotoAction(true));
+
+        Main.map.mapView.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        Main.map.mapView.getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), CLOSEST_PHOTO);
+        getActionMap().put(CLOSEST_PHOTO, new ClosestPhotoAction());
     }
 
     /**
@@ -196,7 +182,19 @@ SequenceObservable, TrackAutoplayObservable {
      */
     void setDataSwitchButtonVisibiliy(final boolean isVisible) {
         if (isVisible) {
+            final GuiConfig guiConfig = GuiConfig.getInstance();
+            final IconConfig iconConfig = IconConfig.getInstance();
+            final boolean enabled =
+                    Util.zoom(Main.map.mapView.getRealBounds()) >= Config.getInstance().getMapPhotoZoom();
+            final Icon icon = Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                    .loadMapViewSettings().getPhotoZoom() ? iconConfig.getManualSwitchSegmentIcon()
+                            : iconConfig.getManualSwitchImageIcon();
+            final String tlt = PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()
+                    ? guiConfig.getBtnDataSwitchImageTlt() : guiConfig.getBtnDataSwitchSegmentTlt();
+            btnDataSwitch = ButtonBuilder.build(new ManualDataSwitchAction(), icon, tlt, enabled);
+            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
             add(btnDataSwitch, 0);
+
         } else {
             remove(btnDataSwitch);
         }
@@ -210,15 +208,11 @@ SequenceObservable, TrackAutoplayObservable {
     void updateDataSwitchButton(final DataType dataType) {
         if (dataType.equals(DataType.PHOTO)) {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchSegmentTlt().replaceAll(SHORTCUT,
-                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
-            btnDataSwitch.setToolTipText(tooltip);
+            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchSegmentTlt());
             btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
         } else {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchImageTlt().replaceAll(SHORTCUT,
-                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
-            btnDataSwitch.setToolTipText(tooltip);
+            btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
             btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
         }
         revalidate();
@@ -234,17 +228,6 @@ SequenceObservable, TrackAutoplayObservable {
     void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         btnPrevious.setEnabled(isPrevious);
         btnNext.setEnabled(isNext);
-
-        // autoplay should be enabled if there are next photos
-        btnAutoplay.setEnabled(isNext);
-        if (!isNext && !isPrevious) {
-            // reset initial state
-            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnPlayTlt().replaceAll(SHORTCUT,
-                    ((JosmAction) btnAutoplay.getAction()).getShortcut().getKeyText());
-            btnAutoplay.setToolTipText(tooltip);
-            btnAutoplay.setActionCommand(AutoplayAction.START.name());
-        }
     }
 
     /**
@@ -254,18 +237,6 @@ SequenceObservable, TrackAutoplayObservable {
      */
     void enableClosestPhotoButton(final boolean enabled) {
         btnClosestPhoto.setEnabled(enabled);
-    }
-
-    void updateAutoplayButton(final AutoplayAction action) {
-        if (action.equals(AutoplayAction.START)) {
-            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
-            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
-            btnAutoplay.setActionCommand(AutoplayAction.STOP.name());
-        } else {
-            btnAutoplay.setIcon(IconConfig.getInstance().getStopIcon());
-            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnStopTlt());
-            btnAutoplay.setActionCommand(AutoplayAction.START.name());
-        }
     }
 
     @Override
@@ -308,16 +279,6 @@ SequenceObservable, TrackAutoplayObservable {
         dataUpdateObserver.update(dataType);
     }
 
-    @Override
-    public void registerObserver(final TrackAutoplayObserver trackAutoplayObserver) {
-        this.trackAutoplayObserver = trackAutoplayObserver;
-
-    }
-
-    @Override
-    public void notifyObserver(final AutoplayAction action) {
-        trackAutoplayObserver.play(action);
-    }
 
     /**
      * Defines the functionality of the manual data switch button.
@@ -325,24 +286,25 @@ SequenceObservable, TrackAutoplayObservable {
      * @author beataj
      * @version $Revision$
      */
-    private final class ManualDataSwitchAction extends JosmAction {
+    private final class ManualDataSwitchAction extends AbstractAction {
 
         private static final long serialVersionUID = -6266140137863469921L;
 
-
-        private ManualDataSwitchAction() {
-            super(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(), null,
-                    GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt()),
-                    true);
-        }
-
         @Override
         public void actionPerformed(final ActionEvent event) {
-            DataType dataType = DataType.getDataType(event.getActionCommand());
-            dataType = dataType == null ? DataType.getDataType(btnDataSwitch.getActionCommand()) : dataType;
-            notifyDataUpdateObserver(dataType);
-            updateDataSwitchButton(dataType);
+            if (event.getActionCommand().equals(DataType.PHOTO.toString())) {
+                // request segments
+                notifyDataUpdateObserver(DataType.PHOTO);
+                btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
+                btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchSegmentTlt());
+                btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
+            } else {
+                // request images
+                notifyDataUpdateObserver(DataType.SEGMENT);
+                btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
+                btnDataSwitch.setToolTipText(GuiConfig.getInstance().getBtnDataSwitchImageTlt());
+                btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+            }
         }
     }
 
@@ -353,14 +315,13 @@ SequenceObservable, TrackAutoplayObservable {
      * @author beataj
      * @version $Revision$
      */
-    private final class SelectPhotoAction extends JosmAction {
+    private final class SelectPhotoAction extends AbstractAction {
 
         private static final long serialVersionUID = 191591505362305396L;
 
         private final boolean isNext;
 
-        private SelectPhotoAction(final String shortcutText, final boolean isNext) {
-            super(shortcutText, null, shortcutText, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
+        private SelectPhotoAction(final boolean isNext) {
             this.isNext = isNext;
         }
 
@@ -376,86 +337,14 @@ SequenceObservable, TrackAutoplayObservable {
 
 
     /**
-     * Selects the closest photo of the selected photo.
-     *
-     * @author ioanao
-     * @version $Revision$
-     */
-    private final class ClosestPhotoAction extends JosmAction {
-
-        private static final long serialVersionUID = 191591505362305396L;
-
-
-        private ClosestPhotoAction() {
-            super(GuiConfig.getInstance().getBtnClosestShortcutText(), null,
-                    GuiConfig.getInstance().getBtnClosestShortcutText(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnClosestShortcutText()),
-                    true);
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (photo != null) {
-                notifyClosestPhotoObserver();
-            }
-        }
-    }
-
-    /**
-     * Starts/stops to auto-play the currently displayed track.
-     *
-     * @author beataj
-     * @version $Revision$
-     */
-    private final class TrackAutoplayAction extends JosmAction {
-
-        private static final long serialVersionUID = -2733397455276087753L;
-
-
-        private TrackAutoplayAction() {
-            super(GuiConfig.getInstance().getBtnPlayShortcutText(), null,
-                    GuiConfig.getInstance().getBtnPlayShortcutText(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnPlayShortcutText()), true);
-        }
-
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (photo != null) {
-                final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
-                final AutoplayAction autoplayAction = eventAction != null ? eventAction
-                        : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
-                updateAutoplayButton(autoplayAction);
-                if (autoplayAction.equals(AutoplayAction.START)) {
-                    btnClosestPhoto.setEnabled(false);
-                    btnPrevious.setEnabled(false);
-                    btnNext.setEnabled(false);
-                } else {
-                    btnPrevious.setEnabled(true);
-                    btnNext.setEnabled(true);
-                }
-                ThreadPool.getInstance().execute(() -> notifyObserver(autoplayAction));
-
-            }
-        }
-    }
-
-    /**
      * Centers the map to the selected photo's location.
      *
      * @author beataj
      * @version $Revision$
      */
-    private final class JumpToLocationAction extends JosmAction {
+    private final class JumpToLocationAction extends AbstractAction {
 
         private static final long serialVersionUID = 6824741346944799071L;
-
-        private JumpToLocationAction() {
-            super(GuiConfig.getInstance().getBtnLocationShortcutText(), null,
-                    GuiConfig.getInstance().getBtnLocationShortcutText(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnLocationShortcutText()),
-                    true);
-        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -465,22 +354,16 @@ SequenceObservable, TrackAutoplayObservable {
         }
     }
 
+
     /**
      * Opens the selected photo's web page
      *
      * @author beataj
      * @version $Revision$
      */
-    private final class OpenWebPageAction extends JosmAction {
+    private final class OpenWebPageAction extends AbstractAction {
 
         private static final long serialVersionUID = -1443190917019829709L;
-
-        private OpenWebPageAction() {
-            super(GuiConfig.getInstance().getBtnWebPageShortcutTlt(), null,
-                    GuiConfig.getInstance().getBtnWebPageShortcutTlt(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnWebPageShortcutTlt()),
-                    true);
-        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -493,6 +376,25 @@ SequenceObservable, TrackAutoplayObservable {
                     JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageTxt(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        }
+    }
+
+
+    /**
+     * Selects the closest photo of the selected photo.
+     *
+     * @author ioanao
+     * @version $Revision$
+     */
+    private final class ClosestPhotoAction extends AbstractAction {
+
+        private static final long serialVersionUID = 191591505362305396L;
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (photo != null) {
+                notifyClosestPhotoObserver();
             }
         }
     }

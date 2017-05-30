@@ -22,18 +22,15 @@ import java.net.URI;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.gui.dialogs.layer.DeleteLayerAction;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.FilterDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -58,7 +55,7 @@ abstract class AbtractLayer extends Layer {
         super(GuiConfig.getInstance().getPluginShortName());
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
         layerListDialog.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
         layerListDialog.getActionMap().put(DELETE_ACTION, new OpenStreetCamDeleteLayerAction());
     }
 
@@ -76,13 +73,12 @@ abstract class AbtractLayer extends Layer {
     @Override
     public Action[] getMenuEntries() {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
-        final String fiterIconName = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
-                ? IconConfig.getInstance().getFilterIconName() : IconConfig.getInstance().getFilterSelectedIconName();
+        final Icon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
+                ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
         return new Action[] { layerListDialog.createActivateLayerAction(this),
                 layerListDialog.createShowHideLayerAction(), new OpenStreetCamDeleteLayerAction(),
-                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(fiterIconName),
-                SeparatorLayerAction.INSTANCE, new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE,
-                new LayerListPopup.InfoAction(this) };
+                SeparatorLayerAction.INSTANCE, new DisplayFilterDialogAction(icon), SeparatorLayerAction.INSTANCE,
+                new OpenFeedbackPageAction(), SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
     }
 
     @Override
@@ -137,22 +133,18 @@ abstract class AbtractLayer extends Layer {
      * @author beataj
      * @version $Revision$
      */
-    private final class DisplayFilterDialogAction extends JosmAction {
+    private final class DisplayFilterDialogAction extends AbstractAction {
 
         private static final long serialVersionUID = 8325126526750975651L;
 
 
-        private DisplayFilterDialogAction(final String iconName) {
-            super(GuiConfig.getInstance().getDlgFilterTitle(), iconName, GuiConfig.getInstance().getDlgFilterTitle(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getDlgFilterShortcutText()),
-                    true);
+        private DisplayFilterDialogAction(final Icon icon) {
+            super(GuiConfig.getInstance().getDlgFilterTitle(), icon);
         }
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final ImageIcon icon = PreferenceManager.getInstance().loadListFilter().isDefaultFilter()
-                    ? IconConfig.getInstance().getFilterIcon() : IconConfig.getInstance().getFilterSelectedIcon();
-            final FilterDialog filterDialog = new FilterDialog(icon);
+            final FilterDialog filterDialog = new FilterDialog();
             filterDialog.setVisible(true);
         }
     }
@@ -164,15 +156,12 @@ abstract class AbtractLayer extends Layer {
      * @author beataj
      * @version $Revision$
      */
-    private final class OpenFeedbackPageAction extends JosmAction {
+    private final class OpenFeedbackPageAction extends AbstractAction {
 
         private static final long serialVersionUID = 4196639030623647016L;
 
         private OpenFeedbackPageAction() {
-            super(GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(), IconConfig.getInstance().getFeedbackIconName(),
-                    GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getLayerFeedbackShortcutText()),
-                    true);
+            super(GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(), IconConfig.getInstance().getFeedbackIcon());
         }
 
         @Override

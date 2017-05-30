@@ -57,13 +57,14 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin
-        implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
-
-    private static final int SEARCH_DELAY = 500;
+implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
 
     private JMenuItem layerActivatorMenuItem;
     private final SelectionHandler selectionHandler;
     private final PreferenceChangedHandler preferenceChangedHandler;
+
+    private static final int SEARCH_DELAY = 500;
+
     private Timer zoomTimer;
 
 
@@ -80,7 +81,6 @@ public class OpenStreetCamPlugin extends Plugin
             layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
-        OpenStreetCamDetailsDialog.getInstance();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class OpenStreetCamPlugin extends Plugin
         if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
             // initialize details dialog
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-            detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler);
+            detailsDialog.registerObservers(this, selectionHandler, selectionHandler, this);
             newMapFrame.addToggleDialog(detailsDialog, true);
             if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
                 detailsDialog.showDialog();
@@ -167,7 +167,7 @@ public class OpenStreetCamPlugin extends Plugin
             Main.map.mapView.removeMouseMotionListener(selectionHandler);
             Main.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
-            OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+            OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
         }
     }
 
@@ -258,8 +258,6 @@ public class OpenStreetCamPlugin extends Plugin
                     selectionHandler.changeMouseHoverTimerDelay();
                 } else if (prefManager.hasMouseHoverFlagChanged(event.getKey(), newValue)) {
                     handleMouseHover();
-                } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
-                    selectionHandler.changeAutoplayTimerDelay();
                 }
             }
         }
@@ -267,7 +265,7 @@ public class OpenStreetCamPlugin extends Plugin
         private void handleMouseHover() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL, true);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL);
             }
         }
 
@@ -277,7 +275,7 @@ public class OpenStreetCamPlugin extends Plugin
                 OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
                 }
                 Main.map.repaint();
             });
@@ -290,7 +288,7 @@ public class OpenStreetCamPlugin extends Plugin
             SwingUtilities.invokeLater(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
                 }
                 Main.map.repaint();
             });
@@ -300,7 +298,7 @@ public class OpenStreetCamPlugin extends Plugin
         private void handleHighQualityPhotoSelection() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.HIGH_QUALITY, true);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoType.HIGH_QUALITY);
             }
         }
 

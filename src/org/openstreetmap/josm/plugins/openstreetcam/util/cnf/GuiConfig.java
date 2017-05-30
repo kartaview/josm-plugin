@@ -32,23 +32,15 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginShortName;
     private final String pluginLongName;
     private final String pluginTlt;
-    private final String pluginShortcutText;
-    private final String pluginShortcutLongText;
 
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
     private final String prefManualSwitchLbl;
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
+    private final String prefDisplayTrackLbl;
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
-
-    private final String prefTrackLbl;
-    private final String prefDisplayTrackLbl;
-    private final String prefAutoplayLbl;
-    private final String prefAutoplayLengthLbl;
-    private final String prefAutoplayDelayLbl;
-
     private final String prefCacheLbl;
     private final String prefMemoryLbl;
     private final String prefDiskLbl;
@@ -56,26 +48,14 @@ public final class GuiConfig extends BaseConfig {
     private final String prefNearbyLbl;
 
     private final String btnPreviousTlt;
-    private final String btnPreviousShortcutText;
     private final String btnNextTlt;
-    private final String btnNextShortcutText;
-
-    private final String btnClosestTlt;
-    private final String btnClosestShortcutText;
-    private final String btnPlayTlt;
-    private final String btnPlayShortcutText;
-    private final String btnStopTlt;
-    private final String btnStopShortcutText;
     private final String btnLocationTlt;
-    private final String btnLocationShortcutText;
     private final String btnWebPageTlt;
-    private final String btnWebPageShortcutTlt;
+    private final String btnClosestImageTlt;
     private final String btnDataSwitchImageTlt;
     private final String btnDataSwitchSegmentTlt;
-    private final String btnDataSwitchShortcutTlt;
 
     private final String dlgFilterTitle;
-    private final String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
@@ -88,7 +68,6 @@ public final class GuiConfig extends BaseConfig {
     private final String errorSequenceTxt;
     private final String errorPhotoLoadingTxt;
     private final String errorPhotoPageTxt;
-    private final String errorUserPageTxt;
     private final String errorFeedbackPageTxt;
     private final String incorrectDateFilterTxt;
     private final String unacceptedDateFilterTxt;
@@ -102,7 +81,6 @@ public final class GuiConfig extends BaseConfig {
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
     private final String layerFeedbackMenuItemLbl;
-    private final String layerFeedbackShortcutText;
 
 
     private GuiConfig() {
@@ -111,22 +89,15 @@ public final class GuiConfig extends BaseConfig {
         pluginShortName = readProperty("plugin.name.short");
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
-        pluginShortcutText = readProperty("plugin.shortcut.text");
-        pluginShortcutLongText = readProperty("plugin.shortcut.longText");
 
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
         prefManualSwitchLbl = readProperty("preferences.mapView.switch.lbl");
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
+        prefDisplayTrackLbl = readProperty("preference.photo.displayTrack.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
-        prefTrackLbl = readProperty("preference.track.lbl");
-        prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
-        prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
-        prefAutoplayLengthLbl = readProperty("preference.track.autoplay.length.lbl");
-        prefAutoplayDelayLbl = readProperty("preference.track.autoplay.delay.lbl");
-
         prefCacheLbl = readProperty("preference.cache.lbl");
         prefMemoryLbl = readProperty("preference.cache.memory.lbl");
         prefDiskLbl = readProperty("preference.cache.disk.lbl");
@@ -134,25 +105,14 @@ public final class GuiConfig extends BaseConfig {
         prefNearbyLbl = readProperty("preference.cache.nearby.lbl");
 
         btnPreviousTlt = readProperty("btn.previous.tlt");
-        btnPreviousShortcutText = readProperty("btn.previous.shortcut.text");
         btnNextTlt = readProperty("btn.next.tlt");
-        btnNextShortcutText = readProperty("btn.next.shortcut.text");
-        btnPlayTlt = readProperty("btn.play.tlt");
-        btnPlayShortcutText = readProperty("btn.play.shortcut.text");
-        btnStopTlt = readProperty("btn.stop.tlt");
-        btnStopShortcutText = readProperty("btn.stop.shortcut.text");
         btnLocationTlt = readProperty("btn.location.tlt");
-        btnLocationShortcutText = readProperty("btn.location.shortcut.text");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
-        btnWebPageShortcutTlt = readProperty("btn.webPage.shortcut.text");
-        btnClosestTlt = readProperty("btn.closest.tlt");
-        btnClosestShortcutText = readProperty("btn.closest.shortcut.text");
+        btnClosestImageTlt = readProperty("btn.closestImage.tlt");
         btnDataSwitchImageTlt = readProperty("btn.switch.image.tlt");
         btnDataSwitchSegmentTlt = readProperty("btn.switch.segment.tlt");
-        btnDataSwitchShortcutTlt = readProperty("btn.switch.shortcut.text");
 
         dlgFilterTitle = readProperty("filter.title");
-        dlgFilterShortcutText = readProperty("filter.shortcut.text");
         dlgFilterDateLbl = readProperty("filter.date.lbl");
         dlgFilterUserLbl = readProperty("filter.user.lbl");
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
@@ -166,7 +126,6 @@ public final class GuiConfig extends BaseConfig {
         errorSequenceTxt = readProperty("error.track");
         errorPhotoLoadingTxt = readProperty("error.photo.loading");
         errorPhotoPageTxt = readProperty("error.photo.page");
-        errorUserPageTxt = readProperty("error.user.page");
         errorFeedbackPageTxt = readProperty("error.feedback.page");
         unacceptedDateFilterTxt = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterTxt = readProperty("error.dateFilter.incorrect");
@@ -180,7 +139,6 @@ public final class GuiConfig extends BaseConfig {
         layerDeleteMenuItemLbl = readProperty("layer.menu.delete.lbl");
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
         layerFeedbackMenuItemLbl = readProperty("layer.menu.feedback.lbl");
-        layerFeedbackShortcutText = readProperty("layer.menu.feedback.shortcut.text");
     }
 
 
@@ -233,22 +191,6 @@ public final class GuiConfig extends BaseConfig {
         return prefMouseHoverDelayLbl;
     }
 
-    public String getPrefTrackLbl() {
-        return prefTrackLbl;
-    }
-
-    public String getPrefAutoplayLbl() {
-        return prefAutoplayLbl;
-    }
-
-    public String getPrefAutoplayLengthLbl() {
-        return prefAutoplayLengthLbl;
-    }
-
-    public String getPrefAutoplayDelayLbl() {
-        return prefAutoplayDelayLbl;
-    }
-
     public String getPrefCacheLbl() {
         return prefCacheLbl;
     }
@@ -277,20 +219,16 @@ public final class GuiConfig extends BaseConfig {
         return btnNextTlt;
     }
 
-    public String getBtnPlayTlt() {
-        return btnPlayTlt;
-    }
-
-    public String getBtnStopTlt() {
-        return btnStopTlt;
-    }
-
     public String getBtnLocationTlt() {
         return btnLocationTlt;
     }
 
     public String getBtnWebPageTlt() {
         return btnWebPageTlt;
+    }
+
+    public String getBtnClosestImageTlt() {
+        return btnClosestImageTlt;
     }
 
     public String getBtnDataSwitchImageTlt() {
@@ -349,10 +287,6 @@ public final class GuiConfig extends BaseConfig {
         return errorPhotoPageTxt;
     }
 
-    public String getErrorUserPageTxt() {
-        return errorUserPageTxt;
-    }
-
     public String getErrorFeedbackPageTxt() {
         return errorFeedbackPageTxt;
     }
@@ -391,57 +325,5 @@ public final class GuiConfig extends BaseConfig {
 
     public String getLayerFeedbackMenuItemLbl() {
         return layerFeedbackMenuItemLbl;
-    }
-
-    public String getPluginShortcutText() {
-        return pluginShortcutText;
-    }
-
-    public String getPluginShortcutLongText() {
-        return pluginShortcutLongText;
-    }
-
-    public String getBtnPreviousShortcutText() {
-        return btnPreviousShortcutText;
-    }
-
-    public String getBtnNextShortcutText() {
-        return btnNextShortcutText;
-    }
-
-    public String getBtnClosestTlt() {
-        return btnClosestTlt;
-    }
-
-    public String getBtnClosestShortcutText() {
-        return btnClosestShortcutText;
-    }
-
-    public String getBtnPlayShortcutText() {
-        return btnPlayShortcutText;
-    }
-
-    public String getBtnStopShortcutText() {
-        return btnStopShortcutText;
-    }
-
-    public String getBtnLocationShortcutText() {
-        return btnLocationShortcutText;
-    }
-
-    public String getBtnWebPageShortcutTlt() {
-        return btnWebPageShortcutTlt;
-    }
-
-    public String getBtnDataSwitchShortcutTlt() {
-        return btnDataSwitchShortcutTlt;
-    }
-
-    public String getDlgFilterShortcutText() {
-        return dlgFilterShortcutText;
-    }
-
-    public String getLayerFeedbackShortcutText() {
-        return layerFeedbackShortcutText;
     }
 }

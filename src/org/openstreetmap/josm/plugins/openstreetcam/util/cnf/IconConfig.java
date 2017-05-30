@@ -42,14 +42,10 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoNoHeadingIcon;
     private final ImageIcon photoNoHeadingSelectedIcon;
     private final ImageIcon filterIcon;
-    private final String filterIconName;
-    private final ImageIcon filterSelectedIcon;
-    private final String filterSelectedIconName;
+    private final Icon filterSelectedIcon;
     private final Icon previousIcon;
     private final Icon nextIcon;
-    private final Icon playIcon;
-    private final Icon stopIcon;
-    private final String feedbackIconName;
+    private final Icon feedbackIcon;
     private final Icon locationIcon;
     private final Icon webPageIcon;
     private final Icon closestImageIcon;
@@ -70,16 +66,12 @@ public final class IconConfig extends BaseConfig {
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
         photoNoHeadingSelectedIcon = ImageProvider.get(readProperty("photo.noHeading.sel.icon"));
-        filterIconName = readProperty("filter.icon");
-        filterIcon = ImageProvider.get(filterIconName);
-        filterSelectedIconName = readProperty("filter.sel.icon");
-        filterSelectedIcon = ImageProvider.get(filterSelectedIconName);
+        filterIcon = ImageProvider.get(readProperty("filter.icon"));
+        filterSelectedIcon = ImageProvider.get(readProperty("filter.sel.icon"));
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
         nextIcon = ImageProvider.get(readProperty("next.icon"));
-        playIcon = ImageProvider.get(readProperty("play.icon"));
-        stopIcon = ImageProvider.get(readProperty("stop.icon"));
         locationIcon = ImageProvider.get(readProperty("location.icon"));
-        feedbackIconName = readProperty("feedback.icon");
+        feedbackIcon = ImageProvider.get(readProperty("feedback.icon"));
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
         closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
@@ -133,7 +125,7 @@ public final class IconConfig extends BaseConfig {
         return filterIcon;
     }
 
-    public ImageIcon getFilterSelectedIcon() {
+    public Icon getFilterSelectedIcon() {
         return filterSelectedIcon;
     }
 
@@ -145,16 +137,8 @@ public final class IconConfig extends BaseConfig {
         return nextIcon;
     }
 
-    public Icon getPlayIcon() {
-        return playIcon;
-    }
-
-    public Icon getStopIcon() {
-        return stopIcon;
-    }
-
-    public String getFeedbackIconName() {
-        return feedbackIconName;
+    public Icon getFeedbackIcon() {
+        return feedbackIcon;
     }
 
     public Icon getLocationIcon() {
@@ -179,13 +163,5 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getManualSwitchImageIcon() {
         return manualSwitchImageIcon;
-    }
-
-    public String getFilterIconName() {
-        return filterIconName;
-    }
-
-    public String getFilterSelectedIconName() {
-        return filterSelectedIconName;
     }
 }

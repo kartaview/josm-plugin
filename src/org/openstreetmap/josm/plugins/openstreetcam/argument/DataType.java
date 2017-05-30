@@ -16,9 +16,5 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @version $Revision$
  */
 public enum DataType {
-    SEGMENT, PHOTO;
-
-    public static DataType getDataType(final String value) {
-        return SEGMENT.name().equals(value) ? SEGMENT : PHOTO.name().equals(value) ? PHOTO : null;
-    }
+    SEGMENT, PHOTO
 }
