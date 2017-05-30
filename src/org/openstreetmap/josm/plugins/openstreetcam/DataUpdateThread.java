@@ -160,7 +160,8 @@ class DataUpdateThread implements Runnable {
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null);
                 }
-                Main.map.repaint();
+                OpenStreetCamLayer.getInstance().invalidate();
+                Main.map.mapView.repaint();
             });
         }
     }
