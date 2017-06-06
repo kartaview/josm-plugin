@@ -45,9 +45,9 @@ public final class ShortcutFactory {
                 guiConfig.getPluginShortcutText(), KeyEvent.VK_1, Shortcut.ALT_CTRL));
         map.put(guiConfig.getBtnPreviousShortcutText(),
                 Shortcut.registerShortcut(guiConfig.getBtnPreviousShortcutText(),
-                        guiConfig.getBtnPreviousShortcutText(), KeyEvent.VK_LEFT, Shortcut.ALT_CTRL));
+                        guiConfig.getBtnPreviousShortcutText(), KeyEvent.VK_LEFT, Shortcut.ALT));
         map.put(guiConfig.getBtnNextShortcutText(), Shortcut.registerShortcut(guiConfig.getBtnNextShortcutText(),
-                guiConfig.getBtnNextShortcutText(), KeyEvent.VK_RIGHT, Shortcut.ALT_CTRL));
+                guiConfig.getBtnNextShortcutText(), KeyEvent.VK_RIGHT, Shortcut.ALT));
         map.put(guiConfig.getBtnClosestShortcutText(), Shortcut.registerShortcut(guiConfig.getBtnClosestShortcutText(),
                 guiConfig.getBtnClosestShortcutText(), KeyEvent.VK_2, Shortcut.ALT_CTRL));
         map.put(guiConfig.getBtnPlayShortcutText(), Shortcut.registerShortcut(guiConfig.getBtnPlayShortcutText(),
@@ -65,6 +65,9 @@ public final class ShortcutFactory {
         map.put(guiConfig.getBtnDataSwitchShortcutTlt(),
                 Shortcut.registerShortcut(guiConfig.getBtnDataSwitchShortcutTlt(),
                         guiConfig.getBtnDataSwitchShortcutTlt(), KeyEvent.VK_8, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getLayerDeleteMenuItemLbl(),
+                Shortcut.registerShortcut(GuiConfig.getInstance().getLayerDeleteMenuItemLbl(),
+                        GuiConfig.getInstance().getLayerDeleteMenuItemTlt(), KeyEvent.VK_DELETE, 0));
         return map;
     }
 

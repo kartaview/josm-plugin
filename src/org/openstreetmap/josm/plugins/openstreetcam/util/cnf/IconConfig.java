@@ -43,8 +43,6 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoNoHeadingSelectedIcon;
     private final ImageIcon filterIcon;
     private final String filterIconName;
-    private final ImageIcon filterSelectedIcon;
-    private final String filterSelectedIconName;
     private final Icon previousIcon;
     private final Icon nextIcon;
     private final Icon playIcon;
@@ -72,8 +70,6 @@ public final class IconConfig extends BaseConfig {
         photoNoHeadingSelectedIcon = ImageProvider.get(readProperty("photo.noHeading.sel.icon"));
         filterIconName = readProperty("filter.icon");
         filterIcon = ImageProvider.get(filterIconName);
-        filterSelectedIconName = readProperty("filter.sel.icon");
-        filterSelectedIcon = ImageProvider.get(filterSelectedIconName);
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
         nextIcon = ImageProvider.get(readProperty("next.icon"));
         playIcon = ImageProvider.get(readProperty("play.icon"));
@@ -133,10 +129,6 @@ public final class IconConfig extends BaseConfig {
         return filterIcon;
     }
 
-    public ImageIcon getFilterSelectedIcon() {
-        return filterSelectedIcon;
-    }
-
     public Icon getPreviousIcon() {
         return previousIcon;
     }
@@ -183,9 +175,5 @@ public final class IconConfig extends BaseConfig {
 
     public String getFilterIconName() {
         return filterIconName;
-    }
-
-    public String getFilterSelectedIconName() {
-        return filterSelectedIconName;
     }
 }
