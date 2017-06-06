@@ -236,7 +236,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
-        if (photo != null && dataSet.getPhotos() != null) {
+        if (photo != null && dataSet != null && dataSet.getPhotos() != null) {
             closestPhotos =
                     Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
         } else {
