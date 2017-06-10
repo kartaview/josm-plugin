@@ -39,7 +39,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 final class SelectionHandler extends MouseAdapter
-        implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -184,33 +184,27 @@ final class SelectionHandler extends MouseAdapter
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         if (photo == null) {
-            handlePhotoUnselection();
+            SwingUtilities.invokeLater(() -> handlePhotoUnselection());
         } else {
             SwingUtilities.invokeLater(() -> {
-                ThreadPool.getInstance().execute(() -> {
-                    final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                    ImageHandler.getInstance().loadPhotos(
-                            layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
-                });
+                final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
+                ImageHandler.getInstance().loadPhotos(
+                        layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+
                 layer.setSelectedPhoto(photo);
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
                 }
                 layer.invalidate();
                 Main.map.repaint();
-            });
-            ThreadPool.getInstance().execute(() -> {
                 if (!detailsDialog.getButton().isSelected()) {
                     detailsDialog.getButton().doClick();
                 }
                 detailsDialog.updateUI(photo, photoType, displayLoadingMessage);
-                SwingUtilities.invokeLater(() -> {
-                    if (layer.getSelectedSequence() != null && (autoplayTimer == null || !autoplayTimer.isRunning())) {
-                        detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                                layer.enableNextPhotoAction());
-                    }
-
-                });
+                if (layer.getSelectedSequence() != null && (autoplayTimer == null)) {
+                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
+                            layer.enableNextPhotoAction());
+                }
             });
         }
     }
@@ -258,17 +252,13 @@ final class SelectionHandler extends MouseAdapter
         ThreadPool.getInstance().execute(() -> {
             final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId());
             if (photo.equals(layer.getSelectedPhoto()) && sequence != null && sequence.hasPhotos()) {
-                SwingUtilities.invokeLater(() -> {
-                    layer.setSelectedSequence(sequence);
-                    detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
-                            layer.enableNextPhotoAction());
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        detailsDialog.updateDataSwitchButton(null, false, null);
-                    }
-                    layer.invalidate();
-                    Main.map.repaint();
-
-                });
+                layer.setSelectedSequence(sequence);
+                detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(), layer.enableNextPhotoAction());
+                if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                    detailsDialog.updateDataSwitchButton(null, false, null);
+                }
+                layer.invalidate();
+                Main.map.repaint();
             }
         });
     }
@@ -299,13 +289,6 @@ final class SelectionHandler extends MouseAdapter
                     photoSettings.isHighQualityFlag() ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
             layer.selectStartPhotoForClosestAction(photo);
-            SwingUtilities.invokeLater(() -> {
-                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                    Main.map.mapView.zoomTo(photo.getLocation());
-                    layer.invalidate();
-                    Main.map.repaint();
-                }
-            });
         }
     }
 
@@ -313,6 +296,7 @@ final class SelectionHandler extends MouseAdapter
     public void play(final AutoplayAction action) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         if (AutoplayAction.START.equals(action)) {
+            PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
             // start autoplay
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 autoplayTimer.stop();
@@ -327,8 +311,10 @@ final class SelectionHandler extends MouseAdapter
             }
 
         } else {
+            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
             // stop autoplay
             autoplayTimer.stop();
+            autoplayTimer = null;
             if (layer.getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
             }
@@ -347,10 +333,16 @@ final class SelectionHandler extends MouseAdapter
                     nextPhoto = null;
                 }
             }
-            if (nextPhoto == null) {
-                // end of sequence
+            if (layer.getSelectedSequence().getPhotos().get(layer.getSelectedSequence().getPhotos().size() - 1)
+                    .equals(nextPhoto)) {
+                PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
                 autoplayTimer.stop();
-                OpenStreetCamDetailsDialog.getInstance().updateAutoplayButton(AutoplayAction.STOP);
+                autoplayTimer = null;
+                // nextphoto is the last one
+                final PhotoType photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
+                selectPhoto(nextPhoto, photoType, false);
+                layer.selectStartPhotoForClosestAction(photo);
                 if (layer.getClosestPhotos() != null && !layer.getClosestPhotos().isEmpty()) {
                     OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
@@ -362,7 +354,10 @@ final class SelectionHandler extends MouseAdapter
                 layer.selectStartPhotoForClosestAction(photo);
             }
         } else {
+            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
             autoplayTimer.stop();
+            autoplayTimer = null;
+            autoplayDistance = 0;
         }
     }
 

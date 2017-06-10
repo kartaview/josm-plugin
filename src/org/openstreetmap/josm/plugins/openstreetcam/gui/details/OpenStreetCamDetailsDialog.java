@@ -21,7 +21,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -142,12 +141,11 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         if (photo != null) {
             // display loading text
             if (displayLoadingMessage) {
-                ThreadPool.getInstance().execute(() -> {
-                    pnlPhoto.displayLoadingMessage();
-                    pnlBtn.updateUI(photo);
-                    repaint();
-                });
+                pnlPhoto.displayLoadingMessage();
             }
+            pnlBtn.updateUI(photo);
+            repaint();
+
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
@@ -179,7 +177,6 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();
         }
-        pnlBtn.updateUI(photo);
         repaint();
     }
 
@@ -247,15 +244,11 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     /**
-     * Updates the properties of the auto-play button. Null properties are ignored.
+     * Checks if a photo is selected or not.
      *
-     * @param action a {@code AutoplayAction} specifies the new action associated with the auto-play button.
+     * @return true if a photo is selected, false otherwise
      */
-    public void updateAutoplayButton(final AutoplayAction action) {
-        if (action != null) {
-            pnlBtn.updateAutoplayButton(action);
-            pnlBtn.revalidate();
-            repaint();
-        }
+    public boolean isPhotoSelected() {
+        return pnlBtn.isPhotoSelected();
     }
 }

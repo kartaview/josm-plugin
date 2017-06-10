@@ -123,7 +123,15 @@ public class Service {
         }
         final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
         verifyResponseStatus(detailsResponse);
-        return detailsResponse != null ? detailsResponse.getOsv() : null;
+
+        Sequence sequence = null;
+        if (detailsResponse != null) {
+            sequence = detailsResponse.getOsv();
+
+            // order photos by sequence index
+            sequence.getPhotos().sort((p1, p2) -> p1.getSequenceIndex().compareTo(p2.getSequenceIndex()));
+        }
+        return sequence;
     }
 
     /**

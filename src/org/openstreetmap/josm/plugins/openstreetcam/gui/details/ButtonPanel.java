@@ -80,7 +80,6 @@ SequenceObservable, TrackAutoplayObservable {
     private SequenceObserver sequenceObserver;
     private TrackAutoplayObserver trackAutoplayObserver;
 
-
     /* the currently selected photo */
     private Photo photo;
 
@@ -97,7 +96,6 @@ SequenceObservable, TrackAutoplayObservable {
         setPreferredSize(DIM);
     }
 
-
     private void addDataSwitchButton() {
         final JosmAction action = new ManualDataSwitchAction();
         final String tooltip =
@@ -106,7 +104,6 @@ SequenceObservable, TrackAutoplayObservable {
                 ButtonBuilder.build(action, IconConfig.getInstance().getManualSwitchImageIcon(), tooltip, false);
         btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-            // add manual switch button
             add(btnDataSwitch);
         }
     }
@@ -170,13 +167,15 @@ SequenceObservable, TrackAutoplayObservable {
     void updateUI(final Photo photo) {
         this.photo = photo;
         if (photo != null) {
-            btnLocation.setEnabled(true);
             btnWebPage.setEnabled(true);
+            if (PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
+                btnLocation.setEnabled(false);
+            }
         } else {
             enableSequenceActions(false, false);
-            btnLocation.setEnabled(false);
             btnWebPage.setEnabled(false);
             btnClosestPhoto.setEnabled(false);
+            btnLocation.setEnabled(false);
         }
     }
 
@@ -226,7 +225,8 @@ SequenceObservable, TrackAutoplayObservable {
     }
 
     /**
-     * Enables or disables the "OpenStreetCam Sequence" related action buttons.
+     * Enables or disables the "OpenStreetCam Sequence" related action buttons based on the given arguments. The play
+     * button is disabled if the last photo of the track was selected (isNext is false).
      *
      * @param isPrevious if true then the "Previous" button is enabled; if false then the button is disabled
      * @param isNext if true then the "Next" button is enabled; if false then the button is disabled
@@ -234,16 +234,27 @@ SequenceObservable, TrackAutoplayObservable {
     void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
         btnPrevious.setEnabled(isPrevious);
         btnNext.setEnabled(isNext);
-
-        // autoplay should be enabled if there are next photos
         btnAutoplay.setEnabled(isNext);
-        if (!isNext && !isPrevious) {
-            // reset initial state
+        if (!isNext) {
+            updateAutoplayButton(AutoplayAction.START);
+        }
+    }
+
+    private void updateAutoplayButton(final AutoplayAction action) {
+        if (action.equals(AutoplayAction.START)) {
             btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
             final String tooltip = GuiConfig.getInstance().getBtnPlayTlt().replaceAll(SHORTCUT,
                     ((JosmAction) btnAutoplay.getAction()).getShortcut().getKeyText());
             btnAutoplay.setToolTipText(tooltip);
             btnAutoplay.setActionCommand(AutoplayAction.START.name());
+            btnLocation.setEnabled(true);
+        } else {
+            btnAutoplay.setIcon(IconConfig.getInstance().getStopIcon());
+            final String tooltip = GuiConfig.getInstance().getBtnStopTlt().replaceAll(SHORTCUT,
+                    ((JosmAction) btnAutoplay.getAction()).getShortcut().getKeyText());
+            btnAutoplay.setToolTipText(tooltip);
+            btnAutoplay.setActionCommand(AutoplayAction.STOP.name());
+            btnLocation.setEnabled(false);
         }
     }
 
@@ -254,18 +265,6 @@ SequenceObservable, TrackAutoplayObservable {
      */
     void enableClosestPhotoButton(final boolean enabled) {
         btnClosestPhoto.setEnabled(enabled);
-    }
-
-    void updateAutoplayButton(final AutoplayAction action) {
-        if (action.equals(AutoplayAction.START)) {
-            btnAutoplay.setIcon(IconConfig.getInstance().getPlayIcon());
-            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnPlayTlt());
-            btnAutoplay.setActionCommand(AutoplayAction.STOP.name());
-        } else {
-            btnAutoplay.setIcon(IconConfig.getInstance().getStopIcon());
-            btnAutoplay.setToolTipText(GuiConfig.getInstance().getBtnStopTlt());
-            btnAutoplay.setActionCommand(AutoplayAction.START.name());
-        }
     }
 
     @Override
@@ -311,13 +310,17 @@ SequenceObservable, TrackAutoplayObservable {
     @Override
     public void registerObserver(final TrackAutoplayObserver trackAutoplayObserver) {
         this.trackAutoplayObserver = trackAutoplayObserver;
-
     }
 
     @Override
     public void notifyObserver(final AutoplayAction action) {
         trackAutoplayObserver.play(action);
     }
+
+    boolean isPhotoSelected() {
+        return photo != null;
+    }
+
 
     /**
      * Defines the functionality of the manual data switch button.
@@ -385,7 +388,6 @@ SequenceObservable, TrackAutoplayObservable {
 
         private static final long serialVersionUID = 191591505362305396L;
 
-
         private ClosestPhotoAction() {
             super(GuiConfig.getInstance().getBtnClosestShortcutText(), null,
                     GuiConfig.getInstance().getBtnClosestShortcutText(),
@@ -401,6 +403,7 @@ SequenceObservable, TrackAutoplayObservable {
         }
     }
 
+
     /**
      * Starts/stops to auto-play the currently displayed track.
      *
@@ -411,13 +414,11 @@ SequenceObservable, TrackAutoplayObservable {
 
         private static final long serialVersionUID = -2733397455276087753L;
 
-
         private TrackAutoplayAction() {
             super(GuiConfig.getInstance().getBtnPlayShortcutText(), null,
                     GuiConfig.getInstance().getBtnPlayShortcutText(),
                     ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnPlayShortcutText()), true);
         }
-
 
         @Override
         public void actionPerformed(final ActionEvent event) {
@@ -425,17 +426,17 @@ SequenceObservable, TrackAutoplayObservable {
                 final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
                 final AutoplayAction autoplayAction = eventAction != null ? eventAction
                         : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
-                updateAutoplayButton(autoplayAction);
                 if (autoplayAction.equals(AutoplayAction.START)) {
+                    updateAutoplayButton(AutoplayAction.STOP);
                     btnClosestPhoto.setEnabled(false);
                     btnPrevious.setEnabled(false);
                     btnNext.setEnabled(false);
                 } else {
+                    updateAutoplayButton(AutoplayAction.START);
                     btnPrevious.setEnabled(true);
                     btnNext.setEnabled(true);
                 }
                 ThreadPool.getInstance().execute(() -> notifyObserver(autoplayAction));
-
             }
         }
     }

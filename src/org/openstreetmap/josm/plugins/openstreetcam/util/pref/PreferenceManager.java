@@ -161,6 +161,14 @@ public final class PreferenceManager {
         return loadManager.loadAutoplaySettings();
     }
 
+    public boolean loadAutoplayStartedFlag() {
+        return loadManager.loadAutoplayStartedFlag();
+    }
+
+    public void saveAutoplayStartedFlag(final boolean flag) {
+        saveManager.saveAutoplayStartedFlag(flag);
+    }
+
     /**
      * Loads the cache preference settings.
      *
