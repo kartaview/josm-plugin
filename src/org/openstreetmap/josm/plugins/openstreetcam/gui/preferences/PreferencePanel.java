@@ -135,8 +135,11 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayDelayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_AUTOPLAY_DELAY);
-        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(
-                settings.getTrackSettings().getAutoplaySettings().getDelay(),
+        int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
+                .getTrackSettings().getAutoplaySettings().getDelay() > Config.getInstance().getAutoplayMinDelay()
+                        ? Config.getInstance().getAutoplayMinDelay()
+                        : settings.getTrackSettings().getAutoplaySettings().getDelay();
+        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
                 Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
         add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
