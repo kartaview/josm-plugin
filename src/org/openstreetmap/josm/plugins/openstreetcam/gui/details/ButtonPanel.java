@@ -168,9 +168,7 @@ SequenceObservable, TrackAutoplayObservable {
         this.photo = photo;
         if (photo != null) {
             btnWebPage.setEnabled(true);
-            if (PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
-                btnLocation.setEnabled(false);
-            }
+            btnLocation.setEnabled(!PreferenceManager.getInstance().loadAutoplayStartedFlag());
         } else {
             enableSequenceActions(false, false);
             btnWebPage.setEnabled(false);

@@ -87,6 +87,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             selectPhoto(null, null, false);
             layer.selectStartPhotoForClosestAction(null);
             ThreadPool.getInstance().execute(new DataUpdateThread(true));
+            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
         }
     }
 
