@@ -104,6 +104,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
             final PhotoType photoType =
                     photoSettings.isHighQualityFlag() ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
+            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
             selectPhoto(photo, photoType, true);
             layer.selectStartPhotoForClosestAction(photo);
         }
