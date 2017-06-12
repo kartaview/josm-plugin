@@ -31,7 +31,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -43,6 +42,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 class DataUpdateThread implements Runnable {
 
     private final Boolean checkSelectedPhoto;
+
 
     DataUpdateThread(final Boolean checkSelectedPhoto) {
         this.checkSelectedPhoto = checkSelectedPhoto;
@@ -58,7 +58,7 @@ class DataUpdateThread implements Runnable {
 
             if (OpenStreetCamLayer.getInstance().getSelectedSequence() != null) {
                 // special case, we load always photos
-                ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
+                updatePhotos(mapViewSettings, listFilter);
             } else {
                 if (mapViewSettings.isManualSwitchFlag()) {
                     // change data type only if user changed manually
@@ -73,24 +73,24 @@ class DataUpdateThread implements Runnable {
 
     private void manualSwitchFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom) {
         // enable switch button based on zoom level
+        final DataType dataType = PreferenceManager.getInstance().loadDataType();
         if (zoom >= Config.getInstance().getMapPhotoZoom()) {
-            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, true, null);
+            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(dataType, true, null);
         } else {
-            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(dataType, false, null);
         }
 
-        final DataType dataType = PreferenceManager.getInstance().loadDataType();
         if (zoom < Config.getInstance().getMapPhotoZoom()) {
             if (dataType == DataType.PHOTO) {
                 // user zoomed out to segment view
                 PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
             }
-            ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
+            updateSegments(mapViewSettings, listFilter, zoom);
         } else {
             if (dataType == DataType.PHOTO) {
-                ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
+                updatePhotos(mapViewSettings, listFilter);
             } else {
-                ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
+                updateSegments(mapViewSettings, listFilter, zoom);
             }
         }
     }
@@ -102,13 +102,13 @@ class DataUpdateThread implements Runnable {
                 // user zoomed out to segment view
                 PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
             }
-            ThreadPool.getInstance().execute(() -> updateSegments(mapViewSettings, listFilter, zoom));
+            updateSegments(mapViewSettings, listFilter, zoom);
         } else if (zoom >= mapViewSettings.getPhotoZoom()) {
             if (dataType == null || dataType == DataType.SEGMENT) {
                 // user zoomed in to photo view
                 PreferenceManager.getInstance().saveDataType(DataType.PHOTO);
             }
-            ThreadPool.getInstance().execute(() -> updatePhotos(mapViewSettings, listFilter));
+            updatePhotos(mapViewSettings, listFilter);
         }
     }
 
@@ -157,11 +157,13 @@ class DataUpdateThread implements Runnable {
         if (Main.map != null && Main.map.mapView != null) {
             SwingUtilities.invokeLater(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelectedPhoto);
-                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
+                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
+                        && OpenStreetCamDetailsDialog.getInstance().isPhotoSelected()) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 } else {
                     if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
-                            && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()) {
+                            && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()
+                            && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
                         OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
                     }
                 }

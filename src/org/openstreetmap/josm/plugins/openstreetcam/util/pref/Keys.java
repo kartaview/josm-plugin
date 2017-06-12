@@ -47,6 +47,7 @@ final class Keys {
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
     static final String AUTOPLAY_LENGTH = "openstreetcam.preferences.autoplay.length";
     static final String AUTOPLAY_DELAY = "openstreetcam.preferences.autoplay.delay";
+    static final String AUTOPLAY_STARTED = "opensteetcam.preferences.autoplay.started";
 
     /* cache related user preference settings */
     static final String CACHE_MEMORY_COUNT = "openstreetcam.preferences.cache.memory";
@@ -58,6 +59,7 @@ final class Keys {
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
     static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
     static final String DATA_TYPE = "openstreetcam.dataType";
+
 
     private Keys() {}
 }

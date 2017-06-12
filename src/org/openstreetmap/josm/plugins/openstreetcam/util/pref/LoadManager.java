@@ -8,7 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_LENGTH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
@@ -101,6 +101,10 @@ final class LoadManager {
         final Integer delay = delayValue == null || delayValue.isEmpty() ? Config.getInstance().getAutoplayMinDelay()
                 : Integer.valueOf(delayValue);
         return new AutoplaySettings(length, delay);
+    }
+
+    boolean loadAutoplayStartedFlag() {
+        return Main.pref.getBoolean(AUTOPLAY_STARTED);
     }
 
     CacheSettings loadCacheSettings() {

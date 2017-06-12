@@ -207,7 +207,6 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         return photo;
     }
 
-
     /**
      * Checks if the selected photo is the first photo of the sequence.
      *
@@ -250,14 +249,15 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      * @return a {@code Photo}
      */
     public Photo closestSelectedPhoto() {
-        if (closestPhotos.isEmpty()) {
-            closestPhotos =
-                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
-        }
         Photo closestPhoto = null;
         if (!closestPhotos.isEmpty()) {
             closestPhoto = closestPhotos.iterator().next();
             closestPhotos.remove(closestPhoto);
+        }
+        // recalculate closest photos when latest closest photo is returned
+        if (closestPhotos.isEmpty()) {
+            closestPhotos =
+                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
         }
         return closestPhoto;
     }
