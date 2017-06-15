@@ -65,9 +65,13 @@ public final class ShortcutFactory {
         map.put(guiConfig.getBtnDataSwitchShortcutTlt(),
                 Shortcut.registerShortcut(guiConfig.getBtnDataSwitchShortcutTlt(),
                         guiConfig.getBtnDataSwitchShortcutTlt(), KeyEvent.VK_8, Shortcut.ALT_CTRL));
-        map.put(guiConfig.getLayerDeleteMenuItemLbl(),
-                Shortcut.registerShortcut(GuiConfig.getInstance().getLayerDeleteMenuItemLbl(),
-                        GuiConfig.getInstance().getLayerDeleteMenuItemTlt(), KeyEvent.VK_DELETE, 0));
+
+        map.put(guiConfig.getBtnMatchedWayShortcutTlt(),
+                Shortcut.registerShortcut(guiConfig.getBtnMatchedWayShortcutTlt(),
+                        guiConfig.getBtnMatchedWayShortcutTlt(), KeyEvent.VK_9, Shortcut.ALT_CTRL));
+
+        map.put(guiConfig.getLayerDeleteMenuItemLbl(), Shortcut.registerShortcut(guiConfig.getLayerDeleteMenuItemLbl(),
+                guiConfig.getLayerDeleteMenuItemTlt(), KeyEvent.VK_DELETE, 0));
         return map;
     }
 

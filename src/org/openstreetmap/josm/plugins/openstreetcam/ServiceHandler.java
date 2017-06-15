@@ -155,7 +155,7 @@ final class ServiceHandler {
     }
 
     /**
-     * Retries the sequence corresponding to the given identifier
+     * Retries the sequence corresponding to the given identifier.
      *
      * @param id a sequence identifier
      * @return a {@code Sequence}
@@ -174,6 +174,29 @@ final class ServiceHandler {
             }
         }
         return sequence;
+    }
+
+    /**
+     * Retrieves the matched OSM way identifier of a given photo identified by the sequenceId and sequenceIndex.
+     *
+     * @param sequenceId the sequence identifier
+     * @param sequenceIndex the sequence index
+     * @return a {@code Long} value
+     */
+    Long retrievePhotoMatchedWayId(final Long sequenceId, final Integer sequenceIndex) {
+        Long wayId = null;
+        try {
+            wayId = service.retrievePhotoMatchedWayId(sequenceId, sequenceIndex);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                        GuiConfig.getInstance().getErrorSequenceTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        return wayId;
     }
 
     /**

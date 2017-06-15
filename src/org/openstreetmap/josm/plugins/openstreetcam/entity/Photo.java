@@ -37,6 +37,7 @@ public class Photo {
     private final Long timestamp;
     private final Double heading;
     private String username;
+    private Long wayId;
 
 
     Photo(final PhotoBuilder builder) {
@@ -50,6 +51,7 @@ public class Photo {
         this.timestamp = builder.getTimestamp();
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
+        this.wayId = builder.getWayId();
     }
 
     public Long getId() {
@@ -94,6 +96,14 @@ public class Photo {
 
     public void setUsername(final String username) {
         this.username = username;
+    }
+
+    public Long getWayId() {
+        return wayId;
+    }
+
+    public void setWayId(final Long wayId) {
+        this.wayId = wayId;
     }
 
     @Override

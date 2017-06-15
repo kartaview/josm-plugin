@@ -94,6 +94,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.nearbyPhoto(event.getPoint());
         if (photo != null) {
+            final Long wayId = ServiceHandler.getInstance().retrievePhotoMatchedWayId(photo.getSequenceId(),
+                    photo.getSequenceIndex());
+            if (wayId != null) {
+                photo.setWayId(wayId);
+            }
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 autoplayTimer.stop();
                 autoplayDistance = 0;
@@ -104,7 +109,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
             final PhotoType photoType =
                     photoSettings.isHighQualityFlag() ? PhotoType.HIGH_QUALITY : PhotoType.LARGE_THUMBNAIL;
-            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
             selectPhoto(photo, photoType, true);
             layer.selectStartPhotoForClosestAction(photo);
         }

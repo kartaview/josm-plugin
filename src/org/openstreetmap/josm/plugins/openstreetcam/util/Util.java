@@ -26,6 +26,8 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.PrimitiveId;
+import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
@@ -191,5 +193,25 @@ public final class Util {
             osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
         }
         return osmDataLayerBounds;
+    }
+
+    /**
+     * Checks if the edit layer contains or not the given way. A way is complete if the edit layer contains the way
+     * nodes and references.
+     *
+     * @param wayId represents the identifier of the way
+     * @return a boolean value
+     */
+    public static boolean editLayerContainsWay(final PrimitiveId wayId) {
+        boolean contains = false;
+        if (Main.getLayerManager().getEditDataSet() != null) {
+            for (final Way way : Main.getLayerManager().getEditDataSet().getWays()) {
+                if (wayId.equals(way.getPrimitiveId()) && way.getNodesCount() > 0) {
+                    contains = true;
+                    break;
+                }
+            }
+        }
+        return contains;
     }
 }
