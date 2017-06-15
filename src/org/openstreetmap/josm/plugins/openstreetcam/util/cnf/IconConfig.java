@@ -51,6 +51,7 @@ public final class IconConfig extends BaseConfig {
     private final Icon locationIcon;
     private final Icon webPageIcon;
     private final Icon closestImageIcon;
+    private final Icon matchedWayIcon;
     private final Icon warningIcon;
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
@@ -78,6 +79,7 @@ public final class IconConfig extends BaseConfig {
         feedbackIconName = readProperty("feedback.icon");
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
         closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
+        matchedWayIcon = ImageProvider.get(readProperty("matchedWay.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
@@ -175,5 +177,9 @@ public final class IconConfig extends BaseConfig {
 
     public String getFilterIconName() {
         return filterIconName;
+    }
+
+    public Icon getMatchedWayIcon() {
+        return matchedWayIcon;
     }
 }

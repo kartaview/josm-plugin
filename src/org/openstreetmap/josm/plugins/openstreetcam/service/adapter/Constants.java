@@ -34,7 +34,7 @@ final class Constants {
     static final String SEGMENT_ID = "element_id";
     static final String SEGMENT_FROM = "from";
     static final String SEGMENT_TO = "to";
-    static final String SEGMENT_WAY_ID = "way_id";
+    static final String WAY_ID = "way_id";
     static final String SEGMENT_COVERAGE = "coverage";
     static final String SEGMENT_GEOMETRY = "track";
 

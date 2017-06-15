@@ -15,7 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_HEADING;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.*;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LATITUDE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LONGITUDE;
@@ -84,6 +84,11 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
                 case PHOTO_USERNAME:
                     builder.username(ReaderUtil.readString(reader));
+                    break;
+                case WAY_ID:
+                    final String wayIdValue = ReaderUtil.readString(reader);
+                    final Long wayId = wayIdValue != null && !wayIdValue.isEmpty() ? Long.parseLong(wayIdValue) : null;
+                    builder.wayId(wayId);
                     break;
                 default:
                     reader.skipValue();

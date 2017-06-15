@@ -13,7 +13,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Const
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_GEOMETRY;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_TO;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_WAY_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.WAY_ID;
 import java.io.IOException;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
@@ -46,7 +46,7 @@ public class SegmentTypeAdapter extends TypeAdapter<Segment> {
                 case SEGMENT_TO:
                     builder.to(ReaderUtil.readLong(reader));
                     break;
-                case SEGMENT_WAY_ID:
+                case WAY_ID:
                     builder.wayId(ReaderUtil.readLong(reader));
                     break;
                 case SEGMENT_COVERAGE:
@@ -70,7 +70,7 @@ public class SegmentTypeAdapter extends TypeAdapter<Segment> {
         writer.name(SEGMENT_ID).value(object.getId());
         writer.name(SEGMENT_FROM).value(object.getFrom());
         writer.name(SEGMENT_TO).value(object.getTo());
-        writer.name(SEGMENT_WAY_ID).value(object.getWayId());
+        writer.name(WAY_ID).value(object.getWayId());
         writer.name(SEGMENT_COVERAGE).value(object.getCoverage());
         writer.name(SEGMENT_GEOMETRY);
         writer.beginArray();

@@ -73,6 +73,8 @@ public final class GuiConfig extends BaseConfig {
     private final String btnDataSwitchImageTlt;
     private final String btnDataSwitchSegmentTlt;
     private final String btnDataSwitchShortcutTlt;
+    private final String btnMatchedWayTlt;
+    private final String btnMatchedWayShortcutTlt;
 
     private final String dlgFilterTitle;
     private final String dlgFilterShortcutText;
@@ -103,6 +105,8 @@ public final class GuiConfig extends BaseConfig {
     private final String layerDeleteMenuItemTlt;
     private final String layerFeedbackMenuItemLbl;
     private final String layerFeedbackShortcutText;
+
+    private final String infoMatchedWayTitle;
 
 
     private GuiConfig() {
@@ -150,6 +154,8 @@ public final class GuiConfig extends BaseConfig {
         btnDataSwitchImageTlt = readProperty("btn.switch.image.tlt");
         btnDataSwitchSegmentTlt = readProperty("btn.switch.segment.tlt");
         btnDataSwitchShortcutTlt = readProperty("btn.switch.shortcut.text");
+        btnMatchedWayShortcutTlt = readProperty("btn.matchedWay.shortcut.text");
+        btnMatchedWayTlt = readProperty("btn.matchedWay.tlt");
 
         dlgFilterTitle = readProperty("filter.title");
         dlgFilterShortcutText = readProperty("filter.shortcut.text");
@@ -181,6 +187,8 @@ public final class GuiConfig extends BaseConfig {
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
         layerFeedbackMenuItemLbl = readProperty("layer.menu.feedback.lbl");
         layerFeedbackShortcutText = readProperty("layer.menu.feedback.shortcut.text");
+
+        infoMatchedWayTitle = readProperty("info.matchedWay.title");
     }
 
 
@@ -443,5 +451,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String getLayerFeedbackShortcutText() {
         return layerFeedbackShortcutText;
+    }
+
+    public String getBtnMatchedWayTlt() {
+        return btnMatchedWayTlt;
+    }
+
+    public String getBtnMatchedWayShortcutTlt() {
+        return btnMatchedWayShortcutTlt;
+    }
+
+    public String getInfoMatchedWayTitle() {
+        return infoMatchedWayTitle;
     }
 }

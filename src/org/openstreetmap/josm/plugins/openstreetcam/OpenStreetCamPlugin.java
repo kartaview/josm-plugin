@@ -80,6 +80,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
+        PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
         OpenStreetCamDetailsDialog.getInstance();
     }
 

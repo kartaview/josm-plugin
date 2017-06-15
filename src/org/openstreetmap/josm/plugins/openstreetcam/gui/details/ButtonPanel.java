@@ -24,6 +24,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+import org.openstreetmap.josm.data.osm.PrimitiveId;
+import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
+import org.openstreetmap.josm.gui.util.GuiHelper;
+import org.openstreetmap.josm.plugins.openstreetcam.DownloadWayTask;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -38,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -72,6 +78,7 @@ SequenceObservable, TrackAutoplayObservable {
     private JButton btnLocation;
     private JButton btnWebPage;
     private JButton btnClosestPhoto;
+    private JButton btnMatchedWay;
 
     /* notifies the plugin main class */
     private ClosestPhotoObserver closestPhotoObserver;
@@ -91,6 +98,7 @@ SequenceObservable, TrackAutoplayObservable {
         addNextButton();
         addAutoplayButton();
         addClosestPhotoButton();
+        addMatchedWayButton();
         addLocationButton();
         addWebPageButton();
         setPreferredSize(DIM);
@@ -133,6 +141,15 @@ SequenceObservable, TrackAutoplayObservable {
         add(btnClosestPhoto);
     }
 
+    private void addMatchedWayButton() {
+        final JosmAction action = new DownloadMatchedWayId();
+        final String tooltip =
+                GuiConfig.getInstance().getBtnMatchedWayTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
+        btnMatchedWay = ButtonBuilder.build(new DownloadMatchedWayId(), IconConfig.getInstance().getMatchedWayIcon(),
+                tooltip, false);
+        add(btnMatchedWay);
+    }
+
     private void addAutoplayButton() {
         final JosmAction action = new TrackAutoplayAction();
         final String tooltip =
@@ -169,11 +186,15 @@ SequenceObservable, TrackAutoplayObservable {
         if (photo != null) {
             btnWebPage.setEnabled(true);
             btnLocation.setEnabled(!PreferenceManager.getInstance().loadAutoplayStartedFlag());
+            if (photo.getWayId() != null) {
+                btnMatchedWay.setEnabled(!PreferenceManager.getInstance().loadAutoplayStartedFlag());
+            }
         } else {
             enableSequenceActions(false, false);
             btnWebPage.setEnabled(false);
             btnClosestPhoto.setEnabled(false);
             btnLocation.setEnabled(false);
+            btnMatchedWay.setEnabled(false);
         }
     }
 
@@ -246,6 +267,7 @@ SequenceObservable, TrackAutoplayObservable {
             btnAutoplay.setToolTipText(tooltip);
             btnAutoplay.setActionCommand(AutoplayAction.START.name());
             btnLocation.setEnabled(true);
+            btnMatchedWay.setEnabled(true);
         } else {
             btnAutoplay.setIcon(IconConfig.getInstance().getStopIcon());
             final String tooltip = GuiConfig.getInstance().getBtnStopTlt().replaceAll(SHORTCUT,
@@ -253,6 +275,7 @@ SequenceObservable, TrackAutoplayObservable {
             btnAutoplay.setToolTipText(tooltip);
             btnAutoplay.setActionCommand(AutoplayAction.STOP.name());
             btnLocation.setEnabled(false);
+            btnMatchedWay.setEnabled(false);
         }
     }
 
@@ -491,6 +514,32 @@ SequenceObservable, TrackAutoplayObservable {
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageTxt(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+
+    private final class DownloadMatchedWayId extends JosmAction {
+
+        private static final long serialVersionUID = 7626759776502632881L;
+
+        private DownloadMatchedWayId() {
+            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), null, GuiConfig.getInstance().getBtnMatchedWayTlt(),
+                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnMatchedWayShortcutTlt()),
+                    true);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            if (photo != null && photo.getWayId() != null) {
+                final PrimitiveId wayId = new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY);
+                final boolean downloaded = Util.editLayerContainsWay(wayId);
+                if (downloaded) {
+                    GuiHelper.runInEDT(() -> Main.getLayerManager().getEditDataSet().setSelected(wayId));
+                } else {
+                    final DownloadWayTask task = new DownloadWayTask(wayId);
+                    Main.worker.submit(task);
                 }
             }
         }

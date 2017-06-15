@@ -19,12 +19,13 @@ import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConsta
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.BBOX_TOP_LEFT;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.COORDINATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.EXTERNAL_USER_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE_ITEMS;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.RADIUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.SEQUENCE_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.SEQUENCE_INDEX;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.USER_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.USER_TYPE_OSM;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.ZOOM;
@@ -94,7 +95,12 @@ final class HttpContentBuilder {
     }
 
     HttpContentBuilder(final Long id) {
-        content.put(ID, id.toString());
+        content.put(SEQUENCE_ID, id.toString());
+    }
+
+    HttpContentBuilder(final Long sequenceId, final Integer sequenceIndex) {
+        content.put(SEQUENCE_ID, Long.toString(sequenceId));
+        content.put(SEQUENCE_INDEX, Integer.toString(sequenceIndex));
     }
 
     Map<String, String> getContent() {

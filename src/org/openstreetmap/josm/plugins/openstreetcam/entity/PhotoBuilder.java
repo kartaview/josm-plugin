@@ -29,6 +29,7 @@ public class PhotoBuilder {
     private Long timestamp;
     private Double heading;
     private String username;
+    private Long wayId;
 
 
     public PhotoBuilder() {}
@@ -111,6 +112,14 @@ public class PhotoBuilder {
 
     public String getUsername() {
         return username;
+    }
+
+    public Long getWayId() {
+        return wayId;
+    }
+
+    public void wayId(final Long wayId) {
+        this.wayId = wayId;
     }
 
     public Photo build() {
