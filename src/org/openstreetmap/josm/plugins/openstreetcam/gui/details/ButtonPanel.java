@@ -185,9 +185,13 @@ SequenceObservable, TrackAutoplayObservable {
         this.photo = photo;
         if (photo != null) {
             btnWebPage.setEnabled(true);
-            btnLocation.setEnabled(!PreferenceManager.getInstance().loadAutoplayStartedFlag());
+            final boolean autoplayStartedFlag = PreferenceManager.getInstance().loadAutoplayStartedFlag();
+            btnLocation.setEnabled(!autoplayStartedFlag);
             if (photo.getWayId() != null) {
-                btnMatchedWay.setEnabled(!PreferenceManager.getInstance().loadAutoplayStartedFlag());
+                btnMatchedWay.setEnabled(!autoplayStartedFlag);
+            }
+            if (!autoplayStartedFlag) {
+                updateAutoplayButton(AutoplayAction.START);
             }
         } else {
             enableSequenceActions(false, false);

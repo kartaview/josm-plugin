@@ -100,7 +100,9 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 photo.setWayId(wayId);
             }
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
                 autoplayTimer.stop();
+                autoplayTimer = null;
                 autoplayDistance = 0;
             }
             if (shouldLoadSequence(photo)) {
