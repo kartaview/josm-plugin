@@ -26,11 +26,15 @@ import java.util.HashSet;
 import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -99,15 +103,22 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setDataSet(final DataSet dataSet, final boolean checkSelectedPhoto) {
         this.dataSet = dataSet;
-        if (checkSelectedPhoto && selectedPhoto != null) {
-            if (this.dataSet == null || this.dataSet.getPhotos() == null
-                    || !this.dataSet.getPhotos().contains(selectedPhoto)) {
-                selectedPhoto = null;
-            }
-            if (closestPhotos != null) {
-                selectStartPhotoForClosestAction(selectedPhoto);
-            }
+        if (checkSelectedPhoto && removeSelection()) {
+            selectedPhoto = null;
         }
+        if (selectedPhoto != null && closestPhotos != null) {
+            selectStartPhotoForClosestAction(selectedPhoto);
+            ThreadPool.getInstance().execute(() -> {
+                final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
+                PhotoHandler.getInstance()
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+            });
+        }
+    }
+
+    private boolean removeSelection() {
+        return selectedPhoto != null
+                && (dataSet == null || dataSet.getPhotos() == null || !dataSet.getPhotos().contains(selectedPhoto));
     }
 
     /**
@@ -120,7 +131,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         Photo photo = null;
         if (selectedSequence != null && selectedSequence.getPhotos() != null) {
             photo = Util.nearbyPhoto(selectedSequence.getPhotos(), point);
-            // // API issue: does not return username for sequence photos
+            // API issue: does not return username for sequence photos
             if (selectedPhoto != null && photo != null) {
                 photo.setUsername(selectedPhoto.getUsername());
             }

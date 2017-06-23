@@ -48,6 +48,7 @@ public final class CacheManager {
             final CompositeCacheAttributes attr = (CompositeCacheAttributes) this.cache.getCacheAttributes();
             attr.setDiskUsagePattern(DiskUsagePattern.SWAP);
             attr.setMemoryCacheName(MEMORY_MANAGER);
+            attr.setUseMemoryShrinker(true);
             this.cache.setCacheAttributes(attr);
             this.cache.clear();
         } catch (final IOException e) {
@@ -65,30 +66,30 @@ public final class CacheManager {
     }
 
     /**
-     * Adds an image to the cache.
+     * Adds a photo to the cache.
      *
      * @param sequenceId the identifier of the sequence to which the photo belongs
-     * @param imageName the name of the image
-     * @param image the image in byte format
-     * @param warning a flag indicating if the image loading was successful or not
+     * @param photoName the name of the photo
+     * @param content the photo content in byte format
+     * @param warning a flag indicating if the photo loading was successful or not
      */
-    public void putPhoto(final Long sequenceId, final String imageName, final byte[] image, final boolean warning) {
-        cache.put(new Key(sequenceId, imageName), new CacheEntry(image, warning));
+    public void putPhoto(final Long sequenceId, final String photoName, final byte[] content, final boolean warning) {
+        cache.put(new Key(sequenceId, photoName), new CacheEntry(content, warning));
     }
 
     /**
-     * Returns the image corresponding to the given name. The method returns null if there is no corresponding image.
+     * Returns the photo corresponding to the given name. The method returns null if there is no corresponding photo.
      *
      * @param sequenceId the identifier of the sequence to which the photo belongs
-     * @param imageName the name of the image
+     * @param photoName the name of the photo
      * @return a {@code CacheEntry} object
      */
-    public CacheEntry getPhoto(final Long sequenceId, final String imageName) {
-        return cache.get(new Key(sequenceId, imageName));
+    public CacheEntry getPhoto(final Long sequenceId, final String photoName) {
+        return cache.get(new Key(sequenceId, photoName));
     }
 
     /**
-     * Removes all the images associated with the given sequence identifier.
+     * Removes all the photos associated with the given sequence identifier.
      *
      * @param sequenceId the identifier of the sequence to which the photo belongs
      */
@@ -99,5 +100,16 @@ public final class CacheManager {
                 cache.remove((Key) key);
             }
         }
+    }
+
+    /**
+     * Verifies if the cache contains the given photo.
+     *
+     * @param sequenceId the identifier of the sequence to which the photo belongs
+     * @param photoName the name of the photo
+     * @return true if the cache contains the photo, false otherwise
+     */
+    public boolean containsPhoto(final Long sequenceId, final String photoName) {
+        return getPhoto(sequenceId, photoName) != null;
     }
 }

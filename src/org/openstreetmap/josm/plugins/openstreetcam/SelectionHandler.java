@@ -100,10 +100,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 photo.setWayId(wayId);
             }
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-                autoplayTimer.stop();
-                autoplayTimer = null;
-                autoplayDistance = 0;
+                stopAutoplay();
             }
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
@@ -194,10 +191,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             SwingUtilities.invokeLater(() -> handlePhotoUnselection());
         } else {
             SwingUtilities.invokeLater(() -> {
-                final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                ImageHandler.getInstance().loadPhotos(
-                        layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
-
                 layer.setSelectedPhoto(photo);
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
                     Main.map.mapView.zoomTo(photo.getLocation());
@@ -212,6 +205,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                     detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(),
                             layer.enableNextPhotoAction());
                 }
+                ThreadPool.getInstance().execute(() -> {
+                    final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
+                    PhotoHandler.getInstance().loadPhotos(
+                            layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                });
             });
         }
     }
@@ -248,8 +246,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         if (layer.getSelectedPhoto() != null && layer.getSelectedSequence() != null) {
             // clean up old sequence
+            CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
             SwingUtilities.invokeLater(() -> {
-                CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
                 layer.setSelectedSequence(null);
                 detailsDialog.enableSequenceActions(false, false);
                 layer.invalidate();
@@ -301,7 +299,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     @Override
     public void play(final AutoplayAction action) {
-        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         if (AutoplayAction.START.equals(action)) {
             PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
             // start autoplay
@@ -318,15 +315,14 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             }
 
         } else {
-            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-            // stop autoplay
-            autoplayTimer.stop();
-            autoplayTimer = null;
-            if (layer.getClosestPhotos() != null) {
-                OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(!layer.getClosestPhotos().isEmpty());
+            stopAutoplay();
+            if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
+                OpenStreetCamDetailsDialog.getInstance()
+                .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
             }
         }
     }
+
 
     private void handleTrackAutoplay() {
         final AutoplaySettings autoplaySettings = PreferenceManager.getInstance().loadAutoplaySettings();
@@ -361,11 +357,16 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 layer.selectStartPhotoForClosestAction(photo);
             }
         } else {
-            PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-            autoplayTimer.stop();
-            autoplayTimer = null;
-            autoplayDistance = 0;
+            stopAutoplay();
         }
+    }
+
+
+    private void stopAutoplay() {
+        PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
+        autoplayTimer.stop();
+        autoplayTimer = null;
+        autoplayDistance = 0;
     }
 
     void changeAutoplayTimerDelay() {

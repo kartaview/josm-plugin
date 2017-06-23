@@ -20,7 +20,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.ImageHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -161,7 +161,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
         try {
             final Pair<BufferedImage, PhotoType> imageResult =
-                    ImageHandler.getInstance().loadPhoto(photo, finalPhotoType);
+                    PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
             if (imageResult.getFirst() != null) {
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
