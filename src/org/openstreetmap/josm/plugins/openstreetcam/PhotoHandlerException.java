@@ -10,12 +10,12 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 
 /**
- * Exception thrown by the image handler.
+ * Exception thrown by the photo handler.
  *
  * @author beataj
  * @version $Revision$
  */
-public class ImageHandlerException extends Exception {
+public class PhotoHandlerException extends Exception {
 
     private static final long serialVersionUID = -6666879046927057243L;
 
@@ -24,7 +24,7 @@ public class ImageHandlerException extends Exception {
      *
      * @param msg the exception message
      */
-    public ImageHandlerException(final String msg) {
+    public PhotoHandlerException(final String msg) {
         super(msg);
     }
 
@@ -33,7 +33,7 @@ public class ImageHandlerException extends Exception {
      *
      * @param cause the exception cause
      */
-    public ImageHandlerException(final Throwable cause) {
+    public PhotoHandlerException(final Throwable cause) {
         super(cause);
     }
 
@@ -43,7 +43,7 @@ public class ImageHandlerException extends Exception {
      * @param msg the exception message
      * @param cause the exception cause
      */
-    public ImageHandlerException(final String msg, final Throwable cause) {
+    public PhotoHandlerException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 }

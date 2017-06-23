@@ -55,10 +55,10 @@ public final class PhotoHandler {
      * @return a pair of ({@code BufferedImage}, {@code Boolean}) representing the corresponding image and boolean flag.
      * The flag is true if the user requested the high quality image and for some reason the image could not be
      * retrieved and instead the large thumbnail is retrieved.
-     * @throws ImageHandlerException if the photo could not be loaded or if the photo content could not be read
+     * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be read
      */
     public Pair<BufferedImage, PhotoType> loadPhoto(final Photo photo, final PhotoType type)
-            throws ImageHandlerException {
+            throws PhotoHandlerException {
         Pair<BufferedImage, PhotoType> result;
         ImageIO.setUseCache(false);
         try {
@@ -77,9 +77,9 @@ public final class PhotoHandler {
                         true);
             }
         } catch (final ServiceException e) {
-            throw new ImageHandlerException("Could not load photo from server.", e);
+            throw new PhotoHandlerException("Could not load photo from server.", e);
         } catch (final IOException e) {
-            throw new ImageHandlerException("Could not read photo content.", e);
+            throw new PhotoHandlerException("Could not read photo content.", e);
         }
         return result;
     }
