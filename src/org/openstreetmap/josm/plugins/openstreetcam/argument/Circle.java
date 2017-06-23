@@ -30,6 +30,7 @@ import com.telenav.josm.common.entity.EntityUtil;
  */
 public class Circle {
 
+    private static final int BUFFER = 4;
     private final LatLon center;
     private final int radius;
 
@@ -41,7 +42,10 @@ public class Circle {
      */
     public Circle(final Bounds bounds) {
         this.center = bounds.toBBox().getCenter();
-        final int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
+        int distance = (int) this.center.greatCircleDistance(bounds.toBBox().getBottomRight());
+
+        // add a buffer to the circle, otherwise elements will be centered in the middle
+        distance += distance / BUFFER;
 
         if (distance > Config.getInstance().getNearbyPhotosMaxRadius()) {
             this.radius = Config.getInstance().getNearbyPhotosMaxRadius();
