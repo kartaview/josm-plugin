@@ -32,6 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.PhotoTypeAdapter;
@@ -86,10 +87,9 @@ public class Service {
      * @return a list of {@code Photo}s
      * @throws ServiceException if the operation fails
      */
-    public List<Photo> listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId)
-            throws ServiceException {
-        final Map<String, String> arguments =
-                new HttpContentBuilder(circle, date, osmUserId, Paging.NEARBY_PHOTOS_DEAFULT).getContent();
+    public PhotoDataSet listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId,
+            final Paging paging) throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(circle, date, osmUserId, paging).getContent();
         final String response;
         try {
             final HttpConnector connector = new HttpConnector(
@@ -101,8 +101,8 @@ public class Service {
         final ListResponse<Photo> listPhotoResponse =
                 parseResponse(response, new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
-        return listPhotoResponse != null ? listPhotoResponse.getCurrentPageItems() : new ArrayList<>();
-
+        return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
+                listPhotoResponse.getTotalItems()) : new PhotoDataSet();
     }
 
     /**

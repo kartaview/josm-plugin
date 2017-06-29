@@ -75,7 +75,6 @@ public final class GuiConfig extends BaseConfig {
     private final String btnDataSwitchShortcutTlt;
     private final String btnMatchedWayTlt;
     private final String btnMatchedWayShortcutTlt;
-
     private final String dlgFilterTitle;
     private final String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
@@ -105,8 +104,12 @@ public final class GuiConfig extends BaseConfig {
     private final String layerDeleteMenuItemTlt;
     private final String layerFeedbackMenuItemLbl;
     private final String layerFeedbackShortcutText;
+    private final String layerPreviousMenuItemLbl;
+    private final String layerNextMenuItemLbl;
 
     private final String infoMatchedWayTitle;
+    private final String infoDownloadNextPhotosTitle;
+    private final String infoDownloadPreviousPhotosTitle;
 
 
     private GuiConfig() {
@@ -187,8 +190,12 @@ public final class GuiConfig extends BaseConfig {
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
         layerFeedbackMenuItemLbl = readProperty("layer.menu.feedback.lbl");
         layerFeedbackShortcutText = readProperty("layer.menu.feedback.shortcut.text");
+        layerPreviousMenuItemLbl = readProperty("layer.menu.previous.lbl");
+        layerNextMenuItemLbl = readProperty("layer.menu.next.lbl");
 
         infoMatchedWayTitle = readProperty("info.matchedWay.title");
+        infoDownloadNextPhotosTitle = readProperty("info.download.next.title");
+        infoDownloadPreviousPhotosTitle = readProperty("info.download.previous.title");
     }
 
 
@@ -401,6 +408,14 @@ public final class GuiConfig extends BaseConfig {
         return layerFeedbackMenuItemLbl;
     }
 
+    public String getLayerPreviousMenuItemLbl() {
+        return layerPreviousMenuItemLbl;
+    }
+
+    public String getLayerNextMenuItemLbl() {
+        return layerNextMenuItemLbl;
+    }
+
     public String getPluginShortcutText() {
         return pluginShortcutText;
     }
@@ -463,5 +478,13 @@ public final class GuiConfig extends BaseConfig {
 
     public String getInfoMatchedWayTitle() {
         return infoMatchedWayTitle;
+    }
+
+    public String getInfoDownloadNextPhotosTitle() {
+        return infoDownloadNextPhotosTitle;
+    }
+
+    public String getInfoDownloadPreviousPhotosTitle() {
+        return infoDownloadPreviousPhotosTitle;
     }
 }

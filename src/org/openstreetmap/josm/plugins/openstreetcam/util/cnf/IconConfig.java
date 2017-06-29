@@ -36,6 +36,7 @@ public final class IconConfig extends BaseConfig {
     private final String dialogShortcutName;
     private final String deleteIconName;
     private final String layerIconName;
+    private final String downloadIconName;
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
@@ -55,6 +56,7 @@ public final class IconConfig extends BaseConfig {
     private final Icon warningIcon;
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
+    private final Icon downloadIcon;
 
 
     private IconConfig() {
@@ -64,6 +66,7 @@ public final class IconConfig extends BaseConfig {
         dialogShortcutName = readProperty("dialog.shortcut");
         deleteIconName = readProperty("delete.icon");
         layerIconName = readProperty("layer.icon");
+        downloadIconName = readProperty("download.icon");
         layerIcon = ImageProvider.get(layerIconName);
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
@@ -83,6 +86,7 @@ public final class IconConfig extends BaseConfig {
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
+        downloadIcon = ImageProvider.get(readProperty("download.icon"));
     }
 
 
@@ -105,6 +109,10 @@ public final class IconConfig extends BaseConfig {
 
     public String getLayerIconName() {
         return layerIconName;
+    }
+
+    public String getDownloadIconName() {
+        return downloadIconName;
     }
 
     public Icon getLayerIcon() {
@@ -181,5 +189,9 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getMatchedWayIcon() {
         return matchedWayIcon;
+    }
+
+    public Icon getDownloadIcon() {
+        return downloadIcon;
     }
 }

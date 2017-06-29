@@ -23,8 +23,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
@@ -35,11 +36,12 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
+ * Handles map view data download and update operations.
  *
  * @author beataj
  * @version $Revision$
  */
-public class DataUpdateHandler {
+class DataUpdateHandler {
 
 
     /**
@@ -63,7 +65,7 @@ public class DataUpdateHandler {
      * @param checkSelection if true verifies if the selected element is contained or not in the new data set, selection
      * is removed for the case when the data set does not contain the selection; if false it is ignored
      */
-    public void updateData(final boolean checkSelection) {
+    void updateData(final boolean checkSelection) {
         final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
         if (zoom >= Config.getInstance().getMapSegmentZoom()) {
             final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
@@ -127,7 +129,6 @@ public class DataUpdateHandler {
         }
     }
 
-
     private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom,
             final boolean checkSelection) {
         if (OpenStreetCamLayer.getInstance().getDataSet() != null
@@ -162,16 +163,64 @@ public class DataUpdateHandler {
                 updateUI(null, false);
             });
         }
-        final List<Circle> areas = Util.currentCircles();
-        if (!areas.isEmpty()) {
-            final List<Photo> photos = ServiceHandler.getInstance().listNearbyPhotos(areas, filter);
+        final Circle area = Util.currentCircle();
+        if (area != null) {
+            final PhotoDataSet photoDataSet =
+                    ServiceHandler.getInstance().listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-                updateUI(new DataSet(null, photos), checkSelection);
+                updateUI(new DataSet(null, photoDataSet), checkSelection);
             }
         }
     }
 
-    private void updateUI(final DataSet dataSet, final boolean checkSelection) {
+    /**
+     *
+     * @param loadNextResults
+     * @return
+     */
+    PhotoDataSet downloadPhotos(final boolean loadNextResults) {
+        final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
+                ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
+        PhotoDataSet photoDataSet = null;
+        if (currentPhotoDataSet != null) {
+            int page = currentPhotoDataSet.getPage();
+            page = loadNextResults ? page + 1 : page - 1;
+            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+            photoDataSet = new PhotoDataSet();
+            final Circle area = Util.currentCircle();
+            if (area != null) {
+                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(area, listFilter,
+                        new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
+            }
+        }
+        return photoDataSet;
+    }
+
+    /**
+     *
+     * @return
+     */
+    boolean photoDownloadAllowed() {
+        boolean result;
+        final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+        if (OpenStreetCamLayer.getInstance().getSelectedSequence() == null) {
+            result = true;
+        } else if (mapViewSettings.isManualSwitchFlag()) {
+            final DataType dataType = PreferenceManager.getInstance().loadDataType();
+            result = zoom >= Config.getInstance().getMapPhotoZoom() && dataType == DataType.PHOTO;
+        } else {
+            result = zoom >= mapViewSettings.getPhotoZoom();
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param dataSet
+     * @param checkSelection
+     */
+    void updateUI(final DataSet dataSet, final boolean checkSelection) {
         if (Main.map != null && Main.map.mapView != null) {
             GuiHelper.runInEDT(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);

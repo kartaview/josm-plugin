@@ -57,7 +57,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin
-implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+        implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -198,9 +198,8 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             zoomTimer.restart();
         } else {
             if (Main.map != null && Main.map.mapView != null) {
-                zoomTimer =
-                        new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance()
-                                .execute(() -> new DataUpdateHandler().updateData(false)));
+                zoomTimer = new Timer(SEARCH_DELAY,
+                        event -> ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(false)));
                 zoomTimer.setRepeats(false);
                 zoomTimer.start();
             }

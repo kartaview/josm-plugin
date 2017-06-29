@@ -1,0 +1,112 @@
+/*
+ *  Copyright 2017 Telenav, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+package org.openstreetmap.josm.plugins.openstreetcam;
+
+import java.io.IOException;
+import org.openstreetmap.josm.gui.PleaseWaitRunnable;
+import org.openstreetmap.josm.gui.progress.PleaseWaitProgressMonitor;
+import org.openstreetmap.josm.io.OsmTransferException;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.xml.sax.SAXException;
+
+
+/**
+ *
+ * @author beataj
+ * @version $Revision$
+ */
+public class DownloadPhotosTask extends PleaseWaitRunnable {
+
+    private static final int SLEEP = 1000;
+
+    /** handles data update operations */
+    private final DataUpdateHandler dataUpdateHandler;
+
+    /** the currently running download thread */
+    private Thread downloadThread;
+
+    /** Flag indicated that user ask for cancel this task */
+    private boolean canceled;
+
+    /** flag indicating if the next or previous result set is loaded */
+    private final boolean loadNextResults;
+
+    /** the downloaded photo data set */
+    private PhotoDataSet photoDataSet;
+
+
+    /**
+     *
+     * @param taskTitle
+     * @param loadNextResults
+     */
+    public DownloadPhotosTask(final String taskTitle, final boolean loadNextResults) {
+        super(taskTitle, new PleaseWaitProgressMonitor(taskTitle), false);
+        dataUpdateHandler = new DataUpdateHandler();
+        this.loadNextResults = loadNextResults;
+    }
+
+    @Override
+    protected void cancel() {
+        synchronized (this) {
+            if (downloadThread != null) {
+                downloadThread.interrupt();
+            }
+            downloadThread = null;
+            canceled = true;
+            ((PleaseWaitProgressMonitor) progressMonitor).close();
+        }
+    }
+
+    @Override
+    protected void afterFinish() {
+        synchronized (this) {
+            if (!canceled && photoDataSet != null && !photoDataSet.getPhotos().isEmpty()) {
+                dataUpdateHandler.updateUI(new DataSet(null, photoDataSet), true);
+            }
+        }
+    }
+
+    @Override
+    protected void finish() {
+        // nothing to add here
+    }
+
+
+    @Override
+    protected void realRun() throws SAXException, IOException, OsmTransferException {
+        if (!canceled && dataUpdateHandler.photoDownloadAllowed()) {
+            try {
+                final String taskTitle = loadNextResults ? GuiConfig.getInstance().getInfoDownloadNextPhotosTitle()
+                        : GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle();
+                this.progressMonitor.indeterminateSubTask(taskTitle);
+                downloadThread = new Thread(() -> photoDataSet = dataUpdateHandler.downloadPhotos(loadNextResults));
+                downloadThread.start();
+                while (downloadThread != null && downloadThread.isAlive()) {
+                    try {
+                        Thread.sleep(SLEEP);
+                    } catch (final InterruptedException e) {
+                        // no need to handle this; if the user cancels the action, exception will occur
+                    }
+                }
+            } finally {
+                progressMonitor.finishTask();
+            }
+        }
+    }
+}

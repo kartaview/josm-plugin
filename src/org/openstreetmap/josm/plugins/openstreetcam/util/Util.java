@@ -50,6 +50,7 @@ public final class Util {
     private static final int MAX_ZOOM = 22;
     private static final int TILE_SIZE = 1024;
     private static final int ZOOM1_SCALE = 78206;
+    private static final int ZOOM_CONST = 2;
     private static final double RADIUS = 0.0003;
     private static final double MAX_DISTANCE = 2.0;
     private static final int EXTENSION_DISTANCE = 500;
@@ -66,7 +67,8 @@ public final class Util {
      */
     public static int zoom(final Bounds bounds) {
         return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
-                Math.max(MIN_ZOOM, Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(2)))));
+                Math.max(MIN_ZOOM,
+                        Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST)))));
     }
 
     /**
@@ -140,24 +142,24 @@ public final class Util {
     }
 
     /**
-     * Returns a list of circles representing the current search area. The method takes into consideration also the edit
-     * layer bounds.
+     * Returns a circle that represents the current search area. The method takes into consideration also the edit layer
+     * bounds. If there are more edit layer bounds the method returns the bounds of the current MapView.
      *
      * @return list of {@code Circle}s
      */
-    public static List<Circle> currentCircles() {
-        final List<Circle> result = new ArrayList<>();
+    public static Circle currentCircle() {
+        final Circle circle;
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-            for (final Bounds bounds : osmDataLayerBounds) {
-                if (Main.map.mapView.getRealBounds().intersects(bounds)) {
-                    result.add(new Circle(bounds));
-                }
+            if (osmDataLayerBounds.size() > 1) {
+                circle = new Circle(Main.map.mapView.getRealBounds());
+            } else {
+                circle = new Circle(osmDataLayerBounds.get(0));
             }
         } else {
-            result.add(new Circle(Main.map.mapView.getRealBounds()));
+            circle = new Circle(Main.map.mapView.getRealBounds());
         }
-        return result;
+        return circle;
     }
 
     /**
