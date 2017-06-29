@@ -174,9 +174,11 @@ class DataUpdateHandler {
     }
 
     /**
+     * Downloads the next/previous set of photo locations from the current view.
      *
-     * @param loadNextResults
-     * @return
+     * @param loadNextResults if true then the next photo location data set is downloaded; if false then the previous
+     * photo location data set is downloaded
+     * @return a {@code PhotoDataSet} containing the photo locations
      */
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
@@ -197,28 +199,34 @@ class DataUpdateHandler {
     }
 
     /**
+     * Verifies if the photo download is allowed or not. A new photo data set download is allowed in the following
+     * cases:
+     * <ul>
+     * <li>current zoom >=photo zoom and no track is displayed</li>
+     * <li>user has manual data switch enabled and photo locations are displayed on the map</li>
+     * </ul>
      *
-     * @return
+     * @return a boolean value
      */
-    boolean photoDownloadAllowed() {
-        boolean result;
+    boolean photoDataSetDownloadAllowed() {
+        boolean result = false;
         final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
-        if (OpenStreetCamLayer.getInstance().getSelectedSequence() == null) {
-            result = true;
-        } else if (mapViewSettings.isManualSwitchFlag()) {
-            final DataType dataType = PreferenceManager.getInstance().loadDataType();
-            result = zoom >= Config.getInstance().getMapPhotoZoom() && dataType == DataType.PHOTO;
-        } else {
-            result = zoom >= mapViewSettings.getPhotoZoom();
+        if (mapViewSettings.isManualSwitchFlag()) {
+            result = zoom >= Config.getInstance().getMapPhotoZoom()
+                    && PreferenceManager.getInstance().loadDataType() == DataType.PHOTO;
+        } else if (zoom >= mapViewSettings.getPhotoZoom()) {
+            result = OpenStreetCamLayer.getInstance().getSelectedSequence() == null;
         }
         return result;
     }
 
     /**
+     * Updates the UI with the given data set.
      *
-     * @param dataSet
-     * @param checkSelection
+     * @param dataSet a {@code DataSet} represents a new data set
+     * @param checkSelection if true then the currently selected element will be removed if it is not present in the
+     * given data set
      */
     void updateUI(final DataSet dataSet, final boolean checkSelection) {
         if (Main.map != null && Main.map.mapView != null) {

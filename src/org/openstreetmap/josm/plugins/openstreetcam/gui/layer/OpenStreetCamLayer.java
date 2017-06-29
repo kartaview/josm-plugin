@@ -116,8 +116,17 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             });
         }
         if (dataSet != null && dataSet.getPhotoDataSet() != null) {
+            enablePhotoDataSetDownloadActions();
+        }
+    }
+
+    private void enablePhotoDataSetDownloadActions() {
+        if (selectedSequence == null) {
             enableDownloadPreviousPhotoAction(dataSet.getPhotoDataSet().hasPreviousItems());
             enabledDownloadNextPhotosAction(dataSet.getPhotoDataSet().hasNextItems());
+        } else {
+            enableDownloadPreviousPhotoAction(false);
+            enabledDownloadNextPhotosAction(false);
         }
     }
 

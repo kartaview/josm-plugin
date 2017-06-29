@@ -90,7 +90,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
 
     @Override
     protected void realRun() throws SAXException, IOException, OsmTransferException {
-        if (!canceled && dataUpdateHandler.photoDownloadAllowed()) {
+        if (!canceled && dataUpdateHandler.photoDataSetDownloadAllowed()) {
             try {
                 final String taskTitle = loadNextResults ? GuiConfig.getInstance().getInfoDownloadNextPhotosTitle()
                         : GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle();

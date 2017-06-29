@@ -84,6 +84,7 @@ public class Service {
      * date
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
      * uploaded by the logged in user
+     * @param paging a {@code Paging} represents the pagination for the data set
      * @return a list of {@code Photo}s
      * @throws ServiceException if the operation fails
      */
