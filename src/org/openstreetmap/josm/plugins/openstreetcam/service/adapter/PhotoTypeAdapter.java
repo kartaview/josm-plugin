@@ -15,7 +15,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.*;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_HEADING;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LATITUDE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LONGITUDE;
@@ -23,9 +23,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Const
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_IDX;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SHOT_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TH_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TIMESTAMP;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_USERNAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.WAY_ID;
 import java.io.IOException;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoBuilder;
@@ -90,6 +92,9 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     final Long wayId = wayIdValue != null && !wayIdValue.isEmpty() ? Long.parseLong(wayIdValue) : null;
                     builder.wayId(wayId);
                     break;
+                case PHOTO_SHOT_DATE:
+                    builder.shotDate(ReaderUtil.readString(reader));
+                    break;
                 default:
                     reader.skipValue();
                     break;
@@ -115,6 +120,9 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
         writer.name(PHOTO_TH_NAME).value(photo.getThumbnailName());
         writer.name(PHOTO_TIMESTAMP).value(photo.getTimestamp());
         writer.name(PHOTO_HEADING).value(photo.getHeading());
+        writer.name(PHOTO_USERNAME).value(photo.getUsername());
+        writer.name(WAY_ID).value(photo.getWayId());
+        writer.name(PHOTO_SHOT_DATE).value(photo.getShotDate());
         writer.endObject();
     }
 }

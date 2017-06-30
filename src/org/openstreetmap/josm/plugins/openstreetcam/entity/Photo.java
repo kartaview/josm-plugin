@@ -38,6 +38,7 @@ public class Photo {
     private final Double heading;
     private String username;
     private Long wayId;
+    private String shotDate;
 
 
     Photo(final PhotoBuilder builder) {
@@ -52,6 +53,7 @@ public class Photo {
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
         this.wayId = builder.getWayId();
+        this.shotDate = builder.getShotDate();
     }
 
     public Long getId() {
@@ -104,6 +106,14 @@ public class Photo {
 
     public void setWayId(final Long wayId) {
         this.wayId = wayId;
+    }
+
+    public String getShotDate() {
+        return shotDate;
+    }
+
+    public void setShotDate(final String shotDate) {
+        this.shotDate = shotDate;
     }
 
     @Override

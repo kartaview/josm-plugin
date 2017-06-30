@@ -40,7 +40,7 @@ public final class PhotoHandler {
     /**
      * Returns the unique instance of the image handler.
      *
-     * @return {@cod ImageHandler} instance
+     * @return {@code ImageHandler} instance
      */
     public static PhotoHandler getInstance() {
         return INSTANCE;

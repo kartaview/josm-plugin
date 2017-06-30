@@ -39,9 +39,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
 /**
- * Utility class, manages save and load (put & get) operations of the preference variables. The preference variables are
- * saved into a global preference file. Preference variables are static variables which can be accessed from any plugin
- * class. Values saved in this global file, can be accessed also after a JOSM restart.
+ * Utility class, manages save and load operations of the preference variables. The preference variables are saved into
+ * a global preference file. Preference variables are static variables which can be accessed from any plugin class.
+ * Values saved in this global file, can be accessed also after a JOSM restart.
  *
  * @author Beata
  * @version $Revision$

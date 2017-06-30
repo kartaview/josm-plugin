@@ -94,11 +94,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo photo = layer.nearbyPhoto(event.getPoint());
         if (photo != null) {
-            final Long wayId = ServiceHandler.getInstance().retrievePhotoMatchedWayId(photo.getSequenceId(),
-                    photo.getSequenceIndex());
-            if (wayId != null) {
-                photo.setWayId(wayId);
-            }
+
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 stopAutoplay();
             }
@@ -190,6 +186,12 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         if (photo == null) {
             SwingUtilities.invokeLater(() -> handlePhotoUnselection());
         } else {
+            final Photo detailedPhoto =
+                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+            if (detailedPhoto != null) {
+                photo.setWayId(detailedPhoto.getWayId());
+                photo.setShotDate(detailedPhoto.getShotDate());
+            }
             SwingUtilities.invokeLater(() -> {
                 layer.setSelectedPhoto(photo);
                 if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
