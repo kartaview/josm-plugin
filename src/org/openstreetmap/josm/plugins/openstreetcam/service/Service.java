@@ -102,7 +102,6 @@ public class Service {
                 parseResponse(response, new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
         return listPhotoResponse != null ? listPhotoResponse.getCurrentPageItems() : new ArrayList<>();
-
     }
 
     /**
@@ -141,9 +140,9 @@ public class Service {
      * @param sequenceId the sequence identifier
      * @param sequenceIndex the sequence index
      * @return a {@code Long} value
-     * @throws ServiceException
+     * @throws ServiceException if the operation fails
      */
-    public Long retrievePhotoMatchedWayId(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
+    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
         final String response;
         try {
@@ -154,12 +153,11 @@ public class Service {
             throw new ServiceException(e);
         }
         final PhotoDetailsResponse detailsResponse = parseResponse(response, PhotoDetailsResponse.class);
-        Long wayId = null;
-        if (detailsResponse != null && detailsResponse.getOsv() != null
-                && detailsResponse.getOsv().getPhotoObject() != null) {
-            wayId = detailsResponse.getOsv().getPhotoObject().getWayId();
+        Photo photo = null;
+        if (detailsResponse != null && detailsResponse.getOsv() != null) {
+            photo = detailsResponse.getOsv().getPhotoObject();
         }
-        return wayId;
+        return photo;
     }
 
     /**

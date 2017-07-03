@@ -30,6 +30,7 @@ public class PhotoBuilder {
     private Double heading;
     private String username;
     private Long wayId;
+    private String shotDate;
 
 
     public PhotoBuilder() {}
@@ -120,6 +121,14 @@ public class PhotoBuilder {
 
     public void wayId(final Long wayId) {
         this.wayId = wayId;
+    }
+
+    public String getShotDate() {
+        return shotDate;
+    }
+
+    public void shotDate(final String shotDate) {
+        this.shotDate = shotDate;
     }
 
     public Photo build() {

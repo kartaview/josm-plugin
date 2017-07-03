@@ -16,7 +16,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import com.telenav.josm.common.formatter.EntityFormatter;
 
 
 /**
@@ -38,7 +37,7 @@ final class Formatter {
     static String formatPhotoDetails(final Photo photo) {
         final StringBuilder sb = new StringBuilder("<html>");
         sb.append("Uploaded");
-        sb.append(" on ").append(EntityFormatter.formatTimestamp(photo.getTimestamp()));
+        sb.append(" on ").append(photo.getShotDate());
         if (photo.getUsername() != null && !photo.getUsername().isEmpty()) {
             sb.append(" by ").append("<a href='' target='_blank'>");
             sb.append(photo.getUsername()).append("</a>");
