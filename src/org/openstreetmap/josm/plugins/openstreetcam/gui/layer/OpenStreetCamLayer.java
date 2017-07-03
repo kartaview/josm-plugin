@@ -77,6 +77,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         instance = null;
     }
 
+
     @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);
@@ -113,6 +114,19 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 PhotoHandler.getInstance()
                 .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
+        }
+        if (dataSet != null && dataSet.getPhotoDataSet() != null) {
+            enablePhotoDataSetDownloadActions();
+        }
+    }
+
+    private void enablePhotoDataSetDownloadActions() {
+        if (selectedSequence == null) {
+            enableDownloadPreviousPhotoAction(dataSet.getPhotoDataSet().hasPreviousItems());
+            enabledDownloadNextPhotosAction(dataSet.getPhotoDataSet().hasNextItems());
+        } else {
+            enableDownloadPreviousPhotoAction(false);
+            enabledDownloadNextPhotosAction(false);
         }
     }
 
@@ -325,5 +339,10 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public Collection<Photo> getClosestPhotos() {
         return closestPhotos;
+    }
+
+    @Override
+    boolean addPhotoDataSetMenuItems() {
+        return dataSet != null && dataSet.getPhotoDataSet() != null;
     }
 }

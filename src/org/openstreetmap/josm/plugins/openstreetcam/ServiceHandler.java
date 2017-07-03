@@ -22,7 +22,9 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
@@ -39,7 +41,7 @@ import com.telenav.josm.common.argument.BoundingBox;
  * @author Beata
  * @version $Revision$
  */
-final class ServiceHandler {
+public final class ServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
     private final Service service;
@@ -49,7 +51,7 @@ final class ServiceHandler {
     }
 
 
-    static ServiceHandler getInstance() {
+    public static ServiceHandler getInstance() {
         return INSTANCE;
     }
 
@@ -57,29 +59,17 @@ final class ServiceHandler {
     /**
      * Lists the photos from the current area based on the given filters.
      *
-     * @param areas a list of {@code Circle}s representing the search areas. If the OsmDataLayer is active, there might
-     * be several bounds.
+     * @param area a {@code Circle} representing the search areas.
      * @param filter a {@code Filter} represents the user's search filters. Null values are ignored.
+     * @param paging a {@code Paging} representing the pagination
      * @return a list of {@code Photo}s
      */
-    List<Photo> listNearbyPhotos(final List<Circle> areas, final ListFilter filter) {
+    public PhotoDataSet listNearbyPhotos(final Circle area, final ListFilter filter, final Paging paging) {
         final Long osmUserId = osmUserId(filter);
         final Date date = filter != null ? filter.getDate() : null;
-        List<Photo> finalResult = new ArrayList<>();
+        PhotoDataSet result = new PhotoDataSet();
         try {
-            if (areas.size() > 1) {
-                // special case: there are several different areas visible in the OSM data layer
-                final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
-                final List<Future<List<Photo>>> futures = new ArrayList<>();
-                for (final Circle circle : areas) {
-                    final Callable<List<Photo>> callable = () -> service.listNearbyPhotos(circle, date, osmUserId);
-                    futures.add(executor.submit(callable));
-                }
-                finalResult.addAll(readResult(futures));
-                executor.shutdown();
-            } else {
-                finalResult = service.listNearbyPhotos(areas.get(0), date, osmUserId);
-            }
+            result = service.listNearbyPhotos(area, date, osmUserId, paging);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
@@ -90,7 +80,7 @@ final class ServiceHandler {
             }
         }
 
-        return finalResult;
+        return result;
     }
 
     /**
@@ -103,7 +93,7 @@ final class ServiceHandler {
      * @param zoom the current zoom level
      * @return a list of {@code Segment}s
      */
-    List<Segment> listMatchedTracks(final List<BoundingBox> areas, final ListFilter filter, final int zoom) {
+    public List<Segment> listMatchedTracks(final List<BoundingBox> areas, final ListFilter filter, final int zoom) {
         List<Segment> finalResult = new ArrayList<>();
         final Long osmUserId = osmUserId(filter);
         try {

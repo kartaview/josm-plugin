@@ -65,13 +65,7 @@ public final class PhotoHandler {
             if (type.equals(PhotoType.THUMBNAIL)) {
                 result = loadThumbnailPhoto(photo);
             } else if (type.equals(PhotoType.HIGH_QUALITY)) {
-                try {
-                    result = loadPhoto(photo.getSequenceId(), photo.getName(), PhotoType.HIGH_QUALITY, false);
-                } catch (final Exception e) {
-                    // try to load large thumbnail image
-                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoType.LARGE_THUMBNAIL,
-                            true);
-                }
+                result = loadHighQualityPhoto(photo);
             } else {
                 result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoType.LARGE_THUMBNAIL,
                         true);
@@ -89,6 +83,18 @@ public final class PhotoHandler {
         final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
         return new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
                 PhotoType.THUMBNAIL);
+    }
+
+    private Pair<BufferedImage, PhotoType> loadHighQualityPhoto(final Photo photo)
+            throws ServiceException, IOException {
+        Pair<BufferedImage, PhotoType> result;
+        try {
+            result = loadPhoto(photo.getSequenceId(), photo.getName(), PhotoType.HIGH_QUALITY, false);
+        } catch (final Exception e) {
+            // try to load large thumbnail image
+            result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoType.LARGE_THUMBNAIL, true);
+        }
+        return result;
     }
 
     private Pair<BufferedImage, PhotoType> loadPhoto(final Long sequenceId, final String photoName,

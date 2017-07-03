@@ -8,6 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,25 +21,35 @@ import java.util.List;
 public class DataSet {
 
     private final List<Segment> segments;
-    private final List<Photo> photos;
+    private final PhotoDataSet photoDataSet;
 
 
     /**
      * Builds a new object with the given arguments.
      *
-     * @param segments a list of {@code Segment}s.
-     * @param photos a list of {@code Photo}s
+     * @param segments represents the data for small zoom levels
+     * @param photoDataSet represents the data for bigger zoom levels
      */
-    public DataSet(final List<Segment> segments, final List<Photo> photos) {
+    public DataSet(final List<Segment> segments, final PhotoDataSet photoDataSet) {
         this.segments = segments;
-        this.photos = photos;
+        this.photoDataSet = photoDataSet;
     }
 
     public List<Segment> getSegments() {
         return segments;
     }
 
+    public PhotoDataSet getPhotoDataSet() {
+        return photoDataSet;
+    }
+
+    /**
+     * Returns a list of individual photo locations. The method returns an empty list if the photo data set does not
+     * contain any photo locations.
+     *
+     * @return a list of {@code Photo}s
+     */
     public List<Photo> getPhotos() {
-        return photos;
+        return photoDataSet != null ? photoDataSet.getPhotos() : new ArrayList<>();
     }
 }

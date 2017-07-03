@@ -37,12 +37,18 @@ abstract class AbtractLayer extends Layer {
     private final JosmAction displayFilterAction;
     private final JosmAction openFeedbackAction;
     private final JosmAction deleteLayerAction;
+    private final JosmAction downloadPreviousPhotosAction;
+    private final JosmAction downloadNextPhotosAction;
 
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
         displayFilterAction = new DisplayFilterDialogAction();
         openFeedbackAction = new OpenFeedbackPageAction();
         deleteLayerAction = new OpenStreetCamDeleteLayerAction();
+        downloadPreviousPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerPreviousMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle(), false);
+        downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadNextPhotosTitle(), true);
     }
 
 
@@ -59,11 +65,23 @@ abstract class AbtractLayer extends Layer {
     @Override
     public Action[] getMenuEntries() {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
-        return new Action[] { layerListDialog.createActivateLayerAction(this),
-                layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
-                displayFilterAction, SeparatorLayerAction.INSTANCE, openFeedbackAction, SeparatorLayerAction.INSTANCE,
-                new LayerListPopup.InfoAction(this) };
+        Action[] actions;
+        if (addPhotoDataSetMenuItems()) {
+            actions = new Action[] { layerListDialog.createActivateLayerAction(this),
+                    layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
+                    displayFilterAction, SeparatorLayerAction.INSTANCE, downloadPreviousPhotosAction,
+                    downloadNextPhotosAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
+                    SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+        } else {
+            actions = new Action[] { layerListDialog.createActivateLayerAction(this),
+                    layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
+                    displayFilterAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
+                    SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+        }
+        return actions;
     }
+
+    abstract boolean addPhotoDataSetMenuItems();
 
     @Override
     public String getToolTipText() {
@@ -83,5 +101,13 @@ abstract class AbtractLayer extends Layer {
     @Override
     public void visitBoundingBox(final BoundingXYVisitor visitor) {
         // no logic to add here
+    }
+
+    void enableDownloadPreviousPhotoAction(final boolean enabled) {
+        downloadPreviousPhotosAction.setEnabled(enabled);
+    }
+
+    void enabledDownloadNextPhotosAction(final boolean enabled) {
+        downloadNextPhotosAction.setEnabled(enabled);
     }
 }
