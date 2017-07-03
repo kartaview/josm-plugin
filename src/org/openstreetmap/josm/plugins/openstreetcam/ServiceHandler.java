@@ -23,6 +23,7 @@ import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -172,10 +173,10 @@ public final class ServiceHandler {
      * @param sequenceIndex the sequence index
      * @return a {@code Long} value
      */
-    Long retrievePhotoMatchedWayId(final Long sequenceId, final Integer sequenceIndex) {
-        Long wayId = null;
+    Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) {
+        Photo photo = null;
         try {
-            wayId = service.retrievePhotoMatchedWayId(sequenceId, sequenceIndex);
+            photo = service.retrievePhoto(sequenceId, sequenceIndex);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
@@ -185,7 +186,7 @@ public final class ServiceHandler {
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
-        return wayId;
+        return photo;
     }
 
     /**

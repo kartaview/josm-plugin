@@ -24,8 +24,8 @@ public class TrackSettings {
     /**
      * Builds a new object with the given arguments.
      *
-     * @param displayTrack
-     * @param autoplaySettings
+     * @param displayTrack is true then when selecting an image also the track will be displayed
+     * @param autoplaySettings the track auto-play settings
      */
     public TrackSettings(final boolean displayTrack, final AutoplaySettings autoplaySettings) {
         this.displayTrack = displayTrack;
