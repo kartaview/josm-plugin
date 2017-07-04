@@ -29,7 +29,7 @@ final class Formatter {
      */
     static String formatPhotoDetails(final Photo photo) {
         final StringBuilder sb = new StringBuilder("<html>");
-        sb.append("Uploaded");
+        sb.append("Created");
         sb.append(" on ").append(photo.getShotDate());
         if (photo.getUsername() != null && !photo.getUsername().isEmpty()) {
             sb.append(" by ").append("<a href='' target='_blank'>");
