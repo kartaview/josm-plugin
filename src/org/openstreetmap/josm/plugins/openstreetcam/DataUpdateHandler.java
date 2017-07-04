@@ -163,6 +163,8 @@ class DataUpdateHandler {
                 updateUI(null, false);
             });
         }
+        OpenStreetCamLayer.getInstance().enableDownloadPreviousPhotoAction(false);
+        OpenStreetCamLayer.getInstance().enabledDownloadNextPhotosAction(false);
         final Circle area = Util.currentCircle();
         if (area != null) {
             final PhotoDataSet photoDataSet =
@@ -183,19 +185,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-        PhotoDataSet photoDataSet = null;
-        if (currentPhotoDataSet != null) {
-            int page = currentPhotoDataSet.getPage();
-            page = loadNextResults ? page + 1 : page - 1;
-            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-            photoDataSet = new PhotoDataSet();
-            final Circle area = Util.currentCircle();
-            if (area != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(area, listFilter,
-                        new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
-            }
-        }
-        return photoDataSet;
+                PhotoDataSet photoDataSet = null;
+                if (currentPhotoDataSet != null) {
+                    int page = currentPhotoDataSet.getPage();
+                    page = loadNextResults ? page + 1 : page - 1;
+                    final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+                    photoDataSet = new PhotoDataSet();
+                    final Circle area = Util.currentCircle();
+                    if (area != null) {
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(area, listFilter,
+                                new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                }
+                return photoDataSet;
     }
 
     /**

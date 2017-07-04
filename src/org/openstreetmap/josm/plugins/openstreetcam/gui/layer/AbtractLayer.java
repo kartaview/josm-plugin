@@ -103,11 +103,11 @@ abstract class AbtractLayer extends Layer {
         // no logic to add here
     }
 
-    void enableDownloadPreviousPhotoAction(final boolean enabled) {
+    public void enableDownloadPreviousPhotoAction(final boolean enabled) {
         downloadPreviousPhotosAction.setEnabled(enabled);
     }
 
-    void enabledDownloadNextPhotosAction(final boolean enabled) {
+    public void enabledDownloadNextPhotosAction(final boolean enabled) {
         downloadNextPhotosAction.setEnabled(enabled);
     }
 }
