@@ -19,7 +19,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.util.GuiHelper;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
@@ -29,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -132,7 +132,7 @@ class DataUpdateHandler {
     private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom,
             final boolean checkSelection) {
         if (OpenStreetCamLayer.getInstance().getDataSet() != null
-                && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null) {
+                && !OpenStreetCamLayer.getInstance().getDataSet().getPhotos().isEmpty()) {
             // clear view
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
@@ -141,7 +141,7 @@ class DataUpdateHandler {
                 updateUI(null, true);
             });
         }
-        final List<BoundingBox> areas = Util.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
         if (!areas.isEmpty()) {
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
             if (PreferenceManager.getInstance().loadDataType() == null
@@ -165,10 +165,10 @@ class DataUpdateHandler {
         }
         OpenStreetCamLayer.getInstance().enableDownloadPreviousPhotoAction(false);
         OpenStreetCamLayer.getInstance().enabledDownloadNextPhotosAction(false);
-        final Circle area = Util.currentCircle();
-        if (area != null) {
+        final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+        if (bbox != null) {
             final PhotoDataSet photoDataSet =
-                    ServiceHandler.getInstance().listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
+                    ServiceHandler.getInstance().listNearbyPhotos(bbox, filter, Paging.NEARBY_PHOTOS_DEAFULT);
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
                 updateUI(new DataSet(null, photoDataSet), checkSelection);
             }
@@ -185,19 +185,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-                PhotoDataSet photoDataSet = null;
-                if (currentPhotoDataSet != null) {
-                    int page = currentPhotoDataSet.getPage();
-                    page = loadNextResults ? page + 1 : page - 1;
-                    final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-                    photoDataSet = new PhotoDataSet();
-                    final Circle area = Util.currentCircle();
-                    if (area != null) {
-                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(area, listFilter,
-                                new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
-                    }
-                }
-                return photoDataSet;
+        PhotoDataSet photoDataSet = null;
+        if (currentPhotoDataSet != null) {
+            int page = currentPhotoDataSet.getPage();
+            page = loadNextResults ? page + 1 : page - 1;
+            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+            photoDataSet = new PhotoDataSet();
+            final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+            if (bbox != null) {
+                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                        new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
+            }
+        }
+        return photoDataSet;
     }
 
     /**

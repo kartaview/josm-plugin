@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -71,7 +70,7 @@ public class Service {
     /**
      * Retrieves OpenStreetCam photos from the given area based on the specified filters.
      *
-     * @param circle a {@code Circle} defines the searching area
+     * @param area a {@code BoundingBox} defines the searching area
      * @param date a {@code Date} if not null, then the method returns the photos that were uploaded after the specified
      * date
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
@@ -80,9 +79,9 @@ public class Service {
      * @return a list of {@code Photo}s
      * @throws ServiceException if the operation fails
      */
-    public PhotoDataSet listNearbyPhotos(final Circle circle, final Date date, final Long osmUserId,
+    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final Date date, final Long osmUserId,
             final Paging paging) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(circle, date, osmUserId, paging).getContent();
+        final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
         final String response;
         try {
             final HttpConnector connector = new HttpConnector(
