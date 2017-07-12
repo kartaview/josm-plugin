@@ -99,6 +99,7 @@ public final class GuiConfig extends BaseConfig {
     private final String layerFeedbackShortcutText;
     private final String layerPreviousMenuItemLbl;
     private final String layerNextMenuItemLbl;
+    private final String layerPreferenceMenuItemLbl;
 
     private final String infoMatchedWayTitle;
     private final String infoDownloadNextPhotosTitle;
@@ -185,6 +186,7 @@ public final class GuiConfig extends BaseConfig {
         layerFeedbackShortcutText = readProperty("layer.menu.feedback.shortcut.text");
         layerPreviousMenuItemLbl = readProperty("layer.menu.previous.lbl");
         layerNextMenuItemLbl = readProperty("layer.menu.next.lbl");
+        layerPreferenceMenuItemLbl = readProperty("layer.menu.preference.lbl");
 
         infoMatchedWayTitle = readProperty("info.matchedWay.title");
         infoDownloadNextPhotosTitle = readProperty("info.download.next.title");
@@ -479,5 +481,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getInfoDownloadPreviousPhotosTitle() {
         return infoDownloadPreviousPhotosTitle;
+    }
+
+    public String getLayerPreferenceMenuItemLbl() {
+        return layerPreferenceMenuItemLbl;
     }
 }

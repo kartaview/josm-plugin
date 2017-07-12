@@ -94,7 +94,6 @@ public class Service {
         final ListResponse<Photo> listPhotoResponse =
                 parseResponse(response, new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
-        System.out.println(response);
         return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
                 listPhotoResponse.getTotalItems()) : new PhotoDataSet();
     }
@@ -126,7 +125,6 @@ public class Service {
             // order photos by sequence index
             sequence.getPhotos().sort((p1, p2) -> p1.getSequenceIndex().compareTo(p2.getSequenceIndex()));
         }
-        System.out.println(response);
         return sequence;
     }
 
