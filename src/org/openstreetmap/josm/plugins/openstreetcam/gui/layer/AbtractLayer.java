@@ -39,6 +39,7 @@ abstract class AbtractLayer extends Layer {
     private final JosmAction deleteLayerAction;
     private final JosmAction downloadPreviousPhotosAction;
     private final JosmAction downloadNextPhotosAction;
+    private final JosmAction openPreferencesAction;
 
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
@@ -49,6 +50,7 @@ abstract class AbtractLayer extends Layer {
                 GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle(), false);
         downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),
                 GuiConfig.getInstance().getInfoDownloadNextPhotosTitle(), true);
+        openPreferencesAction = new OpenPreferenceDialogAction();
     }
 
 
@@ -71,12 +73,14 @@ abstract class AbtractLayer extends Layer {
                     layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
                     displayFilterAction, SeparatorLayerAction.INSTANCE, downloadPreviousPhotosAction,
                     downloadNextPhotosAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
-                    SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+                    SeparatorLayerAction.INSTANCE, openPreferencesAction, SeparatorLayerAction.INSTANCE,
+                    new LayerListPopup.InfoAction(this) };
         } else {
             actions = new Action[] { layerListDialog.createActivateLayerAction(this),
                     layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
                     displayFilterAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
-                    SeparatorLayerAction.INSTANCE, new LayerListPopup.InfoAction(this) };
+                    SeparatorLayerAction.INSTANCE, openPreferencesAction, SeparatorLayerAction.INSTANCE,
+                    new LayerListPopup.InfoAction(this) };
         }
         return actions;
     }
