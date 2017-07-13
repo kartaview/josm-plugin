@@ -22,7 +22,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -163,29 +162,6 @@ public final class ServiceHandler {
             }
         }
         return sequence;
-    }
-
-    /**
-     * Retrieves the matched OSM way identifier of a given photo identified by the sequenceId and sequenceIndex.
-     *
-     * @param sequenceId the sequence identifier
-     * @param sequenceIndex the sequence index
-     * @return a {@code Long} value
-     */
-    Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) {
-        Photo photo = null;
-        try {
-            photo = service.retrievePhoto(sequenceId, sequenceIndex);
-        } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorSequenceTxt(), GuiConfig.getInstance().getErrorTitle(),
-                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-                final boolean flag = val == JOptionPane.YES_OPTION;
-                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-            }
-        }
-        return photo;
     }
 
     /**
