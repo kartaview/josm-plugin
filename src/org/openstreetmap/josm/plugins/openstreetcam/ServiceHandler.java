@@ -20,7 +20,6 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -64,7 +63,7 @@ public final class ServiceHandler {
      * @param paging a {@code Paging} representing the pagination
      * @return a list of {@code Photo}s
      */
-    public PhotoDataSet listNearbyPhotos(final Circle area, final ListFilter filter, final Paging paging) {
+    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final ListFilter filter, final Paging paging) {
         final Long osmUserId = osmUserId(filter);
         final Date date = filter != null ? filter.getDate() : null;
         PhotoDataSet result = new PhotoDataSet();

@@ -10,13 +10,11 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.BBOX_BOTTOM_RIGHT;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.BBOX_TOP_LEFT;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.COORDINATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.EXTERNAL_USER_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.MY_TRACKS_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.PAGE_ITEMS;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.RADIUS;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.SEQUENCE_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.SEQUENCE_INDEX;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.RequestConstants.USER_TYPE;
@@ -26,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Circle;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import com.telenav.josm.common.argument.BoundingBox;
@@ -46,9 +43,9 @@ final class HttpContentBuilder {
     private final Map<String, String> content = new HashMap<>();
 
 
-    HttpContentBuilder(final Circle circle, final Date date, final Long osmUserId, final Paging paging) {
-        content.put(COORDINATE, circle.getCenter().getY() + SEPARATOR + circle.getCenter().getX());
-        content.put(RADIUS, Integer.toString((int) circle.getRadius()));
+    HttpContentBuilder(final BoundingBox area, final Date date, final Long osmUserId, final Paging paging) {
+        content.put(BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
+        content.put(BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
         if (date != null) {
             content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
         }
