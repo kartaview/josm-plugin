@@ -23,8 +23,6 @@ import com.telenav.josm.common.argument.BoundingBox;
  */
 public final class BoundingBoxUtil {
 
-    private static final int EXTENSION_DISTANCE = 100;
-
     private BoundingBoxUtil() {}
 
     /**
@@ -68,10 +66,8 @@ public final class BoundingBoxUtil {
             }
         } else {
             final Bounds bounds = Main.map.mapView.getRealBounds();
-            final BoundingBox bbox = new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(),
-                    bounds.getMax().lon(), bounds.getMin().lon());
-            final double distance = EXTENSION_DISTANCE * Main.map.mapView.getScale();
-            result.add(bbox.extendBoundingBox((int) distance));
+            result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                    bounds.getMin().lon()));
         }
         return result;
     }
