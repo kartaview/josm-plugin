@@ -55,8 +55,9 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-                Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST)))));
+        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
+                Math.max(MIN_ZOOM,
+                        Math.round(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST))));
     }
 
     /**
@@ -92,7 +93,7 @@ public final class Util {
         final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
-            if (!photo.getSequenceId().equals(selectedPhoto.getSequenceId()) && bbox.bounds(photo.getLocation())) {
+            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getLocation())) {
                 final double dist = selectedPhoto.getLocation().distance(photo.getLocation());
                 if (dist <= MAX_DISTANCE) {
                     candidateMap.put(dist, photo);

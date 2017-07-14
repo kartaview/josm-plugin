@@ -12,11 +12,18 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 
 
 /**
+ * Observes the 'Play/Stop'user click action. If the user clicks the 'Play' button then the track will start playing
+ * automatically. If the user clicks the 'Stop' button then the auto-play will stop.
  *
  * @author beataj
  * @version $Revision$
  */
 public interface TrackAutoplayObserver {
 
+    /**
+     * Starts to auto-play the track or stop an already playing track.
+     *
+     * @param action a {@code AutoplayAction} specifies the auto-play action
+     */
     void play(AutoplayAction action);
 }

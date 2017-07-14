@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 
 /**
+ * Downloads the way to which the selected photo was matched.
  *
  * @author beataj
  * @version $Revision$
