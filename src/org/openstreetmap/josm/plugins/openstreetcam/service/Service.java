@@ -8,38 +8,27 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.PhotoTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.SegmentTypeAdapter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.PhotoDetailsResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.http.ContentType;
 import com.telenav.josm.common.http.HttpConnector;
 import com.telenav.josm.common.http.HttpConnectorException;
 
@@ -50,22 +39,9 @@ import com.telenav.josm.common.http.HttpConnectorException;
  * @author Beata
  * @version $Revision$
  */
-public class Service {
+public class Service extends BaseService {
 
     private static final int SECOND_PAGE = 2;
-    private final Gson gson;
-    private final Map<String, String> headers;
-
-
-    public Service() {
-        headers = new HashMap<>();
-        headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
-        final GsonBuilder builder = new GsonBuilder();
-        builder.serializeNulls();
-        builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
-        builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
-        gson = builder.create();
-    }
 
     /**
      * Retrieves OpenStreetCam photos from the given area based on the specified filters.
@@ -82,16 +58,10 @@ public class Service {
     public PhotoDataSet listNearbyPhotos(final BoundingBox area, final Date date, final Long osmUserId,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
-        final String response;
-        try {
-            final HttpConnector connector = new HttpConnector(
-                    Config.getInstance().getServiceUrl() + RequestConstants.LIST_NEARBY_PHOTOS, headers);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
-        final ListResponse<Photo> listPhotoResponse =
-                parseResponse(response, new TypeToken<ListResponse<Photo>>() {}.getType());
+        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
+                .append(RequestConstants.LIST_NEARBY_PHOTOS).toString();
+        final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
+                new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
         return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
                 listPhotoResponse.getTotalItems()) : new PhotoDataSet();
@@ -106,15 +76,10 @@ public class Service {
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
-        final String response;
-        try {
-            final HttpConnector connector = new HttpConnector(
-                    Config.getInstance().getServiceUrl() + RequestConstants.SEQUENCE_PHOTO_LIST, headers);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
-        final SequencePhotoListResponse detailsResponse = parseResponse(response, SequencePhotoListResponse.class);
+        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
+                .append(RequestConstants.SEQUENCE_PHOTO_LIST).toString();
+        final SequencePhotoListResponse detailsResponse =
+                executePost(url, arguments, SequencePhotoListResponse.class);
         verifyResponseStatus(detailsResponse);
 
         Sequence sequence = null;
@@ -137,15 +102,9 @@ public class Service {
      */
     public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
-        final String response;
-        try {
-            final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.PHOTO_DETAILS, headers);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
-        final PhotoDetailsResponse detailsResponse = parseResponse(response, PhotoDetailsResponse.class);
+        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
+                .append(RequestConstants.PHOTO_DETAILS).toString();
+        final PhotoDetailsResponse detailsResponse = executePost(url, arguments, PhotoDetailsResponse.class);
         Photo photo = null;
         if (detailsResponse != null && detailsResponse.getOsv() != null) {
             photo = detailsResponse.getOsv().getPhotoObject();
@@ -165,7 +124,7 @@ public class Service {
         url.append(photoName);
         byte[] image;
         try {
-            final HttpConnector connector = new HttpConnector(url.toString(), headers);
+            final HttpConnector connector = new HttpConnector(url.toString(), getHeaders());
             image = connector.getBytes();
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -212,47 +171,11 @@ public class Service {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final String response;
-        try {
-            final HttpConnector connector = new HttpConnector(
-                    Config.getInstance().getServiceBaseUrl() + RequestConstants.LIST_MATCHED_TRACKS, headers);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
+        final String url = new StringBuilder(Config.getInstance().getServiceBaseUrl())
+                .append(RequestConstants.LIST_MATCHED_TRACKS).toString();
         final ListResponse<Segment> listSegmentResponse =
-                parseResponse(response, new TypeToken<ListResponse<Segment>>() {}.getType());
+                executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType());
         verifyResponseStatus(listSegmentResponse);
         return listSegmentResponse;
-    }
-
-    private Set<Segment> readResult(final List<Future<ListResponse<Segment>>> futures) throws ServiceException {
-        final Set<Segment> segments = new HashSet<>();
-        for (final Future<ListResponse<Segment>> future : futures) {
-            try {
-                segments.addAll(future.get().getCurrentPageItems());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ServiceException(e);
-            }
-        }
-        return segments;
-    }
-
-    private void verifyResponseStatus(final Response response) throws ServiceException {
-        if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
-            throw new ServiceException(response.getStatus().getApiMessage());
-        }
-    }
-
-    private <T> T parseResponse(final String response, final Type responseType) throws ServiceException {
-        T root = null;
-        if (response != null) {
-            try {
-                root = gson.fromJson(response, responseType);
-            } catch (final JsonSyntaxException e) {
-                throw new ServiceException(e);
-            }
-        }
-        return root;
     }
 }

@@ -114,6 +114,7 @@ public class Photo {
         final int prime = 31;
         int result = 1;
         result = prime * result + EntityUtil.hashCode(id);
+        result = prime * result + EntityUtil.hashCode(sequenceId);
         return result;
     }
 
@@ -125,6 +126,7 @@ public class Photo {
         } else if (obj != null && obj.getClass() == this.getClass()) {
             final Photo other = (Photo) obj;
             result = EntityUtil.bothNullOrEqual(id, other.getId());
+            result = result && EntityUtil.bothNullOrEqual(sequenceId, other.getSequenceId());
         }
         return result;
     }

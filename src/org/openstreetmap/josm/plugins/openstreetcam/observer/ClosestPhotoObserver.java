@@ -17,5 +17,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.observer;
  */
 public interface ClosestPhotoObserver {
 
+    /**
+     * Selects the closest photo to the selected photo.
+     */
     void selectClosestPhoto();
 }
