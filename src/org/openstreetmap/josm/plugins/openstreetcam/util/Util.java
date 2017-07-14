@@ -55,8 +55,9 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-                Math.round(Math.floor(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST)))));
+        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
+                Math.max(MIN_ZOOM,
+                Math.round(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST))));
     }
 
     /**
