@@ -38,6 +38,7 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
 class PhotoPanel extends JPanel implements MouseWheelListener {
 
     private static final long serialVersionUID = -1550900781158007580L;
+    private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
 
     private transient BufferedImage image;
@@ -146,10 +147,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         // zoom in case
         if (wheelRotation < 0) {
             pair = getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim,
-                    (currentViewDim * 4 / 5) / 2);
+                    (currentViewDim * 4 / 5) / HALF);
         } else {
             if (currentViewDim != imgDim) {
-                final int dif = (currentViewDim * 5 / 4) / 2;
+                final int dif = (currentViewDim * 5 / 4) / HALF;
                 int minRef = currentViewMinCoord - dif;
                 int maxRef = currentViewMinCoord + currentViewDim + dif;
 
@@ -182,11 +183,11 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         // zoom in case
         if (wheelRotation < 0) {
             final int dimension = (newDim > currentViewDim) ? currentViewDim : newDim;
-            return getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim, dimension / 2);
+            return getImagePart(ref, currentViewMinCoord, currentViewMinCoord + currentViewDim, dimension / HALF);
         }
 
         // zoom out case
-        int minRef = ref - (newDim / 2);
+        int minRef = ref - (newDim / HALF);
         int maxRef = minRef + newDim;
         if (minRef < 0) {
             maxRef -= minRef;
@@ -256,11 +257,11 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         int imageWidth = getWidth();
         int imageHeight = (getWidth() * currentView.height) / currentView.width;
         int marginLeft = 0;
-        int marginTop = (getHeight() - imageHeight) / 2;
+        int marginTop = (getHeight() - imageHeight) / HALF;
         if (imageHeight > getHeight()) {
             imageHeight = getHeight();
             imageWidth = (getHeight() * currentView.width) / currentView.height;
-            marginLeft = (getWidth() - imageWidth) / 2;
+            marginLeft = (getWidth() - imageWidth) / HALF;
             marginTop = 0;
         }
 

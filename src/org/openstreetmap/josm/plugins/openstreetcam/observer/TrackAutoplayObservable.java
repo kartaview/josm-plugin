@@ -12,13 +12,24 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 
 
 /**
+ * The observable interface for the {@code TrackAutoplayObserver} object.
  *
  * @author beataj
  * @version $Revision$
  */
 public interface TrackAutoplayObservable {
 
+    /**
+     * Registers the given observer.
+     *
+     * @param observer a {@code TrackAutoplayObserver}
+     */
     void registerObserver(TrackAutoplayObserver observer);
 
+    /**
+     * Notifies the observes listening.
+     *
+     * @param action the auto-play action to be performed
+     */
     void notifyObserver(AutoplayAction action);
 }

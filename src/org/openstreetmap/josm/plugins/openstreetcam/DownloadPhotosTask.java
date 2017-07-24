@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 
 
 /**
+ * Downloads the next or previous set of photo location results.
  *
  * @author beataj
  * @version $Revision$
@@ -89,15 +90,19 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
                 this.progressMonitor.indeterminateSubTask(taskTitle);
                 downloadThread = new Thread(() -> photoDataSet = dataUpdateHandler.downloadPhotos(loadNextResults));
                 downloadThread.start();
-                while (downloadThread != null && downloadThread.isAlive()) {
-                    try {
-                        Thread.sleep(SLEEP);
-                    } catch (final InterruptedException e) {
-                        // no need to handle this; if the user cancels the action, exception will occur
-                    }
-                }
+                waitForCompletion();
             } finally {
                 progressMonitor.finishTask();
+            }
+        }
+    }
+
+    private void waitForCompletion() {
+        while (downloadThread != null && downloadThread.isAlive()) {
+            try {
+                Thread.sleep(SLEEP);
+            } catch (final InterruptedException e) {
+                // no need to handle this; if the user cancels the action, exception will occur
             }
         }
     }
