@@ -30,7 +30,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.PhotoTypeAdapter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.SegmentTypeAdapter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.PhotoDetailsResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
@@ -125,32 +124,6 @@ public class Service {
             sequence.getPhotos().sort((p1, p2) -> p1.getSequenceIndex().compareTo(p2.getSequenceIndex()));
         }
         return sequence;
-    }
-
-    /**
-     * Retrieves the matched OSM way identifier of the photo identified by the given sequenceId and sequenceIndex.
-     *
-     * @param sequenceId the sequence identifier
-     * @param sequenceIndex the sequence index
-     * @return a {@code Long} value
-     * @throws ServiceException if the operation fails
-     */
-    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
-        final String response;
-        try {
-            final HttpConnector connector =
-                    new HttpConnector(Config.getInstance().getServiceUrl() + RequestConstants.PHOTO_DETAILS, headers);
-            response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
-        } catch (final HttpConnectorException e) {
-            throw new ServiceException(e);
-        }
-        final PhotoDetailsResponse detailsResponse = parseResponse(response, PhotoDetailsResponse.class);
-        Photo photo = null;
-        if (detailsResponse != null && detailsResponse.getOsv() != null) {
-            photo = detailsResponse.getOsv().getPhotoObject();
-        }
-        return photo;
     }
 
     /**
