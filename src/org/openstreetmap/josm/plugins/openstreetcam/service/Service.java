@@ -24,7 +24,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.PhotoDetailsResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import com.google.gson.reflect.TypeToken;
@@ -90,26 +89,6 @@ public class Service extends BaseService {
             sequence.getPhotos().sort((p1, p2) -> p1.getSequenceIndex().compareTo(p2.getSequenceIndex()));
         }
         return sequence;
-    }
-
-    /**
-     * Retrieves the matched OSM way identifier of the photo identified by the given sequenceId and sequenceIndex.
-     *
-     * @param sequenceId the sequence identifier
-     * @param sequenceIndex the sequence index
-     * @return a {@code Long} value
-     * @throws ServiceException if the operation fails
-     */
-    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
-        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
-                .append(RequestConstants.PHOTO_DETAILS).toString();
-        final PhotoDetailsResponse detailsResponse = executePost(url, arguments, PhotoDetailsResponse.class);
-        Photo photo = null;
-        if (detailsResponse != null && detailsResponse.getOsv() != null) {
-            photo = detailsResponse.getOsv().getPhotoObject();
-        }
-        return photo;
     }
 
     /**
