@@ -68,13 +68,15 @@ final class LoadManager {
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag =
                 onlyUserFlagStr.isEmpty() ? ListFilter.DEFAULT.isOnlyUserFlag() : Boolean.parseBoolean(onlyUserFlagStr);
-        return new ListFilter(date, onlyUserFlag);
+                return new ListFilter(date, onlyUserFlag);
     }
 
     MapViewSettings loadMapViewSettings() {
         final String photoZoomVal = Main.pref.get(MAP_VIEW_PHOTO_ZOOM);
-        final int photoZoom = (photoZoomVal != null && !photoZoomVal.isEmpty()) ? Integer.valueOf(photoZoomVal)
+        int photoZoom = (photoZoomVal != null && !photoZoomVal.isEmpty()) ? Integer.valueOf(photoZoomVal)
                 : Config.getInstance().getMapPhotoZoom();
+        photoZoom = photoZoom > Config.getInstance().getPreferencesMaxZoom()
+                ? Config.getInstance().getPreferencesMaxZoom() : photoZoom;
         final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
         return new MapViewSettings(photoZoom, manualSwitchFlag);
 
@@ -84,9 +86,11 @@ final class LoadManager {
         final boolean highQualityFlag = Main.pref.getBoolean(HIGH_QUALITY_PHOTO_FLAG);
         final boolean mouseHoverFlag = Main.pref.getBoolean(MOUSE_HOVER_FLAG);
         final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
-        final int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
+        int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
                 ? Integer.valueOf(mouseHoverDelayValue) : Config.getInstance().getMouseHoverMinDelay();
-        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
+                mouseHoverDelay = mouseHoverDelay > Config.getInstance().getMouseHoverMaxDelay()
+                        ? Config.getInstance().getMouseHoverMaxDelay() : mouseHoverDelay;
+                        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     TrackSettings loadTrackSettings() {
@@ -99,8 +103,9 @@ final class LoadManager {
         final String lengthValue = Main.pref.get(AUTOPLAY_LENGTH);
         final Integer length = lengthValue == null || lengthValue.isEmpty() ? null : Integer.valueOf(lengthValue);
         final String delayValue = Main.pref.get(AUTOPLAY_DELAY);
-        final Integer delay = delayValue == null || delayValue.isEmpty() ? Config.getInstance().getAutoplayMinDelay()
+        Integer delay = delayValue == null || delayValue.isEmpty() ? Config.getInstance().getAutoplayMinDelay()
                 : Integer.valueOf(delayValue);
+        delay = delay > Config.getInstance().getAutoplayMaxDelay() ? Config.getInstance().getAutoplayMaxDelay() : delay;
         return new AutoplaySettings(length, delay);
     }
 
@@ -110,11 +115,15 @@ final class LoadManager {
 
     CacheSettings loadCacheSettings() {
         final String memoryCountVal = Main.pref.get(CACHE_MEMORY_COUNT);
-        final int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
+        int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
                 : CacheConfig.getInstance().getDefaultMemoryCount();
+        memoryCount = memoryCount > CacheConfig.getInstance().getMaxMemoryCount()
+                ? CacheConfig.getInstance().getMaxMemoryCount() : memoryCount;
         final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
-        final int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
+        int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
                 : CacheConfig.getInstance().getDefaultDiskCount();
+        diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
+                ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
         final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
         int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
                 ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
