@@ -8,8 +8,9 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_LENGTH;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_STARTED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -115,11 +116,15 @@ final class LoadManager {
         final int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
                 : CacheConfig.getInstance().getDefaultDiskCount();
         final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
-        final int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
+        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
                 ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
+        prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
+                ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
         final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-        final int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
                 : CacheConfig.getInstance().getDefaultNearbyCount();
+        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
+                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
         return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
