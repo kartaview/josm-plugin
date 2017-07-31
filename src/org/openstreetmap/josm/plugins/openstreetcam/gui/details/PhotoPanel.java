@@ -21,9 +21,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
@@ -52,7 +50,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the image coordinate where the mouse dragging was started */
     private Point startPoint;
 
-    private final JLabel lblLoading;
 
     PhotoPanel() {
         super(new BorderLayout());
@@ -61,9 +58,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         addMouseWheelListener(this);
         addMouseListener(new MousePressedAdapater());
         addMouseMotionListener(new MouseDraggedAdapter());
-        lblLoading = LabelBuilder.build(GuiConfig.getInstance().getWarningLoadingPhoto(), Font.BOLD, Color.white);
-        lblLoading.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLoading.setVerticalAlignment(SwingConstants.CENTER);
     }
 
 
@@ -76,6 +70,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             currentView = null;
             frame = null;
         }
+        revalidate();
         repaint();
     }
 
@@ -86,7 +81,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         currentView = null;
         add(LabelBuilder.build(GuiConfig.getInstance().getErrorPhotoLoadingTxt(), Font.BOLD, Color.white),
                 BorderLayout.CENTER);
-
+        revalidate();
         repaint();
     }
 
@@ -95,10 +90,11 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         setBackground(Color.white);
         image = null;
         currentView = null;
-        add(lblLoading, BorderLayout.CENTER);
+        add(LabelBuilder.build(GuiConfig.getInstance().getWarningLoadingPhoto(), Font.BOLD, Color.white),
+                BorderLayout.CENTER);
+        revalidate();
         repaint();
     }
-
 
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
