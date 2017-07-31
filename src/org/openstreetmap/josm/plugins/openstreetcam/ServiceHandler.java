@@ -7,19 +7,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -28,15 +19,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.gpx.GpxData;
-import org.openstreetmap.josm.data.gpx.GpxTrack;
-import org.openstreetmap.josm.data.gpx.ImmutableGpxTrack;
-import org.openstreetmap.josm.data.gpx.WayPoint;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
-import org.openstreetmap.josm.io.GpxWriter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -86,7 +71,7 @@ public final class ServiceHandler {
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorPhotoListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
                 PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
@@ -124,12 +109,12 @@ public final class ServiceHandler {
                 finalResult = service.listMatchedTracks(areas.get(0), osmUserId, zoom);
             }
         } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+            if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorSegmentListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
-                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+                PreferenceManager.getInstance().saveSegmentsErrorSuppressFlag(flag);
             }
         }
         return finalResult;
@@ -157,7 +142,6 @@ public final class ServiceHandler {
         return result;
     }
 
-
     /**
      * Retries the sequence corresponding to the given identifier.
      *
@@ -171,51 +155,11 @@ public final class ServiceHandler {
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorSequenceTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorSequenceText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
-        }
-        try {
-            final String fileName = "Track_" + id + ".gpx";
-            final GpxWriter gpxWriter = new GpxWriter(new FileOutputStream(new File(fileName)));
-            final GpxData gpxData = new GpxData();
-            // gpxData.put("author", "test");
-            final Collection<Collection<WayPoint>> trk = new ArrayList<>();
-            final Map<String, Object> trkAttr = new HashMap<>();
-            trkAttr.put("extensions", "heading");
-
-            final List<WayPoint> wayPoints = new ArrayList<>();
-            int i=0;
-            for (final Photo photo: sequence.getPhotos()) {
-                final WayPoint wayPoint = new WayPoint(photo.getLocation());
-                final LocalDateTime dateTime =
-                        LocalDateTime.parse(photo.getShotDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                final ZonedDateTime utcZoned =
-                        dateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-                wayPoint.put("time", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'").format(utcZoned));
-                wayPoint.addExtension("heading", Double.toString(photo.getHeading()));
-                wayPoints.add(wayPoint);
-                // gpxData.addWaypoint(wayPoint);
-                i++;
-                // if (i== 2){
-                // trk.add(trkseg);
-                // trkseg = new ArrayList<>();
-                // i =0;
-                // }
-            }
-            trk.add(wayPoints);
-
-
-            final GpxTrack gpsTrack = new ImmutableGpxTrack(trk, trkAttr);
-            gpxData.addTrack(gpsTrack);
-
-
-            gpxWriter.write(gpxData);
-
-        } catch (final Exception e) {
-            e.printStackTrace();
         }
         return sequence;
     }

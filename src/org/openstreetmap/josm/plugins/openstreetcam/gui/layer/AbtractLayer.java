@@ -15,6 +15,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Action;
 import javax.swing.Icon;
 import org.openstreetmap.josm.actions.JosmAction;
@@ -40,6 +42,7 @@ abstract class AbtractLayer extends Layer {
     private final JosmAction downloadPreviousPhotosAction;
     private final JosmAction downloadNextPhotosAction;
     private final JosmAction openPreferencesAction;
+    private final JosmAction saveSequenceAction;
 
     AbtractLayer() {
         super(GuiConfig.getInstance().getPluginShortName());
@@ -51,6 +54,7 @@ abstract class AbtractLayer extends Layer {
         downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),
                 GuiConfig.getInstance().getInfoDownloadNextPhotosTitle(), true);
         openPreferencesAction = new OpenPreferenceDialogAction();
+        saveSequenceAction = new SaveTrackAction();
     }
 
 
@@ -67,25 +71,34 @@ abstract class AbtractLayer extends Layer {
     @Override
     public Action[] getMenuEntries() {
         final LayerListDialog layerListDialog = LayerListDialog.getInstance();
-        Action[] actions;
+        final List<Action> actions = new ArrayList<>();
+        actions.add(layerListDialog.createActivateLayerAction(this));
+        actions.add(layerListDialog.createShowHideLayerAction());
+        actions.add(deleteLayerAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+        actions.add(displayFilterAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
         if (addPhotoDataSetMenuItems()) {
-            actions = new Action[] { layerListDialog.createActivateLayerAction(this),
-                    layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
-                    displayFilterAction, SeparatorLayerAction.INSTANCE, downloadPreviousPhotosAction,
-                    downloadNextPhotosAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
-                    SeparatorLayerAction.INSTANCE, openPreferencesAction, SeparatorLayerAction.INSTANCE,
-                    new LayerListPopup.InfoAction(this) };
-        } else {
-            actions = new Action[] { layerListDialog.createActivateLayerAction(this),
-                    layerListDialog.createShowHideLayerAction(), deleteLayerAction, SeparatorLayerAction.INSTANCE,
-                    displayFilterAction, SeparatorLayerAction.INSTANCE, openFeedbackAction,
-                    SeparatorLayerAction.INSTANCE, openPreferencesAction, SeparatorLayerAction.INSTANCE,
-                    new LayerListPopup.InfoAction(this) };
+            actions.add(downloadPreviousPhotosAction);
+            actions.add(downloadNextPhotosAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
         }
-        return actions;
+        if (addSequenceMenuItem()) {
+            actions.add(saveSequenceAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
+        actions.add(openFeedbackAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+
+        actions.add(openPreferencesAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+        actions.add(new LayerListPopup.InfoAction(this));
+        return actions.toArray(new Action[0]);
     }
 
     abstract boolean addPhotoDataSetMenuItems();
+
+    abstract boolean addSequenceMenuItem();
 
     @Override
     public String getToolTipText() {

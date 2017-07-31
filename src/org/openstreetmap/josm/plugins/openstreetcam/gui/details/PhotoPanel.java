@@ -79,7 +79,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         setBackground(Color.white);
         image = null;
         currentView = null;
-        add(LabelBuilder.build(GuiConfig.getInstance().getErrorPhotoLoadingTxt(), Font.BOLD, Color.white),
+        add(LabelBuilder.build(GuiConfig.getInstance().getErrorPhotoLoadingText(), Font.BOLD, Color.white),
                 BorderLayout.CENTER);
         revalidate();
         repaint();

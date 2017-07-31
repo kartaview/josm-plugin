@@ -96,11 +96,11 @@ class FilterPanel extends JPanel {
             final Date date = DateFormatter.parseDay(dateValue.trim());
             if (date == null) {
                 // date value was invalid
-                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
+                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterText(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             } else if (date.compareTo(Calendar.getInstance().getTime()) > 0) {
                 // date is to big
-                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
+                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getUnacceptedDateFilterText(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             } else {
                 filter = new ListFilter(date, cbbUser.isSelected());
@@ -131,12 +131,13 @@ class FilterPanel extends JPanel {
             if (!valueStr.isEmpty()) {
                 final Date newDate = DateFormatter.parseDay(valueStr);
                 if (newDate == null) {
-                    JOptionPane.showMessageDialog(FilterPanel.this, GuiConfig.getInstance().getIncorrectDateFilterTxt(),
+                    JOptionPane.showMessageDialog(FilterPanel.this,
+                            GuiConfig.getInstance().getIncorrectDateFilterText(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                     isValid = false;
                 } else if (newDate.compareTo(Calendar.getInstance().getTime()) > 0) {
                     JOptionPane.showMessageDialog(FilterPanel.this,
-                            GuiConfig.getInstance().getUnacceptedDateFilterTxt(),
+                            GuiConfig.getInstance().getUnacceptedDateFilterText(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                     isValid = false;
                 }

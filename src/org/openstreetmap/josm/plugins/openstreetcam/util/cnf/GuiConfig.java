@@ -78,14 +78,17 @@ public final class GuiConfig extends BaseConfig {
     private final String btnCancelLbl;
 
     private final String errorTitle;
-    private final String errorPhotoListTxt;
-    private final String errorSequenceTxt;
-    private final String errorPhotoLoadingTxt;
-    private final String errorPhotoPageTxt;
-    private final String errorUserPageTxt;
-    private final String errorFeedbackPageTxt;
-    private final String incorrectDateFilterTxt;
-    private final String unacceptedDateFilterTxt;
+    private final String errorPhotoListText;
+    private final String errorSequenceText;
+    private final String errorPhotoLoadingText;
+    private final String errorPhotoPageText;
+    private final String errorUserPageText;
+    private final String errorFeedbackPageText;
+    private final String incorrectDateFilterText;
+    private final String unacceptedDateFilterText;
+    private final String errorSequenceSaveText;
+    private final String errorSegmentListText;
+
 
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
@@ -100,10 +103,13 @@ public final class GuiConfig extends BaseConfig {
     private final String layerPreviousMenuItemLbl;
     private final String layerNextMenuItemLbl;
     private final String layerPreferenceMenuItemLbl;
+    private final String layerSaveSequenceMenuItemLbl;
 
     private final String infoMatchedWayTitle;
     private final String infoDownloadNextPhotosTitle;
     private final String infoDownloadPreviousPhotosTitle;
+    private final String infoFileExistsTitle;
+    private final String infoFileExistsText;
 
 
     private GuiConfig() {
@@ -165,14 +171,16 @@ public final class GuiConfig extends BaseConfig {
         btnCancelLbl = readProperty("btn.cancel.lbl");
 
         errorTitle = readProperty("error.title");
-        errorPhotoListTxt = readProperty("error.photo.list");
-        errorSequenceTxt = readProperty("error.track");
-        errorPhotoLoadingTxt = readProperty("error.photo.loading");
-        errorPhotoPageTxt = readProperty("error.photo.page");
-        errorUserPageTxt = readProperty("error.user.page");
-        errorFeedbackPageTxt = readProperty("error.feedback.page");
-        unacceptedDateFilterTxt = readProperty("error.dateFilter.unaccepted");
-        incorrectDateFilterTxt = readProperty("error.dateFilter.incorrect");
+        errorPhotoListText = readProperty("error.photo.list");
+        errorSequenceText = readProperty("error.track");
+        errorPhotoLoadingText = readProperty("error.photo.loading");
+        errorPhotoPageText = readProperty("error.photo.page");
+        errorUserPageText = readProperty("error.user.page");
+        errorFeedbackPageText = readProperty("error.feedback.page");
+        errorSegmentListText = readProperty("error.segment.list");
+        errorSequenceSaveText = readProperty("error.track.save");
+        unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
+        incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
 
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
@@ -187,10 +195,13 @@ public final class GuiConfig extends BaseConfig {
         layerPreviousMenuItemLbl = readProperty("layer.menu.previous.lbl");
         layerNextMenuItemLbl = readProperty("layer.menu.next.lbl");
         layerPreferenceMenuItemLbl = readProperty("layer.menu.preference.lbl");
+        layerSaveSequenceMenuItemLbl = readProperty("layer.menu.sequence.save");
 
         infoMatchedWayTitle = readProperty("info.matchedWay.title");
         infoDownloadNextPhotosTitle = readProperty("info.download.next.title");
         infoDownloadPreviousPhotosTitle = readProperty("info.download.previous.title");
+        infoFileExistsTitle = readProperty("info.file.exists.title");
+        infoFileExistsText = readProperty("info.file.exists.text");
     }
 
 
@@ -343,36 +354,44 @@ public final class GuiConfig extends BaseConfig {
         return errorTitle;
     }
 
-    public String getErrorPhotoListTxt() {
-        return errorPhotoListTxt;
+    public String getErrorPhotoListText() {
+        return errorPhotoListText;
     }
 
-    public String getErrorSequenceTxt() {
-        return errorSequenceTxt;
+    public String getErrorSequenceText() {
+        return errorSequenceText;
     }
 
-    public String getErrorPhotoLoadingTxt() {
-        return errorPhotoLoadingTxt;
+    public String getErrorPhotoLoadingText() {
+        return errorPhotoLoadingText;
     }
 
-    public String getErrorPhotoPageTxt() {
-        return errorPhotoPageTxt;
+    public String getErrorPhotoPageText() {
+        return errorPhotoPageText;
     }
 
-    public String getErrorUserPageTxt() {
-        return errorUserPageTxt;
+    public String getErrorUserPageText() {
+        return errorUserPageText;
     }
 
-    public String getErrorFeedbackPageTxt() {
-        return errorFeedbackPageTxt;
+    public String getErrorFeedbackPageText() {
+        return errorFeedbackPageText;
     }
 
-    public String getIncorrectDateFilterTxt() {
-        return incorrectDateFilterTxt;
+    public String getIncorrectDateFilterText() {
+        return incorrectDateFilterText;
     }
 
-    public String getUnacceptedDateFilterTxt() {
-        return unacceptedDateFilterTxt;
+    public String getUnacceptedDateFilterText() {
+        return unacceptedDateFilterText;
+    }
+
+    public String getErrorSequenceSaveText() {
+        return errorSequenceSaveText;
+    }
+
+    public String getErrorSegmentListText() {
+        return errorSegmentListText;
     }
 
     public String getWarningHighQualityPhoto() {
@@ -485,5 +504,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String getLayerPreferenceMenuItemLbl() {
         return layerPreferenceMenuItemLbl;
+    }
+
+    public String getLayerSaveSequenceMenuItemLbl() {
+        return layerSaveSequenceMenuItemLbl;
+    }
+
+    public String getInfoFileExistsTitle() {
+        return infoFileExistsTitle;
+    }
+
+    public String getInfoFileExistsText() {
+        return infoFileExistsText;
     }
 }

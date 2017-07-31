@@ -91,6 +91,14 @@ public final class PreferenceManager {
         saveManager.saveSequenceErrorSuppressFlag(flag);
     }
 
+    public boolean loadSegmentsErrorSuppressFlag() {
+        return loadManager.loadSegmentsErrorSuppressFlag();
+    }
+
+    public void saveSegmentsErrorSuppressFlag(final boolean flag) {
+        saveManager.saveSegmentsErrorSuppressFlag(flag);
+    }
+
     /**
      * Saves the 'filtersChanged' flag to the preference file.
      *

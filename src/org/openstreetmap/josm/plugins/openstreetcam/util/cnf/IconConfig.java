@@ -30,6 +30,7 @@ public final class IconConfig extends BaseConfig {
     private final String deleteIconName;
     private final String layerIconName;
     private final String downloadIconName;
+    private final String saveIconName;
     private final Icon layerIcon;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
@@ -61,6 +62,7 @@ public final class IconConfig extends BaseConfig {
         deleteIconName = readProperty("delete.icon");
         layerIconName = readProperty("layer.icon");
         downloadIconName = readProperty("download.icon");
+        saveIconName = readProperty("save.icon");
         layerIcon = ImageProvider.get(layerIconName);
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
@@ -108,6 +110,10 @@ public final class IconConfig extends BaseConfig {
 
     public String getDownloadIconName() {
         return downloadIconName;
+    }
+
+    public String getSaveIconName() {
+        return saveIconName;
     }
 
     public Icon getLayerIcon() {
