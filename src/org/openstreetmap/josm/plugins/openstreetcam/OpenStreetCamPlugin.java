@@ -27,6 +27,7 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -307,6 +308,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 selectionHandler.loadSequence(layer.getSelectedPhoto());
             } else if (layer.getSelectedSequence() != null) {
                 layer.setSelectedSequence(null);
+                selectionHandler.play(AutoplayAction.STOP);
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
