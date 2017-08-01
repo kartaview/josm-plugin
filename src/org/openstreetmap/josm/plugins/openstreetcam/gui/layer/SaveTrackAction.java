@@ -44,6 +44,7 @@ class SaveTrackAction extends JosmAction {
     @Override
     public void actionPerformed(final ActionEvent event) {
         final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
         fileChooser.setDialogTitle(event.getActionCommand());
         fileChooser.setSelectedFile(new File(getFileName()));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
