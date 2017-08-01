@@ -44,9 +44,11 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
 
 
     /**
+     * Builds a new task.
      *
-     * @param taskTitle
-     * @param loadNextResults
+     * @param taskTitle the title to be displayed while downloading the new set of photos
+     * @param loadNextResults if true then the next result set is loaded; if false then the previous result set is
+     * loaded
      */
     public DownloadPhotosTask(final String taskTitle, final boolean loadNextResults) {
         super(taskTitle, new PleaseWaitProgressMonitor(taskTitle), false);

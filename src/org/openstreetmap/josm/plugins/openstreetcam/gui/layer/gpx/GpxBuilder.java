@@ -16,12 +16,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openstreetmap.josm.data.gpx.GpxConstants;
 import org.openstreetmap.josm.data.gpx.GpxData;
 import org.openstreetmap.josm.data.gpx.GpxTrack;
 import org.openstreetmap.josm.data.gpx.ImmutableGpxTrack;
 import org.openstreetmap.josm.data.gpx.WayPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 
 
 /**
@@ -37,7 +39,8 @@ final class GpxBuilder {
     private static final String TIME = "time";
     private static final String UTC = "UTC";
     private static final String LOCAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String UTC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
+    private static final String UTC_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String EMPTY_DATE = "0000-00-00 00:00:00";
 
     private GpxBuilder() {}
 
@@ -58,8 +61,11 @@ final class GpxBuilder {
         trk.add(wayPoints);
         final Map<String, Object> trkAttr = new HashMap<>();
         trkAttr.put(EXTENSIONS, HEADING);
+        trkAttr.put(GpxConstants.GPX_DESC, GuiConfig.getInstance().getGpxTrackDescription());
         final GpxTrack gpsTrack = new ImmutableGpxTrack(trk, trkAttr);
         final GpxData gpxData = new GpxData();
+        // need to set fromServer=true, otherwise GpxWriter will not add the necessary extension URI
+        gpxData.fromServer = true;
         gpxData.addTrack(gpsTrack);
         return gpxData;
     }
@@ -67,10 +73,13 @@ final class GpxBuilder {
 
     private static WayPoint createWayPoint(final Photo photo) {
         final WayPoint wayPoint = new WayPoint(photo.getLocation());
-        final LocalDateTime dateTime =
-                LocalDateTime.parse(photo.getShotDate(), DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT));
-        final ZonedDateTime utcZoned = dateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(UTC));
-        wayPoint.put(TIME, DateTimeFormatter.ofPattern(UTC_DATE_FORMAT).format(utcZoned));
+        if (photo.getShotDate() != null && !photo.getShotDate().isEmpty() && !photo.getShotDate().equals(EMPTY_DATE)) {
+            final LocalDateTime dateTime =
+                    LocalDateTime.parse(photo.getShotDate(), DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT));
+            final ZonedDateTime utcZoned = dateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(UTC));
+            final String formattedDate = DateTimeFormatter.ofPattern(UTC_DATE_FORMAT).format(utcZoned);
+            wayPoint.put(TIME, formattedDate);
+        }
         if (photo.getHeading() != null) {
             wayPoint.addExtension(HEADING, Double.toString(photo.getHeading()));
         }

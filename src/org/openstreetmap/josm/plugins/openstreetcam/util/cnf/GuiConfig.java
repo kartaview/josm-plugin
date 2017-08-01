@@ -110,7 +110,7 @@ public final class GuiConfig extends BaseConfig {
     private final String infoDownloadPreviousPhotosTitle;
     private final String infoFileExistsTitle;
     private final String infoFileExistsText;
-
+    private final String gpxTrackDescription;
 
     private GuiConfig() {
         super(CONFIG_FILE);
@@ -185,8 +185,8 @@ public final class GuiConfig extends BaseConfig {
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
 
-        confirmDateFilterTitle = readProperty("information.dateFilter.title");
-        confirmDateFilterTxt = readProperty("information.dateFilter.text");
+        confirmDateFilterTitle = readProperty("info.dateFilter.title");
+        confirmDateFilterTxt = readProperty("info.dateFilter.text");
 
         layerDeleteMenuItemLbl = readProperty("layer.menu.delete.lbl");
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
@@ -202,6 +202,8 @@ public final class GuiConfig extends BaseConfig {
         infoDownloadPreviousPhotosTitle = readProperty("info.download.previous.title");
         infoFileExistsTitle = readProperty("info.file.exists.title");
         infoFileExistsText = readProperty("info.file.exists.text");
+
+        gpxTrackDescription = readProperty("gpx.track.description");
     }
 
 
@@ -516,5 +518,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getInfoFileExistsText() {
         return infoFileExistsText;
+    }
+
+    public String getGpxTrackDescription() {
+        return gpxTrackDescription;
     }
 }
