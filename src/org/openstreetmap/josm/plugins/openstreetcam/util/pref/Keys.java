@@ -17,6 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 final class Keys {
 
     static final String SUPPRESS_PHOTOS_ERROR = "openstreetcam.error.photos.suppress";
+    static final String SUPPRESS_SEGMENTS_ERROR = "openstreetcam.error.segments.suppress";
     static final String SUPPRESS_SEQUENCE_ERROR = "openstreetcam.error.sequence.suppress";
     static final String FILTERS_CHANGED = "openstreetcam.filter.changed";
     static final String FILTER_DATE = "openstreetcam.filter.date";

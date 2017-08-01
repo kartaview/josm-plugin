@@ -8,8 +8,9 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.*;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_LENGTH;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_STARTED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_DISK_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
@@ -28,6 +29,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -53,6 +55,10 @@ final class SaveManager {
 
     void saveSequenceErrorSuppressFlag(final boolean flag) {
         Main.pref.put(SUPPRESS_SEQUENCE_ERROR, flag);
+    }
+
+    void saveSegmentsErrorSuppressFlag(final boolean flag) {
+        Main.pref.put(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
@@ -84,8 +90,8 @@ final class SaveManager {
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-            Main.pref.put(AUTOPLAY_LENGTH, length);
-            Main.pref.putInteger(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+                    Main.pref.put(AUTOPLAY_LENGTH, length);
+                    Main.pref.putInteger(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 

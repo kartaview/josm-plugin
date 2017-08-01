@@ -28,6 +28,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.Date;
 import org.openstreetmap.josm.Main;
@@ -55,6 +56,10 @@ final class LoadManager {
         return Main.pref.getBoolean(SUPPRESS_PHOTOS_ERROR);
     }
 
+    boolean loadSegmentsErrorSuppressFlag() {
+        return Main.pref.getBoolean(SUPPRESS_SEGMENTS_ERROR);
+    }
+
     boolean loadSequenceErrorSuppressFlag() {
         return Main.pref.getBoolean(SUPPRESS_SEQUENCE_ERROR);
     }
@@ -77,8 +82,8 @@ final class LoadManager {
                 : Config.getInstance().getMapPhotoZoom();
         photoZoom = photoZoom > Config.getInstance().getPreferencesMaxZoom()
                 ? Config.getInstance().getPreferencesMaxZoom() : photoZoom;
-        final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
-        return new MapViewSettings(photoZoom, manualSwitchFlag);
+                final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
+                return new MapViewSettings(photoZoom, manualSwitchFlag);
 
     }
 
@@ -119,22 +124,22 @@ final class LoadManager {
                 : CacheConfig.getInstance().getDefaultMemoryCount();
         memoryCount = memoryCount > CacheConfig.getInstance().getMaxMemoryCount()
                 ? CacheConfig.getInstance().getMaxMemoryCount() : memoryCount;
-        final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
-        int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
-                : CacheConfig.getInstance().getDefaultDiskCount();
-        diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
-                ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
-        final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
-        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
-                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-        prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
-                ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
-        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                : CacheConfig.getInstance().getDefaultNearbyCount();
-        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
-                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
-        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+                final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
+                int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
+                        : CacheConfig.getInstance().getDefaultDiskCount();
+                diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
+                        ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
+                        final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
+                        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
+                                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
+                                prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
+                                        ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
+                                        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
+                                        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+                                                : CacheConfig.getInstance().getDefaultNearbyCount();
+                                        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
+                                                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
+                                                return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     boolean loadLayerOpenedFlag() {

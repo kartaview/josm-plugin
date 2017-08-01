@@ -42,7 +42,7 @@ class OpenFeedbackPageAction extends JosmAction {
         try {
             OpenBrowser.displayUrl(new URI(Config.getInstance().getFeedbackUrl()));
         } catch (final Exception e) {
-            JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageTxt(),
+            JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageText(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }

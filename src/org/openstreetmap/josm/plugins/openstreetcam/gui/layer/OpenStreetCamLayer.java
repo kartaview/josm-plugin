@@ -338,4 +338,9 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     boolean addPhotoDataSetMenuItems() {
         return dataSet != null && dataSet.getPhotoDataSet() != null;
     }
+
+    @Override
+    boolean addSequenceMenuItem() {
+        return selectedSequence != null;
+    }
 }

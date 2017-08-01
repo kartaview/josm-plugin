@@ -75,7 +75,7 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
             try {
                 OpenBrowser.displayUrl(new URI(link.toString()));
             } catch (final Exception e) {
-                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorUserPageTxt(),
+                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorUserPageText(),
                         GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }

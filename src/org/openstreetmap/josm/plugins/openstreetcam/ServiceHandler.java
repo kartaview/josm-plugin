@@ -71,7 +71,7 @@ public final class ServiceHandler {
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorPhotoListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
                 PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
@@ -109,12 +109,12 @@ public final class ServiceHandler {
                 finalResult = service.listMatchedTracks(areas.get(0), osmUserId, zoom);
             }
         } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+            if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorPhotoListTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorSegmentListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
-                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+                PreferenceManager.getInstance().saveSegmentsErrorSuppressFlag(flag);
             }
         }
         return finalResult;
@@ -155,7 +155,7 @@ public final class ServiceHandler {
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(Main.map.mapView,
-                        GuiConfig.getInstance().getErrorSequenceTxt(), GuiConfig.getInstance().getErrorTitle(),
+                        GuiConfig.getInstance().getErrorSequenceText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);

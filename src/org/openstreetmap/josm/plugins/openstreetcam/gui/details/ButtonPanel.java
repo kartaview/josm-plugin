@@ -509,7 +509,7 @@ SequenceObservable, TrackAutoplayObservable {
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));
                 } catch (final Exception e) {
-                    JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageTxt(),
+                    JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageText(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
