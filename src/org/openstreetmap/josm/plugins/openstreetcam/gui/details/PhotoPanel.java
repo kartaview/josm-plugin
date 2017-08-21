@@ -51,7 +51,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the image coordinate where the mouse dragging was started */
     private Point startPoint;
 
-    /** the dimension of the panel, it is used to detect if the user had maximized or not the panel window */
+    /** the dimension of the panel, it is used to detect if the user had maximized or not the panel */
     private Dimension size;
 
 
@@ -327,7 +327,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             if (image != null) {
                 final Point endPoint = getPointOnImage(e.getPoint());
                 moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
-                matchImageOnPanel();
                 repaint();
             }
         }
