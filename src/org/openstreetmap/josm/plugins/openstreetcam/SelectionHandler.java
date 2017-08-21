@@ -358,8 +358,12 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     private void stopAutoplay() {
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-        autoplayTimer.stop();
-        autoplayTimer = null;
+        if (autoplayTimer != null) {
+            if (autoplayTimer.isRunning()) {
+                autoplayTimer.stop();
+            }
+            autoplayTimer = null;
+        }
         autoplayDistance = 0;
     }
 
