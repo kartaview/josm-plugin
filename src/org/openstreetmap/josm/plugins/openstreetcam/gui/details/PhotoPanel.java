@@ -198,26 +198,24 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         return getImagePart(ref, 0, imgDim, newDim / HALF);
     }
 
-    private Pair<Integer, Integer> getImagePart(final int ref, final int currentViewMinCoord,
-            final int currentViewMaxCoord, final int cut) {
+    private Pair<Integer, Integer> getImagePart(final int ref, final int firstRef, final int secondRef, final int cut) {
         final int minCoord = ref - cut;
         final int maxCoord = ref + cut;
 
         int modifiedFirstRef = minCoord;
         int modifiedSecondRef = maxCoord;
 
-        if (minCoord < currentViewMinCoord) {
-            modifiedFirstRef = currentViewMinCoord;
-            modifiedSecondRef = modifiedSecondRef - minCoord + currentViewMinCoord;
+        if (minCoord < firstRef) {
+            modifiedFirstRef = firstRef;
+            modifiedSecondRef = modifiedSecondRef - minCoord + firstRef;
         }
 
-        if (maxCoord > currentViewMaxCoord) {
-            modifiedFirstRef = modifiedFirstRef - maxCoord + currentViewMaxCoord;
-            modifiedSecondRef = currentViewMaxCoord;
+        if (maxCoord > secondRef) {
+            modifiedFirstRef = modifiedFirstRef - maxCoord + secondRef;
+            modifiedSecondRef = secondRef;
         }
-
-        modifiedFirstRef = modifiedFirstRef < currentViewMinCoord ? currentViewMinCoord : modifiedFirstRef;
-        modifiedSecondRef = (modifiedSecondRef > currentViewMaxCoord) ? currentViewMaxCoord : modifiedSecondRef;
+        modifiedFirstRef = modifiedFirstRef < firstRef ? firstRef : modifiedFirstRef;
+        modifiedSecondRef = (modifiedSecondRef > secondRef) ? secondRef : modifiedSecondRef;
         return new Pair<>(modifiedFirstRef, modifiedSecondRef);
     }
 
