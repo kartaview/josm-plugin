@@ -276,10 +276,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                 currentView.x = newDimension.getFirst();
                 currentView.width = newDimension.getSecond() - newDimension.getFirst();
 
-                if (currentView.height == image.getHeight()) {
-                    frame.x = 0;
-                    frame.width = getWidth();
-                } else if (currentView.width < image.getWidth()) {
+                if (currentView.height == image.getHeight() || currentView.width < image.getWidth()) {
                     frame.x = 0;
                     frame.width = getWidth();
                 } else {
@@ -292,12 +289,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                 currentView.y = newDimension.getFirst();
                 currentView.height = newDimension.getSecond() - newDimension.getFirst();
 
-                if (currentView.width == image.getWidth()) {
-                    frame.height = getHeight();
+                if (currentView.width == image.getWidth() || currentView.height < image.getHeight()) {
                     frame.y = 0;
-                } else if (currentView.height < image.getHeight()) {
                     frame.height = getHeight();
-                    frame.y = 0;
                 } else {
                     matchImageOnPanel();
                 }
