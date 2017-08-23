@@ -10,11 +10,11 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -270,7 +270,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     private void panelDimensionsChanged() {
         if ((currentView != null) && (currentView.width != image.getWidth() || currentView.height != image
                 .getHeight())) {
-            if (getWidth() != size.getWidth()) {
+            if (getWidth() != size.width) {
                 final Pair<Integer, Integer> newDimension = getImagePart(currentView.x + currentView.width / HALF, 0,
                         image.getWidth(), (currentView.height * getWidth() / frame.height) / HALF);
                 currentView.x = newDimension.getFirst();
@@ -283,7 +283,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                     matchImageOnPanel();
                 }
             }
-            if (getHeight() != size.getHeight()) {
+            if (getHeight() != size.height) {
                 final Pair<Integer, Integer> newDimension = getImagePart(currentView.y + currentView.height / HALF, 0,
                         image.getHeight(), (currentView.width * getHeight() / frame.width) / HALF);
                 currentView.y = newDimension.getFirst();
