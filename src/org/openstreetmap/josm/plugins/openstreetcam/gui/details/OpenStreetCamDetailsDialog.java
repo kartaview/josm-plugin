@@ -123,6 +123,24 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     /**
+     * It is called when the detached dialog is opened.
+     */
+    @Override
+    protected void detach() {
+        pnlPhoto.initializeCurrentImageView();
+        super.detach();
+    }
+
+    /**
+     * It is called when the detached dialog is closed.
+     */
+    @Override
+    protected void dock() {
+        pnlPhoto.initializeCurrentImageView();
+        super.dock();
+    }
+
+    /**
      * Updates the details dialog with the details of the given photo.
      *
      * @param photo the currently selected {@code Photo}
