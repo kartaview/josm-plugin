@@ -39,8 +39,6 @@ import com.telenav.josm.common.http.HttpConnectorException;
 class BaseService {
 
     private final Gson gson;
-    private final Map<String, String> headers;
-
 
     BaseService() {
         final GsonBuilder builder = new GsonBuilder();
@@ -48,8 +46,6 @@ class BaseService {
         builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
         builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
         gson = builder.create();
-        headers = new HashMap<>();
-        headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
     }
 
 
@@ -66,7 +62,7 @@ class BaseService {
             throws ServiceException {
         final String response;
         try {
-            final HttpConnector connector = new HttpConnector(url, headers);
+            final HttpConnector connector = new HttpConnector(url, getHeaders());
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
             throw new ServiceException(e);
@@ -119,6 +115,8 @@ class BaseService {
     }
 
     Map<String, String> getHeaders() {
+        final Map<String, String> headers = new HashMap<>();
+        headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
         return headers;
     }
 }
