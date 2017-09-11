@@ -117,6 +117,7 @@ class BaseService {
     Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
+        System.out.println(new UserAgent().toString());
         return headers;
     }
 }

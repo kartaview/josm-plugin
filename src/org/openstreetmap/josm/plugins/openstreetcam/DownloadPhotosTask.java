@@ -9,7 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.io.IOException;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
-import org.openstreetmap.josm.gui.progress.PleaseWaitProgressMonitor;
+import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
