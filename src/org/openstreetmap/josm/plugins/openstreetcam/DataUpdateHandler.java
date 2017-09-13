@@ -17,7 +17,7 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.util.List;
 import javax.swing.SwingUtilities;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
@@ -66,7 +66,7 @@ class DataUpdateHandler {
      * is removed for the case when the data set does not contain the selection; if false it is ignored
      */
     void updateData(final boolean checkSelection) {
-        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+        final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (zoom >= Config.getInstance().getMapSegmentZoom()) {
             final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
             final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
@@ -185,19 +185,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-        PhotoDataSet photoDataSet = null;
-        if (currentPhotoDataSet != null) {
-            int page = currentPhotoDataSet.getPage();
-            page = loadNextResults ? page + 1 : page - 1;
-            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-            photoDataSet = new PhotoDataSet();
-            final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-            if (bbox != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                        new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
-            }
-        }
-        return photoDataSet;
+                PhotoDataSet photoDataSet = null;
+                if (currentPhotoDataSet != null) {
+                    int page = currentPhotoDataSet.getPage();
+                    page = loadNextResults ? page + 1 : page - 1;
+                    final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+                    photoDataSet = new PhotoDataSet();
+                    final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+                    if (bbox != null) {
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                                new Paging(page, Config.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                }
+                return photoDataSet;
     }
 
     /**
@@ -213,7 +213,7 @@ class DataUpdateHandler {
     boolean photoDataSetDownloadAllowed() {
         boolean result = false;
         final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
-        final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+        final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (mapViewSettings.isManualSwitchFlag()) {
             result = zoom >= Config.getInstance().getMapPhotoZoom()
                     && PreferenceManager.getInstance().loadDataType() == DataType.PHOTO;
@@ -231,7 +231,7 @@ class DataUpdateHandler {
      * given data set
      */
     void updateUI(final DataSet dataSet, final boolean checkSelection) {
-        if (Main.map != null && Main.map.mapView != null) {
+        if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
@@ -245,7 +245,7 @@ class DataUpdateHandler {
                     }
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             });
         }
     }

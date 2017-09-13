@@ -9,8 +9,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
 import java.awt.event.ActionEvent;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DownloadPhotosTask;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 
@@ -35,6 +35,6 @@ public class DownloadPhotosAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        Main.worker.execute(new DownloadPhotosTask(taskTitle, loadNextResults));
+        MainApplication.worker.execute(new DownloadPhotosTask(taskTitle, loadNextResults));
     }
 }

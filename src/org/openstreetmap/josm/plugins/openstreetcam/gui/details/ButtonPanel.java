@@ -20,6 +20,7 @@ import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.DownloadWayTask;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
@@ -533,10 +534,10 @@ SequenceObservable, TrackAutoplayObservable {
                 final PrimitiveId wayId = new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY);
                 final boolean downloaded = Util.editLayerContainsWay(wayId);
                 if (downloaded) {
-                    GuiHelper.runInEDT(() -> Main.getLayerManager().getEditDataSet().setSelected(wayId));
+                    GuiHelper.runInEDT(() -> MainApplication.getLayerManager().getEditDataSet().setSelected(wayId));
                 } else {
                     final DownloadWayTask task = new DownloadWayTask(wayId);
-                    Main.worker.submit(task);
+                    MainApplication.worker.submit(task);
                 }
             }
         }

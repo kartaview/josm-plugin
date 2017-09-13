@@ -10,11 +10,11 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadReferrersTask;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.gui.ExceptionDialogUtil;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.io.DownloadPrimitivesTask;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -109,12 +109,12 @@ public class DownloadWayTask extends PleaseWaitRunnable {
                 return;
             }
         }
-        if (Main.getLayerManager().getEditLayer() == null) {
-            Main.getLayerManager().addLayer(tempLayer);
+        if (MainApplication.getLayerManager().getEditLayer() == null) {
+            MainApplication.getLayerManager().addLayer(tempLayer);
         } else {
-            Main.getLayerManager().getEditLayer().mergeFrom(tempLayer);
+            MainApplication.getLayerManager().getEditLayer().mergeFrom(tempLayer);
         }
-        GuiHelper.runInEDT(() -> Main.getLayerManager().getEditDataSet().setSelected(wayId));
+        GuiHelper.runInEDT(() -> MainApplication.getLayerManager().getEditDataSet().setSelected(wayId));
     }
 
 

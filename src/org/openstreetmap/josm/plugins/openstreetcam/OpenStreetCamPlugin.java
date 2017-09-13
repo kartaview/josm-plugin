@@ -16,6 +16,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.data.Preferences.PreferenceChangedListener;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.NavigatableComponent;
@@ -40,6 +41,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
+import org.openstreetmap.josm.tools.Logging;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -70,7 +72,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         this.selectionHandler = new SelectionHandler();
         this.preferenceChangedHandler = new PreferenceChangedHandler();
         if (layerActivatorMenuItem == null) {
-            layerActivatorMenuItem = MainMenu.add(Main.main.menu.imageryMenu, new LayerActivator(), false);
+            layerActivatorMenuItem = MainMenu.add(MainApplication.getMenu().imageryMenu, new LayerActivator(), false);
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
@@ -84,7 +86,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
 
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
-        if (Main.map != null && !GraphicsEnvironment.isHeadless()) {
+        if (MainApplication.getMap() != null && !GraphicsEnvironment.isHeadless()) {
             // initialize details dialog
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
             detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler);
@@ -112,7 +114,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
-                Main.error(e, "Could not shutdown thead pool.");
+                Logging.error("Could not shutdown thead pool.", e);
             }
         }
     }
@@ -120,12 +122,12 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
     private void addLayer() {
         // register listeners that needs to be registered only if the layer is created
         NavigatableComponent.addZoomChangeListener(this);
-        Main.getLayerManager().addLayerChangeListener(this);
-        Main.map.mapView.addMouseListener(selectionHandler);
-        Main.map.mapView.addMouseMotionListener(selectionHandler);
+        MainApplication.getLayerManager().addLayerChangeListener(this);
+        MainApplication.getMap().mapView.addMouseListener(selectionHandler);
+        MainApplication.getMap().mapView.addMouseMotionListener(selectionHandler);
 
         // add layer
-        Main.map.mapView.getLayerManager().addLayer(OpenStreetCamLayer.getInstance());
+        MainApplication.getMap().mapView.getLayerManager().addLayer(OpenStreetCamLayer.getInstance());
     }
 
 
@@ -157,9 +159,9 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
     public void layerRemoving(final LayerRemoveEvent event) {
         if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
-            Main.map.mapView.removeMouseListener(selectionHandler);
-            Main.map.mapView.removeMouseMotionListener(selectionHandler);
-            Main.getLayerManager().removeLayerChangeListener(this);
+            MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
+            MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
+            MainApplication.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
             OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
         }
@@ -172,12 +174,13 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
     public void zoomToSelectedPhoto() {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final Photo selectedPhoto = layer.getSelectedPhoto();
-        if (selectedPhoto != null && !Main.map.mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
+        if (selectedPhoto != null
+                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
             SwingUtilities.invokeLater(() -> {
                 layer.setDataSet(null, false);
-                Main.map.mapView.zoomTo(selectedPhoto.getLocation());
+                MainApplication.getMap().mapView.zoomTo(selectedPhoto.getLocation());
                 layer.invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             });
         }
     }
@@ -190,7 +193,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         if (zoomTimer != null && zoomTimer.isRunning()) {
             zoomTimer.restart();
         } else {
-            if (Main.map != null && Main.map.mapView != null) {
+            if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
                 zoomTimer = new Timer(SEARCH_DELAY,
                         event -> ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(false)));
                 zoomTimer.setRepeats(false);
@@ -217,7 +220,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            if (!Main.map.mapView.getLayerManager().containsLayer(OpenStreetCamLayer.getInstance())) {
+            if (!MainApplication.getMap().mapView.getLayerManager().containsLayer(OpenStreetCamLayer.getInstance())) {
                 addLayer();
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
@@ -275,7 +278,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             });
             ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
         }
@@ -289,7 +292,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             });
             ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
         }
@@ -313,7 +316,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
                 layer.invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             }
         }
     }

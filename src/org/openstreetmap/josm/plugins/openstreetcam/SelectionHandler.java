@@ -13,7 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -114,7 +114,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      * @return true if the selection is allowed; false otherwise
      */
     private boolean selectionAllowed() {
-        return Util.zoom(Main.map.mapView.getRealBounds()) >= PreferenceManager.getInstance().loadMapViewSettings()
+        return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
+                .loadMapViewSettings()
                 .getPhotoZoom()
                 || (OpenStreetCamLayer.getInstance().getDataSet() != null
                 && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null);
@@ -183,11 +184,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
                 layer.setSelectedPhoto(photo);
-                if (!Main.map.mapView.getRealBounds().contains(photo.getLocation())) {
-                    Main.map.mapView.zoomTo(photo.getLocation());
+                if (!MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
+                    MainApplication.getMap().mapView.zoomTo(photo.getLocation());
                 }
                 layer.invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
                 if (!detailsDialog.getButton().isSelected()) {
                     detailsDialog.getButton().doClick();
                 }
@@ -209,7 +210,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
         if (layer.getSelectedSequence() != null && layer.getDataSet() != null
                 && layer.getDataSet().getPhotos() != null) {
-            final int zoom = Util.zoom(Main.map.mapView.getRealBounds());
+            final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
             if (zoom < PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom()) {
                 layer.setDataSet(null, false);
             }
@@ -222,7 +223,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         detailsDialog.enableSequenceActions(false, false);
         detailsDialog.updateUI(null, null, false);
         layer.invalidate();
-        Main.map.repaint();
+        MainApplication.getMap().repaint();
     }
 
     /**
@@ -244,7 +245,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                     detailsDialog.updateDataSwitchButton(null, false, null);
                 }
                 layer.invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             }
         });
     }
@@ -258,7 +259,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 layer.setSelectedSequence(null);
                 OpenStreetCamDetailsDialog.getInstance().enableSequenceActions(false, false);
                 layer.invalidate();
-                Main.map.repaint();
+                MainApplication.getMap().repaint();
             });
         }
     }
