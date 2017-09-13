@@ -18,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
@@ -70,7 +70,7 @@ public final class ServiceHandler {
             result = service.listNearbyPhotos(area, date, osmUserId, paging);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
                         GuiConfig.getInstance().getErrorPhotoListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
@@ -110,7 +110,7 @@ public final class ServiceHandler {
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
-                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
                         GuiConfig.getInstance().getErrorSegmentListText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;
@@ -154,7 +154,7 @@ public final class ServiceHandler {
             sequence = service.retrieveSequence(id);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final int val = JOptionPane.showOptionDialog(Main.map.mapView,
+                final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
                         GuiConfig.getInstance().getErrorSequenceText(), GuiConfig.getInstance().getErrorTitle(),
                         JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 final boolean flag = val == JOptionPane.YES_OPTION;

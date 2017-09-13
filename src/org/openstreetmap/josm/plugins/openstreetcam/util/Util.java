@@ -14,12 +14,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -55,7 +55,7 @@ public final class Util {
      * @return an integer
      */
     public static int zoom(final Bounds bounds) {
-        return Main.map.mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
+        return MainApplication.getMap().mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
                 Math.max(MIN_ZOOM,
                         Math.round(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST))));
     }
@@ -68,11 +68,12 @@ public final class Util {
      * @return a {@code Photo} object
      */
     public static Photo nearbyPhoto(final List<Photo> photos, final Point point) {
-        final double maxDist = Main.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
+        final double maxDist =
+                MainApplication.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
         Photo result = null;
         for (final Photo photo : photos) {
             final double dist = new Point2D.Double(point.getX(), point.getY())
-                    .distance(Main.map.mapView.getPoint(photo.getLocation()));
+                    .distance(MainApplication.getMap().mapView.getPoint(photo.getLocation()));
             if (dist <= maxDist) {
                 result = photo;
                 break;
@@ -114,10 +115,10 @@ public final class Util {
      */
     public static boolean containsLatLon(final MapView mapView, final LatLon latLon) {
         boolean contains = false;
-        final OsmDataLayer osmDataLayer = Main.getLayerManager().getEditLayer();
-        if ((Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer) && osmDataLayer != null
+        final OsmDataLayer osmDataLayer = MainApplication.getLayerManager().getEditLayer();
+        if ((MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer) && osmDataLayer != null
                 && !osmDataLayer.data.getDataSourceBounds().isEmpty() && osmDataLayer.isVisible()) {
-            for (final Bounds bounds : Main.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
+            for (final Bounds bounds : MainApplication.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
                 if (bounds.contains(latLon)) {
                     contains = true;
                     break;
@@ -141,8 +142,8 @@ public final class Util {
      */
     public static boolean editLayerContainsWay(final PrimitiveId wayId) {
         boolean contains = false;
-        if (Main.getLayerManager().getEditDataSet() != null) {
-            for (final Way way : Main.getLayerManager().getEditDataSet().getWays()) {
+        if (MainApplication.getLayerManager().getEditDataSet() != null) {
+            for (final Way way : MainApplication.getLayerManager().getEditDataSet().getWays()) {
                 if (wayId.equals(way.getPrimitiveId()) && way.getNodesCount() > 0) {
                     contains = true;
                     break;

@@ -14,13 +14,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Set;
 import javax.imageio.ImageIO;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.Logging;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.thread.ThreadPool;
 
@@ -135,7 +135,7 @@ public final class PhotoHandler {
                 try {
                     loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), true);
                 } catch (final Exception e2) {
-                    Main.warn(e2, "Error loading image:" + photo.getLargeThumbnailName());
+                    Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
                 }
             }
         } else {
@@ -143,7 +143,7 @@ public final class PhotoHandler {
             try {
                 loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), false);
             } catch (final Exception e2) {
-                Main.warn(e2, "Error loading image:" + photo.getLargeThumbnailName());
+                Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
             }
         }
     }

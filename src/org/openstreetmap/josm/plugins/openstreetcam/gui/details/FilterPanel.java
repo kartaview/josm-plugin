@@ -21,8 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.JXDatePicker;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.JosmUserIdentityManager;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
@@ -62,7 +62,7 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD), Constraints.LBL_DATE);
         pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
-        if (Util.zoom(Main.map.mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
+        if (Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
             pickerDate.setEnabled(false);
         }
         add(pickerDate, Constraints.PICKER_DATE);

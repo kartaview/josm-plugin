@@ -9,8 +9,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import com.telenav.josm.common.argument.BoundingBox;
 
@@ -37,12 +37,12 @@ public final class BoundingBoxUtil {
         Bounds bounds;
         if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
             if (osmDataLayerBounds.size() > 1) {
-                bounds = Main.map.mapView.getRealBounds();
+                bounds = MainApplication.getMap().mapView.getRealBounds();
             } else {
                 bounds = osmDataLayerBounds.get(0);
             }
         } else {
-            bounds = Main.map.mapView.getRealBounds();
+            bounds = MainApplication.getMap().mapView.getRealBounds();
         }
         return new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
                 bounds.getMin().lon());
@@ -59,13 +59,13 @@ public final class BoundingBoxUtil {
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
             for (final Bounds osmBounds : osmDataLayerBounds) {
-                if (Main.map.mapView.getRealBounds().intersects(osmBounds)) {
+                if (MainApplication.getMap().mapView.getRealBounds().intersects(osmBounds)) {
                     result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
                             osmBounds.getMax().lon(), osmBounds.getMin().lon()));
                 }
             }
         } else {
-            final Bounds bounds = Main.map.mapView.getRealBounds();
+            final Bounds bounds = MainApplication.getMap().mapView.getRealBounds();
             result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
                     bounds.getMin().lon()));
         }
@@ -75,9 +75,9 @@ public final class BoundingBoxUtil {
 
     private static List<Bounds> editLayerDataBounds() {
         List<Bounds> osmDataLayerBounds = null;
-        if (Main.getLayerManager().getEditLayer() != null
-                && (Main.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
-            osmDataLayerBounds = Main.getLayerManager().getEditLayer().data.getDataSourceBounds();
+        if (MainApplication.getLayerManager().getEditLayer() != null
+                && (MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+            osmDataLayerBounds = MainApplication.getLayerManager().getEditLayer().data.getDataSourceBounds();
         }
         return osmDataLayerBounds;
     }
