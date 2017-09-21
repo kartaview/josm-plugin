@@ -120,6 +120,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             super.destroy();
             destroyed = true;
         }
+        dock();
     }
 
     /**
