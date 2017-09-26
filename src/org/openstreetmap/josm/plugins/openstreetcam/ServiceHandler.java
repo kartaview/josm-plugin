@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
-import org.openstreetmap.josm.gui.JosmUserIdentityManager;
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
@@ -123,9 +123,9 @@ public final class ServiceHandler {
 
     private Long osmUserId(final ListFilter filter) {
         Long osmUserId = null;
-        if (filter != null && filter.isOnlyUserFlag() && JosmUserIdentityManager.getInstance().isFullyIdentified()
-                && JosmUserIdentityManager.getInstance().asUser().getId() > 0) {
-            osmUserId = JosmUserIdentityManager.getInstance().asUser().getId();
+        if (filter != null && filter.isOnlyUserFlag() && UserIdentityManager.getInstance().isFullyIdentified()
+                && UserIdentityManager.getInstance().asUser().getId() > 0) {
+            osmUserId = UserIdentityManager.getInstance().asUser().getId();
         }
         return osmUserId;
     }

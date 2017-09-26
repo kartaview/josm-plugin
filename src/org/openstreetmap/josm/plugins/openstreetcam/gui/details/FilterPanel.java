@@ -21,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.JXDatePicker;
-import org.openstreetmap.josm.gui.JosmUserIdentityManager;
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -74,7 +74,7 @@ class FilterPanel extends JPanel {
         final JLabel lblLoginWarning =
                 LabelBuilder.build(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(), Font.ITALIC);
         final boolean enabled = true;
-        if (JosmUserIdentityManager.getInstance().asUser().getId() <= 0) {
+        if (UserIdentityManager.getInstance().asUser().getId() <= 0) {
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
         }
