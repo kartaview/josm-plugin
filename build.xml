@@ -8,7 +8,7 @@
 	<property name="plugin.lib.dir" value="${basedir}/lib" />
 	<property name="plugin.images.dir" value="${basedir}/images" />
 	<property name="plugin.name" value="OpenStreetCam.jar" />
-	<property name="JOSM_lib" value="josm-tested.jar" />
+	<property name="JOSM_lib" value="josm-latest.jar" />
 
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -92,8 +92,9 @@
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
-
-				<attribute name="Plugin-Mainversion" value="12712" />
+				<attribute name="Plugin-Mainversion" value="12901" />
+				<attribute name="12712_Plugin-Url" value="113;http://developer.skobbler.com/public/scoutsigns/1.0/scoutsigns.jar" />
+				<attribute name="12901_Plugin-Url" value="${build-label};http://developer.skobbler.com/public/scoutsigns/2.0/scoutsigns.jar" />
 			</manifest>
 		</jar>
 	</target>
