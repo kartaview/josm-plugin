@@ -93,7 +93,7 @@
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 
-				<attribute name="Plugin-Mainversion" value="10580" />
+				<attribute name="Plugin-Mainversion" value="12712" />
 			</manifest>
 		</jar>
 	</target>
