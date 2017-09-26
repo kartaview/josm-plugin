@@ -38,6 +38,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.spi.preferences.Config;
 
 
 /**
@@ -50,68 +51,68 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 final class SaveManager {
 
     void savePhotosErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_PHOTOS_ERROR, flag);
+        Config.getPref().putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
     }
 
     void saveSequenceErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_SEQUENCE_ERROR, flag);
+        Config.getPref().putBoolean(SUPPRESS_SEQUENCE_ERROR, flag);
     }
 
     void saveSegmentsErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_SEGMENTS_ERROR, flag);
+        Config.getPref().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
-        Main.pref.put(FILTERS_CHANGED, "");
-        Main.pref.put(FILTERS_CHANGED, Boolean.toString(changed));
+        Config.getPref().put(FILTERS_CHANGED, "");
+        Config.getPref().put(FILTERS_CHANGED, Boolean.toString(changed));
     }
 
     void saveListFilter(final ListFilter filter) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
-            Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.put(FILTER_ONLY_USER_FLAG, filter.isOnlyUserFlag());
+            Config.getPref().put(FILTER_DATE, dateStr);
+            Config.getPref().putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyUserFlag());
         }
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
-        Main.pref.putInteger(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
-        Main.pref.put(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
+        Config.getPref().putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
+        Config.getPref().putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
     }
 
     void savePhotoSettings(final PhotoSettings photoSettings) {
-        Main.pref.put(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
-        Main.pref.put(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
-        Main.pref.putInteger(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
+        Config.getPref().putBoolean(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
+        Config.getPref().putBoolean(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
+        Config.getPref().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
     void saveTrackSettings(final TrackSettings trackSettings) {
-        Main.pref.put(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
+        Config.getPref().putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
                     Main.pref.put(AUTOPLAY_LENGTH, length);
-                    Main.pref.putInteger(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+                    Config.getPref().putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
     void saveAutoplayStartedFlag(final boolean flag) {
-        Main.pref.put(AUTOPLAY_STARTED, flag);
+        Config.getPref().putBoolean(AUTOPLAY_STARTED, flag);
     }
 
     void saveCacheSettings(final CacheSettings cacheSettings) {
-        Main.pref.putInteger(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
-        Main.pref.putInteger(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
-        Main.pref.putInteger(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
-        Main.pref.putInteger(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
+        Config.getPref().putInt(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
+        Config.getPref().putInt(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
+        Config.getPref().putInt(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
+        Config.getPref().putInt(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
     }
 
     void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        Main.pref.put(LAYER_OPENED, isLayerOpened);
+        Config.getPref().putBoolean(LAYER_OPENED, isLayerOpened);
     }
 
     void savePanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.put(PANEL_OPENED, isPanelOpened);
+        Config.getPref().putBoolean(PANEL_OPENED, isPanelOpened);
     }
 
     void saveDataType(final DataType dataType) {
