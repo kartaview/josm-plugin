@@ -93,8 +93,8 @@
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Mainversion" value="12901" />
-				<attribute name="12712_Plugin-Url" value="113;http://developer.skobbler.com/public/scoutsigns/1.0/scoutsigns.jar" />
-				<attribute name="12901_Plugin-Url" value="${build-label};http://developer.skobbler.com/public/scoutsigns/2.0/scoutsigns.jar" />
+				<attribute name="12712_Plugin-Url" value="108;​https://developer.skobbler.com/public/openstreetcam/1.0/OpenStreetCam.jar" />
+				<attribute name="12901_Plugin-Url" value="${build-label};​https://developer.skobbler.com/public/openstreetcam/2.0/OpenStreetCam.jar" />
 			</manifest>
 		</jar>
 	</target>
