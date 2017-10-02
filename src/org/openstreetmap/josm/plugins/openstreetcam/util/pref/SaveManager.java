@@ -31,7 +31,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
@@ -91,7 +90,7 @@ final class SaveManager {
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Main.pref.put(AUTOPLAY_LENGTH, length);
+                    Config.getPref().put(AUTOPLAY_LENGTH, length);
                     Config.getPref().putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
@@ -117,10 +116,10 @@ final class SaveManager {
 
     void saveDataType(final DataType dataType) {
         final String value = dataType != null ? dataType.name() : "";
-        Main.pref.put(DATA_TYPE, value);
+        Config.getPref().put(DATA_TYPE, value);
     }
 
     void savePluginLocalVersion(final String localVersion) {
-        Main.pref.put(PLUGIN_LOCAL_VERSION, localVersion);
+        Config.getPref().put(PLUGIN_LOCAL_VERSION, localVersion);
     }
 }
