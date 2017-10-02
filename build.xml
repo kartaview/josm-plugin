@@ -92,8 +92,9 @@
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
-
 				<attribute name="Plugin-Mainversion" value="12712" />
+				<attribute name="12712_Plugin-Url" value="${build-label};​https://developer.skobbler.com/public/openstreetcam/1.0/OpenStreetCam.jar" />
+				<attribute name="12901_Plugin-Url" value="108;​https://developer.skobbler.com/public/openstreetcam/2.0/OpenStreetCam.jar" />
 			</manifest>
 		</jar>
 	</target>
