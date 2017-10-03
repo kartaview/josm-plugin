@@ -56,8 +56,7 @@ public final class Util {
      */
     public static int zoom(final Bounds bounds) {
         return MainApplication.getMap().mapView.getScale() >= ZOOM1_SCALE ? 1 : (int) Math.min(MAX_ZOOM,
-                Math.max(MIN_ZOOM,
-                        Math.round(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST))));
+                Math.max(MIN_ZOOM, Math.round(Math.log(TILE_SIZE / bounds.asRect().height) / Math.log(ZOOM_CONST))));
     }
 
     /**
@@ -91,7 +90,9 @@ public final class Util {
      * @return a set of {@code Photo}
      */
     public static Collection<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
-        final BBox bbox = selectedPhoto.getLocation().toBBox(RADIUS);
+        final BBox bbox =
+                new BBox(selectedPhoto.getLocation().getX() - RADIUS, selectedPhoto.getLocation().getY() - RADIUS,
+                        selectedPhoto.getLocation().getX() + RADIUS, selectedPhoto.getLocation().getY() + RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
             if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getLocation())) {
@@ -130,7 +131,6 @@ public final class Util {
         }
         return contains;
     }
-
 
 
     /**

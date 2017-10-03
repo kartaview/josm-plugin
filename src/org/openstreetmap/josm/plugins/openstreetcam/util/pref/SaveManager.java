@@ -50,15 +50,15 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 final class SaveManager {
 
     void savePhotosErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_PHOTOS_ERROR, flag);
+        Main.pref.putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
     }
 
     void saveSequenceErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_SEQUENCE_ERROR, flag);
+        Main.pref.putBoolean(SUPPRESS_SEQUENCE_ERROR, flag);
     }
 
     void saveSegmentsErrorSuppressFlag(final boolean flag) {
-        Main.pref.put(SUPPRESS_SEGMENTS_ERROR, flag);
+        Main.pref.putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
@@ -70,48 +70,48 @@ final class SaveManager {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.put(FILTER_ONLY_USER_FLAG, filter.isOnlyUserFlag());
+            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyUserFlag());
         }
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
-        Main.pref.putInteger(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
-        Main.pref.put(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
+        Main.pref.putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
+        Main.pref.putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
     }
 
     void savePhotoSettings(final PhotoSettings photoSettings) {
-        Main.pref.put(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
-        Main.pref.put(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
-        Main.pref.putInteger(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
+        Main.pref.putBoolean(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
+        Main.pref.putBoolean(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
+        Main.pref.putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
     void saveTrackSettings(final TrackSettings trackSettings) {
-        Main.pref.put(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
+        Main.pref.putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Main.pref.put(AUTOPLAY_LENGTH, length);
-                    Main.pref.putInteger(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+            Main.pref.put(AUTOPLAY_LENGTH, length);
+            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
     void saveAutoplayStartedFlag(final boolean flag) {
-        Main.pref.put(AUTOPLAY_STARTED, flag);
+        Main.pref.putBoolean(AUTOPLAY_STARTED, flag);
     }
 
     void saveCacheSettings(final CacheSettings cacheSettings) {
-        Main.pref.putInteger(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
-        Main.pref.putInteger(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
-        Main.pref.putInteger(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
-        Main.pref.putInteger(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
+        Main.pref.putInt(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
+        Main.pref.putInt(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
+        Main.pref.putInt(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
+        Main.pref.putInt(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
     }
 
     void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        Main.pref.put(LAYER_OPENED, isLayerOpened);
+        Main.pref.putBoolean(LAYER_OPENED, isLayerOpened);
     }
 
     void savePanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.put(PANEL_OPENED, isPanelOpened);
+        Main.pref.putBoolean(PANEL_OPENED, isPanelOpened);
     }
 
     void saveDataType(final DataType dataType) {

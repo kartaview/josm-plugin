@@ -8,9 +8,9 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.Version;
 import org.openstreetmap.josm.data.osm.User;
-import org.openstreetmap.josm.gui.JosmUserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -30,7 +30,7 @@ public class UserAgent {
     public UserAgent() {
         josmVersion = Version.getInstance().getVersionString();
         openStreetCamVersion = PreferenceManager.getInstance().loadPluginLocalVersion();
-        final User user = JosmUserIdentityManager.getInstance().asUser();
+        final User user = UserIdentityManager.getInstance().asUser();
         osmUserInfo = user.getId() > 0 ? Long.toString(user.getId()) : user.getName();
     }
 
