@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MainMenu;
@@ -37,7 +38,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.spi.preferences.Config;
 import org.openstreetmap.josm.spi.preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.spi.preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.tools.ImageProvider;
@@ -103,12 +103,12 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 addLayer();
             }
 
-            Config.getPref().addPreferenceChangeListener(preferenceChangedHandler);
+            Main.pref.addPreferenceChangeListener(preferenceChangedHandler);
         }
 
         if (oldMapFrame != null && newMapFrame == null) {
             // clean-up
-            Config.getPref().removePreferenceChangeListener(preferenceChangedHandler);
+            Main.pref.removePreferenceChangeListener(preferenceChangedHandler);
             layerActivatorMenuItem.setEnabled(false);
             OpenStreetCamDetailsDialog.destroyInstance();
             try {
