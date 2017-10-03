@@ -95,6 +95,7 @@
 				<attribute name="Plugin-Mainversion" value="12901" />
 				<attribute name="12712_Plugin-Url" value="108;​https://developer.skobbler.com/public/openstreetcam/1.0/OpenStreetCam.jar" />
 				<attribute name="12901_Plugin-Url" value="${build-label};​https://developer.skobbler.com/public/openstreetcam/2.0/OpenStreetCam.jar" />
+				<attribute name="12915_Plugin-Url" value="109;​https://developer.skobbler.com/public/openstreetcam/3.0/OpenStreetCam.jar" />
 			</manifest>
 		</jar>
 	</target>
