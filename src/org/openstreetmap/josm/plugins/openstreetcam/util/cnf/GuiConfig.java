@@ -112,6 +112,11 @@ public final class GuiConfig extends BaseConfig {
     private final String infoFileExistsText;
     private final String gpxTrackDescription;
 
+    private final String btnReopenDetection;
+    private final String btnFixDetection;
+    private final String btnInvalidateDetection;
+    private final String btnOtherDetection;
+
     private GuiConfig() {
         super(CONFIG_FILE);
 
@@ -204,6 +209,11 @@ public final class GuiConfig extends BaseConfig {
         infoFileExistsText = readProperty("info.file.exists.text");
 
         gpxTrackDescription = readProperty("gpx.track.description");
+
+        btnReopenDetection = readProperty("btn.detection.reopen");
+        btnFixDetection = readProperty("btn.detection.fix");
+        btnInvalidateDetection = readProperty("btn.detection.invalidate");
+        btnOtherDetection = readProperty("btn.detection.other");
     }
 
 
@@ -522,5 +532,21 @@ public final class GuiConfig extends BaseConfig {
 
     public String getGpxTrackDescription() {
         return gpxTrackDescription;
+    }
+
+    public String getBtnReopenDetection() {
+        return btnReopenDetection;
+    }
+
+    public String getBtnInvalidateDetection() {
+        return btnInvalidateDetection;
+    }
+
+    public String getBtnFixDetection() {
+        return btnFixDetection;
+    }
+
+    public String getBtnOtherDetection() {
+        return btnOtherDetection;
     }
 }
