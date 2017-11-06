@@ -52,6 +52,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
     private final String preferenceIconName;
+    private final String detectionIconsLongPath;
+    private final String detectionIconsPath;
 
 
     private IconConfig() {
@@ -84,6 +86,8 @@ public final class IconConfig extends BaseConfig {
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
         preferenceIconName = readProperty("preference.icon");
+        detectionIconsLongPath = readProperty("detection.icons.longPath");
+        detectionIconsPath = readProperty("detection.icons.path");
     }
 
 
@@ -198,5 +202,13 @@ public final class IconConfig extends BaseConfig {
 
     public String getPreferenceIconName() {
         return preferenceIconName;
+    }
+
+    public String getDetectionIconsLongPath() {
+        return detectionIconsLongPath;
+    }
+
+    public String getDetectionIconsPath() {
+        return detectionIconsPath;
     }
 }
