@@ -117,6 +117,15 @@ public final class GuiConfig extends BaseConfig {
     private final String btnInvalidateDetection;
     private final String btnOtherDetection;
 
+    private final String btnReopenDetectionShortcutText;
+    private final String btnReopenDetectionTlt;
+    private final String btnFixDetectionShortcutText;
+    private final String btnFixDetectionTlt;
+    private final String btnInvalidateDetectionShortcutText;
+    private final String btnInvalidateDetectionTlt;
+    private final String btnOtherActionOnDetectionShortcutText;
+    private final String btnOtherActionOnDetectionTlt;
+
     private GuiConfig() {
         super(CONFIG_FILE);
 
@@ -214,6 +223,15 @@ public final class GuiConfig extends BaseConfig {
         btnFixDetection = readProperty("btn.detection.fix");
         btnInvalidateDetection = readProperty("btn.detection.invalidate");
         btnOtherDetection = readProperty("btn.detection.other");
+
+        btnReopenDetectionTlt = readProperty("btn.detection.reopen.tlt");
+        btnReopenDetectionShortcutText = readProperty("btn.detection.reopen.shortcut.text");
+        btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
+        btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
+        btnInvalidateDetectionShortcutText = readProperty("btn.detection.invalidate.shortcut.text");
+        btnInvalidateDetectionTlt = readProperty("btn.detection.invalidate.tlt");
+        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.other.action.shortcut.text");
+        btnOtherActionOnDetectionTlt = readProperty("btn.detection.other.action.tlt");
     }
 
 
@@ -548,5 +566,37 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnOtherDetection() {
         return btnOtherDetection;
+    }
+
+    public String getBtnReopenDetectionShortcutText() {
+        return btnReopenDetectionShortcutText;
+    }
+
+    public String getBtnReopenDetectionTlt() {
+        return btnReopenDetectionTlt;
+    }
+
+    public String getBtnFixDetectionShortcutText() {
+        return btnFixDetectionShortcutText;
+    }
+
+    public String getBtnFixDetectionTlt() {
+        return btnFixDetectionTlt;
+    }
+
+    public String getBtnInvalidateDetectionShortcutText() {
+        return btnInvalidateDetectionShortcutText;
+    }
+
+    public String getBtnInvalidateDetectionTlt() {
+        return btnInvalidateDetectionTlt;
+    }
+
+    public String getBtnOtherActionOnDetectionShortcutText() {
+        return btnOtherActionOnDetectionShortcutText;
+    }
+
+    public String getBtnOtherActionOnDetectionTlt() {
+        return btnOtherActionOnDetectionTlt;
     }
 }
