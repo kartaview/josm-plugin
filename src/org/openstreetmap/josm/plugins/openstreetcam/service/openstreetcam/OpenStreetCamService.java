@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service;
+package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,10 +23,16 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
+import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
+import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter.PhotoTypeAdapter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter.SegmentTypeAdapter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.ListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpConnector;
@@ -42,6 +48,16 @@ import com.telenav.josm.common.http.HttpConnectorException;
 public class OpenStreetCamService extends BaseService {
 
     private static final int SECOND_PAGE = 2;
+
+    @Override
+    public Gson createGson() {
+        final GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls();
+        builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
+        builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
+        return builder.create();
+    }
+
 
     /**
      * Retrieves OpenStreetCam photos from the given area based on the specified filters.
@@ -157,4 +173,5 @@ public class OpenStreetCamService extends BaseService {
         verifyResponseStatus(listSegmentResponse);
         return listSegmentResponse;
     }
+
 }

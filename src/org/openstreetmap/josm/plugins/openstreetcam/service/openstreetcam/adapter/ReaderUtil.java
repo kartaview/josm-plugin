@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
+package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -16,14 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
-import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.PhotoTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.adapter.SegmentTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
+import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.ListResponse;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.telenav.josm.common.http.ContentType;
 import com.telenav.josm.common.http.HttpConnector;
@@ -36,18 +31,17 @@ import com.telenav.josm.common.http.HttpConnectorException;
  * @author beataj
  * @version $Revision$
  */
-class BaseService {
+public abstract class BaseService {
+
+    static final String USER_AGENT = "User-Agent";
 
     private final Gson gson;
 
-    BaseService() {
-        final GsonBuilder builder = new GsonBuilder();
-        builder.serializeNulls();
-        builder.registerTypeAdapter(Photo.class, new PhotoTypeAdapter());
-        builder.registerTypeAdapter(Segment.class, new SegmentTypeAdapter());
-        gson = builder.create();
+    public BaseService() {
+        gson = createGson();
     }
 
+    public abstract Gson createGson();
 
     /**
      * Executes a HTTP POST method and reads the service response. The response is transformed to the specified type.
@@ -58,7 +52,7 @@ class BaseService {
      * @return a {@code T} object
      * @throws ServiceException if the operation failed
      */
-    <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType)
+    public <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType)
             throws ServiceException {
         final String response;
         try {
@@ -89,7 +83,7 @@ class BaseService {
      * @param response a represents the response of the service
      * @throws ServiceException if the response contains a HTTP error code
      */
-    void verifyResponseStatus(final Response response) throws ServiceException {
+    public void verifyResponseStatus(final Response response) throws ServiceException {
         if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
             throw new ServiceException(response.getStatus().getApiMessage());
         }
@@ -102,7 +96,7 @@ class BaseService {
      * @return a set of objects of the {@code T}
      * @throws ServiceException if the thread execution failed or if the process was interrupted.
      */
-    <T> Set<T> readResult(final List<Future<ListResponse<T>>> futures) throws ServiceException {
+    public <T> Set<T> readResult(final List<Future<ListResponse<T>>> futures) throws ServiceException {
         final Set<T> result = new HashSet<>();
         for (final Future<ListResponse<T>> future : futures) {
             try {
@@ -114,9 +108,9 @@ class BaseService {
         return result;
     }
 
-    Map<String, String> getHeaders() {
+    public Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
-        headers.put(RequestConstants.USER_AGENT, new UserAgent().toString());
+        headers.put(USER_AGENT, new UserAgent().toString());
         return headers;
     }
 }

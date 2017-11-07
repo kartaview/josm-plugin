@@ -5,15 +5,9 @@
  *
  * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service;
-
 /**
- *
- * @author beataj
- * @version $Revision$
- */
-public class ApolloService extends BaseService {
-
-    // TODO: add necesarry apollo service calls here
-
-}
+* 
+* @author beataj
+* @version $Revision$
+*/
+package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter;

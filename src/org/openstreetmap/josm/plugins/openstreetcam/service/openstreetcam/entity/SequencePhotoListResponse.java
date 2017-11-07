@@ -6,8 +6,10 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
+package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity;
 
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import com.telenav.josm.common.entity.Status;
 
 
@@ -16,18 +18,17 @@ import com.telenav.josm.common.entity.Status;
  * @author beataj
  * @version $Revision$
  */
-public class PhotoDetailsResponse extends Response {
+public class SequencePhotoListResponse extends Response {
 
-    private final OSV osv;
+    // setters are not required,since GSON sets the fields directly using reflection.
+    private final Sequence osv;
 
-
-    public PhotoDetailsResponse(final Status status, final OSV osv) {
+    public SequencePhotoListResponse(final Status status, final Sequence osv) {
         super(status);
         this.osv = osv;
     }
 
-
-    public OSV getOsv() {
+    public Sequence getOsv() {
         return osv;
     }
 }

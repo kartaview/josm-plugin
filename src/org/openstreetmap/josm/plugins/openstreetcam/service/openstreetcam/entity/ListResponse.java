@@ -6,9 +6,10 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
+package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity;
 
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
 import com.telenav.josm.common.entity.Status;
 
 
