@@ -10,4 +10,4 @@
 * @author beataj
 * @version $Revision$
 */
-package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter;

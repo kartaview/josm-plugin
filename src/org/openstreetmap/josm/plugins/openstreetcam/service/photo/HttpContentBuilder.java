@@ -6,20 +6,20 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.BBOX_BOTTOM_RIGHT;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.BBOX_TOP_LEFT;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.EXTERNAL_USER_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.MY_TRACKS;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.MY_TRACKS_VAL;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.PAGE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.PAGE_ITEMS;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.SEQUENCE_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.SEQUENCE_INDEX;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.USER_TYPE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.USER_TYPE_OSM;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.RequestConstants.ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.BBOX_BOTTOM_RIGHT;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.BBOX_TOP_LEFT;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.EXTERNAL_USER_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.MY_TRACKS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.MY_TRACKS_VAL;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.PAGE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.PAGE_ITEMS;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.SEQUENCE_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.SEQUENCE_INDEX;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.USER_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.USER_TYPE_OSM;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.RequestConstants.ZOOM;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;

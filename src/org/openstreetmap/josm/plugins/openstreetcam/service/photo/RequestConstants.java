@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo;
 
 
 /**

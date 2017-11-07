@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
-import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.ListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.telenav.josm.common.http.ContentType;

@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,10 +25,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
-import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter.PhotoTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.adapter.SegmentTypeAdapter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.ListResponse;
-import org.openstreetmap.josm.plugins.openstreetcam.service.openstreetcam.entity.SequencePhotoListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.PhotoTypeAdapter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.SegmentTypeAdapter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import com.google.gson.Gson;
