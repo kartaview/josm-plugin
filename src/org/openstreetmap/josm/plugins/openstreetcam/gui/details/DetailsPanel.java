@@ -20,9 +20,9 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 
@@ -70,7 +70,7 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
     @Override
     public void hyperlinkUpdate(final HyperlinkEvent event) {
         if (txtDetails.getText() != null && event.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-            final StringBuilder link = new StringBuilder(Config.getInstance().getUserPageUrl());
+            final StringBuilder link = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getUserPageUrl());
             link.append(username);
             try {
                 OpenBrowser.displayUrl(new URI(link.toString()));

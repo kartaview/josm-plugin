@@ -26,6 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.ListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import com.google.gson.reflect.TypeToken;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpConnector;
@@ -38,7 +39,7 @@ import com.telenav.josm.common.http.HttpConnectorException;
  * @author Beata
  * @version $Revision$
  */
-public class Service extends BaseService {
+public class OpenStreetCamService extends BaseService {
 
     private static final int SECOND_PAGE = 2;
 
@@ -57,10 +58,10 @@ public class Service extends BaseService {
     public PhotoDataSet listNearbyPhotos(final BoundingBox area, final Date date, final Long osmUserId,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
-        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
+        final String url = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getServiceUrl())
                 .append(RequestConstants.LIST_NEARBY_PHOTOS).toString();
-        final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
-                new TypeToken<ListResponse<Photo>>() {}.getType());
+        final ListResponse<Photo> listPhotoResponse =
+                executePost(url, arguments, new TypeToken<ListResponse<Photo>>() {}.getType());
         verifyResponseStatus(listPhotoResponse);
         return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
                 listPhotoResponse.getTotalItems()) : new PhotoDataSet();
@@ -75,10 +76,9 @@ public class Service extends BaseService {
      */
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
-        final String url = new StringBuilder(Config.getInstance().getServiceUrl())
+        final String url = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getServiceUrl())
                 .append(RequestConstants.SEQUENCE_PHOTO_LIST).toString();
-        final SequencePhotoListResponse detailsResponse =
-                executePost(url, arguments, SequencePhotoListResponse.class);
+        final SequencePhotoListResponse detailsResponse = executePost(url, arguments, SequencePhotoListResponse.class);
         verifyResponseStatus(detailsResponse);
 
         Sequence sequence = null;
@@ -99,7 +99,7 @@ public class Service extends BaseService {
      * @throws ServiceException if the operation failed
      */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
-        final StringBuilder url = new StringBuilder(Config.getInstance().getServiceBaseUrl());
+        final StringBuilder url = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl());
         url.append(photoName);
         byte[] image;
         try {
@@ -150,7 +150,7 @@ public class Service extends BaseService {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final String url = new StringBuilder(Config.getInstance().getServiceBaseUrl())
+        final String url = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl())
                 .append(RequestConstants.LIST_MATCHED_TRACKS).toString();
         final ListResponse<Segment> listSegmentResponse =
                 executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType());

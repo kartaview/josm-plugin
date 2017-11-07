@@ -25,7 +25,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.service.Service;
+import org.openstreetmap.josm.plugins.openstreetcam.service.ApolloService;
+import org.openstreetmap.josm.plugins.openstreetcam.service.OpenStreetCamService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -42,10 +43,12 @@ import com.telenav.josm.common.argument.BoundingBox;
 public final class ServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
-    private final Service service;
+    private final OpenStreetCamService openStreetCamService;
+    private final ApolloService apolloService;
 
     private ServiceHandler() {
-        service = new Service();
+        openStreetCamService = new OpenStreetCamService();
+        apolloService = new ApolloService();
     }
 
 
@@ -67,7 +70,7 @@ public final class ServiceHandler {
         final Date date = filter != null ? filter.getDate() : null;
         PhotoDataSet result = new PhotoDataSet();
         try {
-            result = service.listNearbyPhotos(area, date, osmUserId, paging);
+            result = openStreetCamService.listNearbyPhotos(area, date, osmUserId, paging);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
@@ -100,13 +103,14 @@ public final class ServiceHandler {
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Segment>>> futures = new ArrayList<>();
                 for (final BoundingBox bbox : areas) {
-                    final Callable<List<Segment>> callable = () -> service.listMatchedTracks(bbox, osmUserId, zoom);
+                    final Callable<List<Segment>> callable =
+                            () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
                     futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
             } else {
-                finalResult = service.listMatchedTracks(areas.get(0), osmUserId, zoom);
+                finalResult = openStreetCamService.listMatchedTracks(areas.get(0), osmUserId, zoom);
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
@@ -151,7 +155,7 @@ public final class ServiceHandler {
     Sequence retrieveSequence(final Long id) {
         Sequence sequence = null;
         try {
-            sequence = service.retrieveSequence(id);
+            sequence = openStreetCamService.retrieveSequence(id);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
@@ -172,6 +176,6 @@ public final class ServiceHandler {
      * @throws ServiceException if the download operation fails
      */
     byte[] retrievePhoto(final String photoName) throws ServiceException {
-        return service.retrievePhoto(photoName);
+        return openStreetCamService.retrievePhoto(photoName);
     }
 }

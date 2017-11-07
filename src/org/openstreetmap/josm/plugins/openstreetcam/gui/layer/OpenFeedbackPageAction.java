@@ -14,9 +14,9 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.tools.OpenBrowser;
 
 
@@ -40,7 +40,7 @@ class OpenFeedbackPageAction extends JosmAction {
     @Override
     public void actionPerformed(final ActionEvent event) {
         try {
-            OpenBrowser.displayUrl(new URI(Config.getInstance().getFeedbackUrl()));
+            OpenBrowser.displayUrl(new URI(OpenStreetCamServiceConfig.getInstance().getFeedbackUrl()));
         } catch (final Exception e) {
             JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorFeedbackPageText(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
