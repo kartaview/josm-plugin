@@ -20,9 +20,9 @@ import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
@@ -72,7 +72,7 @@ class DataUpdateHandler {
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (zoom >= Config.getInstance().getMapSegmentZoom()) {
             final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
-            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
+            final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
 
             if (OpenStreetCamLayer.getInstance().getSelectedSequence() != null) {
                 // special case, we load always photos
@@ -89,7 +89,7 @@ class DataUpdateHandler {
         }
     }
 
-    private void manualSwitchFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom,
+    private void manualSwitchFlow(final MapViewSettings mapViewSettings, final SearchFilter listFilter, final int zoom,
             final boolean checkSelection) {
         // enable switch button based on zoom level
         final DataType dataType = PreferenceManager.getInstance().loadDataType();
@@ -114,7 +114,7 @@ class DataUpdateHandler {
         }
     }
 
-    private void normalFlow(final MapViewSettings mapViewSettings, final ListFilter listFilter, final int zoom,
+    private void normalFlow(final MapViewSettings mapViewSettings, final SearchFilter listFilter, final int zoom,
             final boolean checkSelection) {
         final DataType dataType = PreferenceManager.getInstance().loadDataType();
         if (zoom < mapViewSettings.getPhotoZoom()) {
@@ -132,7 +132,7 @@ class DataUpdateHandler {
         }
     }
 
-    private void updateSegments(final MapViewSettings mapViewSettings, final ListFilter filter, final int zoom,
+    private void updateSegments(final MapViewSettings mapViewSettings, final SearchFilter filter, final int zoom,
             final boolean checkSelection) {
         if (OpenStreetCamLayer.getInstance().getDataSet() != null
                 && !OpenStreetCamLayer.getInstance().getDataSet().getPhotos().isEmpty()) {
@@ -154,7 +154,7 @@ class DataUpdateHandler {
         }
     }
 
-    private void updatePhotos(final MapViewSettings mapViewSettings, final ListFilter filter,
+    private void updatePhotos(final MapViewSettings mapViewSettings, final SearchFilter filter,
             final boolean checkSelection) {
         if (OpenStreetCamLayer.getInstance().getDataSet() != null
                 && OpenStreetCamLayer.getInstance().getDataSet().getSegments() != null) {
@@ -188,19 +188,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-        PhotoDataSet photoDataSet = null;
-        if (currentPhotoDataSet != null) {
-            int page = currentPhotoDataSet.getPage();
-            page = loadNextResults ? page + 1 : page - 1;
-            final ListFilter listFilter = PreferenceManager.getInstance().loadListFilter();
-            photoDataSet = new PhotoDataSet();
-            final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-            if (bbox != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                        new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
-            }
-        }
-        return photoDataSet;
+                PhotoDataSet photoDataSet = null;
+                if (currentPhotoDataSet != null) {
+                    int page = currentPhotoDataSet.getPage();
+                    page = loadNextResults ? page + 1 : page - 1;
+                    final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
+                    photoDataSet = new PhotoDataSet();
+                    final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+                    if (bbox != null) {
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                                new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                }
+                return photoDataSet;
     }
 
     /**

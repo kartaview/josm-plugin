@@ -18,6 +18,6 @@ public enum SignType {
 
     @Override
     public String toString() {
-        return name().toLowerCase().replace("_", " ");
+        return (name().substring(0, 1) + name().substring(1).toLowerCase()).replaceAll("_", " ");
     }
 }

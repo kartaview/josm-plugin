@@ -28,7 +28,7 @@ import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
@@ -265,7 +265,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         private void handleMouseHover() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.THUMBNAIL, true);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoSize.THUMBNAIL, true);
             }
         }
 
@@ -300,7 +300,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
         private void handleHighQualityPhotoSelection() {
             final Photo selectedPhoto = OpenStreetCamLayer.getInstance().getSelectedPhoto();
             if (selectedPhoto != null) {
-                selectionHandler.selectPhoto(selectedPhoto, PhotoType.HIGH_QUALITY, true);
+                selectionHandler.selectPhoto(selectedPhoto, PhotoSize.HIGH_QUALITY, true);
             }
         }
 

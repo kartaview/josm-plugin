@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
@@ -62,7 +62,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private Dimension size;
 
     /** the currently selected element */
-    private Pair<Photo, PhotoType> selectedElement;
+    private Pair<Photo, PhotoSize> selectedElement;
 
 
     private OpenStreetCamDetailsDialog() {
@@ -102,8 +102,8 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
     @Override
     protected void paintComponent(final Graphics graphics) {
-        if (selectedElement != null && selectedElement.getSecond().equals(PhotoType.THUMBNAIL) && isPanelMaximized()) {
-            loadPhoto(selectedElement.getFirst(), PhotoType.LARGE_THUMBNAIL);
+        if (selectedElement != null && selectedElement.getSecond().equals(PhotoSize.THUMBNAIL) && isPanelMaximized()) {
+            loadPhoto(selectedElement.getFirst(), PhotoSize.LARGE_THUMBNAIL);
             size = getSize();
         }
         super.paintComponent(graphics);
@@ -149,7 +149,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      * @param displayLoadingMessage specifies if the loading message is displayed or not. The loading message is
      * displayed until the photo is loaded.
      */
-    public void updateUI(final Photo photo, final PhotoType photoType, final boolean displayLoadingMessage) {
+    public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
         if (photo != null) {
             // display loading text
             if (displayLoadingMessage) {
@@ -169,15 +169,15 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         }
     }
 
-    private void loadPhoto(final Photo photo, final PhotoType photoType) {
-        final PhotoType finalPhotoType = photoType == null ? PhotoType.LARGE_THUMBNAIL : photoType;
+    private void loadPhoto(final Photo photo, final PhotoSize photoType) {
+        final PhotoSize finalPhotoType = photoType == null ? PhotoSize.LARGE_THUMBNAIL : photoType;
         try {
-            final Pair<BufferedImage, PhotoType> imageResult =
+            final Pair<BufferedImage, PhotoSize> imageResult =
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
             if (imageResult.getFirst() != null) {
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        && !imageResult.getSecond().equals(PhotoType.HIGH_QUALITY)) {
+                        && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
                     pnlDetails.updateUI(photo, true);
                     pnlDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
                 } else {

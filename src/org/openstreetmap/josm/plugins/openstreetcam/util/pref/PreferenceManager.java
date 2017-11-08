@@ -24,10 +24,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
@@ -113,8 +113,8 @@ public final class PreferenceManager {
      *
      * @return a {@code ListFilter}
      */
-    public ListFilter loadListFilter() {
-        return loadManager.loadListFilter();
+    public SearchFilter loadSearchFilter() {
+        return loadManager.loadSearchFilter();
     }
 
     /**
@@ -122,8 +122,8 @@ public final class PreferenceManager {
      *
      * @param filter a {@code ListFilter} represents the current filter settings
      */
-    public void saveListFilter(final ListFilter filter) {
-        saveManager.saveListFilter(filter);
+    public void saveListFilter(final SearchFilter filter) {
+        saveManager.saveSearchFilter(filter);
     }
 
     /**

@@ -8,7 +8,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.text.SimpleDateFormat;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.FilterPack;
+import java.util.HashSet;
+import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -43,7 +44,7 @@ public class HttpQueryBuilder {
 
     private void appendFilters(final FilterPack filterPack) {
         if (filterPack.getExternalId() != null) {
-            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(filterPack.getExternalId());
+            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(filterPack.getExternalId().toString());
             query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
         }
 
@@ -54,20 +55,17 @@ public class HttpQueryBuilder {
 
         if (filterPack.getOsmComparisons() != null && !filterPack.getOsmComparisons().isEmpty()) {
             query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
-            .append(HttpUtil.utf8Encode(filterPack.getOsmComparisons()));
-        }
-        if (filterPack.getValidationStatuses() != null && !filterPack.getValidationStatuses().isEmpty()) {
-            query.append(AND).append(RequestConstants.VALIDATION_STATUSES).append(EQ)
-            .append(HttpUtil.utf8Encode(filterPack.getValidationStatuses()));
-        }
-        if (filterPack.getEditStatuses() != null && !filterPack.getEditStatuses().isEmpty()) {
-            query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-            .append(HttpUtil.utf8Encode(filterPack.getEditStatuses()));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getOsmComparisons())));
         }
 
-        if (filterPack.getTypes() != null && !filterPack.getTypes().isEmpty()) {
+        if (filterPack.getEditStatuses() != null && !filterPack.getEditStatuses().isEmpty()) {
+            query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getEditStatuses())));
+        }
+
+        if (filterPack.getSignTypes() != null && !filterPack.getSignTypes().isEmpty()) {
             query.append(AND).append(RequestConstants.TYPES).append(EQ)
-            .append(HttpUtil.utf8Encode(filterPack.getTypes()));
+                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
         }
     }
 
