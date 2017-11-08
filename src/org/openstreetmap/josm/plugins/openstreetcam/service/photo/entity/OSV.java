@@ -6,9 +6,9 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity;
 
-import com.telenav.josm.common.entity.Status;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 
 
 /**
@@ -16,18 +16,17 @@ import com.telenav.josm.common.entity.Status;
  * @author beataj
  * @version $Revision$
  */
-public class PhotoDetailsResponse extends Response {
+public class OSV {
 
-    private final OSV osv;
+    private final Photo photoObject;
 
 
-    public PhotoDetailsResponse(final Status status, final OSV osv) {
-        super(status);
-        this.osv = osv;
+    public OSV(final Photo photoObject) {
+        this.photoObject = photoObject;
     }
 
 
-    public OSV getOsv() {
-        return osv;
+    public Photo getPhotoObject() {
+        return photoObject;
     }
 }

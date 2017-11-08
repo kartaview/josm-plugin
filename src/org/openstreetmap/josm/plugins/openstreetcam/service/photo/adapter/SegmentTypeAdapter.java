@@ -6,14 +6,14 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_COVERAGE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_FROM;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_GEOMETRY;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.SEGMENT_TO;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.WAY_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.SEGMENT_COVERAGE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.SEGMENT_FROM;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.SEGMENT_GEOMETRY;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.SEGMENT_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.SEGMENT_TO;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.WAY_ID;
 import java.io.IOException;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
