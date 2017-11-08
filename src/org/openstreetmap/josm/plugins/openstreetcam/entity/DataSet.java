@@ -22,6 +22,7 @@ public class DataSet {
 
     private final List<Segment> segments;
     private final PhotoDataSet photoDataSet;
+    private final List<Detection> detections;
 
 
     /**
@@ -30,9 +31,10 @@ public class DataSet {
      * @param segments represents the data for small zoom levels
      * @param photoDataSet represents the data for bigger zoom levels
      */
-    public DataSet(final List<Segment> segments, final PhotoDataSet photoDataSet) {
+    public DataSet(final List<Segment> segments, final PhotoDataSet photoDataSet, final List<Detection> detections) {
         this.segments = segments;
         this.photoDataSet = photoDataSet;
+        this.detections = detections;
     }
 
     public List<Segment> getSegments() {
@@ -51,5 +53,9 @@ public class DataSet {
      */
     public List<Photo> getPhotos() {
         return photoDataSet != null ? photoDataSet.getPhotos() : new ArrayList<>();
+    }
+
+    public List<Detection> getDetections() {
+        return detections;
     }
 }

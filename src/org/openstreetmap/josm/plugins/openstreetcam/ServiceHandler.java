@@ -20,8 +20,10 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -31,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamS
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
+import com.telenav.josm.common.entity.Pair;
 
 
 /**
@@ -56,6 +59,31 @@ public final class ServiceHandler {
         return INSTANCE;
     }
 
+
+    public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final ListFilter filter) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(2);
+        final Future<PhotoDataSet> future1 = executorService.submit(() -> {
+            return listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
+        });
+        final Future<List<Detection>> future2 = executorService.submit(() -> {
+            return searchDetections(area, null);
+        });
+
+        PhotoDataSet photoDataSet = null;
+        try {
+            photoDataSet = future1.get();
+        } catch (final Exception ex) {
+            // handle ex
+        }
+        List<Detection> detections = null;
+        try {
+            detections = future2.get();
+        } catch (final Exception ex) {
+            // handle ex
+        }
+        executorService.shutdown();
+        return new Pair<>(photoDataSet, detections);
+    }
 
     /**
      * Lists the photos from the current area based on the given filters.
@@ -84,6 +112,23 @@ public final class ServiceHandler {
         return result;
     }
 
+
+    private List<Detection> searchDetections(final BoundingBox area, final FilterPack filterPack) {
+        List<Detection> result = new ArrayList<>();
+        try {
+            result = apolloService.searchDetections(area, filterPack);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
+                        GuiConfig.getInstance().getErrorPhotoListText(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+            }
+        }
+        return result;
+    }
+
     /**
      * Lists the segments that have OpenStreetCam coverage from the given area(s) corresponding to the specified zoom
      * level.
@@ -105,7 +150,7 @@ public final class ServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();

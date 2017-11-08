@@ -24,6 +24,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
@@ -34,6 +35,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
+import com.telenav.josm.common.entity.Pair;
 
 
 /**
@@ -147,7 +149,7 @@ class DataUpdateHandler {
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
             if (PreferenceManager.getInstance().loadDataType() == null
                     || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
-                updateUI(new DataSet(segments, null), checkSelection);
+                updateUI(new DataSet(segments, null, null), checkSelection);
             }
         }
     }
@@ -168,10 +170,10 @@ class DataUpdateHandler {
         OpenStreetCamLayer.getInstance().enabledDownloadNextPhotosAction(false);
         final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
         if (bbox != null) {
-            final PhotoDataSet photoDataSet =
-                    ServiceHandler.getInstance().listNearbyPhotos(bbox, filter, Paging.NEARBY_PHOTOS_DEAFULT);
+            final Pair<PhotoDataSet, List<Detection>> dataSet =
+                    ServiceHandler.getInstance().searchHighZoomData(bbox, filter);
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-                updateUI(new DataSet(null, photoDataSet), checkSelection);
+                updateUI(new DataSet(null, dataSet.getFirst(), dataSet.getSecond()), checkSelection);
             }
         }
     }

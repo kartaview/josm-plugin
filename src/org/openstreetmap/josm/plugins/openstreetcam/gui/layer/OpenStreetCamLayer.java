@@ -22,6 +22,7 @@ import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -45,6 +46,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     private Photo startPhoto;
     private Sequence selectedSequence;
     private Collection<Photo> closestPhotos;
+    private Detection selectedDetection;
 
 
     private OpenStreetCamLayer() {
@@ -80,8 +82,13 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             final Stroke originalStorke = graphics.getStroke();
             if (dataSet.getSegments() != null) {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
-            } else if (dataSet.getPhotos() != null) {
-                paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, selectedSequence);
+            } else {
+                if (dataSet.getPhotos() != null) {
+                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, selectedSequence);
+                }
+                if (dataSet.getDetections() != null) {
+                    paintHandler.drawDetections(graphics, mapView, dataSet.getDetections());
+                }
             }
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStorke);

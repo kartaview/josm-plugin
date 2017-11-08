@@ -44,7 +44,7 @@ import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 class FilterPanel extends JPanel {
 
     private static final long serialVersionUID = -4229411104270361299L;
-    private static final Dimension PICKER_SIZE = new Dimension(120, 20);
+    private static final Dimension PICKER_SIZE = new Dimension(120, 140);
 
     /* panel components */
     private JXDatePicker pickerDate;
@@ -56,6 +56,13 @@ class FilterPanel extends JPanel {
         final ListFilter filter = PreferenceManager.getInstance().loadListFilter();
         addDateFitler(filter.getDate());
         addUserFilter(filter.isOnlyUserFlag());
+        addPhotoTypeFilter();
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),
+                Constraints.LBL_DETECTION);
+        addOsmComparisonFilter();
+        addValidationStatusFilter();
+        addEditStatusFilter();
+        addDetectionTypeFilter();
     }
 
     private void addDateFitler(final Date date) {
@@ -80,6 +87,31 @@ class FilterPanel extends JPanel {
         }
         cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.CBB_USER);
+    }
+
+    private void addPhotoTypeFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterPhotoTypeLbl(), Font.BOLD),
+                Constraints.LBL_PHOTO_TYPE);
+    }
+
+    private void addOsmComparisonFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterOsmComparisonLbl(), Font.BOLD),
+                Constraints.LBL_OSM_COMPARISON);
+    }
+
+    private void addValidationStatusFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterValidationStatusLbl(), Font.BOLD),
+                Constraints.LBL_VALIDATION_STATUS);
+    }
+
+    private void addEditStatusFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterEditStatusLbl(), Font.BOLD),
+                Constraints.LBL_EDIT_STATUS);
+    }
+
+    private void addDetectionTypeFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
+                Constraints.LBL_DETECTION_TYPE);
     }
 
     /**
@@ -159,6 +191,24 @@ class FilterPanel extends JPanel {
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
         private static final GridBagConstraints LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 1, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
+
+        private static final GridBagConstraints LBL_PHOTO_TYPE = new GridBagConstraints(0, 2, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
+
+        private static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 3, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
+
+        private static final GridBagConstraints LBL_OSM_COMPARISON = new GridBagConstraints(0, 4, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
+
+        private static final GridBagConstraints LBL_VALIDATION_STATUS = new GridBagConstraints(0, 5, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
+
+        private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 6, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
+
+        private static final GridBagConstraints LBL_DETECTION_TYPE = new GridBagConstraints(0, 7, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
 
         private Constraints() {}
     }
