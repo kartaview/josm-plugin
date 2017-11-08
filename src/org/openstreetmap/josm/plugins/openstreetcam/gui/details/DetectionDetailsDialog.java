@@ -8,8 +8,9 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
@@ -30,30 +31,39 @@ public class DetectionDetailsDialog extends ToggleDialog {
     private static final long serialVersionUID = -3824929254682268496L;
 
     /** preferred size */
-    private static final Dimension DIM = new Dimension(150, 150);
+    private static final Dimension DIM = new Dimension(150, 100);
 
     /** dialog default height */
-    private static final int DLG_HEIGHT = 150;
+    private static final int DLG_HEIGHT = 100;
+
+
+    private static final int SCROLL_BAR_UNIT = 100;
 
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
     /** dialog components */
-    private final PhotoPanel pnlDetails;
-    private final DetectionButtonPanel pnlBtn;
+    private final DetectionDetailsPanel pnlDetails;
+    private final DetectionButtonPanel pnlButtons;
+
 
     private DetectionDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginShortcutLongText(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
                 true, PreferenceEditor.class);
-        pnlDetails = new PhotoPanel();
-        pnlBtn = new DetectionButtonPanel();
-        pnlDetails.setBackground(getBackground());
-        final JPanel pnlMain = ContainerBuilder.buildBorderLayoutPanel(null, pnlDetails, pnlBtn, null);
-        add(createLayout(pnlMain, false, null));
+
+        pnlDetails = new DetectionDetailsPanel();
+        final JScrollPane scrollablePanel = ContainerBuilder.buildScrollPane(
+                ContainerBuilder.buildEmptyPanel(Color.WHITE), null, Color.white, null, SCROLL_BAR_UNIT, false, DIM);
+        scrollablePanel.setViewportView(pnlDetails);
+
+        pnlButtons = new DetectionButtonPanel();
+
+        add(createLayout(ContainerBuilder.buildBorderLayoutPanel(null, scrollablePanel, pnlButtons, null), false,
+                null));
         setPreferredSize(DIM);
         pnlDetails.setSize(getPreferredSize());
-
+        updateDetectionDetails(null);
     }
 
     /**
@@ -69,7 +79,7 @@ public class DetectionDetailsDialog extends ToggleDialog {
     }
 
     public void updateDetectionDetails(final Detection detection) {
-
+        pnlDetails.updateData(detection);
+        repaint();
     }
-
 }

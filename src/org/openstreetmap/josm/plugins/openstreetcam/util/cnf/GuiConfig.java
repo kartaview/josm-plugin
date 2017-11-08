@@ -126,6 +126,23 @@ public final class GuiConfig extends BaseConfig {
     private final String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
 
+    private final String detectedDetectionText;
+    private final String detectionOnOsmText;
+    private final String detectionModeText;
+    private final String detectionAddedValidationStatusText;
+    private final String detectionValidationStatusText;
+    private final String detectionChangedValidationStatusText;
+    private final String detectionConfirmedValidationStatusText;
+    private final String detectionRemovedValidationStatusText;
+    private final String detectionToBeCheckedValidationStatusText;
+    private final String detectionManualModeText;
+    private final String detectionAutomaticModeText;
+    private final String detectionNewOnOsmText;
+    private final String detectionChangedOnOsmText;
+    private final String detectionSameOnOsmText;
+    private final String detectionUnknownOnOsmText;
+
+
     private GuiConfig() {
         super(CONFIG_FILE);
 
@@ -232,8 +249,23 @@ public final class GuiConfig extends BaseConfig {
         btnInvalidateDetectionTlt = readProperty("btn.detection.invalidate.tlt");
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.other.action.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.other.action.tlt");
-    }
 
+        detectedDetectionText = readProperty("detection.detected.text");
+        detectionOnOsmText = readProperty("detection.osm.text");
+        detectionModeText = readProperty("detection.mode.text");
+        detectionValidationStatusText = readProperty("detection.validation.status.text");
+        detectionAddedValidationStatusText = readProperty("detection.validation.status.value.added");
+        detectionChangedValidationStatusText = readProperty("detection.validation.status.value.changed");
+        detectionConfirmedValidationStatusText = readProperty("detection.validation.status.value.confirmed");
+        detectionRemovedValidationStatusText = readProperty("detection.validation.status.value.removed");
+        detectionToBeCheckedValidationStatusText = readProperty("detection.validation.status.value.toBeChecked");
+        detectionManualModeText = readProperty("detection.mode.value.manual");
+        detectionAutomaticModeText = readProperty("detection.mode.value.automatic");
+        detectionNewOnOsmText = readProperty("detection.osm.new.value");
+        detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
+        detectionSameOnOsmText = readProperty("detection.osm.same.value");
+        detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+    }
 
     public static GuiConfig getInstance() {
         return INSTANCE;
@@ -598,5 +630,65 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnOtherActionOnDetectionTlt() {
         return btnOtherActionOnDetectionTlt;
+    }
+
+    public String getDetectedDetectionText() {
+        return detectedDetectionText;
+    }
+
+    public String getDetectionOnOsmText() {
+        return detectionOnOsmText;
+    }
+
+    public String getDetectionModeText() {
+        return detectionModeText;
+    }
+
+    public String getDetectionValidationStatusText() {
+        return detectionValidationStatusText;
+    }
+
+    public String getDetectionChangedValidationStatusText() {
+        return detectionChangedValidationStatusText;
+    }
+
+    public String getDetectionConfirmedValidationStatusText() {
+        return detectionConfirmedValidationStatusText;
+    }
+
+    public String getDetectionRemovedValidationStatusText() {
+        return detectionRemovedValidationStatusText;
+    }
+
+    public String getDetectionToBeCheckedValidationStatusText() {
+        return detectionToBeCheckedValidationStatusText;
+    }
+
+    public String getDetectionAddedValidationStatusText() {
+        return detectionAddedValidationStatusText;
+    }
+
+    public String getDetectionManualModeText() {
+        return detectionManualModeText;
+    }
+
+    public String getDetectionAutomaticModeText() {
+        return detectionAutomaticModeText;
+    }
+
+    public String getDetectionNewOnOsmText() {
+        return detectionNewOnOsmText;
+    }
+
+    public String getDetectionChangedOnOsmText() {
+        return detectionChangedOnOsmText;
+    }
+
+    public String getDetectionSameOnOsmText() {
+        return detectionSameOnOsmText;
+    }
+
+    public String getDetectionUnknownOnOsmText() {
+        return detectionUnknownOnOsmText;
     }
 }

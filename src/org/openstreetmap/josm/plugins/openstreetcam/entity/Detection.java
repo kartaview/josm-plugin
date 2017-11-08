@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 
 /**
  * Defines the detection entity.
@@ -14,7 +15,7 @@ public class Detection {
     private final Long sequenceIndex;
     private final Long creationTimestamp;
     private final Long latestChangeTimestamp;
-    private final Point point;
+    private final LatLon point;
     private final Sign sign;
     private final Rectangle locationOnPhoto;
     private final Double confidenceLevel;
@@ -25,12 +26,11 @@ public class Detection {
     private final DetectionMode mode;
     private final Author author;
 
-    
+
     public Detection(final Long id, final Long sequenceId, final Long sequenceIndex, final Long creationTimestamp, final Long latestChangeTimestamp,
-            final Point point, final Sign sign, final Rectangle locationOnPhoto, final Double confidenceLevel,
+            final LatLon point, final Sign sign, final Rectangle locationOnPhoto, final Double confidenceLevel,
             final ValidationStatus validationStatus, final EditStatus editStatus, final OsmComparison osmComparison,
             final OsmElement osmElement, final DetectionMode mode, final Author author) {
-        super();
         this.id = id;
         this.sequenceId = sequenceId;
         this.sequenceIndex = sequenceIndex;
@@ -68,7 +68,7 @@ public class Detection {
         return latestChangeTimestamp;
     }
 
-    public Point getPoint() {
+    public LatLon getPoint() {
         return point;
     }
 
