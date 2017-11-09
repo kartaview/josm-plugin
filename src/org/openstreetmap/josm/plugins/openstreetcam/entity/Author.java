@@ -11,11 +11,13 @@ public class Author {
 
     private final Long externalId;
     private final String userName;
+    private final String type;
 
 
     public Author(final Long externalId, final String userName) {
         this.externalId = externalId;
         this.userName = userName;
+        this.type = "OSM";
     }
 
 
@@ -25,5 +27,9 @@ public class Author {
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getType() {
+        return type;
     }
 }

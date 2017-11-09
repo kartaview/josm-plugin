@@ -38,7 +38,7 @@ public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
     private static final Dimension HIGH_ZOOM_DIM = new Dimension(400, 370);
-    private static final Dimension DIM = new Dimension(350, 150);
+    private static final Dimension DIM = new Dimension(380, 150);
 
     private FilterPanel pnlFilter;
     private boolean isHighLevelZoom = false;
