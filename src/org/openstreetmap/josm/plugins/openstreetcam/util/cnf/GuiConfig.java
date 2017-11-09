@@ -96,6 +96,8 @@ public final class GuiConfig extends BaseConfig {
     private final String unacceptedDateFilterText;
     private final String errorSequenceSaveText;
     private final String errorSegmentListText;
+    private final String errorDetectionRetrieveText;
+    private final String errorDetectionUpdateText;
 
 
     private final String warningHighQualityPhoto;
@@ -209,12 +211,12 @@ public final class GuiConfig extends BaseConfig {
         errorFeedbackPageText = readProperty("error.feedback.page");
         errorSegmentListText = readProperty("error.segment.list");
         errorSequenceSaveText = readProperty("error.track.save");
+        errorDetectionRetrieveText = readProperty("error.detection.retrieve");
+        errorDetectionUpdateText = readProperty("error.detection.update");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
-
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
-
         confirmDateFilterTitle = readProperty("info.dateFilter.title");
         confirmDateFilterTxt = readProperty("info.dateFilter.text");
 
@@ -448,6 +450,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorFeedbackPageText() {
         return errorFeedbackPageText;
+    }
+
+    public String getErrorDetectionRetrieveText() {
+        return errorDetectionRetrieveText;
+    }
+
+    public String getErrorDetectionUpdateText() {
+        return errorDetectionUpdateText;
     }
 
     public String getIncorrectDateFilterText() {

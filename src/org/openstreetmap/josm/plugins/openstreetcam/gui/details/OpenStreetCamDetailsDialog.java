@@ -18,6 +18,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
@@ -175,7 +176,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
             final Pair<BufferedImage, PhotoSize> imageResult =
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
-            if (imageResult.getFirst() != null) {
+            if (imageResult.getFirst() != null && OpenStreetCamLayer.getInstance().getSelectedPhoto() != null) {
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                         && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
                     pnlDetails.updateUI(photo, true);

@@ -19,6 +19,11 @@ final class Keys {
     static final String SUPPRESS_PHOTOS_ERROR = "openstreetcam.error.photos.suppress";
     static final String SUPPRESS_SEGMENTS_ERROR = "openstreetcam.error.segments.suppress";
     static final String SUPPRESS_SEQUENCE_ERROR = "openstreetcam.error.sequence.suppress";
+    static final String SUPPRESS_DETECTION_SEARCH_ERROR = "openstreetcam.error.detection.search.suppress";
+    static final String SUPPRESS_SEQUENCE_DETECTIONS_ERROR = "openstreetcam.error.sequence.detections.suppress";
+    static final String SUPPRESS_PHOTO_DETECTIONS_ERROR = "openstreetcam.error.photo.detections.suppress";
+    static final String SUPPRESS_DETECTION_UPDATE_ERROR = "openstreetcam.error.detection.update.suppress";
+
     static final String FILTERS_CHANGED = "openstreetcam.filter.changed";
     static final String FILTER_DATE = "openstreetcam.filter.date";
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";

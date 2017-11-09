@@ -3,7 +3,7 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 

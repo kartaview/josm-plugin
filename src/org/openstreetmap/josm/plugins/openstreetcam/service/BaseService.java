@@ -64,6 +64,17 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
+    public <T> T executePost(final String url, final String content, final Class<T> responseType)
+            throws ServiceException {
+        String response;
+        try {
+            response = new HttpConnector(url).post(content, ContentType.JSON);
+        } catch (final HttpConnectorException e) {
+            throw new ServiceException(e);
+        }
+        return parseResponse(response, responseType);
+    }
+
     public <T> T executeGet(final String url, final Class<T> responseType) throws ServiceException {
         String response;
         try {
@@ -121,5 +132,9 @@ public abstract class BaseService {
         final Map<String, String> headers = new HashMap<>();
         headers.put(USER_AGENT, new UserAgent().toString());
         return headers;
+    }
+
+    public <T> String buildRequest(final T request, final Class<T> requestType) {
+        return gson.toJson(request, requestType);
     }
 }

@@ -31,7 +31,7 @@ import javax.swing.JRadioButton;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoTypeFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -65,7 +65,6 @@ class FilterPanel extends JPanel {
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
     private JRadioButton rbDetections;
-    private JRadioButton rbNoDetections;
     private JRadioButton rbAll;
     private ButtonGroup btnPhotoType;
 
@@ -115,30 +114,23 @@ class FilterPanel extends JPanel {
         add(cbbUser, Constraints.CBB_USER);
     }
 
-    private void addPhotoTypeFilter(final PhotoTypeFilter photoType) {
+    private void addPhotoTypeFilter(final PhotoDataTypeFilter photoType) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterPhotoTypeLbl(), Font.BOLD),
                 Constraints.LBL_PHOTO_TYPE);
-        boolean selected = photoType != null && photoType.equals(PhotoTypeFilter.WITH_DETECTIONS);
-        rbDetections =
-                ButtonBuilder.build(PhotoTypeFilter.WITH_DETECTIONS.toString(), Font.PLAIN, getBackground(), selected);
-        rbDetections.setActionCommand(PhotoTypeFilter.WITH_DETECTIONS.name());
+        boolean selected = photoType != null && photoType.equals(PhotoDataTypeFilter.DETECTIONS_ONLY);
+        rbDetections = ButtonBuilder.build(PhotoDataTypeFilter.DETECTIONS_ONLY.toString(), Font.PLAIN, getBackground(),
+                selected);
+        rbDetections.setActionCommand(PhotoDataTypeFilter.DETECTIONS_ONLY.name());
         rbDetections.addActionListener(new PhotoTypeSelectionListener());
         add(rbDetections, Constraints.RB_DETECTIONS);
 
-        selected = photoType != null && photoType.equals(PhotoTypeFilter.ALL);
-        rbAll = ButtonBuilder.build(PhotoTypeFilter.ALL.toString(), Font.PLAIN, getBackground(), selected);
-        rbAll.setActionCommand(PhotoTypeFilter.ALL.name());
+        selected = photoType != null && photoType.equals(PhotoDataTypeFilter.ALL);
+        rbAll = ButtonBuilder.build(PhotoDataTypeFilter.ALL.toString(), Font.PLAIN, getBackground(), selected);
+        rbAll.setActionCommand(PhotoDataTypeFilter.ALL.name());
         rbAll.addActionListener(new PhotoTypeSelectionListener());
         add(rbAll, Constraints.RB_ALL);
 
-        selected = photoType != null && photoType.equals(PhotoTypeFilter.WITHOUT_DETECTIONS);
-        rbNoDetections = ButtonBuilder.build(PhotoTypeFilter.WITHOUT_DETECTIONS.toString(), Font.PLAIN, getBackground(),
-                selected);
-        rbNoDetections.setActionCommand(PhotoTypeFilter.WITHOUT_DETECTIONS.name());
-        rbNoDetections.addActionListener(new PhotoTypeSelectionListener());
-
-        add(rbNoDetections, Constraints.RB_NO_DETECTIONS);
-        btnPhotoType = ButtonBuilder.build(rbDetections, rbNoDetections, rbAll);
+        btnPhotoType = ButtonBuilder.build(rbDetections, rbAll);
     }
 
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -193,8 +185,8 @@ class FilterPanel extends JPanel {
         }
         SearchFilter searchFilter;
         if (isHighLevelZoom) {
-            final PhotoTypeFilter photoTypeFilter = rbDetections.isSelected() ? PhotoTypeFilter.WITH_DETECTIONS
-                    : rbNoDetections.isSelected() ? PhotoTypeFilter.WITHOUT_DETECTIONS : PhotoTypeFilter.ALL;
+            final PhotoDataTypeFilter photoTypeFilter =
+                    rbDetections.isSelected() ? PhotoDataTypeFilter.DETECTIONS_ONLY : PhotoDataTypeFilter.ALL;
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), photoTypeFilter,
                     listOsmComparison.getSelectedValuesList(), listEditStatus.getSelectedValuesList(),
                     listSignType.getSelectedValuesList());
@@ -247,8 +239,8 @@ class FilterPanel extends JPanel {
         public void actionPerformed(final ActionEvent event) {
             final JRadioButton button = (JRadioButton) event.getSource();
             if (button.isSelected()) {
-                final PhotoTypeFilter filter = PhotoTypeFilter.valueOf(button.getActionCommand());
-                if (filter == PhotoTypeFilter.WITHOUT_DETECTIONS) {
+                final PhotoDataTypeFilter filter = PhotoDataTypeFilter.valueOf(button.getActionCommand());
+                if (filter == PhotoDataTypeFilter.DETECTIONS_ONLY) {
                     listOsmComparison.setEnabled(false);
                     listEditStatus.setEnabled(false);
                     listSignType.setEnabled(false);
@@ -286,10 +278,6 @@ class FilterPanel extends JPanel {
         private static final GridBagConstraints RB_ALL = new GridBagConstraints(2, 2, 1, 1, 0, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
 
-        private static final GridBagConstraints RB_NO_DETECTIONS = new GridBagConstraints(1, 3, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
-
-
         private static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
 
@@ -297,14 +285,14 @@ class FilterPanel extends JPanel {
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
 
         private static final GridBagConstraints CBB_OSM_COMPARISON = new GridBagConstraints(1, 5, 2, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 30);
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 40);
 
 
         private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 6, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
 
         private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 6, 2, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 30);
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 40);
 
 
         private static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 7, 1, 1, 1, 1,
@@ -312,7 +300,7 @@ class FilterPanel extends JPanel {
 
 
         private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 7, 2, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 30);
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 40);
 
         private Constraints() {}
     }

@@ -21,8 +21,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @author beataj
  * @version $Revision$
  */
-public enum PhotoTypeFilter {
-    WITH_DETECTIONS, WITHOUT_DETECTIONS, ALL;
+public enum PhotoDataTypeFilter {
+    DETECTIONS_ONLY, ALL;
 
     @Override
     public String toString() {

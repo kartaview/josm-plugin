@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import com.telenav.josm.common.entity.EntityUtil;
+
 
 /**
  * Defines the detection entity.
@@ -11,27 +13,34 @@ import org.openstreetmap.josm.data.coor.LatLon;
 public class Detection {
 
     private final Long id;
-    private final Long sequenceId;
-    private final Long sequenceIndex;
-    private final Long creationTimestamp;
-    private final Long latestChangeTimestamp;
-    private final LatLon point;
-    private final Sign sign;
-    private final Rectangle locationOnPhoto;
-    private final Double confidenceLevel;
-    private final ValidationStatus validationStatus;
+    private Long sequenceId;
+    private Long sequenceIndex;
+    private Long creationTimestamp;
+    private Long latestChangeTimestamp;
+    private LatLon point;
+    private Sign sign;
+    private Rectangle locationOnPhoto;
+    private Double confidenceLevel;
+    private ValidationStatus validationStatus;
     private final EditStatus editStatus;
-    private final OsmComparison osmComparison;
-    private final OsmElement osmElement;
-    private final DetectionMode mode;
-    private final Author author;
+    private OsmComparison osmComparison;
+    private OsmElement osmElement;
+    private DetectionMode mode;
+    private Author author;
 
 
-    public Detection(final Long id, final Long sequenceId, final Long sequenceIndex, final Long creationTimestamp, final Long latestChangeTimestamp,
-            final LatLon point, final Sign sign, final Rectangle locationOnPhoto, final Double confidenceLevel,
-            final ValidationStatus validationStatus, final EditStatus editStatus, final OsmComparison osmComparison,
-            final OsmElement osmElement, final DetectionMode mode, final Author author) {
+    public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
+        this.editStatus = editStatus;
+    }
+
+
+    public Detection(final Long id, final Long sequenceId, final Long sequenceIndex, final Long creationTimestamp,
+            final Long latestChangeTimestamp, final LatLon point, final Sign sign, final Rectangle locationOnPhoto,
+            final Double confidenceLevel, final ValidationStatus validationStatus, final EditStatus editStatus,
+            final OsmComparison osmComparison, final OsmElement osmElement, final DetectionMode mode,
+            final Author author) {
+        this(id, editStatus);
         this.sequenceId = sequenceId;
         this.sequenceIndex = sequenceIndex;
         this.creationTimestamp = creationTimestamp;
@@ -41,7 +50,6 @@ public class Detection {
         this.locationOnPhoto = locationOnPhoto;
         this.confidenceLevel = confidenceLevel;
         this.validationStatus = validationStatus;
-        this.editStatus = editStatus;
         this.osmComparison = osmComparison;
         this.osmElement = osmElement;
         this.mode = mode;
@@ -106,5 +114,25 @@ public class Detection {
 
     public Author getAuthor() {
         return author;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + EntityUtil.hashCode(id);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        boolean result = false;
+        if (this == obj) {
+            result = true;
+        } else if (obj != null && obj.getClass() == this.getClass()) {
+            final Detection other = (Detection) obj;
+            result = EntityUtil.bothNullOrEqual(id, other.getId());
+        }
+        return result;
     }
 }

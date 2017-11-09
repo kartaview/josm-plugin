@@ -72,6 +72,38 @@ public final class PreferenceManager {
         saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
+    public void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionSearchErrorSuppressFlag(flag);
+    }
+
+    public void saveSequenceDetectionsErrorFlag(final boolean flag) {
+        saveManager.saveSequenceDetectionsErrorFlag(flag);
+    }
+
+    public void savePhotoDetectionsErrorFlag(final boolean flag) {
+        saveManager.savePhotoDetectionsErrorFlag(flag);
+    }
+
+    public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
+    }
+
+    public boolean loadDetectionSearchErrorSuppressFlag() {
+        return loadManager.loadDetectionSearchErrorSuppressFlag();
+    }
+
+    public boolean loadSequenceDetectionsErrorFlag() {
+        return loadManager.loadSequenceDetectionsErrorFlag();
+    }
+
+    public boolean loadPhotoDetectionsErrorFlag() {
+        return loadManager.loadPhotoDetectionsErrorFlag();
+    }
+
+    public boolean loadDetectionUpdateErrorSuppressFlag() {
+        return loadManager.loadDetectionUpdateErrorSuppressFlag();
+    }
+
     /**
      * Loads the sequence error suppress flag. If this value is true, then all the future sequence retrieve errors will
      * be suppressed.

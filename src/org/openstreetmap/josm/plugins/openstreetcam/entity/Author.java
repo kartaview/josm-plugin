@@ -10,12 +10,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 public class Author {
 
     private final Long externalId;
-    private final AuthorType type;
+    private final String userName;
 
 
-    public Author(final Long externalId, final AuthorType type) {
+    public Author(final Long externalId, final String userName) {
         this.externalId = externalId;
-        this.type = type;
+        this.userName = userName;
     }
 
 
@@ -23,7 +23,7 @@ public class Author {
         return externalId;
     }
 
-    public AuthorType getType() {
-        return type;
+    public String getUserName() {
+        return userName;
     }
 }

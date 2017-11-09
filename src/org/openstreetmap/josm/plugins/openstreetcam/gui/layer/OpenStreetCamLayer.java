@@ -16,6 +16,7 @@ import java.awt.Stroke;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
@@ -28,6 +29,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.thread.ThreadPool;
 
 
@@ -44,7 +46,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     private DataSet dataSet;
     private Photo selectedPhoto;
     private Photo startPhoto;
-    private Sequence selectedSequence;
+    private Pair<Sequence, List<Detection>> selectedSequence;
     private Collection<Photo> closestPhotos;
     private Detection selectedDetection;
 
@@ -83,11 +85,21 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             if (dataSet.getSegments() != null) {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else {
+                // draw photos
+                final boolean isTransparent = selectedSequence != null;
                 if (dataSet.getPhotos() != null) {
-                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, selectedSequence);
+                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, isTransparent);
                 }
+
+                // draw detections
                 if (dataSet.getDetections() != null) {
-                    paintHandler.drawDetections(graphics, mapView, dataSet.getDetections());
+                    paintHandler.drawDetections(graphics, mapView, dataSet.getDetections(), selectedDetection,
+                            isTransparent);
+                }
+
+                // draw sequence if any
+                if (selectedSequence != null) {
+                    paintHandler.drawSequence(graphics, mapView, selectedSequence, selectedPhoto, selectedDetection);
                 }
             }
             graphics.setComposite(originalComposite);
@@ -143,8 +155,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public Photo nearbyPhoto(final Point point) {
         Photo photo = null;
-        if (selectedSequence != null && selectedSequence.getPhotos() != null) {
-            photo = Util.nearbyPhoto(selectedSequence.getPhotos(), point);
+        if (selectedSequence != null && selectedSequence.getFirst().getPhotos() != null) {
+            photo = Util.nearbyPhoto(selectedSequence.getFirst().getPhotos(), point);
             // API issue: does not return username for sequence photos
             if (selectedPhoto != null && photo != null) {
                 photo.setUsername(selectedPhoto.getUsername());
@@ -154,6 +166,24 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             photo = Util.nearbyPhoto(dataSet.getPhotos(), point);
         }
         return photo;
+    }
+
+
+    /**
+     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
+     *
+     * @param point a {@code Point} represents location where the user had clicked
+     * @return a {@code Photo}
+     */
+    public Detection nearbyDetection(final Point point) {
+        Detection detection = null;
+        if (selectedSequence != null && selectedSequence.getSecond() != null) {
+            detection = Util.nearbyDetection(selectedSequence.getSecond(), point);
+        }
+        if (detection == null && dataSet != null && dataSet.getDetections() != null) {
+            detection = Util.nearbyDetection(dataSet.getDetections(), point);
+        }
+        return detection;
     }
 
     /**
@@ -191,8 +221,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public boolean isPhotoPartOfSequence(final Photo photo) {
         boolean contains = false;
-        if (selectedSequence != null && (selectedSequence.getPhotos() != null)) {
-            for (final Photo elem : selectedSequence.getPhotos()) {
+        if (selectedSequence != null && (selectedSequence.getFirst().getPhotos() != null)) {
+            for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
                 if (elem.equals(photo)) {
                     contains = true;
                     break;
@@ -212,7 +242,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public Photo sequencePhoto(final int index) {
         Photo photo = null;
         if (selectedSequence != null) {
-            for (final Photo elem : selectedSequence.getPhotos()) {
+            for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
                 if (elem.getSequenceIndex().equals(index)) {
                     photo = elem;
                     // API issue: does not return username for sequence photos
@@ -238,8 +268,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      * @return true/false
      */
     public boolean enablePreviousPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
-                && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+        return selectedSequence != null && selectedPhoto != null && !selectedSequence.getFirst().getPhotos().get(0)
+                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -249,8 +279,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
-                && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex());
+                && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
+                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -301,7 +331,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return a {@code Sequence}
      */
-    public Sequence getSelectedSequence() {
+    public Pair<Sequence, List<Detection>> getSelectedSequence() {
         return selectedSequence;
     }
 
@@ -314,12 +344,20 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         this.selectedPhoto = selectedPhoto;
     }
 
+    public Detection getSelectedDetection() {
+        return selectedDetection;
+    }
+
+    public void setSelectedDetection(final Detection selectedDetection) {
+        this.selectedDetection = selectedDetection;
+    }
+
     /**
      * Sets the currently selected sequence.
      *
      * @param selectedSequence a {@code Sequence}
      */
-    public void setSelectedSequence(final Sequence selectedSequence) {
+    public void setSelectedSequence(final Pair<Sequence, List<Detection>> selectedSequence) {
         this.selectedSequence = selectedSequence;
     }
 

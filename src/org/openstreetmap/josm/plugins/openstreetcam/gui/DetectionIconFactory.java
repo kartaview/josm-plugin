@@ -3,7 +3,7 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui;
 
@@ -39,7 +39,7 @@ public enum DetectionIconFactory {
             final String fileName = file.replace(EXT_PNG, "").replace(EXT_SVG, "");
             final String filePath = IconConfig.getInstance().getDetectionIconsPath() + "/" + file;
             iconsMap.put(fileName, new Pair<>(ImageProvider.get(filePath, ImageSizes.LARGEICON),
-                    ImageProvider.get(filePath, ImageSizes.MAPMAX)));
+                    ImageProvider.get(filePath, ImageSizes.CURSOR)));
         }
     }
 

@@ -3,7 +3,7 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
@@ -16,6 +16,9 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 final class RequestConstants {
 
     static final String SEARCH_DETECTIONS = "searchDetections";
+    static final String UPDATE_DETECTION = "updateDetection";
+    static final String RETRIEVE_SEQUENCE_DETECTIONS = "retrieveSequenceDetections";
+    static final String RETRIEVE_PHOTO_DETECTIONS = "retrievePhotoDetections";
 
     static final String NORTH = "north";
     static final String SOUTH = "south";
@@ -32,4 +35,7 @@ final class RequestConstants {
     static final String EDIT_STATUSES = "editStatuses";
     static final String VALIDATION_STATUSES = "validationStatuses";
     static final String TYPES = "types";
+    static final String SEQUENCE_ID = "sequenceId";
+    static final String SEQUENCE_INDEX = "sequenceIndex";
+
 }

@@ -3,12 +3,14 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
@@ -20,7 +22,7 @@ import com.telenav.josm.common.http.HttpUtil;
  * @author beataj
  * @version $Revision$
  */
-public class HttpQueryBuilder {
+class HttpQueryBuilder {
 
     private static final char QUESTIONM = '?';
     private static final char EQ = '=';
@@ -31,8 +33,18 @@ public class HttpQueryBuilder {
     private final StringBuilder query;
 
 
-    HttpQueryBuilder(final BoundingBox area, final FilterPack filterPack) {
-        query = new StringBuilder(RequestConstants.SEARCH_DETECTIONS);
+    HttpQueryBuilder() {
+        query = new StringBuilder();
+    }
+
+    String buildCommentQuery() {
+        query.append(RequestConstants.UPDATE_DETECTION);
+        appendFormatFilter(query);
+        return build();
+    }
+
+    String buildSearchQuery(final BoundingBox area, final FilterPack filterPack) {
+        query.append(RequestConstants.SEARCH_DETECTIONS);
         query.append(QUESTIONM);
 
         appendFormatFilter(query);
@@ -40,11 +52,32 @@ public class HttpQueryBuilder {
         if (filterPack != null) {
             appendFilters(filterPack);
         }
+        return build();
+    }
+
+    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId, final List<OsmComparison> osmComparisons) {
+        query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
+        query.append(QUESTIONM);
+        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        if (osmComparisons != null && !osmComparisons.isEmpty()) {
+            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(osmComparisons)));
+        }
+        return build();
+    }
+
+    String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Long sequenceIndex) {
+        query.append(RequestConstants.RETRIEVE_PHOTO_DETECTIONS);
+        query.append(QUESTIONM);
+        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
+        return build();
     }
 
     private void appendFilters(final FilterPack filterPack) {
         if (filterPack.getExternalId() != null) {
-            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(filterPack.getExternalId().toString());
+            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ)
+            .append(filterPack.getExternalId().toString());
             query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
         }
 
@@ -65,7 +98,7 @@ public class HttpQueryBuilder {
 
         if (filterPack.getSignTypes() != null && !filterPack.getSignTypes().isEmpty()) {
             query.append(AND).append(RequestConstants.TYPES).append(EQ)
-                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
         }
     }
 

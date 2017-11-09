@@ -32,8 +32,12 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +76,22 @@ final class SaveManager {
 
     void saveSegmentsErrorSuppressFlag(final boolean flag) {
         Main.pref.putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
+    }
+
+    void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
+        Main.pref.putBoolean(SUPPRESS_DETECTION_SEARCH_ERROR, flag);
+    }
+
+    void saveSequenceDetectionsErrorFlag(final boolean flag) {
+        Main.pref.putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
+    }
+
+    void savePhotoDetectionsErrorFlag(final boolean flag) {
+        Main.pref.putBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR, flag);
+    }
+
+    void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
+        Main.pref.putBoolean(SUPPRESS_DETECTION_UPDATE_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {

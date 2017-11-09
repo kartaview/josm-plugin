@@ -46,6 +46,48 @@ import com.telenav.josm.common.util.GeometryUtil;
  */
 class PaintHandler {
 
+
+    void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
+            final Photo selectedPhoto, final boolean isTransparent) {
+        final Composite composite = isTransparent ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+
+        // draw photo locations
+        if (photos != null) {
+            graphics.setComposite(composite);
+            for (final Photo photo : photos) {
+                if (!photo.equals(selectedPhoto)) {
+                    drawPhoto(graphics, mapView, photo, false);
+                }
+            }
+        }
+
+        if (selectedPhoto != null) {
+            drawPhoto(graphics, mapView, selectedPhoto, true);
+        }
+    }
+
+
+    void drawSequence(final Graphics2D graphics, final MapView mapView, final Pair<Sequence, List<Detection>> sequence,
+            final Photo selectedPhoto, final Detection selectedDetection) {
+        graphics.setComposite(OPAQUE_COMPOSITE);
+        graphics.setStroke(SEQUENCE_LINE);
+        drawSequence(graphics, mapView, sequence.getFirst());
+
+        if (sequence.getSecond() != null) {
+            for (final Detection detection : sequence.getSecond()) {
+                drawDetection(graphics, mapView, detection, false);
+            }
+        }
+
+        if (selectedPhoto != null) {
+            drawPhoto(graphics, mapView, selectedPhoto, true);
+        }
+
+        if (selectedDetection != null) {
+            drawDetection(graphics, mapView, selectedDetection, false);
+        }
+    }
+
     /**
      * Draws a list of photos to the map. A photo is represented by an icon on the map.
      *
@@ -160,14 +202,29 @@ class PaintHandler {
         }
     }
 
-    void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections) {
+    void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
+            final Detection selectedDetection, final boolean isTransparent) {
+        final Composite composite = isTransparent ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+        graphics.setComposite(composite);
+
+        // draw map detections
         for (final Detection detection : detections) {
-            final Point point = mapView.getPoint(detection.getPoint());
-            // if (detection.getSign().getName().equals("regulatory--traffic--lights--sign")) {
-            final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign().getName(), false);
-            PaintManager.drawIcon(graphics, icon, point);
-            // }
+            if (selectedDetection == null || (!detection.equals(selectedDetection))) {
+                drawDetection(graphics, mapView, detection, false);
+            }
         }
+
+        if (selectedDetection != null) {
+            graphics.setComposite(OPAQUE_COMPOSITE);
+            drawDetection(graphics, mapView, selectedDetection, true);
+        }
+    }
+
+    private void drawDetection(final Graphics2D graphics, final MapView mapView, final Detection detection,
+            final boolean isSelected) {
+        final Point point = mapView.getPoint(detection.getPoint());
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign().getName(), isSelected);
+        PaintManager.drawIcon(graphics, icon, point);
     }
 
     private List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {

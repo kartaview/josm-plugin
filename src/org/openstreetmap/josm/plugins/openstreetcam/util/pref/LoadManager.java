@@ -31,8 +31,12 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +48,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoTypeFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -77,6 +81,22 @@ final class LoadManager {
         return Main.pref.getBoolean(SUPPRESS_SEQUENCE_ERROR);
     }
 
+    boolean loadDetectionSearchErrorSuppressFlag() {
+        return Main.pref.getBoolean(SUPPRESS_DETECTION_SEARCH_ERROR);
+    }
+
+    boolean loadSequenceDetectionsErrorFlag() {
+        return Main.pref.getBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR);
+    }
+
+    boolean loadPhotoDetectionsErrorFlag() {
+        return Main.pref.getBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR);
+    }
+
+    boolean loadDetectionUpdateErrorSuppressFlag() {
+        return Main.pref.getBoolean(SUPPRESS_DETECTION_UPDATE_ERROR);
+    }
+
     SearchFilter loadSearchFilter() {
         final String dateStr = Main.pref.get(FILTER_DATE);
         Date date = null;
@@ -85,9 +105,10 @@ final class LoadManager {
         }
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
-        final String photoTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
-        final PhotoTypeFilter photoType = photoTypeVal != null && !photoTypeVal.isEmpty()
-                ? PhotoTypeFilter.valueOf(photoTypeVal) : PhotoTypeFilter.ALL;
+     //   final String photoTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
+        final String photoTypeVal = "";
+        final PhotoDataTypeFilter photoType = photoTypeVal != null && !photoTypeVal.isEmpty()
+                ? PhotoDataTypeFilter.valueOf(photoTypeVal) : PhotoDataTypeFilter.ALL;
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
         final List<EditStatus> editStatuses = loadEditStatusFilter();
         final List<SignType> signTypes = loadSignTypeFilter();

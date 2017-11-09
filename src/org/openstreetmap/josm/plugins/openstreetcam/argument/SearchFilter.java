@@ -3,7 +3,7 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
@@ -25,7 +25,7 @@ public class SearchFilter {
     private Date date;
     private final boolean onlyMineFlag;
 
-    private PhotoTypeFilter photoType;
+    private PhotoDataTypeFilter photoType;
     private List<OsmComparison> osmComparisons;
     private List<EditStatus> editStatuses;
     private List<SignType> signTypes;
@@ -40,7 +40,7 @@ public class SearchFilter {
         this.date = date;
     }
 
-    public SearchFilter(final Date date, final boolean onlyMineFlag, final PhotoTypeFilter photoType,
+    public SearchFilter(final Date date, final boolean onlyMineFlag, final PhotoDataTypeFilter photoType,
             final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
             final List<SignType> signTypes) {
         this(date, onlyMineFlag);
@@ -51,7 +51,7 @@ public class SearchFilter {
     }
 
 
-    public PhotoTypeFilter getPhotoType() {
+    public PhotoDataTypeFilter getPhotoType() {
         return photoType;
     }
 
