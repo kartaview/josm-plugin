@@ -25,9 +25,11 @@ import java.util.SortedMap;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import com.telenav.josm.common.entity.Coordinate;
@@ -155,6 +157,16 @@ class PaintHandler {
                     PaintUtil.segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
             graphics.setComposite(originalComposite.derive(val));
             PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
+        }
+    }
+
+    void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections) {
+        for (final Detection detection : detections) {
+            final Point point = mapView.getPoint(detection.getPoint());
+            // if (detection.getSign().getName().equals("regulatory--traffic--lights--sign")) {
+            final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign().getName(), false);
+            PaintManager.drawIcon(graphics, icon, point);
+            // }
         }
     }
 

@@ -38,7 +38,7 @@ public enum DetectionIconFactory {
         for (final String file : new File(IconConfig.getInstance().getDetectionIconsLongPath()).list()) {
             final String fileName = file.replace(EXT_PNG, "").replace(EXT_SVG, "");
             final String filePath = IconConfig.getInstance().getDetectionIconsPath() + "/" + file;
-            iconsMap.put(fileName, new Pair<>(ImageProvider.get(filePath, ImageSizes.CURSOR),
+            iconsMap.put(fileName, new Pair<>(ImageProvider.get(filePath, ImageSizes.LARGEICON),
                     ImageProvider.get(filePath, ImageSizes.MAPMAX)));
         }
     }
@@ -49,7 +49,8 @@ public enum DetectionIconFactory {
             icon = isSelected ? iconsMap.get(SIGN_POST_ICON_NAME).getSecond()
                     : iconsMap.get(SIGN_POST_ICON_NAME).getFirst();
         } else {
-            icon = isSelected ? iconsMap.get(name).getSecond() : iconsMap.get(name).getFirst();
+            icon = iconsMap.get(name) != null
+                    ? isSelected ? iconsMap.get(name).getSecond() : iconsMap.get(name).getFirst() : null;
         }
         return icon;
     }

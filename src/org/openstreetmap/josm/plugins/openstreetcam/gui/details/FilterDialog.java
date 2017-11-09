@@ -17,7 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.CancelAction;
@@ -35,23 +37,32 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
 public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
+    private static final Dimension HIGH_ZOOM_DIM = new Dimension(400, 370);
     private static final Dimension DIM = new Dimension(350, 150);
 
     private FilterPanel pnlFilter;
-
+    private boolean isHighLevelZoom = false;
 
     public FilterDialog(final ImageIcon icon) {
         super(GuiConfig.getInstance().getDlgFilterTitle(), icon.getImage());
+        final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+        final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
+        Dimension dimension = DIM;
+        if (zoom >= mapViewSettings.getPhotoZoom()) {
+            isHighLevelZoom = true;
+            dimension = HIGH_ZOOM_DIM;
+        }
         createComponents();
         setLocationRelativeTo(MainApplication.getMap().mapView);
-        setSize(DIM);
-        setMinimumSize(DIM);
-        setPreferredSize(DIM);
+
+        setSize(dimension);
+        setMinimumSize(dimension);
+        setPreferredSize(dimension);
     }
 
     @Override
     protected void createComponents() {
-        pnlFilter = new FilterPanel();
+        pnlFilter = new FilterPanel(isHighLevelZoom);
         final JButton btnOk = ButtonBuilder.build(new OkAction(), GuiConfig.getInstance().getBtnOkLbl());
         final JButton btnClear = ButtonBuilder.build(new ClearAction(), GuiConfig.getInstance().getBtnClearLbl());
         final JButton btnCancel =
@@ -74,10 +85,10 @@ public class FilterDialog extends ModalDialog {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final ListFilter result = pnlFilter.selectedFilters();
+            final SearchFilter result = pnlFilter.selectedFilters();
             if (result != null) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
-                final ListFilter oldFilter = prefManager.loadListFilter();
+                final SearchFilter oldFilter = prefManager.loadSearchFilter();
                 if (result.equals(oldFilter)) {
                     prefManager.saveFiltersChangedFlag(false);
                 } else {

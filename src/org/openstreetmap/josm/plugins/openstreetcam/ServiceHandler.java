@@ -20,17 +20,21 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoTypeFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.ApolloService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamService;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
+import com.telenav.josm.common.entity.Pair;
 
 
 /**
@@ -57,6 +61,39 @@ public final class ServiceHandler {
     }
 
 
+    public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
+        Pair<PhotoDataSet, List<Detection>> result;
+        if (filter != null && filter.getPhotoType() != PhotoTypeFilter.WITHOUT_DETECTIONS) {
+            final PhotoDataSet photoDataSet = listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
+            result = new Pair<>(photoDataSet, null);
+        } else {
+
+            final ExecutorService executorService = Executors.newFixedThreadPool(2);
+            final Future<PhotoDataSet> future1 = executorService.submit(() -> {
+                return listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
+            });
+            final Future<List<Detection>> future2 = executorService.submit(() -> {
+                return searchDetections(area, null);
+            });
+
+            PhotoDataSet photoDataSet = null;
+            try {
+                photoDataSet = future1.get();
+            } catch (final Exception ex) {
+                // handle ex
+            }
+            List<Detection> detections = null;
+            try {
+                detections = future2.get();
+            } catch (final Exception ex) {
+                // handle ex
+            }
+            executorService.shutdown();
+            result = new Pair<>(photoDataSet, detections);
+        }
+        return result;
+    }
+
     /**
      * Lists the photos from the current area based on the given filters.
      *
@@ -65,7 +102,7 @@ public final class ServiceHandler {
      * @param paging a {@code Paging} representing the pagination
      * @return a list of {@code Photo}s
      */
-    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final ListFilter filter, final Paging paging) {
+    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final SearchFilter filter, final Paging paging) {
         final Long osmUserId = osmUserId(filter);
         final Date date = filter != null ? filter.getDate() : null;
         PhotoDataSet result = new PhotoDataSet();
@@ -84,6 +121,26 @@ public final class ServiceHandler {
         return result;
     }
 
+
+    private List<Detection> searchDetections(final BoundingBox area, final SearchFilter searchFilter) {
+        final Long osmUserId = osmUserId(searchFilter);
+        final FilterPack filterPack = new FilterPack(osmUserId, searchFilter.getDate(),
+                searchFilter.getOsmComparisons(), searchFilter.getEditStatuses(), searchFilter.getSignTypes());
+        List<Detection> result = new ArrayList<>();
+        try {
+            result = apolloService.searchDetections(area, filterPack);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView,
+                        GuiConfig.getInstance().getErrorPhotoListText(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                final boolean flag = val == JOptionPane.YES_OPTION;
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+            }
+        }
+        return result;
+    }
+
     /**
      * Lists the segments that have OpenStreetCam coverage from the given area(s) corresponding to the specified zoom
      * level.
@@ -94,7 +151,7 @@ public final class ServiceHandler {
      * @param zoom the current zoom level
      * @return a list of {@code Segment}s
      */
-    public List<Segment> listMatchedTracks(final List<BoundingBox> areas, final ListFilter filter, final int zoom) {
+    public List<Segment> listMatchedTracks(final List<BoundingBox> areas, final SearchFilter filter, final int zoom) {
         List<Segment> finalResult = new ArrayList<>();
         final Long osmUserId = osmUserId(filter);
         try {
@@ -105,7 +162,7 @@ public final class ServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
@@ -125,9 +182,9 @@ public final class ServiceHandler {
     }
 
 
-    private Long osmUserId(final ListFilter filter) {
+    private Long osmUserId(final SearchFilter filter) {
         Long osmUserId = null;
-        if (filter != null && filter.isOnlyUserFlag() && UserIdentityManager.getInstance().isFullyIdentified()
+        if (filter != null && filter.isOnlyMineFlag() && UserIdentityManager.getInstance().isFullyIdentified()
                 && UserIdentityManager.getInstance().asUser().getId() > 0) {
             osmUserId = UserIdentityManager.getInstance().asUser().getId();
         }

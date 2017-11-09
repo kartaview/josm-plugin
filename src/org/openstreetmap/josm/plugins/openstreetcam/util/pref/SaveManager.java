@@ -20,6 +20,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLA
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
@@ -31,13 +35,22 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
+import java.util.ArrayList;
+import java.util.List;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 
 
 /**
@@ -66,12 +79,46 @@ final class SaveManager {
         Main.pref.put(FILTERS_CHANGED, Boolean.toString(changed));
     }
 
-    void saveListFilter(final ListFilter filter) {
+    void saveSearchFilter(final SearchFilter filter) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyUserFlag());
+            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyMineFlag());
+            Main.pref.put(FILTER_SEARCH_PHOTO_TYPE, filter.getPhotoType().name());
+            saveOsmComparisonFilter(filter.getOsmComparisons());
+            saveEditStatusFilter(filter.getEditStatuses());
+            saveSignTypeFilter(filter.getSignTypes());
         }
+    }
+
+    private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
+        final List<OsmComparisonEntry> entries = new ArrayList<>();
+        if (osmComparisons != null) {
+            for (final OsmComparison osmComparison : osmComparisons) {
+                entries.add(new OsmComparisonEntry(osmComparison));
+            }
+        }
+        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_OSM_COMPARISON, entries, OsmComparisonEntry.class);
+    }
+
+    private void saveEditStatusFilter(final List<EditStatus> editStatuses) {
+        final List<EditStatusEntry> entries = new ArrayList<>();
+        if (editStatuses != null) {
+            for (final EditStatus editStatus : editStatuses) {
+                entries.add(new EditStatusEntry(editStatus));
+            }
+        }
+        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
+    }
+
+    private void saveSignTypeFilter(final List<SignType> signTypes) {
+        final List<SignTypeEntry> entries = new ArrayList<>();
+        if (signTypes != null) {
+            for (final SignType signType : signTypes) {
+                entries.add(new SignTypeEntry(signType));
+            }
+        }
+        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
@@ -90,8 +137,8 @@ final class SaveManager {
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-            Main.pref.put(AUTOPLAY_LENGTH, length);
-            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+                    Main.pref.put(AUTOPLAY_LENGTH, length);
+                    Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 

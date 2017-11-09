@@ -68,11 +68,19 @@ public final class GuiConfig extends BaseConfig {
     private final String btnDataSwitchShortcutTlt;
     private final String btnMatchedWayTlt;
     private final String btnMatchedWayShortcutTlt;
+
     private final String dlgFilterTitle;
     private final String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
+    private final String dlgFilterPhotoTypeLbl;
+    private final String dlgFilterDetectionLbl;
+    private final String dlgFilterOsmComparisonLbl;
+    private final String dlgFilterValidationStatusLbl;
+    private final String dlgFilterEditStatusLbl;
+    private final String dlgFilterDetectionTypeLbl;
+
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
@@ -111,6 +119,22 @@ public final class GuiConfig extends BaseConfig {
     private final String infoFileExistsTitle;
     private final String infoFileExistsText;
     private final String gpxTrackDescription;
+
+    private final String detectedDetectionText;
+    private final String detectionOnOsmText;
+    private final String detectionModeText;
+    private final String detectionAddedValidationStatusText;
+    private final String detectionValidationStatusText;
+    private final String detectionChangedValidationStatusText;
+    private final String detectionConfirmedValidationStatusText;
+    private final String detectionRemovedValidationStatusText;
+    private final String detectionToBeCheckedValidationStatusText;
+    private final String detectionManualModeText;
+    private final String detectionAutomaticModeText;
+    private final String detectionNewOnOsmText;
+    private final String detectionChangedOnOsmText;
+    private final String detectionSameOnOsmText;
+    private final String detectionUnknownOnOsmText;
 
     private GuiConfig() {
         super(CONFIG_FILE);
@@ -165,6 +189,12 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDateLbl = readProperty("filter.date.lbl");
         dlgFilterUserLbl = readProperty("filter.user.lbl");
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
+        dlgFilterDetectionLbl = readProperty("filter.detection.lbl");
+        dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
+        dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
+        dlgFilterValidationStatusLbl = readProperty("filter.validationStatus.lbl");
+        dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
+        dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -204,6 +234,22 @@ public final class GuiConfig extends BaseConfig {
         infoFileExistsText = readProperty("info.file.exists.text");
 
         gpxTrackDescription = readProperty("gpx.track.description");
+
+        detectedDetectionText = readProperty("detection.detected.text");
+        detectionOnOsmText = readProperty("detection.osm.text");
+        detectionModeText = readProperty("detection.mode.text");
+        detectionValidationStatusText = readProperty("detection.validation.status.text");
+        detectionAddedValidationStatusText = readProperty("detection.validation.status.value.added");
+        detectionChangedValidationStatusText = readProperty("detection.validation.status.value.changed");
+        detectionConfirmedValidationStatusText = readProperty("detection.validation.status.value.confirmed");
+        detectionRemovedValidationStatusText = readProperty("detection.validation.status.value.removed");
+        detectionToBeCheckedValidationStatusText = readProperty("detection.validation.status.value.toBeChecked");
+        detectionManualModeText = readProperty("detection.mode.value.manual");
+        detectionAutomaticModeText = readProperty("detection.mode.value.automatic");
+        detectionNewOnOsmText = readProperty("detection.osm.new.value");
+        detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
+        detectionSameOnOsmText = readProperty("detection.osm.same.value");
+        detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
     }
 
 
@@ -338,6 +384,30 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterLoginWarningLbl() {
         return dlgFilterLoginWarningLbl;
+    }
+
+    public String getDlgFilterDetectionLbl() {
+        return dlgFilterDetectionLbl;
+    }
+
+    public String getDlgFilterPhotoTypeLbl() {
+        return dlgFilterPhotoTypeLbl;
+    }
+
+    public String getDlgFilterOsmComparisonLbl() {
+        return dlgFilterOsmComparisonLbl;
+    }
+
+    public String getDlgFilterValidationStatusLbl() {
+        return dlgFilterValidationStatusLbl;
+    }
+
+    public String getDlgFilterEditStatusLbl() {
+        return dlgFilterEditStatusLbl;
+    }
+
+    public String getDlgFilterDetectionTypeLbl() {
+        return dlgFilterDetectionTypeLbl;
     }
 
     public String getBtnOkLbl() {
@@ -522,5 +592,65 @@ public final class GuiConfig extends BaseConfig {
 
     public String getGpxTrackDescription() {
         return gpxTrackDescription;
+    }
+
+    public String getDetectedDetectionText() {
+        return detectedDetectionText;
+    }
+
+    public String getDetectionOnOsmText() {
+        return detectionOnOsmText;
+    }
+
+    public String getDetectionModeText() {
+        return detectionModeText;
+    }
+
+    public String getDetectionValidationStatusText() {
+        return detectionValidationStatusText;
+    }
+
+    public String getDetectionChangedValidationStatusText() {
+        return detectionChangedValidationStatusText;
+    }
+
+    public String getDetectionConfirmedValidationStatusText() {
+        return detectionConfirmedValidationStatusText;
+    }
+
+    public String getDetectionRemovedValidationStatusText() {
+        return detectionRemovedValidationStatusText;
+    }
+
+    public String getDetectionToBeCheckedValidationStatusText() {
+        return detectionToBeCheckedValidationStatusText;
+    }
+
+    public String getDetectionAddedValidationStatusText() {
+        return detectionAddedValidationStatusText;
+    }
+
+    public String getDetectionManualModeText() {
+        return detectionManualModeText;
+    }
+
+    public String getDetectionAutomaticModeText() {
+        return detectionAutomaticModeText;
+    }
+
+    public String getDetectionNewOnOsmText() {
+        return detectionNewOnOsmText;
+    }
+
+    public String getDetectionChangedOnOsmText() {
+        return detectionChangedOnOsmText;
+    }
+
+    public String getDetectionSameOnOsmText() {
+        return detectionSameOnOsmText;
+    }
+
+    public String getDetectionUnknownOnOsmText() {
+        return detectionUnknownOnOsmText;
     }
 }

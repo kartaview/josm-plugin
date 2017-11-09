@@ -14,7 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Set;
 import javax.imageio.ImageIO;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -57,17 +57,17 @@ public final class PhotoHandler {
      * retrieved and instead the large thumbnail is retrieved.
      * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be read
      */
-    public Pair<BufferedImage, PhotoType> loadPhoto(final Photo photo, final PhotoType type)
+    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type)
             throws PhotoHandlerException {
-        Pair<BufferedImage, PhotoType> result;
+        Pair<BufferedImage, PhotoSize> result;
         ImageIO.setUseCache(false);
         try {
-            if (type.equals(PhotoType.THUMBNAIL)) {
+            if (type.equals(PhotoSize.THUMBNAIL)) {
                 result = loadThumbnailPhoto(photo);
-            } else if (type.equals(PhotoType.HIGH_QUALITY)) {
+            } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
                 result = loadHighQualityPhoto(photo);
             } else {
-                result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoType.LARGE_THUMBNAIL,
+                result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL,
                         true);
             }
         } catch (final ServiceException e) {
@@ -78,28 +78,28 @@ public final class PhotoHandler {
         return result;
     }
 
-    private Pair<BufferedImage, PhotoType> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
+    private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
         // special case, we don't save small thumbnails to cache
         final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
         return new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
-                PhotoType.THUMBNAIL);
+                PhotoSize.THUMBNAIL);
     }
 
-    private Pair<BufferedImage, PhotoType> loadHighQualityPhoto(final Photo photo)
+    private Pair<BufferedImage, PhotoSize> loadHighQualityPhoto(final Photo photo)
             throws ServiceException, IOException {
-        Pair<BufferedImage, PhotoType> result;
+        Pair<BufferedImage, PhotoSize> result;
         try {
-            result = loadPhoto(photo.getSequenceId(), photo.getName(), PhotoType.HIGH_QUALITY, false);
+            result = loadPhoto(photo.getSequenceId(), photo.getName(), PhotoSize.HIGH_QUALITY, false);
         } catch (final Exception e) {
             // try to load large thumbnail image
-            result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoType.LARGE_THUMBNAIL, true);
+            result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL, true);
         }
         return result;
     }
 
-    private Pair<BufferedImage, PhotoType> loadPhoto(final Long sequenceId, final String photoName,
-            final PhotoType photoType, final boolean isWarning) throws ServiceException, IOException {
-        final Pair<BufferedImage, PhotoType> result;
+    private Pair<BufferedImage, PhotoSize> loadPhoto(final Long sequenceId, final String photoName,
+            final PhotoSize photoType, final boolean isWarning) throws ServiceException, IOException {
+        final Pair<BufferedImage, PhotoSize> result;
         final CacheEntry image = cacheManager.getPhoto(sequenceId, photoName);
         if (image == null) {
             // load image from server

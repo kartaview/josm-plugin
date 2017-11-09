@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -64,6 +64,15 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
+    public <T> T executeGet(final String url, final Class<T> responseType) throws ServiceException {
+        String response;
+        try {
+            response = new HttpConnector(url, getHeaders()).get();
+        } catch (final HttpConnectorException e) {
+            throw new ServiceException(e);
+        }
+        return parseResponse(response, responseType);
+    }
 
     private <T> T parseResponse(final String response, final Type responseType) throws ServiceException {
         T root = null;
@@ -83,7 +92,7 @@ public abstract class BaseService {
      * @param response a represents the response of the service
      * @throws ServiceException if the response contains a HTTP error code
      */
-    public void verifyResponseStatus(final Response response) throws ServiceException {
+    public void verifyResponseStatus(final BaseResponse response) throws ServiceException {
         if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
             throw new ServiceException(response.getStatus().getApiMessage());
         }

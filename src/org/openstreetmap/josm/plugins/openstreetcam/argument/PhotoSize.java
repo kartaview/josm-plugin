@@ -15,7 +15,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @author beataj
  * @version $Revision$
  */
-public enum PhotoType {
+public enum PhotoSize {
     /** small image */
     THUMBNAIL,
 
