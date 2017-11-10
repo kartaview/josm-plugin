@@ -20,20 +20,19 @@ import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 
 /**
-*
-* @author ioanao
-* @version $Revision$
-*/
+ *
+ * @author ioanao
+ * @version $Revision$
+ */
 public class DetectionButtonPanel extends JPanel {
 
     private static final long serialVersionUID = -6885598017144429682L;
 
     private static final String SHORTCUT = "sc";
-    private static final int COLS = 4;
+    private static final int COLS = 3;
     private static final int ROWS = 1;
     private static final Dimension DIM = new Dimension(200, 24);
 
-    private JButton btnReopen;
     private JButton btnFix;
     private JButton btnInvalidate;
     private JButton btnOther;
@@ -41,19 +40,10 @@ public class DetectionButtonPanel extends JPanel {
 
     DetectionButtonPanel() {
         super(new GridLayout(ROWS, COLS));
-        addReopenButton();
         addFixButton();
-        addInvalidateButton();
-        addOtherButton();
+        addAlreadyFixedButton();
+        addCouldntFixButton();
         setPreferredSize(DIM);
-    }
-
-    private void addReopenButton() {
-        final JosmAction action = new ReopenAction();
-        btnReopen = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnReopenDetection());
-        btnReopen.setToolTipText(GuiConfig.getInstance().getBtnReopenDetectionTlt().replace(SHORTCUT,
-                action.getShortcut().getKeyText()));
-        add(btnReopen);
     }
 
     private void addFixButton() {
@@ -64,38 +54,20 @@ public class DetectionButtonPanel extends JPanel {
         add(btnFix);
     }
 
-    private void addInvalidateButton() {
-        final JosmAction action = new InvalidateAction();
-        btnInvalidate = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnInvalidateDetection());
-        btnInvalidate.setToolTipText(GuiConfig.getInstance().getBtnInvalidateDetectionTlt().replace(SHORTCUT,
+    private void addAlreadyFixedButton() {
+        final JosmAction action = new AlreadyFixedAction();
+        btnInvalidate = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnAlreadyFixedDetection());
+        btnInvalidate.setToolTipText(GuiConfig.getInstance().getBtnAlreadyFixedDetectionTlt().replace(SHORTCUT,
                 action.getShortcut().getKeyText()));
         add(btnInvalidate);
     }
 
-    private void addOtherButton() {
-        final JosmAction action = new OtherAction();
-        btnOther = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnOtherDetection());
-        btnOther.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
-                action.getShortcut().getKeyText()));
+    private void addCouldntFixButton() {
+        final JosmAction action = new CouldntFixAction();
+        btnOther = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnCouldntFixDetection());
         add(btnOther);
     }
 
-
-    private final class ReopenAction extends JosmAction {
-
-        private static final long serialVersionUID = 191591505362305396L;
-
-        private ReopenAction() {
-            super(null, null, null, ShortcutFactory.getInstance()
-                    .getShotrcut(GuiConfig.getInstance().getBtnReopenDetectionShortcutText()),
-                    true);
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-
-        }
-    }
 
     private final class FixAction extends JosmAction {
 
@@ -113,16 +85,13 @@ public class DetectionButtonPanel extends JPanel {
         }
     }
 
-    private final class InvalidateAction extends JosmAction {
+    private final class AlreadyFixedAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
 
-        private InvalidateAction() {
-            super(GuiConfig.getInstance().getBtnClosestShortcutText(), null,
-                    GuiConfig.getInstance().getBtnClosestShortcutText(),
-                    ShortcutFactory.getInstance()
-                            .getShotrcut(GuiConfig.getInstance().getBtnInvalidateDetectionShortcutText()),
-                    true);
+        private AlreadyFixedAction() {
+            super(null, null, null, ShortcutFactory.getInstance()
+                    .getShotrcut(GuiConfig.getInstance().getBtnAlreadyFixedDetectionShortcutText()), true);
         }
 
         @Override
@@ -131,17 +100,9 @@ public class DetectionButtonPanel extends JPanel {
         }
     }
 
-    private final class OtherAction extends JosmAction {
+    private final class CouldntFixAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
-
-        private OtherAction() {
-            super(GuiConfig.getInstance().getBtnClosestShortcutText(), null,
-                    GuiConfig.getInstance().getBtnClosestShortcutText(),
-                    ShortcutFactory.getInstance()
-                            .getShotrcut(GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText()),
-                    true);
-        }
 
         @Override
         public void actionPerformed(final ActionEvent event) {

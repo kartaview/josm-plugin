@@ -112,17 +112,17 @@ public final class GuiConfig extends BaseConfig {
     private final String infoFileExistsText;
     private final String gpxTrackDescription;
 
-    private final String btnReopenDetection;
     private final String btnFixDetection;
-    private final String btnInvalidateDetection;
-    private final String btnOtherDetection;
-
-    private final String btnReopenDetectionShortcutText;
-    private final String btnReopenDetectionTlt;
     private final String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
-    private final String btnInvalidateDetectionShortcutText;
-    private final String btnInvalidateDetectionTlt;
+    private final String btnAlreadyFixedDetection;
+    private final String btnAlreadyFixedDetectionShortcutText;
+    private final String btnAlreadyFixedDetectionTlt;
+    private final String btnCouldntFixDetection;
+    private final String btnBadDetection;
+    private final String btnBadDetectionShortcutText;
+    private final String btnBadDetectionTlt;
+    private final String btnOtherActionOnDetection;
     private final String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
 
@@ -236,19 +236,19 @@ public final class GuiConfig extends BaseConfig {
 
         gpxTrackDescription = readProperty("gpx.track.description");
 
-        btnReopenDetection = readProperty("btn.detection.reopen");
         btnFixDetection = readProperty("btn.detection.fix");
-        btnInvalidateDetection = readProperty("btn.detection.invalidate");
-        btnOtherDetection = readProperty("btn.detection.other");
-
-        btnReopenDetectionTlt = readProperty("btn.detection.reopen.tlt");
-        btnReopenDetectionShortcutText = readProperty("btn.detection.reopen.shortcut.text");
         btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
         btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
-        btnInvalidateDetectionShortcutText = readProperty("btn.detection.invalidate.shortcut.text");
-        btnInvalidateDetectionTlt = readProperty("btn.detection.invalidate.tlt");
-        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.other.action.shortcut.text");
-        btnOtherActionOnDetectionTlt = readProperty("btn.detection.other.action.tlt");
+        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
+        btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
+        btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
+        btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
+        btnBadDetection = readProperty("btn.detection.couldntFixed.bad");
+        btnBadDetectionShortcutText = readProperty("btn.detection.couldntFixed.bad.shortcut.text");
+        btnBadDetectionTlt = readProperty("btn.detection.couldntFixed.bad.tlt");
+        btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
+        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
+        btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
 
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
@@ -584,28 +584,12 @@ public final class GuiConfig extends BaseConfig {
         return gpxTrackDescription;
     }
 
-    public String getBtnReopenDetection() {
-        return btnReopenDetection;
-    }
-
-    public String getBtnInvalidateDetection() {
-        return btnInvalidateDetection;
-    }
-
     public String getBtnFixDetection() {
         return btnFixDetection;
     }
 
-    public String getBtnOtherDetection() {
-        return btnOtherDetection;
-    }
-
-    public String getBtnReopenDetectionShortcutText() {
-        return btnReopenDetectionShortcutText;
-    }
-
-    public String getBtnReopenDetectionTlt() {
-        return btnReopenDetectionTlt;
+    public String getBtnAlreadyFixedDetection() {
+        return btnAlreadyFixedDetection;
     }
 
     public String getBtnFixDetectionShortcutText() {
@@ -614,14 +598,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnFixDetectionTlt() {
         return btnFixDetectionTlt;
-    }
-
-    public String getBtnInvalidateDetectionShortcutText() {
-        return btnInvalidateDetectionShortcutText;
-    }
-
-    public String getBtnInvalidateDetectionTlt() {
-        return btnInvalidateDetectionTlt;
     }
 
     public String getBtnOtherActionOnDetectionShortcutText() {
@@ -690,5 +666,33 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionUnknownOnOsmText() {
         return detectionUnknownOnOsmText;
+    }
+
+    public String getBtnCouldntFixDetection() {
+        return btnCouldntFixDetection;
+    }
+
+    public String getBtnBadDetection() {
+        return btnBadDetection;
+    }
+
+    public String getBtnBadDetectionShortcutText() {
+        return btnBadDetectionShortcutText;
+    }
+
+    public String getBtnBadDetectionTlt() {
+        return btnBadDetectionTlt;
+    }
+
+    public String getBtnOtherActionOnDetection() {
+        return btnOtherActionOnDetection;
+    }
+
+    public String getBtnAlreadyFixedDetectionShortcutText() {
+        return btnAlreadyFixedDetectionShortcutText;
+    }
+
+    public String getBtnAlreadyFixedDetectionTlt() {
+        return btnAlreadyFixedDetectionTlt;
     }
 }
