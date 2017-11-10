@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 
 
 /**
@@ -20,7 +21,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 public class Paging {
 
     /** default paging used for the list/nearby-photos method */
-    public static final Paging NEARBY_PHOTOS_DEAFULT = new Paging(1, Config.getInstance().getNearbyPhotosMaxItems());
+    public static final Paging NEARBY_PHOTOS_DEAFULT =
+            new Paging(1, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems());
 
     /** default paging used for the tracks method */
     public static final Paging TRACKS_DEFAULT = new Paging(1, Config.getInstance().getTracksMaxItems());

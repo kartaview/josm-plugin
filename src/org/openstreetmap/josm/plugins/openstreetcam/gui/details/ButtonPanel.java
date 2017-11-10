@@ -38,9 +38,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
@@ -505,7 +505,8 @@ SequenceObservable, TrackAutoplayObservable {
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                final StringBuilder link = new StringBuilder(Config.getInstance().getPhotoDetailsUrl());
+                final StringBuilder link =
+                        new StringBuilder(OpenStreetCamServiceConfig.getInstance().getPhotoDetailsUrl());
                 link.append(photo.getSequenceId()).append("/").append(photo.getSequenceIndex());
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));

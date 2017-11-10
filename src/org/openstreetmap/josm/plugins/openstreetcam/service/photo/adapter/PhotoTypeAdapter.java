@@ -6,21 +6,21 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.service.adapter;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter;
 
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_HEADING;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LATITUDE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LONGITUDE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_LTH_NAME;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_NAME;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_ID;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SEQUENCE_IDX;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_SHOT_DATE;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TH_NAME;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_TIMESTAMP;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.PHOTO_USERNAME;
-import static org.openstreetmap.josm.plugins.openstreetcam.service.adapter.Constants.WAY_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_HEADING;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_LATITUDE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_LONGITUDE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_LTH_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SEQUENCE_ID;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SEQUENCE_IDX;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SHOT_DATE;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_TH_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_TIMESTAMP;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_USERNAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.WAY_ID;
 import java.io.IOException;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoBuilder;

@@ -10,7 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 
 
 /**
@@ -58,6 +58,6 @@ public class PhotoDataSet {
     }
 
     public boolean hasNextItems() {
-        return page != null && totalItems > page * Config.getInstance().getNearbyPhotosMaxItems();
+        return page != null && totalItems > page * OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems();
     }
 }

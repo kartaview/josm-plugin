@@ -32,12 +32,6 @@ public final class Config extends BaseConfig {
     private static final int AUTOPLAY_MIN_DELAY = 200;
     private static final int AUTOPLAY_MAX_DELAY = 2000;
 
-    private final String serviceBaseUrl;
-    private final String serviceUrl;
-    private final String photoDetailsUrl;
-    private final String userPageUrl;
-    private final String feedbackUrl;
-    private final int nearbyPhotosMaxItems;
     private final int closestPhotosMaxItems;
     private final int tracksMaxItems;
     private final int tracksMaxZoom;
@@ -53,12 +47,6 @@ public final class Config extends BaseConfig {
     private Config() {
         super(CONFIG_FILE);
 
-        serviceBaseUrl = readProperty("service.url");
-        serviceUrl = serviceBaseUrl + readProperty("service.version");
-        photoDetailsUrl = serviceBaseUrl + readProperty("service.details");
-        userPageUrl = serviceBaseUrl + readProperty("service.userPage");
-        feedbackUrl = readProperty("feedback.url");
-        nearbyPhotosMaxItems = readIntegerProperty("nearbyPhotos.maxItems", MAX_ITEMS);
         closestPhotosMaxItems = readIntegerProperty("closestPhotos.maxNumber", MAX_CLOSEST_ITEMS);
         tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
         tracksMaxZoom = readIntegerProperty("tracks.maxZoom", MAX_ZOOM);
@@ -76,29 +64,6 @@ public final class Config extends BaseConfig {
         return INSTANCE;
     }
 
-    public String getServiceBaseUrl() {
-        return serviceBaseUrl;
-    }
-
-    public String getServiceUrl() {
-        return serviceUrl;
-    }
-
-    public String getPhotoDetailsUrl() {
-        return photoDetailsUrl;
-    }
-
-    public String getUserPageUrl() {
-        return userPageUrl;
-    }
-
-    public String getFeedbackUrl() {
-        return feedbackUrl;
-    }
-
-    public int getNearbyPhotosMaxItems() {
-        return nearbyPhotosMaxItems;
-    }
 
     public int getTracksMaxItems() {
         return tracksMaxItems;
