@@ -24,6 +24,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
@@ -123,7 +124,9 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     private void handleDetectionSelection(final Detection detection) {
         if (detection != null) {
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
             OpenStreetCamLayer.getInstance().setSelectedDetection(detection);
+
             OpenStreetCamLayer.getInstance().invalidate();
             MainApplication.getMap().repaint();
         }
