@@ -47,7 +47,8 @@ public class DetectionDetailsDialog extends ToggleDialog {
 
 
     private DetectionDetailsDialog() {
-        super(GuiConfig.getInstance().getDetectionDialogTitleName(), IconConfig.getInstance().getDialogShortcutName(),
+        super(GuiConfig.getInstance().getDetectionDialogTitleName(),
+                IconConfig.getInstance().getDetectionDialogShortcutName(),
                 GuiConfig.getInstance().getPluginShortcutLongText(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
                 true, PreferenceEditor.class);
