@@ -15,11 +15,11 @@ import com.telenav.josm.common.entity.Status;
  * @author beataj
  * @version $Revision$
  */
-public class Response {
+public class BaseResponse {
 
     private final Status status;
 
-    public Response(final Status status) {
+    public BaseResponse(final Status status) {
         this.status = status;
     }
 

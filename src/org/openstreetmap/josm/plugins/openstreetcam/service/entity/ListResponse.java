@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.entity;
 
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.telenav.josm.common.entity.Status;
 
 

@@ -9,7 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity;
 
 import java.util.List;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import com.telenav.josm.common.entity.Status;
 
 
@@ -20,7 +20,7 @@ import com.telenav.josm.common.entity.Status;
  * @version $Revision$
  * @param <T> specifies the current page items type
  */
-public class ListResponse<T> extends Response {
+public class ListResponse<T> extends BaseResponse {
 
     private final List<Integer> totalFilteredItems;
     private final List<T> currentPageItems;

@@ -69,7 +69,7 @@ class SaveTrackAction extends JosmAction {
     private void saveSequence(final String fileName) {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         try {
-            gpxManager.saveSequence(layer.getSelectedSequence(), fileName);
+            gpxManager.saveSequence(layer.getSelectedSequence().getFirst(), fileName);
         } catch (final GpxManagerException e) {
             JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorSequenceSaveText(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);

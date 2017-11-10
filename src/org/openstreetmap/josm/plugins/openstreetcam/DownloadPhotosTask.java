@@ -72,7 +72,8 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
     protected void afterFinish() {
         synchronized (this) {
             if (!canceled && photoDataSet != null && !photoDataSet.getPhotos().isEmpty()) {
-                dataUpdateHandler.updateUI(new DataSet(null, photoDataSet), true);
+                // TODO: take into consideration also detections!
+                dataUpdateHandler.updateUI(new DataSet(null, photoDataSet, null), true);
             }
         }
     }

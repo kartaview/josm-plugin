@@ -68,11 +68,19 @@ public final class GuiConfig extends BaseConfig {
     private final String btnDataSwitchShortcutTlt;
     private final String btnMatchedWayTlt;
     private final String btnMatchedWayShortcutTlt;
+
     private final String dlgFilterTitle;
     private final String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
+    private final String dlgFilterPhotoTypeLbl;
+    private final String dlgFilterDetectionLbl;
+    private final String dlgFilterOsmComparisonLbl;
+    private final String dlgFilterValidationStatusLbl;
+    private final String dlgFilterEditStatusLbl;
+    private final String dlgFilterDetectionTypeLbl;
+
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
@@ -88,6 +96,8 @@ public final class GuiConfig extends BaseConfig {
     private final String unacceptedDateFilterText;
     private final String errorSequenceSaveText;
     private final String errorSegmentListText;
+    private final String errorDetectionRetrieveText;
+    private final String errorDetectionUpdateText;
 
 
     private final String warningHighQualityPhoto;
@@ -196,6 +206,12 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDateLbl = readProperty("filter.date.lbl");
         dlgFilterUserLbl = readProperty("filter.user.lbl");
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
+        dlgFilterDetectionLbl = readProperty("filter.detection.lbl");
+        dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
+        dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
+        dlgFilterValidationStatusLbl = readProperty("filter.validationStatus.lbl");
+        dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
+        dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -210,12 +226,12 @@ public final class GuiConfig extends BaseConfig {
         errorFeedbackPageText = readProperty("error.feedback.page");
         errorSegmentListText = readProperty("error.segment.list");
         errorSequenceSaveText = readProperty("error.track.save");
+        errorDetectionRetrieveText = readProperty("error.detection.retrieve");
+        errorDetectionUpdateText = readProperty("error.detection.update");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
-
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
-
         confirmDateFilterTitle = readProperty("info.dateFilter.title");
         confirmDateFilterTxt = readProperty("info.dateFilter.text");
 
@@ -236,19 +252,6 @@ public final class GuiConfig extends BaseConfig {
 
         gpxTrackDescription = readProperty("gpx.track.description");
 
-        btnFixDetection = readProperty("btn.detection.fix");
-        btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
-        btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
-        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
-        btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
-        btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
-        btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
-        btnBadDetection = readProperty("btn.detection.couldntFixed.bad");
-        btnBadDetectionShortcutText = readProperty("btn.detection.couldntFixed.bad.shortcut.text");
-        btnBadDetectionTlt = readProperty("btn.detection.couldntFixed.bad.tlt");
-        btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
-        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
-        btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
 
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
@@ -265,6 +268,22 @@ public final class GuiConfig extends BaseConfig {
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+
+
+        btnFixDetection = readProperty("btn.detection.fix");
+        btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
+        btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
+        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
+        btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
+        btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
+        btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
+        btnBadDetection = readProperty("btn.detection.couldntFixed.bad");
+        btnBadDetectionShortcutText = readProperty("btn.detection.couldntFixed.bad.shortcut.text");
+        btnBadDetectionTlt = readProperty("btn.detection.couldntFixed.bad.tlt");
+        btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
+        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
+        btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
+
     }
 
     public static GuiConfig getInstance() {
@@ -400,6 +419,30 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterLoginWarningLbl;
     }
 
+    public String getDlgFilterDetectionLbl() {
+        return dlgFilterDetectionLbl;
+    }
+
+    public String getDlgFilterPhotoTypeLbl() {
+        return dlgFilterPhotoTypeLbl;
+    }
+
+    public String getDlgFilterOsmComparisonLbl() {
+        return dlgFilterOsmComparisonLbl;
+    }
+
+    public String getDlgFilterValidationStatusLbl() {
+        return dlgFilterValidationStatusLbl;
+    }
+
+    public String getDlgFilterEditStatusLbl() {
+        return dlgFilterEditStatusLbl;
+    }
+
+    public String getDlgFilterDetectionTypeLbl() {
+        return dlgFilterDetectionTypeLbl;
+    }
+
     public String getBtnOkLbl() {
         return btnOkLbl;
     }
@@ -438,6 +481,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorFeedbackPageText() {
         return errorFeedbackPageText;
+    }
+
+    public String getErrorDetectionRetrieveText() {
+        return errorDetectionRetrieveText;
+    }
+
+    public String getErrorDetectionUpdateText() {
+        return errorDetectionUpdateText;
     }
 
     public String getIncorrectDateFilterText() {
@@ -695,4 +746,5 @@ public final class GuiConfig extends BaseConfig {
     public String getBtnAlreadyFixedDetectionTlt() {
         return btnAlreadyFixedDetectionTlt;
     }
+
 }

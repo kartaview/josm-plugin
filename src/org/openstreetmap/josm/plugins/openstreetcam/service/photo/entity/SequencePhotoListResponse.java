@@ -9,7 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity;
 
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.service.entity.Response;
+import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import com.telenav.josm.common.entity.Status;
 
 
@@ -18,7 +18,7 @@ import com.telenav.josm.common.entity.Status;
  * @author beataj
  * @version $Revision$
  */
-public class SequencePhotoListResponse extends Response {
+public class SequencePhotoListResponse extends BaseResponse {
 
     // setters are not required,since GSON sets the fields directly using reflection.
     private final Sequence osv;

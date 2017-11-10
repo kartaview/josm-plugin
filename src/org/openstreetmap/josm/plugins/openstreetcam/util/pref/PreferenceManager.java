@@ -24,10 +24,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ListFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 
 
@@ -72,6 +72,38 @@ public final class PreferenceManager {
         saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
+    public void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionSearchErrorSuppressFlag(flag);
+    }
+
+    public void saveSequenceDetectionsErrorFlag(final boolean flag) {
+        saveManager.saveSequenceDetectionsErrorFlag(flag);
+    }
+
+    public void savePhotoDetectionsErrorFlag(final boolean flag) {
+        saveManager.savePhotoDetectionsErrorFlag(flag);
+    }
+
+    public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
+    }
+
+    public boolean loadDetectionSearchErrorSuppressFlag() {
+        return loadManager.loadDetectionSearchErrorSuppressFlag();
+    }
+
+    public boolean loadSequenceDetectionsErrorFlag() {
+        return loadManager.loadSequenceDetectionsErrorFlag();
+    }
+
+    public boolean loadPhotoDetectionsErrorFlag() {
+        return loadManager.loadPhotoDetectionsErrorFlag();
+    }
+
+    public boolean loadDetectionUpdateErrorSuppressFlag() {
+        return loadManager.loadDetectionUpdateErrorSuppressFlag();
+    }
+
     /**
      * Loads the sequence error suppress flag. If this value is true, then all the future sequence retrieve errors will
      * be suppressed.
@@ -113,8 +145,8 @@ public final class PreferenceManager {
      *
      * @return a {@code ListFilter}
      */
-    public ListFilter loadListFilter() {
-        return loadManager.loadListFilter();
+    public SearchFilter loadSearchFilter() {
+        return loadManager.loadSearchFilter();
     }
 
     /**
@@ -122,8 +154,8 @@ public final class PreferenceManager {
      *
      * @param filter a {@code ListFilter} represents the current filter settings
      */
-    public void saveListFilter(final ListFilter filter) {
-        saveManager.saveListFilter(filter);
+    public void saveListFilter(final SearchFilter filter) {
+        saveManager.saveSearchFilter(filter);
     }
 
     /**

@@ -3,11 +3,10 @@
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- * Copyright ©2017, Telenav, Inc. All Rights Reserved
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
@@ -35,21 +34,27 @@ public enum DetectionIconFactory {
 
     private DetectionIconFactory() {
         iconsMap = new HashMap<>();
-        for (final String file : new File(IconConfig.getInstance().getDetectionIconsLongPath()).list()) {
-            final String fileName = file.replace(EXT_PNG, "").replace(EXT_SVG, "");
-            final String filePath = IconConfig.getInstance().getDetectionIconsPath() + "/" + file;
-            iconsMap.put(fileName, new Pair<>(ImageProvider.get(filePath, ImageSizes.CURSOR),
-                    ImageProvider.get(filePath, ImageSizes.MAPMAX)));
-        }
     }
 
     public ImageIcon getIcon(final String name, final boolean isSelected) {
-        final ImageIcon icon;
-        if (name.startsWith(SIGN_POST_PREFIX)) {
-            icon = isSelected ? iconsMap.get(SIGN_POST_ICON_NAME).getSecond()
-                    : iconsMap.get(SIGN_POST_ICON_NAME).getFirst();
-        } else {
-            icon = isSelected ? iconsMap.get(name).getSecond() : iconsMap.get(name).getFirst();
+        final String iconName = name.startsWith(SIGN_POST_PREFIX) ? SIGN_POST_ICON_NAME : name;
+        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.get(iconName);
+        if (iconPair == null) {
+            iconPair = new Pair<>(loadIcon(iconName, ImageSizes.LARGEICON), loadIcon(iconName, ImageSizes.CURSOR));
+            iconsMap.put(name, iconPair);
+        }
+        return isSelected ? iconPair.getSecond() : iconPair.getFirst();
+    }
+
+    private ImageIcon loadIcon(final String name, final ImageSizes size) {
+        ImageIcon icon;
+        try {
+            final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name + EXT_SVG;
+            icon = ImageProvider.get(iconPath, size);
+        } catch (final Exception ex) {
+            // try to load png
+            final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name + EXT_PNG;
+            icon = ImageProvider.get(iconPath, size);
         }
         return icon;
     }

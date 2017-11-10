@@ -1,0 +1,122 @@
+/*
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ *
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
+ */
+package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
+
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
+import com.telenav.josm.common.argument.BoundingBox;
+import com.telenav.josm.common.http.HttpUtil;
+
+
+/**
+ *
+ * @author beataj
+ * @version $Revision$
+ */
+class HttpQueryBuilder {
+
+    private static final char QUESTIONM = '?';
+    private static final char EQ = '=';
+    private static final char AND = '&';
+    private static final String DATE_FORMAT = "YYYY-MM-dd";
+
+
+    private final StringBuilder query;
+
+
+    HttpQueryBuilder() {
+        query = new StringBuilder();
+    }
+
+    String buildCommentQuery() {
+        query.append(RequestConstants.UPDATE_DETECTION);
+        appendFormatFilter(query);
+        return build();
+    }
+
+    String buildSearchQuery(final BoundingBox area, final FilterPack filterPack) {
+        query.append(RequestConstants.SEARCH_DETECTIONS);
+        query.append(QUESTIONM);
+
+        appendFormatFilter(query);
+        appendBoundingBoxFilter(query, area);
+        if (filterPack != null) {
+            appendFilters(filterPack);
+        }
+        return build();
+    }
+
+    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId, final List<OsmComparison> osmComparisons) {
+        query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
+        query.append(QUESTIONM);
+        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        if (osmComparisons != null && !osmComparisons.isEmpty()) {
+            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(osmComparisons)));
+        }
+        return build();
+    }
+
+    String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Long sequenceIndex) {
+        query.append(RequestConstants.RETRIEVE_PHOTO_DETECTIONS);
+        query.append(QUESTIONM);
+        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
+        return build();
+    }
+
+    private void appendFilters(final FilterPack filterPack) {
+        if (filterPack.getExternalId() != null) {
+            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ)
+            .append(filterPack.getExternalId().toString());
+            query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
+        }
+
+        if (filterPack.getDate() != null) {
+            query.append(AND).append(RequestConstants.DATE)
+            .append(new SimpleDateFormat(DATE_FORMAT).format(filterPack.getDate()));
+        }
+
+        if (filterPack.getOsmComparisons() != null && !filterPack.getOsmComparisons().isEmpty()) {
+            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getOsmComparisons())));
+        }
+
+        if (filterPack.getEditStatuses() != null && !filterPack.getEditStatuses().isEmpty()) {
+            query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getEditStatuses())));
+        }
+
+        if (filterPack.getSignTypes() != null && !filterPack.getSignTypes().isEmpty()) {
+            query.append(AND).append(RequestConstants.TYPES).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
+        }
+    }
+
+
+    private void appendBoundingBoxFilter(final StringBuilder query, final BoundingBox area) {
+        query.append(AND).append(RequestConstants.NORTH).append(EQ).append(area.getNorth());
+        query.append(AND).append(RequestConstants.SOUTH).append(EQ).append(area.getSouth());
+        query.append(AND).append(RequestConstants.EAST).append(EQ).append(area.getEast());
+        query.append(AND).append(RequestConstants.WEST).append(EQ).append(area.getWest());
+    }
+
+    private void appendFormatFilter(final StringBuilder query) {
+        query.append(RequestConstants.FORMAT).append(EQ).append(RequestConstants.FORMAT_VAL);
+    }
+
+    String build() {
+        final StringBuilder url = new StringBuilder(ApolloServiceConfig.getInstance().getServiceUrl());
+        url.append(query);
+        return url.toString();
+    }
+}
