@@ -122,6 +122,7 @@ public final class GuiConfig extends BaseConfig {
     private final String infoFileExistsText;
     private final String gpxTrackDescription;
 
+    private final String detectionDialogTitleName;
     private final String btnFixDetection;
     private final String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
@@ -266,6 +267,7 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
 
+        detectionDialogTitleName = readProperty("detection.dialog.title");
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
         detectionModeText = readProperty("detection.mode.text");
@@ -742,5 +744,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnAlreadyFixedDetectionTlt() {
         return btnAlreadyFixedDetectionTlt;
+    }
+
+    public String getDetectionDialogTitleName() {
+        return detectionDialogTitleName;
     }
 }

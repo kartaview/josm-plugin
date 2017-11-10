@@ -67,7 +67,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
 
 
     private OpenStreetCamDetailsDialog() {
-        super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
+        super(GuiConfig.getInstance().getDetectionDialogTitleName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginShortcutLongText(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
                 true, PreferenceEditor.class);
