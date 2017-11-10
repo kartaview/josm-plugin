@@ -55,6 +55,15 @@ public final class ShortcutFactory {
         map.put(guiConfig.getBtnLocationShortcutText(),
                 Shortcut.registerShortcut(guiConfig.getBtnLocationShortcutText(),
                         guiConfig.getBtnLocationShortcutText(), KeyEvent.VK_4, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getBtnFixDetectionShortcutText(),
+                Shortcut.registerShortcut(guiConfig.getBtnFixDetectionShortcutText(),
+                        guiConfig.getBtnFixDetectionShortcutText(), KeyEvent.VK_5, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getBtnAlreadyFixedDetectionShortcutText(),
+                Shortcut.registerShortcut(guiConfig.getBtnAlreadyFixedDetectionShortcutText(),
+                        guiConfig.getBtnAlreadyFixedDetectionShortcutText(), KeyEvent.VK_6, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getBtnOtherActionOnDetectionShortcutText(),
+                Shortcut.registerShortcut(guiConfig.getBtnOtherActionOnDetectionShortcutText(),
+                        guiConfig.getBtnOtherActionOnDetectionShortcutText(), KeyEvent.VK_8, Shortcut.ALT_CTRL));
         map.put(guiConfig.getBtnWebPageShortcutTlt(), Shortcut.registerShortcut(guiConfig.getBtnWebPageShortcutTlt(),
                 guiConfig.getBtnWebPageShortcutTlt(), KeyEvent.VK_5, Shortcut.ALT_CTRL));
         map.put(guiConfig.getDlgFilterShortcutText(), Shortcut.registerShortcut(guiConfig.getDlgFilterShortcutText(),

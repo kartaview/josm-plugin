@@ -30,6 +30,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
@@ -87,6 +88,11 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (MainApplication.getMap() != null && !GraphicsEnvironment.isHeadless()) {
+            // initialize detection details dialog
+            final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
+            newMapFrame.addToggleDialog(detectionDetailsDialog, true);
+            detectionDetailsDialog.showDialog();
+
             // initialize details dialog
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
             detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler);
@@ -201,6 +207,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             }
         }
     }
+
 
     /**
      * Activates the layer.

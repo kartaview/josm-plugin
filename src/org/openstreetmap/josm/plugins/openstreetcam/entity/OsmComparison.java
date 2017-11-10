@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 
+
 /**
  * Defines the entity representing the comparison between a detection and an OSM entity.
  *
