@@ -252,6 +252,19 @@ public final class GuiConfig extends BaseConfig {
 
         gpxTrackDescription = readProperty("gpx.track.description");
 
+        btnFixDetection = readProperty("btn.detection.fix");
+        btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
+        btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
+        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
+        btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
+        btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
+        btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
+        btnBadDetection = readProperty("btn.detection.couldntFixed.bad");
+        btnBadDetectionShortcutText = readProperty("btn.detection.couldntFixed.bad.shortcut.text");
+        btnBadDetectionTlt = readProperty("btn.detection.couldntFixed.bad.tlt");
+        btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
+        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
+        btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
 
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
@@ -268,22 +281,6 @@ public final class GuiConfig extends BaseConfig {
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
-
-
-        btnFixDetection = readProperty("btn.detection.fix");
-        btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
-        btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
-        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
-        btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
-        btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
-        btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
-        btnBadDetection = readProperty("btn.detection.couldntFixed.bad");
-        btnBadDetectionShortcutText = readProperty("btn.detection.couldntFixed.bad.shortcut.text");
-        btnBadDetectionTlt = readProperty("btn.detection.couldntFixed.bad.tlt");
-        btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
-        btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
-        btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
-
     }
 
     public static GuiConfig getInstance() {
@@ -746,5 +743,4 @@ public final class GuiConfig extends BaseConfig {
     public String getBtnAlreadyFixedDetectionTlt() {
         return btnAlreadyFixedDetectionTlt;
     }
-
 }
