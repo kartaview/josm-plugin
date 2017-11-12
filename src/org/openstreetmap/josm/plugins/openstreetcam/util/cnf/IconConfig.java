@@ -27,6 +27,7 @@ public final class IconConfig extends BaseConfig {
 
     private final String pluginIconName;
     private final String dialogShortcutName;
+    private final String detectionDialogShortcutName;
     private final String deleteIconName;
     private final String layerIconName;
     private final String downloadIconName;
@@ -61,6 +62,7 @@ public final class IconConfig extends BaseConfig {
 
         pluginIconName = readProperty("plugin.icon");
         dialogShortcutName = readProperty("dialog.shortcut");
+        detectionDialogShortcutName = readProperty("dialog.detection.shortcut");
         deleteIconName = readProperty("delete.icon");
         layerIconName = readProperty("layer.icon");
         downloadIconName = readProperty("download.icon");
@@ -103,6 +105,11 @@ public final class IconConfig extends BaseConfig {
     public String getDialogShortcutName() {
         return dialogShortcutName;
     }
+
+    public String getDetectionDialogShortcutName() {
+        return detectionDialogShortcutName;
+    }
+
 
     public String getDeleteIconName() {
         return deleteIconName;

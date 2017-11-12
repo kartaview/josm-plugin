@@ -291,7 +291,7 @@ class FilterPanel extends JPanel {
         private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 6, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 15, 3, 5), 0, 0);
 
-        private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 6, 2, 2, 0, 0,
+        private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 6, 2, 1, 0, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 40);
 
 

@@ -69,7 +69,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             } else {
                 final Detection detection = OpenStreetCamLayer.getInstance().nearbyDetection(event.getPoint());
                 if (detection != null) {
-
                     handleDetectionSelection(detection);
                 } else {
                     final Photo photo = OpenStreetCamLayer.getInstance().nearbyPhoto(event.getPoint());
@@ -99,6 +98,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
         if (OpenStreetCamLayer.getInstance().getSelectedDetection() != null) {
             SwingUtilities.invokeLater(() -> {
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 OpenStreetCamLayer.getInstance().setSelectedDetection(null);
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
