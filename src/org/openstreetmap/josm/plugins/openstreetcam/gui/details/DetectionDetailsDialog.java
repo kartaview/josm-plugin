@@ -36,7 +36,6 @@ public class DetectionDetailsDialog extends ToggleDialog {
     /** dialog default height */
     private static final int DLG_HEIGHT = 100;
 
-
     private static final int SCROLL_BAR_UNIT = 100;
 
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
