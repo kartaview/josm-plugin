@@ -27,6 +27,8 @@ public final class GuiConfig extends BaseConfig {
     private final String pluginTlt;
     private final String pluginShortcutText;
     private final String pluginShortcutLongText;
+    private final String pluginDetectionShortcutText;
+    private final String pluginDetectionShortcutLongText;
 
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
@@ -163,6 +165,8 @@ public final class GuiConfig extends BaseConfig {
         pluginTlt = readProperty("plugin.tlt");
         pluginShortcutText = readProperty("plugin.shortcut.text");
         pluginShortcutLongText = readProperty("plugin.shortcut.longText");
+        pluginDetectionShortcutText = readProperty("plugin.detection.shortcut.text");
+        pluginDetectionShortcutLongText = readProperty("plugin.detection.shortcut.longText");
 
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
@@ -298,6 +302,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPluginLongName() {
         return pluginLongName;
+    }
+
+    public String getPluginDetectionShortcutText() {
+        return pluginDetectionShortcutText;
+    }
+
+    public String getPluginDetectionShortcutLongText() {
+        return pluginDetectionShortcutLongText;
     }
 
     public String getPluginTlt() {
