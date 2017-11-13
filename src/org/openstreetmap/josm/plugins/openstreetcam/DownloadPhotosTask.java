@@ -11,7 +11,6 @@ import java.io.IOException;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.xml.sax.SAXException;
@@ -72,8 +71,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
     protected void afterFinish() {
         synchronized (this) {
             if (!canceled && photoDataSet != null && !photoDataSet.getPhotos().isEmpty()) {
-                // TODO: take into consideration also detections!
-                dataUpdateHandler.updateUI(new DataSet(null, photoDataSet, null), true);
+                dataUpdateHandler.updateUI(photoDataSet);
             }
         }
     }

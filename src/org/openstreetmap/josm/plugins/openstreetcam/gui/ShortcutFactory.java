@@ -43,6 +43,8 @@ public final class ShortcutFactory {
         final Map<String, Shortcut> map = new HashMap<>();
         map.put(guiConfig.getPluginShortcutText(), Shortcut.registerShortcut(guiConfig.getPluginShortcutText(),
                 guiConfig.getPluginShortcutText(), KeyEvent.VK_1, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getPluginShortcutText(), Shortcut.registerShortcut(guiConfig.getPluginDetectionShortcutText(),
+                guiConfig.getPluginDetectionShortcutText(), KeyEvent.VK_2, Shortcut.ALT_CTRL));
         map.put(guiConfig.getBtnPreviousShortcutText(),
                 Shortcut.registerShortcut(guiConfig.getBtnPreviousShortcutText(),
                         guiConfig.getBtnPreviousShortcutText(), KeyEvent.VK_LEFT, Shortcut.ALT));
@@ -100,6 +102,6 @@ public final class ShortcutFactory {
      */
     public Shortcut getShotrcut(final String key) {
         final Shortcut shortcut = shortcutMap.get(key);
-        return shortcut != null ? shortcut : defaultShortcutMap.get(shortcut);
+        return shortcut != null ? shortcut : defaultShortcutMap.get(key);
     }
 }

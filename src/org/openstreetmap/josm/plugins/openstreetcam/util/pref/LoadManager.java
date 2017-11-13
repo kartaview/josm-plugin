@@ -47,8 +47,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -105,8 +105,7 @@ final class LoadManager {
         }
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
-     //   final String photoTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
-        final String photoTypeVal = "";
+        final String photoTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
         final PhotoDataTypeFilter photoType = photoTypeVal != null && !photoTypeVal.isEmpty()
                 ? PhotoDataTypeFilter.valueOf(photoTypeVal) : PhotoDataTypeFilter.ALL;
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
@@ -166,7 +165,6 @@ final class LoadManager {
         return new MapViewSettings(photoZoom, manualSwitchFlag);
 
     }
-
 
     PhotoSettings loadPhotoSettings() {
         final boolean highQualityFlag = Main.pref.getBoolean(HIGH_QUALITY_PHOTO_FLAG);
