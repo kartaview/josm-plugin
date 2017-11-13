@@ -114,6 +114,12 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
             }
+            System.out.println("selected photo ids:" + photo.getSequenceId() + " - " + photo.getSequenceIndex());
+
+            // load photo detections
+            final List<Detection> detections = ServiceHandler.getInstance()
+                    .retrievePhotoDetections(photo.getSequenceId(), new Long(photo.getSequenceIndex()));
+            photo.setDetections(detections);
             final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
             final PhotoSize photoType =
                     photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
@@ -124,6 +130,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     private void handleDetectionSelection(final Detection detection) {
         if (detection != null) {
+            System.out.println(
+                    "selected detection ids:" + detection.getSequenceId() + " - " + detection.getSequenceIndex());
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
             OpenStreetCamLayer.getInstance().setSelectedDetection(detection);
 

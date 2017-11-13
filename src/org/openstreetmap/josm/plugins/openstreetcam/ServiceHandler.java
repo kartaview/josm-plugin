@@ -219,6 +219,19 @@ public final class ServiceHandler {
         return result;
     }
 
+    public List<Detection> retrievePhotoDetections(final Long sequenceId, final Long sequenceIndex) {
+        List<Detection> result = null;
+        try {
+            result = apolloService.retrievePhotoDetections(sequenceId, sequenceIndex);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
+                PreferenceManager.getInstance().saveSequenceDetectionsErrorFlag(flag);
+            }
+        }
+        return result;
+    }
+
     /**
      * Lists the segments that have OpenStreetCam coverage from the given area(s) corresponding to the specified zoom
      * level.

@@ -21,8 +21,10 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
@@ -54,6 +56,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the dimension of the panel, it is used to detect if the user had maximized or not the panel */
     private Dimension size;
 
+    private List<Detection> detections;
+
 
     PhotoPanel() {
         super(new BorderLayout());
@@ -65,9 +69,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     }
 
 
-    void updateUI(final BufferedImage image) {
+    void updateUI(final BufferedImage image, final List<Detection> detections) {
         removeAll();
         this.image = image;
+        this.detections = detections;
         initializeCurrentImageView();
         revalidate();
         repaint();
@@ -140,8 +145,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             }
         }
 
-        if (wheelRotation > 0 || (wheelRotation <= 0
-                && horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
+        if (wheelRotation > 0
+                || (wheelRotation <= 0 && horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
                 && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
             currentView = new Rectangle(horizontal.getFirst(), vertical.getFirst(),
                     horizontal.getSecond() - horizontal.getFirst(), vertical.getSecond() - vertical.getFirst());
@@ -246,9 +251,27 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             }
             g.drawImage(image, frame.x, frame.y, frame.x + frame.width, frame.y + frame.height, currentView.x,
                     currentView.y, currentView.x + currentView.width, currentView.y + currentView.height, null);
+
+            // draw detections
+            drawDetections(g);
         }
         size = getSize();
     }
+
+    private void drawDetections(final Graphics graphics) {
+        if (detections != null && !detections.isEmpty()) {
+            graphics.setColor(Color.red);
+            for (final Detection detection : detections) {
+                final int x = (int) (detection.getLocationOnPhoto().getX() * currentView.getWidth());
+                final int y = (int) (detection.getLocationOnPhoto().getY() * currentView.getHeight());
+                final int width = (int) (detection.getLocationOnPhoto().getWidth() * currentView.getWidth());
+                final int height = (int) (detection.getLocationOnPhoto().getHeight() * currentView.getHeight());
+                graphics.drawRect(x, y, width, height);
+
+            }
+        }
+    }
+
 
     /**
      * The method match on the panel the new part of the image.
@@ -268,8 +291,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     }
 
     private void panelDimensionsChanged() {
-        if ((currentView != null) && (currentView.width != image.getWidth() || currentView.height != image
-                .getHeight())) {
+        if ((currentView != null)
+                && (currentView.width != image.getWidth() || currentView.height != image.getHeight())) {
             if (getWidth() != size.width) {
                 final Pair<Integer, Integer> newDimension = getImagePart(currentView.x + currentView.width / HALF, 0,
                         image.getWidth(), (currentView.height * getWidth() / frame.height) / HALF);
