@@ -40,6 +40,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
+// TODO: refactore this class
 public final class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
@@ -113,21 +114,25 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      * Sets the currently displayed data.
      *
      * @param dataSet a {@code DataSet} containing a list of photos/segments from the current view
-     * @param checkSelectedPhoto is true, verifies if the selected photo is present or not in the given photo list. The
+     * @param checkSelectedData is true, verifies if the selected photo is present or not in the given photo list. The
      * selected photo is set to null, if it is not present in the given list.
      */
-    public void setDataSet(final DataSet dataSet, final boolean checkSelectedPhoto) {
+    public void setDataSet(final DataSet dataSet, final boolean checkSelectedData) {
         this.dataSet = dataSet;
-        if (checkSelectedPhoto && removeSelection()) {
-            selectedPhoto = null;
+        if (checkSelectedData) {
+            if (removePhotoSelection()) {
+                selectedPhoto = null;
+            }
+            if (removeDetectionSelection()) {
+                checkSelectedDetection();
+            }
         }
-        checkSelectedDetection();
         if (selectedPhoto != null && closestPhotos != null) {
             selectStartPhotoForClosestAction(selectedPhoto);
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
         if (dataSet != null && dataSet.getPhotoDataSet() != null) {
@@ -145,9 +150,14 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
     }
 
-    private boolean removeSelection() {
+    private boolean removePhotoSelection() {
         return selectedPhoto != null
                 && (dataSet == null || dataSet.getPhotos() == null || !dataSet.getPhotos().contains(selectedPhoto));
+    }
+
+    private boolean removeDetectionSelection() {
+        return selectedDetection != null && (dataSet == null || dataSet.getPhotos() == null
+                || !dataSet.getDetections().contains(selectedDetection));
     }
 
     private void checkSelectedDetection() {
@@ -299,7 +309,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
                 && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
-                        .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
 

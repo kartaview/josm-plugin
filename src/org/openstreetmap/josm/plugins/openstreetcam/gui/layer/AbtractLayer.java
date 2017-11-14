@@ -77,7 +77,6 @@ abstract class AbtractLayer extends Layer {
         actions.add(deleteLayerAction);
         actions.add(SeparatorLayerAction.INSTANCE);
         if (addSequenceMenuItem()) {
-            actions.add(SeparatorLayerAction.INSTANCE);
             actions.add(saveSequenceAction);
             actions.add(SeparatorLayerAction.INSTANCE);
         } else {

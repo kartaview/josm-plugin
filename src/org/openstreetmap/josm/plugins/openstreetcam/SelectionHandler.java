@@ -99,17 +99,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 mouseHoverTimer = null;
             }
             selectPhoto(null, null, false);
-            OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(null);
-
-            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
-        }
-        if (OpenStreetCamLayer.getInstance().getSelectedDetection() != null) {
-            SwingUtilities.invokeLater(() -> {
-                DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-                OpenStreetCamLayer.getInstance().setSelectedDetection(null);
-                OpenStreetCamLayer.getInstance().invalidate();
-                MainApplication.getMap().repaint();
-            });
         }
     }
 
@@ -173,7 +162,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
                 .loadMapViewSettings().getPhotoZoom()
                 || (OpenStreetCamLayer.getInstance().getDataSet() != null
-                && OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null);
+                && (OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null
+                || OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null));
     }
 
     /**
@@ -233,7 +223,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      */
     void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
         if (photo == null) {
-            SwingUtilities.invokeLater(() -> handlePhotoUnselection());
+            SwingUtilities.invokeLater(() -> handleDataUnselection());
         } else {
             SwingUtilities.invokeLater(() -> {
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
@@ -259,12 +249,12 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
     }
 
-    private void handlePhotoUnselection() {
+    private void handleDataUnselection() {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
         CacheManager.getInstance().removePhotos(layer.getSelectedPhoto().getSequenceId());
         if (layer.getSelectedSequence() != null && layer.getDataSet() != null
-                && layer.getDataSet().getPhotos() != null) {
+                && (layer.getDataSet().getPhotos() != null || layer.getDataSet().getDetections() != null)) {
             final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
             if (zoom < PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom()) {
                 layer.setDataSet(null, false);
@@ -272,6 +262,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
         layer.setSelectedSequence(null);
         layer.setSelectedPhoto(null);
+        DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+        layer.setSelectedDetection(null);
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
             detailsDialog.updateDataSwitchButton(null, true, null);
         }
@@ -279,6 +271,9 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         detailsDialog.updateUI(null, null, false);
         layer.invalidate();
         MainApplication.getMap().repaint();
+
+        OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(null);
+        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
     }
 
     /**
