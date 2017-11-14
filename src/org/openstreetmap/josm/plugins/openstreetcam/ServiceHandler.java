@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -78,12 +78,9 @@ public final class ServiceHandler {
             result = new Pair<>(null, detections);
         } else {
             final ExecutorService executorService = Executors.newFixedThreadPool(2);
-            final Future<PhotoDataSet> future1 = executorService.submit(() -> {
-                return listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT);
-            });
-            final Future<List<Detection>> future2 = executorService.submit(() -> {
-                return searchDetections(area, filter);
-            });
+            final Future<PhotoDataSet> future1 =
+                    executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT));
+            final Future<List<Detection>> future2 = executorService.submit(() -> searchDetections(area, filter));
 
             PhotoDataSet photoDataSet = null;
             try {
@@ -126,10 +123,8 @@ public final class ServiceHandler {
             result = openStreetCamService.listNearbyPhotos(area, date, osmUserId, paging);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                    PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
-                }
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
             }
         }
         return result;
@@ -137,17 +132,19 @@ public final class ServiceHandler {
 
     private List<Detection> searchDetections(final BoundingBox area, final SearchFilter searchFilter) {
         final Long osmUserId = osmUserId(searchFilter);
-        final FilterPack filterPack = new FilterPack(osmUserId, searchFilter.getDate(),
-                searchFilter.getOsmComparisons(), searchFilter.getEditStatuses(), searchFilter.getSignTypes());
+        FilterPack filterPack = null;
+        if (searchFilter != null) {
+            filterPack = new FilterPack(osmUserId, searchFilter.getDate(), searchFilter.getOsmComparisons(),
+                    searchFilter.getEditStatuses(), searchFilter.getSignTypes());
+        }
+
         List<Detection> result = null;
         try {
             result = apolloService.searchDetections(area, filterPack);
         } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                    PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
-                }
+            if (!PreferenceManager.getInstance().loadDetectionSearchErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
+                PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
             }
         }
         return result;
@@ -161,16 +158,11 @@ public final class ServiceHandler {
      * @param osmComparisons a list of {@code OsmComparison}s
      * @return a {code Pair} of {@code Sequence} and {@code Detection}s list
      */
-    public Pair<Sequence, List<Detection>> retrieveSequence(final Long sequenceId,
-            final List<OsmComparison> osmComparisons) {
+    public Pair<Sequence, List<Detection>> retrieveSequence(final Long sequenceId) {
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        final Future<Sequence> sequenceFuture = executorService.submit(() -> {
-            return retrieveSequence(sequenceId);
-        });
-        final Future<List<Detection>> deiectionsFuture = executorService.submit(() -> {
-            return retrieveSequenceDetection(sequenceId, osmComparisons);
-        });
-
+        final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
+        final Future<List<Detection>> deiectionsFuture =
+                executorService.submit(() -> retrieveSequenceDetection(sequenceId));
         Sequence sequence = null;
         try {
             sequence = sequenceFuture.get();
@@ -193,7 +185,7 @@ public final class ServiceHandler {
         return new Pair<>(sequence, detections);
     }
 
-    private Sequence retrieveSequence(final Long id) {
+    private Sequence retrieveSequencePhotos(final Long id) {
         Sequence sequence = null;
         try {
             sequence = openStreetCamService.retrieveSequence(id);
@@ -206,10 +198,23 @@ public final class ServiceHandler {
         return sequence;
     }
 
-    private List<Detection> retrieveSequenceDetection(final Long id, final List<OsmComparison> osmComparisons) {
+    private List<Detection> retrieveSequenceDetection(final Long id) {
         List<Detection> result = null;
         try {
-            result = apolloService.retrieveSequenceDetections(id, osmComparisons);
+            result = apolloService.retrieveSequenceDetections(id);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
+                PreferenceManager.getInstance().saveSequenceDetectionsErrorFlag(flag);
+            }
+        }
+        return result;
+    }
+
+    public List<Detection> retrievePhotoDetections(final Long sequenceId, final Integer sequenceIndex) {
+        List<Detection> result = null;
+        try {
+            result = apolloService.retrievePhotoDetections(sequenceId, sequenceIndex);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
@@ -265,6 +270,19 @@ public final class ServiceHandler {
      */
     byte[] retrievePhoto(final String photoName) throws ServiceException {
         return openStreetCamService.retrievePhoto(photoName);
+    }
+
+    public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) {
+        Photo result = null;
+        try {
+            result = openStreetCamService.retrievePhotoDetails(sequenceId, sequenceIndex);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoLoadingText());
+                PreferenceManager.getInstance().savePhotoDetectionsErrorFlag(flag);
+            }
+        }
+        return result;
     }
 
     /**

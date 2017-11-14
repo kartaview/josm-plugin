@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.PhotoTypeAdapter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.SegmentTypeAdapter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.PhotoDetailsResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.SequencePhotoListResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -174,4 +175,12 @@ public class OpenStreetCamService extends BaseService {
         return listSegmentResponse;
     }
 
+    public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
+        final String url = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getServiceUrl())
+                .append(RequestConstants.PHOTO_DETAILS).toString();
+        final PhotoDetailsResponse result = executePost(url, arguments, PhotoDetailsResponse.class);
+        verifyResponseStatus(result);
+        return result != null && result.getOsv() != null ? result.getOsv().getPhotoObject() : null;
+    }
 }

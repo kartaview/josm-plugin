@@ -23,7 +23,7 @@ import com.telenav.josm.common.entity.EntityUtil;
 public class SearchFilter {
 
     private Date date;
-    private final boolean onlyMineFlag;
+    private boolean onlyMineFlag;
 
     private PhotoDataTypeFilter photoType;
     private List<OsmComparison> osmComparisons;
@@ -50,6 +50,10 @@ public class SearchFilter {
         this.signTypes = signTypes;
     }
 
+    public SearchFilter(final PhotoDataTypeFilter photoType, final List<OsmComparison> osmComparisons) {
+        this.photoType = photoType;
+        this.osmComparisons = osmComparisons;
+    }
 
     public PhotoDataTypeFilter getPhotoType() {
         return photoType;

@@ -42,6 +42,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
+// TODO: refactor this class
 final class SelectionHandler extends MouseAdapter
 implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
@@ -69,10 +70,16 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             } else {
                 final Detection detection = OpenStreetCamLayer.getInstance().nearbyDetection(event.getPoint());
                 if (detection != null) {
-                    handleDetectionSelection(detection);
+                    Photo photo = OpenStreetCamLayer.getInstance().getPhoto(detection.getSequenceId(),
+                            detection.getSequenceIndex());
+                    if (photo == null) {
+                        photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
+                                detection.getSequenceIndex());
+                    }
+                    handleDataSelection(photo, detection);
                 } else {
                     final Photo photo = OpenStreetCamLayer.getInstance().nearbyPhoto(event.getPoint());
-                    handlePhotoSelection(photo);
+                    handleDataSelection(photo, null);
                 }
             }
             if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
@@ -106,7 +113,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
     }
 
-    private void handlePhotoSelection(final Photo photo) {
+    private void handleDataSelection(final Photo photo, final Detection detection) {
         if (photo != null) {
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 stopAutoplay();
@@ -114,23 +121,44 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
             }
-            final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
-            final PhotoSize photoType =
-                    photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
-            OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
-        }
-    }
 
-    private void handleDetectionSelection(final Detection detection) {
-        if (detection != null) {
+            // load photo detections
+            final List<Detection> detections = ServiceHandler.getInstance()
+                    .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
+            photo.setDetections(detections);
+
+            final Detection selectedDetection =
+                    detection != null ? detection : detections != null ? detections.get(0) : null;
+
+                    DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+                    OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
+
+                    final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
+                    final PhotoSize photoType =
+                            photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+                    selectPhoto(photo, photoType, true);
+                    OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
+
+        } else if (detection != null) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
             OpenStreetCamLayer.getInstance().setSelectedDetection(detection);
-
-            OpenStreetCamLayer.getInstance().invalidate();
-            MainApplication.getMap().repaint();
+            if (OpenStreetCamLayer.getInstance().getSelectedPhoto() != null) {
+                if (autoplayTimer != null) {
+                    stopAutoplay();
+                }
+                if (mouseHoverTimer != null) {
+                    mouseHoverTimer.stop();
+                    mouseHoverTimer = null;
+                }
+                selectPhoto(null, null, false);
+                OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(null);
+            } else {
+                OpenStreetCamLayer.getInstance().invalidate();
+                MainApplication.getMap().repaint();
+            }
         }
     }
+
 
     /**
      * Verifies if the user is allowed to select a photo location from the map. A photo location can be selected if:
@@ -264,11 +292,11 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         ThreadPool.getInstance().execute(() -> {
             final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
             final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
-            final Pair<Sequence, List<Detection>> result =
-                    ServiceHandler.getInstance().retrieveSequence(photo.getSequenceId(), null);
+            final Long sequenceId = photo != null ? photo.getSequenceId() : layer.getSelectedPhoto().getSequenceId();
+            final Pair<Sequence, List<Detection>> result = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            // TODO: handle detections
-            if (photo.equals(layer.getSelectedPhoto()) && result.getFirst() != null && result.getFirst().hasPhotos()) {
+            if (photo == null || photo.equals(layer.getSelectedPhoto()) && result != null
+                    && (result.getFirst() != null || result.getSecond() != null)) {
                 layer.setSelectedSequence(result);
                 detailsDialog.enableSequenceActions(layer.enablePreviousPhotoAction(), layer.enableNextPhotoAction());
                 if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
@@ -279,6 +307,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             }
         });
     }
+
 
     private void cleanUpOldSequence() {
         final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
@@ -314,6 +343,18 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
     public void selectSequencePhoto(final int index) {
         final Photo photo = OpenStreetCamLayer.getInstance().sequencePhoto(index);
         if (photo != null) {
+            final List<Detection> detections = ServiceHandler.getInstance()
+                    .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
+            photo.setDetections(detections);
+            final Detection selectedDetection = detections != null ? detections.get(0) : null;
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+            OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
+
+            if (selectedDetection != null
+                    && !MainApplication.getMap().mapView.getRealBounds().contains(selectedDetection.getPoint())) {
+                MainApplication.getMap().mapView.zoomTo(selectedDetection.getPoint());
+            }
+
             final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
             final PhotoSize photoType =
                     photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;

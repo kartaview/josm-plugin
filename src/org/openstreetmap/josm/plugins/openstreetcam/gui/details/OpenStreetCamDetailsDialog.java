@@ -164,7 +164,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
         } else {
             pnlDetails.updateUI(null, false);
             pnlDetails.setToolTipText("");
-            pnlPhoto.updateUI(null);
+            pnlPhoto.updateUI(null, null);
             pnlBtn.updateUI(null);
             repaint();
         }
@@ -185,7 +185,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
                     pnlDetails.updateUI(photo, false);
                     pnlDetails.setToolTipText(null);
                 }
-                pnlPhoto.updateUI(imageResult.getFirst());
+                pnlPhoto.updateUI(imageResult.getFirst(), photo.getDetections());
             }
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();
