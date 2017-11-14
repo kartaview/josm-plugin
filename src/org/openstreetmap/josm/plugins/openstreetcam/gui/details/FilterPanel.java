@@ -198,7 +198,7 @@ class FilterPanel extends JPanel {
         pickerDate.setDate(null);
         cbbUser.setSelected(false);
         if (isHighLevelZoom) {
-            btnPhotoType.clearSelection();
+            rbAll.setSelected(true);
             listOsmComparison.clearSelection();
             listEditStatus.clearSelection();
             listSignType.clearSelection();
