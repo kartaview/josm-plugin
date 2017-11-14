@@ -14,6 +14,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_LONGITUDE;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_LTH_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_NAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_ORI_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SEQUENCE_ID;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SEQUENCE_IDX;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_SHOT_DATE;
@@ -68,6 +69,9 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
                 case PHOTO_TH_NAME:
                     builder.thumbnailName(ReaderUtil.readString(reader));
+                    break;
+                case PHOTO_ORI_NAME:
+                    builder.oriName(ReaderUtil.readString(reader));
                     break;
                 case PHOTO_TIMESTAMP:
                     builder.timestamp(ReaderUtil.readLong(reader));

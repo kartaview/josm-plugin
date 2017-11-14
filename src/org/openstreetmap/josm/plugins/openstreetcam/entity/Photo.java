@@ -28,6 +28,7 @@ public class Photo {
     private final String name;
     private final String largeThumbnailName;
     private final String thumbnailName;
+    private final String oriName;
     private final Long timestamp;
     private final Double heading;
     private String username;
@@ -44,6 +45,7 @@ public class Photo {
         this.name = builder.getName();
         this.largeThumbnailName = builder.getLargeThumbnailName();
         this.thumbnailName = builder.getThumbnailName();
+        this.oriName = builder.getOriName();
         this.timestamp = builder.getTimestamp();
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
@@ -118,6 +120,10 @@ public class Photo {
 
     public List<Detection> getDetections() {
         return detections;
+    }
+
+    public String getOriName() {
+        return oriName;
     }
 
     @Override

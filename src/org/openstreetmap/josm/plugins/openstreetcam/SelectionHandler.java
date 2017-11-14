@@ -253,8 +253,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                             layer.enableNextPhotoAction());
                 }
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                PhotoHandler.getInstance().loadPhotos(
-                        layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                ThreadPool.getInstance().execute(() -> PhotoHandler.getInstance().loadPhotos(
+                        layer.nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount())));
             });
         }
     }

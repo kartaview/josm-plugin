@@ -27,6 +27,7 @@ public class PhotoBuilder {
     private String name;
     private String largeThumbnailName;
     private String thumbnailName;
+    private String oriName;
     private Long timestamp;
     private Double heading;
     private String username;
@@ -139,6 +140,14 @@ public class PhotoBuilder {
 
     public List<Detection> getDetections() {
         return detections;
+    }
+
+    public void oriName(final String oriName) {
+        this.oriName = oriName;
+    }
+
+    public String getOriName() {
+        return oriName;
     }
 
     public Photo build() {
