@@ -9,8 +9,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.List;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
@@ -55,18 +53,14 @@ class HttpQueryBuilder {
         return build();
     }
 
-    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId, final List<OsmComparison> osmComparisons) {
+    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {
         query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
-        if (osmComparisons != null && !osmComparisons.isEmpty()) {
-            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(osmComparisons)));
-        }
         return build();
     }
 
-    String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Long sequenceIndex) {
+    String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Integer sequenceIndex) {
         query.append(RequestConstants.RETRIEVE_PHOTO_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);

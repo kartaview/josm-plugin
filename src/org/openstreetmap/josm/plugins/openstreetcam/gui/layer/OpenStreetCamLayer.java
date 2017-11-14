@@ -155,7 +155,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public Photo nearbyPhoto(final Point point) {
         Photo photo = null;
-        if (selectedSequence != null && selectedSequence.getFirst().getPhotos() != null) {
+        if (selectedSequence != null && selectedSequence.getFirst() != null) {
             photo = Util.nearbyPhoto(selectedSequence.getFirst().getPhotos(), point);
             // API issue: does not return username for sequence photos
             if (selectedPhoto != null && photo != null) {
@@ -221,7 +221,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public boolean isPhotoPartOfSequence(final Photo photo) {
         boolean contains = false;
-        if (selectedSequence != null && (selectedSequence.getFirst().getPhotos() != null)) {
+        if (selectedSequence != null
+                && (selectedSequence.getFirst() != null && selectedSequence.getFirst().getPhotos() != null)) {
             for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
                 if (elem.equals(photo)) {
                     contains = true;
@@ -282,6 +283,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
                 .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
+
 
     /**
      * Sets a start photo from witch a possible closest image action should start.
@@ -387,5 +389,25 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     @Override
     boolean addSequenceMenuItem() {
         return selectedSequence != null;
+    }
+
+    public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
+        Photo result = null;
+        if (selectedSequence != null && selectedSequence.getFirst() != null) {
+            for (final Photo photo : selectedSequence.getFirst().getPhotos()) {
+                if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
+                    result = photo;
+                    break;
+                }
+            }
+        } else if (dataSet != null && dataSet.getPhotoDataSet() != null) {
+            for (final Photo photo : dataSet.getPhotoDataSet().getPhotos()) {
+                if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
+                    result = photo;
+                    break;
+                }
+            }
+        }
+        return result;
     }
 }

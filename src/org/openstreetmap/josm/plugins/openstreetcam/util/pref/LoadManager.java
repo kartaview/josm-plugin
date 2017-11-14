@@ -114,7 +114,6 @@ final class LoadManager {
         return new SearchFilter(date, onlyUserFlag, photoType, osmComparisons, editStatuses, signTypes);
     }
 
-
     private List<OsmComparison> loadOsmComparisonFilter() {
         final List<OsmComparisonEntry> entries =
                 StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);

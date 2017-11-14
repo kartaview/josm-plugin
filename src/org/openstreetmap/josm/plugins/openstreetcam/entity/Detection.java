@@ -14,7 +14,7 @@ public class Detection {
 
     private final Long id;
     private Long sequenceId;
-    private Long sequenceIndex;
+    private Integer sequenceIndex;
     private Long creationTimestamp;
     private Long latestChangeTimestamp;
     private LatLon point;
@@ -35,7 +35,7 @@ public class Detection {
     }
 
 
-    public Detection(final Long id, final Long sequenceId, final Long sequenceIndex, final Long creationTimestamp,
+    public Detection(final Long id, final Long sequenceId, final Integer sequenceIndex, final Long creationTimestamp,
             final Long latestChangeTimestamp, final LatLon point, final Sign sign, final Rectangle locationOnPhoto,
             final Double confidenceLevel, final ValidationStatus validationStatus, final EditStatus editStatus,
             final OsmComparison osmComparison, final OsmElement osmElement, final DetectionMode mode,
@@ -64,7 +64,7 @@ public class Detection {
         return sequenceId;
     }
 
-    public Long getSequenceIndex() {
+    public Integer getSequenceIndex() {
         return sequenceIndex;
     }
 
