@@ -155,6 +155,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionChangedOnOsmText;
     private final String detectionSameOnOsmText;
     private final String detectionUnknownOnOsmText;
+    private final String dialogAddCommentText;
 
 
     private GuiConfig() {
@@ -289,6 +290,7 @@ public final class GuiConfig extends BaseConfig {
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+        dialogAddCommentText = readProperty("detection.dialog.comment.text");
     }
 
     public static GuiConfig getInstance() {
@@ -742,6 +744,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnBadDetectionShortcutText() {
         return btnBadDetectionShortcutText;
+    }
+
+    public String getAddCommentDialogText() {
+        return dialogAddCommentText;
     }
 
     public String getBtnBadDetectionTlt() {

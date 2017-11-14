@@ -39,6 +39,7 @@ class HttpQueryBuilder {
 
     String buildCommentQuery() {
         query.append(RequestConstants.UPDATE_DETECTION);
+        query.append(QUESTIONM);
         appendFormatFilter(query);
         return build();
     }

@@ -119,12 +119,13 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         if (checkSelectedPhoto && removeSelection()) {
             selectedPhoto = null;
         }
+        checkSelectedDetection();
         if (selectedPhoto != null && closestPhotos != null) {
             selectStartPhotoForClosestAction(selectedPhoto);
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
         if (dataSet != null && dataSet.getPhotoDataSet() != null) {
@@ -145,6 +146,21 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     private boolean removeSelection() {
         return selectedPhoto != null
                 && (dataSet == null || dataSet.getPhotos() == null || !dataSet.getPhotos().contains(selectedPhoto));
+    }
+
+    private void checkSelectedDetection() {
+        if (selectedDetection != null) {
+            if (dataSet != null && dataSet.getDetections() != null) {
+                final int index = dataSet.getDetections().indexOf(selectedDetection);
+                if (index >= 0) {
+                    selectedDetection = dataSet.getDetections().get(index);
+                } else {
+                    selectedDetection = null;
+                }
+            } else {
+                selectedDetection = null;
+            }
+        }
     }
 
     /**
@@ -280,7 +296,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
                 && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
-                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                        .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
