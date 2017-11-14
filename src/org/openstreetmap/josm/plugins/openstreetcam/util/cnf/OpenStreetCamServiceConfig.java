@@ -15,7 +15,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author beataj
  * @version $Revision$
  */
-public class OpenStreetCamServiceConfig extends BaseConfig {
+public final class OpenStreetCamServiceConfig extends BaseConfig {
 
     private static final String CONFIG_FILE = "openstreetcam_service.properties";
     private static final OpenStreetCamServiceConfig INSTANCE = new OpenStreetCamServiceConfig();

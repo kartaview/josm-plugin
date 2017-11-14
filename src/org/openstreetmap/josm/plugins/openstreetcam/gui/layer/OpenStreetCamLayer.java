@@ -393,15 +393,15 @@ public final class OpenStreetCamLayer extends AbtractLayer {
 
     public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
+        List<Photo> photos = null;
+
         if (selectedSequence != null && selectedSequence.getFirst() != null) {
-            for (final Photo photo : selectedSequence.getFirst().getPhotos()) {
-                if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
-                    result = photo;
-                    break;
-                }
-            }
+            photos = selectedSequence.getFirst().getPhotos();
         } else if (dataSet != null && dataSet.getPhotoDataSet() != null) {
-            for (final Photo photo : dataSet.getPhotoDataSet().getPhotos()) {
+            photos = dataSet.getPhotoDataSet().getPhotos();
+        }
+        if (photos != null) {
+            for (final Photo photo : photos) {
                 if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
                     result = photo;
                     break;
@@ -410,4 +410,5 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
         return result;
     }
+
 }
