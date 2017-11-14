@@ -29,12 +29,14 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -52,8 +54,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamPlugin extends Plugin
-implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomChangeListener {
+public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserver, LayerChangeListener,
+        LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -91,6 +93,7 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
             // initialize detection details dialog
             final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
             newMapFrame.addToggleDialog(detectionDetailsDialog, true);
+            detectionDetailsDialog.registerCommentObserver(this);
             detectionDetailsDialog.showDialog();
 
             // initialize details dialog
@@ -206,6 +209,15 @@ implements DataTypeChangeObserver, LayerChangeListener, LocationObserver, ZoomCh
                 zoomTimer.start();
             }
         }
+    }
+
+    /* implementation of ChangeDetectionObserver */
+
+    @Override
+    public void editDetection(final EditStatus editStatus, final String text) {
+        ServiceHandler.getInstance().updateDetection(OpenStreetCamLayer.getInstance().getSelectedDetection().getId(),
+                editStatus, text);
+        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
     }
 
 

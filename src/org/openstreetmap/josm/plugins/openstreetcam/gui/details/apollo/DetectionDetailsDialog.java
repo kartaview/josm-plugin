@@ -6,15 +6,17 @@
  *
  * Copyright ©2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JScrollPane;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
@@ -26,16 +28,15 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
  * @author ioanao
  * @version $Revision$
  */
-public final class DetectionDetailsDialog extends ToggleDialog {
+public class DetectionDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -3824929254682268496L;
 
     /** preferred size */
-    private static final Dimension DIM = new Dimension(150, 100);
+    private static final Dimension DIM = new Dimension(150, 120);
 
     /** dialog default height */
-    private static final int DLG_HEIGHT = 100;
-
+    private static final int DLG_HEIGHT = 120;
 
     private static final int SCROLL_BAR_UNIT = 100;
 
@@ -44,6 +45,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     /** dialog components */
     private final DetectionDetailsPanel pnlDetails;
     private final DetectionButtonPanel pnlButtons;
+    private final JScrollPane scrollablePanel;
 
 
     private DetectionDetailsDialog() {
@@ -51,18 +53,18 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                 IconConfig.getInstance().getDetectionDialogShortcutName(),
                 GuiConfig.getInstance().getPluginDetectionShortcutLongText(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginDetectionShortcutText()),
-                DLG_HEIGHT,
-                true, PreferenceEditor.class);
+                DLG_HEIGHT, true, PreferenceEditor.class);
 
         pnlDetails = new DetectionDetailsPanel();
-        final JScrollPane scrollablePanel = ContainerBuilder.buildScrollPane(
-                ContainerBuilder.buildEmptyPanel(Color.WHITE), null, Color.white, null, SCROLL_BAR_UNIT, false, DIM);
+        scrollablePanel = ContainerBuilder.buildScrollPane(ContainerBuilder.buildEmptyPanel(Color.WHITE), null,
+                Color.white, null, SCROLL_BAR_UNIT, false, DIM);
         scrollablePanel.setViewportView(pnlDetails);
 
         pnlButtons = new DetectionButtonPanel();
-
+        pnlButtons.setVisible(false);
         add(createLayout(ContainerBuilder.buildBorderLayoutPanel(null, scrollablePanel, pnlButtons, null), false,
                 null));
+
         setPreferredSize(DIM);
         pnlDetails.setSize(getPreferredSize());
         updateDetectionDetails(null);
@@ -80,8 +82,29 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         return instance;
     }
 
+    /**
+     * Registers the comment observer to the corresponding UI component.
+     *
+     * @param observer a {@code DetectionChangeObserver} object
+     */
+    public void registerCommentObserver(final DetectionChangeObserver observer) {
+        pnlButtons.registerObserver(observer);
+    }
+
+    /**
+     * Update the dialog with another detection information.
+     *
+     * @param detection a {@code DetectionChangeObserver} object
+     */
     public void updateDetectionDetails(final Detection detection) {
         pnlDetails.updateData(detection);
+        if (detection != null && detection.getOsmComparison() != null
+                && (detection.getOsmComparison().equals(OsmComparison.NEW)
+                        || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
+            pnlButtons.setVisible(true);
+        } else {
+            pnlButtons.setVisible(false);
+        }
         repaint();
     }
 }

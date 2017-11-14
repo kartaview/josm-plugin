@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -162,6 +163,7 @@ class DataUpdateHandler {
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
                     OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO, null, null);
+                    DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 }
                 updateUI(null, false);
             });
@@ -243,6 +245,9 @@ class DataUpdateHandler {
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);
+                DetectionDetailsDialog.getInstance()
+                        .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
+
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
                         && OpenStreetCamDetailsDialog.getInstance().isPhotoSelected()) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);

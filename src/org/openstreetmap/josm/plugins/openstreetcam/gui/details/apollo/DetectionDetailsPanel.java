@@ -13,7 +13,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo;
 
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -22,6 +22,7 @@ import java.awt.Rectangle;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.gui.BasicInfoPanel;
@@ -45,7 +46,7 @@ public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
     public void createComponents(final Detection detection) {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
-                GuiConfig.getInstance().getDetectionModeText(),
+                GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText());
 
         if (detection != null) {
@@ -55,6 +56,11 @@ public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
             addDetectionInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
             addDetectionInformation(GuiConfig.getInstance().getDetectionValidationStatusText(),
                     detection.getValidationStatus(), widthLbl);
+            if (detection.getOsmComparison() != null && (detection.getOsmComparison().equals(OsmComparison.NEW)
+                    || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
+                addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
+                        widthLbl);
+            }
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;

@@ -148,12 +148,14 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionConfirmedValidationStatusText;
     private final String detectionRemovedValidationStatusText;
     private final String detectionToBeCheckedValidationStatusText;
+    private final String detectionTaskStatusText;
     private final String detectionManualModeText;
     private final String detectionAutomaticModeText;
     private final String detectionNewOnOsmText;
     private final String detectionChangedOnOsmText;
     private final String detectionSameOnOsmText;
     private final String detectionUnknownOnOsmText;
+    private final String dialogAddCommentText;
 
 
     private GuiConfig() {
@@ -281,12 +283,14 @@ public final class GuiConfig extends BaseConfig {
         detectionConfirmedValidationStatusText = readProperty("detection.validation.status.value.confirmed");
         detectionRemovedValidationStatusText = readProperty("detection.validation.status.value.removed");
         detectionToBeCheckedValidationStatusText = readProperty("detection.validation.status.value.toBeChecked");
+        detectionTaskStatusText = readProperty("detection.task.status.text");
         detectionManualModeText = readProperty("detection.mode.value.manual");
         detectionAutomaticModeText = readProperty("detection.mode.value.automatic");
         detectionNewOnOsmText = readProperty("detection.osm.new.value");
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+        dialogAddCommentText = readProperty("detection.dialog.comment.text");
     }
 
     public static GuiConfig getInstance() {
@@ -742,6 +746,10 @@ public final class GuiConfig extends BaseConfig {
         return btnBadDetectionShortcutText;
     }
 
+    public String getAddCommentDialogText() {
+        return dialogAddCommentText;
+    }
+
     public String getBtnBadDetectionTlt() {
         return btnBadDetectionTlt;
     }
@@ -760,5 +768,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionDialogTitleName() {
         return detectionDialogTitleName;
+    }
+
+    public String getDetectionTaskStatusText() {
+        return detectionTaskStatusText;
     }
 }
