@@ -26,6 +26,7 @@ final class Constants {
     static final String PHOTO_NAME = "name";
     static final String PHOTO_LTH_NAME = "lth_name";
     static final String PHOTO_TH_NAME = "th_name";
+    static final String PHOTO_ORI_NAME = "ori_name";
     static final String PHOTO_TIMESTAMP = "timestamp";
     static final String PHOTO_HEADING = "heading";
     static final String PHOTO_USERNAME = "username";

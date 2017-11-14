@@ -11,7 +11,6 @@ import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
@@ -53,15 +52,15 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(root);
     }
 
-    public List<Detection> retrieveSequenceDetections(final Long sequenceId, final List<OsmComparison> osmComparisons)
+    public List<Detection> retrieveSequenceDetections(final Long sequenceId)
             throws ServiceException {
-        final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId, osmComparisons);
+        final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();
     }
 
-    public List<Detection> retrievePhotoDetections(final Long sequenceId, final Long sequenceIndex)
+    public List<Detection> retrievePhotoDetections(final Long sequenceId, final Integer sequenceIndex)
             throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrievePhotoDetectionsQuery(sequenceId, sequenceIndex);
         final Response response = executeGet(url, Response.class);

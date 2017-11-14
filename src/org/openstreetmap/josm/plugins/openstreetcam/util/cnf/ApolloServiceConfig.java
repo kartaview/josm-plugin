@@ -15,7 +15,7 @@ import com.telenav.josm.common.cnf.BaseConfig;
  * @author beataj
  * @version $Revision$
  */
-public class ApolloServiceConfig extends BaseConfig {
+public final class ApolloServiceConfig extends BaseConfig {
 
     private static final String CONFIG_FILE = "openstreetcam_apollo_service.properties";
     private static final ApolloServiceConfig INSTANCE = new ApolloServiceConfig();

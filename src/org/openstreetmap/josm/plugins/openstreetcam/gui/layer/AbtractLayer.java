@@ -76,15 +76,17 @@ abstract class AbtractLayer extends Layer {
         actions.add(layerListDialog.createShowHideLayerAction());
         actions.add(deleteLayerAction);
         actions.add(SeparatorLayerAction.INSTANCE);
-        actions.add(displayFilterAction);
-        actions.add(SeparatorLayerAction.INSTANCE);
+        if (addSequenceMenuItem()) {
+            actions.add(SeparatorLayerAction.INSTANCE);
+            actions.add(saveSequenceAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        } else {
+            actions.add(displayFilterAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
         if (addPhotoDataSetMenuItems()) {
             actions.add(downloadPreviousPhotosAction);
             actions.add(downloadNextPhotosAction);
-            actions.add(SeparatorLayerAction.INSTANCE);
-        }
-        if (addSequenceMenuItem()) {
-            actions.add(saveSequenceAction);
             actions.add(SeparatorLayerAction.INSTANCE);
         }
         actions.add(openFeedbackAction);

@@ -38,4 +38,5 @@ final class RequestConstants {
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
 
+    private RequestConstants() {}
 }

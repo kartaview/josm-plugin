@@ -13,6 +13,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
@@ -22,7 +24,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Logging;
 import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -33,6 +34,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  */
 public final class PhotoHandler {
 
+    private static final String STORAGE = "storage";
     private final CacheManager cacheManager = CacheManager.getInstance();
     private static final PhotoHandler INSTANCE = new PhotoHandler();
 
@@ -88,8 +90,9 @@ public final class PhotoHandler {
     private Pair<BufferedImage, PhotoSize> loadHighQualityPhoto(final Photo photo)
             throws ServiceException, IOException {
         Pair<BufferedImage, PhotoSize> result;
+        final String name = photo.getName().contains(STORAGE) ? photo.getName() : photo.getOriName();
         try {
-            result = loadPhoto(photo.getSequenceId(), photo.getName(), PhotoSize.HIGH_QUALITY, false);
+            result = loadPhoto(photo.getSequenceId(), name, PhotoSize.HIGH_QUALITY, false);
         } catch (final Exception e) {
             // try to load large thumbnail image
             result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL, true);
@@ -120,8 +123,12 @@ public final class PhotoHandler {
      */
     public void loadPhotos(final Set<Photo> photos) {
         final boolean highQualityFlag = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag();
-        for (final Photo photo : photos) {
-            ThreadPool.getInstance().execute(() -> loadPhotoToCache(photo, highQualityFlag));
+        if (photos != null && !photos.isEmpty()) {
+            final ExecutorService executorService = Executors.newFixedThreadPool(photos.size());
+            for (final Photo photo : photos) {
+                executorService.execute(() -> loadPhotoToCache(photo, highQualityFlag));
+            }
+            executorService.shutdown();
         }
     }
 
