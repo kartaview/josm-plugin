@@ -37,10 +37,11 @@ import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**
-*
-* @author ioanao
-* @version $Revision$
-*/
+ *
+ * @author ioanao
+ * @version $Revision$
+ */
+// TODO: make class package private
 public class EditDialog extends ModalDialog implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6452018453545899786L;
@@ -63,6 +64,7 @@ public class EditDialog extends ModalDialog implements DetectionChangeObservable
     public void createComponents() {
         txtComment = TextComponentBuilder.buildTextArea(new EditDocument(), null, Color.white, Font.PLAIN, true);
 
+        // TODO: create a well named constant for 100
         final JPanel pnlComment = ContainerBuilder.buildBorderLayoutPanel(null,
                 ContainerBuilder.buildScrollPane(txtComment, null, Color.white, Color.gray, 100, true, null), null,
                 BORDER);

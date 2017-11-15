@@ -35,6 +35,8 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
  * @author ioanao
  * @version $Revision$
  */
+
+// TODO: make class package private
 public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
 
     private static final long serialVersionUID = 5842933383198993565L;
@@ -74,7 +76,7 @@ public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
                 SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, icon.getIconHeight())));
 
         final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(sign) + icon.getIconWidth()
-                + SIGN_VALUE_EXTRA_WIDTH;
+        + SIGN_VALUE_EXTRA_WIDTH;
         add(LabelBuilder.build(sign, icon, Font.PLAIN,
                 new Rectangle(widthLbl, getPnlY(), widthVal, Math.max(LINE_HEIGHT, icon.getIconHeight()))));
 

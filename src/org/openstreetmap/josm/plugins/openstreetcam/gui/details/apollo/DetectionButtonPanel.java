@@ -31,6 +31,7 @@ import com.telenav.josm.common.gui.builder.MenuBuilder;
  * @author ioanao
  * @version $Revision$
  */
+// TODO: make this class package private
 public class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6885598017144429682L;
@@ -143,6 +144,7 @@ public class DetectionButtonPanel extends JPanel implements DetectionChangeObser
             int y = 0;
             if (cmpParent.getMousePosition() != null) {
                 x = point.x;
+                // TODO: create a well named constant for 4
                 y = point.y - cmpParent.getWidth() / 4;
             }
             menu.show(cmpParent, x, y);
@@ -168,6 +170,7 @@ public class DetectionButtonPanel extends JPanel implements DetectionChangeObser
             dialog.setVisible(true);
         }
 
+        // TODO: observer is never used
         void registerObserver(final DetectionChangeObserver observer) {
             dialog.registerObserver(detectionChangeObserver);
         }

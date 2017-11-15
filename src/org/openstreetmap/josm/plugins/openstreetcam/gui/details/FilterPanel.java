@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -64,7 +63,6 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUser;
     private JRadioButton rbDetections;
     private JRadioButton rbAll;
-    private ButtonGroup btnPhotoType;
 
     private JList<OsmComparison> listOsmComparison;
     private JList<EditStatus> listEditStatus;
@@ -124,7 +122,7 @@ class FilterPanel extends JPanel {
         rbAll = ButtonBuilder.build(PhotoDataTypeFilter.ALL.toString(), Font.PLAIN, getBackground(), selected);
         add(rbAll, Constraints.RB_ALL);
 
-        btnPhotoType = ButtonBuilder.build(rbDetections, rbAll);
+        ButtonBuilder.build(rbDetections, rbAll);
     }
 
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
