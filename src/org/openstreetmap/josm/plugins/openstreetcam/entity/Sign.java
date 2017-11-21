@@ -9,24 +9,24 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public class Sign {
 
+    private final String name;
+    private final String internalName;
+    private final String iconName;
     private final String region;
     private final SignCategory category;
     private final String type;
-    private final String name;
-    private String internalName;
 
-    public Sign(final String region, final SignCategory category, final String type, final String name) {
+
+    public Sign(final String name, final String internalName, final String iconName, final String region,
+            final SignCategory category, final String type) {
+        this.name = name;
+        this.internalName = internalName;
+        this.iconName = iconName;
         this.region = region;
         this.category = category;
         this.type = type;
-        this.name = name;
     }
 
-    public Sign(final String region, final SignCategory category, final String type, final String name,
-            final String internalName) {
-        this(region, category, type, name);
-        this.internalName = internalName;
-    }
     public String getRegion() {
         return region;
     }
@@ -45,5 +45,9 @@ public class Sign {
 
     public String getInternalName() {
         return internalName;
+    }
+
+    public String getIconName() {
+        return iconName;
     }
 }

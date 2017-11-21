@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.gui.BasicInfoPanel;
@@ -52,7 +53,7 @@ public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
                 GuiConfig.getInstance().getDetectionValidationStatusText());
 
         if (detection != null) {
-            addSign(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign().getName(), widthLbl);
+            addSign(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign(), widthLbl);
             addDetectionInformation(GuiConfig.getInstance().getDetectionOnOsmText(), detection.getOsmComparison(),
                     widthLbl);
             addDetectionInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
@@ -69,15 +70,15 @@ public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
     }
 
-    private void addSign(final String label, final String sign, final int widthLbl) {
-        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign, true);
+    private void addSign(final String label, final Sign sign, final int widthLbl) {
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign.getIconName(), true);
 
         add(LabelBuilder.build(label, Font.BOLD, ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT,
                 SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, icon.getIconHeight())));
 
-        final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(sign) + icon.getIconWidth()
-        + SIGN_VALUE_EXTRA_WIDTH;
-        add(LabelBuilder.build(sign, icon, Font.PLAIN,
+        final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(sign.getName())
+                + icon.getIconWidth() + SIGN_VALUE_EXTRA_WIDTH;
+        add(LabelBuilder.build(sign.getName(), icon, Font.PLAIN,
                 new Rectangle(widthLbl, getPnlY(), widthVal, Math.max(LINE_HEIGHT, icon.getIconHeight()))));
 
         setPnlWidth(widthLbl + widthVal);
