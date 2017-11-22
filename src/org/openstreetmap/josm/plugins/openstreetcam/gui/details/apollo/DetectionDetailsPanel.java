@@ -36,9 +36,7 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
  * @author ioanao
  * @version $Revision$
  */
-
-// TODO: make class package private
-public class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
+class DetectionDetailsPanel extends BasicInfoPanel<Detection> {
 
     private static final long serialVersionUID = 5842933383198993565L;
 

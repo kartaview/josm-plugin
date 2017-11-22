@@ -41,12 +41,12 @@ import com.telenav.josm.common.gui.builder.TextComponentBuilder;
  * @author ioanao
  * @version $Revision$
  */
-// TODO: make class package private
-public class EditDialog extends ModalDialog implements DetectionChangeObservable {
+class EditDialog extends ModalDialog implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6452018453545899786L;
     private static final Dimension DIM = new Dimension(300, 200);
     private static final Border BORDER = new EmptyBorder(5, 5, 2, 5);
+    private static final int SCROLL_BAR_UNIT = 100;
 
     private final EditStatus status;
     private JTextArea txtComment;
@@ -63,11 +63,8 @@ public class EditDialog extends ModalDialog implements DetectionChangeObservable
     @Override
     public void createComponents() {
         txtComment = TextComponentBuilder.buildTextArea(new EditDocument(), null, Color.white, Font.PLAIN, true);
-
-        // TODO: create a well named constant for 100
-        final JPanel pnlComment = ContainerBuilder.buildBorderLayoutPanel(null,
-                ContainerBuilder.buildScrollPane(txtComment, null, Color.white, Color.gray, 100, true, null), null,
-                BORDER);
+        final JPanel pnlComment = ContainerBuilder.buildBorderLayoutPanel(null, ContainerBuilder
+                .buildScrollPane(txtComment, null, Color.white, Color.gray, SCROLL_BAR_UNIT, true, null), null, BORDER);
         pnlComment.setVerifyInputWhenFocusTarget(true);
         add(pnlComment, BorderLayout.CENTER);
 
@@ -96,6 +93,7 @@ public class EditDialog extends ModalDialog implements DetectionChangeObservable
         @Override
         public void actionPerformed(final ActionEvent e) {
             notifyDetectionChangeObserver(status, txtComment.getText());
+            txtComment.setText(null);
             dispose();
         }
     }

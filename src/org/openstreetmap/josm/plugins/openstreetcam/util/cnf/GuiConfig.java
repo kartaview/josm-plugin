@@ -101,7 +101,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorDetectionRetrieveText;
     private final String errorDetectionUpdateText;
 
-
+    private final String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
 
@@ -142,7 +142,6 @@ public final class GuiConfig extends BaseConfig {
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
     private final String detectionModeText;
-    private final String detectionAddedValidationStatusText;
     private final String detectionValidationStatusText;
     private final String detectionChangedValidationStatusText;
     private final String detectionConfirmedValidationStatusText;
@@ -156,6 +155,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionSameOnOsmText;
     private final String detectionUnknownOnOsmText;
     private final String dialogAddCommentText;
+    private final String authenticationNeededErrorMessage;
 
 
     private GuiConfig() {
@@ -237,6 +237,7 @@ public final class GuiConfig extends BaseConfig {
         errorDetectionUpdateText = readProperty("error.detection.update");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
+        warningTitle = readProperty("warning.title");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
         confirmDateFilterTitle = readProperty("info.dateFilter.title");
@@ -278,7 +279,6 @@ public final class GuiConfig extends BaseConfig {
         detectionOnOsmText = readProperty("detection.osm.text");
         detectionModeText = readProperty("detection.mode.text");
         detectionValidationStatusText = readProperty("detection.validation.status.text");
-        detectionAddedValidationStatusText = readProperty("detection.validation.status.value.added");
         detectionChangedValidationStatusText = readProperty("detection.validation.status.value.changed");
         detectionConfirmedValidationStatusText = readProperty("detection.validation.status.value.confirmed");
         detectionRemovedValidationStatusText = readProperty("detection.validation.status.value.removed");
@@ -291,6 +291,7 @@ public final class GuiConfig extends BaseConfig {
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
         dialogAddCommentText = readProperty("detection.dialog.comment.text");
+        authenticationNeededErrorMessage = readProperty("error.detection.authentication");
     }
 
     public static GuiConfig getInstance() {
@@ -472,6 +473,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorTitle() {
         return errorTitle;
+    }
+
+    public String getWarningTitle() {
+        return warningTitle;
     }
 
     public String getErrorPhotoListText() {
@@ -706,10 +711,6 @@ public final class GuiConfig extends BaseConfig {
         return detectionToBeCheckedValidationStatusText;
     }
 
-    public String getDetectionAddedValidationStatusText() {
-        return detectionAddedValidationStatusText;
-    }
-
     public String getDetectionManualModeText() {
         return detectionManualModeText;
     }
@@ -772,5 +773,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionTaskStatusText() {
         return detectionTaskStatusText;
+    }
+
+    public String getAuthenticationNeededErrorMessage() {
+        return authenticationNeededErrorMessage;
     }
 }
