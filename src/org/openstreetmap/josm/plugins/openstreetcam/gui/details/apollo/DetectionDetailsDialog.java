@@ -28,8 +28,7 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
  * @author ioanao
  * @version $Revision$
  */
-// TODO: make class final
-public class DetectionDetailsDialog extends ToggleDialog {
+public final class DetectionDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -3824929254682268496L;
 
