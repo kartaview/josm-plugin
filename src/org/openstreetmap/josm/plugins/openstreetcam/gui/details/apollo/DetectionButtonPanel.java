@@ -31,8 +31,7 @@ import com.telenav.josm.common.gui.builder.MenuBuilder;
  * @author ioanao
  * @version $Revision$
  */
-// TODO: make this class package private
-public class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
+class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6885598017144429682L;
 
@@ -126,6 +125,7 @@ public class DetectionButtonPanel extends JPanel implements DetectionChangeObser
     private class CouldntFixAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
+        private static final int Y_COORD = 4;
 
         private final JPopupMenu menu;
 
@@ -144,8 +144,7 @@ public class DetectionButtonPanel extends JPanel implements DetectionChangeObser
             int y = 0;
             if (cmpParent.getMousePosition() != null) {
                 x = point.x;
-                // TODO: create a well named constant for 4
-                y = point.y - cmpParent.getWidth() / 4;
+                y = point.y - cmpParent.getWidth() / Y_COORD;
             }
             menu.show(cmpParent, x, y);
         }
@@ -163,7 +162,6 @@ public class DetectionButtonPanel extends JPanel implements DetectionChangeObser
             dialog = new EditDialog(title, EditStatus.OTHER);
 
         }
-
 
         @Override
         public void actionPerformed(final ActionEvent event) {

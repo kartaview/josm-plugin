@@ -11,14 +11,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  */
 public enum ValidationStatus {
 
-    ADDED {
-
-        @Override
-        public String toString() {
-            return GuiConfig.getInstance().getDetectionAddedValidationStatusText();
-        }
-    },
-
     CHANGED {
 
         @Override
