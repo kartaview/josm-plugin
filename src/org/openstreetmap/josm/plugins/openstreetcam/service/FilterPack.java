@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import java.util.Date;
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
@@ -26,15 +27,17 @@ public class FilterPack {
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
     final List<SignType> signTypes;
+    final List<DetectionMode> modes;
 
 
     public FilterPack(final Long externalId, final Date date, final List<OsmComparison> osmComparisons,
-            final List<EditStatus> editStatuses, final List<SignType> signTypes) {
+            final List<EditStatus> editStatuses, final List<SignType> signTypes, final List<DetectionMode> modes) {
         this.externalId = externalId;
         this.date = date;
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
+        this.modes = modes;
     }
 
     public Long getExternalId() {
@@ -53,8 +56,11 @@ public class FilterPack {
         return editStatuses;
     }
 
-
     public List<SignType> getSignTypes() {
         return signTypes;
+    }
+
+    public List<DetectionMode> getModes() {
+        return modes;
     }
 }

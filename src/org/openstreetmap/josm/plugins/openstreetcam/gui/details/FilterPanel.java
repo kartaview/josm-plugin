@@ -30,6 +30,7 @@ import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
@@ -63,12 +64,16 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUser;
     private JRadioButton rbDetections;
     private JRadioButton rbAll;
+    private JCheckBox cbbAutomaticMode;
+    private JCheckBox cbbManualMode;
 
     private JList<OsmComparison> listOsmComparison;
     private JList<EditStatus> listEditStatus;
     private JList<SignType> listSignType;
+    private JList<DetectionMode> listModes;
 
     private final boolean isHighLevelZoom;
+
 
     FilterPanel(final boolean isHighLevelZoom) {
         super(new GridBagLayout());
@@ -83,6 +88,7 @@ class FilterPanel extends JPanel {
             addOsmComparisonFilter(filter.getOsmComparisons());
             addEditStatusFilter(filter.getEditStatuses());
             addDetectionTypeFilter(filter.getSignTypes());
+            addModeFilter(filter.getModes());
         }
     }
 
@@ -153,6 +159,15 @@ class FilterPanel extends JPanel {
         add(ContainerBuilder.buildScrollPane(listSignType, getBackground()), Constraints.CBB_SIGN_TYPE);
     }
 
+    public void addModeFilter(final List<DetectionMode> modes) {
+        add(LabelBuilder.build("Mode", Font.BOLD), Constraints.LBL_MODE);
+        cbbAutomaticMode =
+                CheckBoxBuilder.build("Automatic", Font.PLAIN, null, modes.contains(DetectionMode.AUTOMATIC));
+        add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
+        cbbManualMode = CheckBoxBuilder.build("Manual", Font.PLAIN, null, modes.contains(DetectionMode.MANUAL));
+        add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
+    }
+
     /**
      * Returns the currently selected filters, considering also the uncommitted date case.
      *
@@ -181,7 +196,7 @@ class FilterPanel extends JPanel {
                     rbDetections.isSelected() ? PhotoDataTypeFilter.DETECTIONS_ONLY : PhotoDataTypeFilter.ALL;
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), photoTypeFilter,
                     listOsmComparison.getSelectedValuesList(), listEditStatus.getSelectedValuesList(),
-                    listSignType.getSelectedValuesList());
+                    listSignType.getSelectedValuesList(), listModes.getSelectedValuesList());
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -200,6 +215,8 @@ class FilterPanel extends JPanel {
             listOsmComparison.clearSelection();
             listEditStatus.clearSelection();
             listSignType.clearSelection();
+            cbbAutomaticMode.setSelected(false);
+            cbbManualMode.setSelected(false);
         }
     }
 
@@ -278,6 +295,13 @@ class FilterPanel extends JPanel {
 
         private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 9, 2, 1, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
+
+        private static final GridBagConstraints LBL_MODE = new GridBagConstraints(0, 10, 1, 1, 1, 1,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
+        private static final GridBagConstraints CBB_AUTOMATIC_MODE = new GridBagConstraints(1, 10, 1, 1, 0, 0,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
+        private static final GridBagConstraints CBB_MANUAL_MODE = new GridBagConstraints(2, 10, 1, 1, 0, 0,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
 
         private Constraints() {}
     }
