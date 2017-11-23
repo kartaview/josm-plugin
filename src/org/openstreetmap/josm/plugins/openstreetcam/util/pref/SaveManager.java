@@ -21,6 +21,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
@@ -41,6 +42,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -49,9 +51,11 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
@@ -108,6 +112,7 @@ final class SaveManager {
             saveOsmComparisonFilter(filter.getOsmComparisons());
             saveEditStatusFilter(filter.getEditStatuses());
             saveSignTypeFilter(filter.getSignTypes());
+            saveModesFilter(filter.getModes());
         }
     }
 
@@ -139,6 +144,14 @@ final class SaveManager {
             }
         }
         StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
+    }
+
+    private void saveModesFilter(final List<DetectionMode> modes) {
+        List<DetectionModeEntry> entries = new ArrayList<>();
+        if (modes != null) {
+            entries = modes.stream().map(DetectionModeEntry::new).collect(Collectors.toList());
+        }
+        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {

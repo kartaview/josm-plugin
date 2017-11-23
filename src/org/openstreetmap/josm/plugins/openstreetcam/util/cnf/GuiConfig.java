@@ -79,6 +79,9 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterPhotoTypeLbl;
     private final String dlgFilterDetectionLbl;
     private final String dlgFilterOsmComparisonLbl;
+    private final String dlgFilterModeLbl;
+    private final String dlgFilterModeAutomaticTxt;
+    private final String dlgFilterModeManualTxt;
     private final String dlgFilterValidationStatusLbl;
     private final String dlgFilterEditStatusLbl;
     private final String dlgFilterDetectionTypeLbl;
@@ -214,6 +217,9 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterUserLbl = readProperty("filter.user.lbl");
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
         dlgFilterDetectionLbl = readProperty("filter.detection.lbl");
+        dlgFilterModeLbl = readProperty("filter.mode.lbl");
+        dlgFilterModeAutomaticTxt = readProperty("filter.mode.automatic");
+        dlgFilterModeManualTxt = readProperty("filter.mode.manual");
         dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
         dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
         dlgFilterValidationStatusLbl = readProperty("filter.validationStatus.lbl");
@@ -445,6 +451,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterOsmComparisonLbl() {
         return dlgFilterOsmComparisonLbl;
+    }
+
+    public String getDlgFilterModeLbl() {
+        return dlgFilterModeLbl;
+    }
+
+    public String getDlgFilterModeAutomaticTxt() {
+        return dlgFilterModeAutomaticTxt;
+    }
+
+    public String getDlgFilterModeManualTxt() {
+        return dlgFilterModeManualTxt;
     }
 
     public String getDlgFilterValidationStatusLbl() {

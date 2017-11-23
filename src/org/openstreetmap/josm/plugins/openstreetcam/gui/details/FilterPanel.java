@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,7 +71,6 @@ class FilterPanel extends JPanel {
     private JList<OsmComparison> listOsmComparison;
     private JList<EditStatus> listEditStatus;
     private JList<SignType> listSignType;
-    private JList<DetectionMode> listModes;
 
     private final boolean isHighLevelZoom;
 
@@ -160,11 +160,12 @@ class FilterPanel extends JPanel {
     }
 
     public void addModeFilter(final List<DetectionMode> modes) {
-        add(LabelBuilder.build("Mode", Font.BOLD), Constraints.LBL_MODE);
-        cbbAutomaticMode =
-                CheckBoxBuilder.build("Automatic", Font.PLAIN, null, modes.contains(DetectionMode.AUTOMATIC));
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
+        cbbAutomaticMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeAutomaticTxt(), Font.PLAIN,
+                null, modes == null ? false : modes.contains(DetectionMode.AUTOMATIC));
         add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
-        cbbManualMode = CheckBoxBuilder.build("Manual", Font.PLAIN, null, modes.contains(DetectionMode.MANUAL));
+        cbbManualMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeManualTxt(), Font.PLAIN, null,
+                modes == null ? false : modes.contains(DetectionMode.MANUAL));
         add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
     }
 
@@ -196,11 +197,22 @@ class FilterPanel extends JPanel {
                     rbDetections.isSelected() ? PhotoDataTypeFilter.DETECTIONS_ONLY : PhotoDataTypeFilter.ALL;
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), photoTypeFilter,
                     listOsmComparison.getSelectedValuesList(), listEditStatus.getSelectedValuesList(),
-                    listSignType.getSelectedValuesList(), listModes.getSelectedValuesList());
+                    listSignType.getSelectedValuesList(), getSelectedModes());
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
         return searchFilter;
+    }
+
+    private List<DetectionMode> getSelectedModes() {
+        final List<DetectionMode> selectedModes = new ArrayList<>();
+        if (cbbAutomaticMode.isSelected()) {
+            selectedModes.add(DetectionMode.AUTOMATIC);
+        }
+        if (cbbManualMode.isSelected()) {
+            selectedModes.add(DetectionMode.MANUAL);
+        }
+        return selectedModes;
     }
 
     /**
