@@ -29,6 +29,7 @@ final class Keys {
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String FILTER_SEARCH_PHOTO_TYPE = "openstreetcam.filter.search.photoType";
     static final String FILTER_SEARCH_OSM_COMPARISON = "openstreetcam.filter.search.osmComparison";
+    static final String FILTER_SEARCH_MODE = "openstreetcam.filter.search.mode";
     static final String FILTER_SEARCH_EDIT_STATUS = "openstreetcam.filter.search.editStatus";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
 

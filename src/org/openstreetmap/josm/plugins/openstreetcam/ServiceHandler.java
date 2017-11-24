@@ -135,7 +135,7 @@ public final class ServiceHandler {
         FilterPack filterPack = null;
         if (searchFilter != null) {
             filterPack = new FilterPack(osmUserId, searchFilter.getDate(), searchFilter.getOsmComparisons(),
-                    searchFilter.getEditStatuses(), searchFilter.getSignTypes());
+                    searchFilter.getEditStatuses(), searchFilter.getSignTypes(), searchFilter.getModes());
         }
 
         List<Detection> result = null;

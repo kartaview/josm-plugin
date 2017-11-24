@@ -132,7 +132,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
         if (dataSet != null && dataSet.getPhotoDataSet() != null) {
@@ -156,7 +156,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     }
 
     private boolean removeDetectionSelection() {
-        return selectedDetection != null && (dataSet == null || dataSet.getPhotos() == null
+        return selectedDetection != null && (dataSet == null || dataSet.getDetections() == null
                 || !dataSet.getDetections().contains(selectedDetection));
     }
 
@@ -309,7 +309,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
                 && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
-                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                        .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
 

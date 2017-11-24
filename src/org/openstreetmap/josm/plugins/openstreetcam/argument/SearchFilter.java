@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import java.util.Date;
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
@@ -29,6 +30,7 @@ public class SearchFilter {
     private List<OsmComparison> osmComparisons;
     private List<EditStatus> editStatuses;
     private List<SignType> signTypes;
+    private List<DetectionMode> modes;
 
 
     public SearchFilter(final boolean onlyMineFlag) {
@@ -42,12 +44,13 @@ public class SearchFilter {
 
     public SearchFilter(final Date date, final boolean onlyMineFlag, final PhotoDataTypeFilter photoType,
             final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
-            final List<SignType> signTypes) {
+            final List<SignType> signTypes, final List<DetectionMode> modes) {
         this(date, onlyMineFlag);
         this.photoType = photoType;
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
+        this.modes = modes;
     }
 
     public SearchFilter(final PhotoDataTypeFilter photoType, final List<OsmComparison> osmComparisons) {
@@ -75,6 +78,10 @@ public class SearchFilter {
         return date;
     }
 
+    public List<DetectionMode> getModes() {
+        return modes;
+    }
+
     public boolean isOnlyMineFlag() {
         return onlyMineFlag;
     }
@@ -89,6 +96,7 @@ public class SearchFilter {
         result = prime * result + EntityUtil.hashCode(osmComparisons);
         result = prime * result + EntityUtil.hashCode(editStatuses);
         result = prime * result + EntityUtil.hashCode(signTypes);
+        result = prime * result + EntityUtil.hashCode(modes);
         return result;
     }
 
@@ -105,6 +113,7 @@ public class SearchFilter {
             result = result && EntityUtil.bothNullOrEqual(osmComparisons, other.getOsmComparisons());
             result = result && EntityUtil.bothNullOrEqual(editStatuses, other.getEditStatuses());
             result = result && EntityUtil.bothNullOrEqual(signTypes, other.getSignTypes());
+            result = result && EntityUtil.bothNullOrEqual(modes, other.getModes());
         }
         return result;
     }
