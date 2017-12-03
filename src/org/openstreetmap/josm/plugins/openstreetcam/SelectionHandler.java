@@ -229,7 +229,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                 final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
                 final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
                 layer.setSelectedPhoto(photo);
-                if (!MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
+                if (layer.getSelectedDetection() == null
+                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
                     MainApplication.getMap().mapView.zoomTo(photo.getLocation());
                 }
                 layer.invalidate();
