@@ -168,9 +168,8 @@ class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
             dialog.setVisible(true);
         }
 
-        // TODO: observer is never used
         void registerObserver(final DetectionChangeObserver observer) {
-            dialog.registerObserver(detectionChangeObserver);
+            dialog.registerObserver(observer);
         }
     }
 }

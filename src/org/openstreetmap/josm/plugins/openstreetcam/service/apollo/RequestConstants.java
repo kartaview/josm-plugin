@@ -35,7 +35,7 @@ final class RequestConstants {
     static final String EDIT_STATUSES = "editStatuses";
     static final String MODES = "detectionModes";
     static final String VALIDATION_STATUSES = "validationStatuses";
-    static final String TYPES = "types";
+    static final String TYPES = "signTypes";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
 
