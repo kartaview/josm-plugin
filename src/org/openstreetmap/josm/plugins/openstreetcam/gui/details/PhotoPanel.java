@@ -74,6 +74,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     void updateUI(final BufferedImage image, final List<Detection> detections) {
         removeAll();
         this.image = image;
+        if (image != null) {
+            drawDetections(image.createGraphics());
+        }
         this.detections = detections;
         initializeCurrentImageView();
         revalidate();
@@ -255,9 +258,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                     currentView.y, currentView.x + currentView.width, currentView.y + currentView.height, null);
 
             // draw detections
-            if (Double.valueOf(0.0).equals(currentView.getX()) && Double.valueOf(0.0).equals(currentView.getY())) {
-                drawDetections((Graphics2D) g);
-            }
+            // if (Double.valueOf(0.0).equals(currentView.getX()) && Double.valueOf(0.0).equals(currentView.getY())) {
+            // drawDetections((Graphics2D) g);
+            // }
         }
         size = getSize();
     }
@@ -267,13 +270,19 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             graphics.setColor(Color.red);
 
             for (final Detection detection : detections) {
+                final double x = detection.getLocationOnPhoto().getX() * image.getWidth();
+                final double y = detection.getLocationOnPhoto().getY() * image.getHeight();
 
-                final double x = frame.getX() + detection.getLocationOnPhoto().getX() * frame.getWidth();
-                final double y = frame.getY() + detection.getLocationOnPhoto().getY() * frame.getHeight();
-
-                final double width = (detection.getLocationOnPhoto().getWidth() * frame.getWidth());
-                final double height = (detection.getLocationOnPhoto().getHeight() * frame.getHeight());
+                final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth();
+                final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight();
+                /*
+                 * final double x = frame.getX() + detection.getLocationOnPhoto().getX() * frame.getWidth(); final
+                 * double y = frame.getY() + detection.getLocationOnPhoto().getY() * frame.getHeight(); final double
+                 * width = (detection.getLocationOnPhoto().getWidth() * frame.getWidth()); final double height =
+                 * (detection.getLocationOnPhoto().getHeight() * frame.getHeight());
+                 */
                 graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                graphics.fill(new Rectangle2D.Double(x, y, width, height));
             }
         }
     }
