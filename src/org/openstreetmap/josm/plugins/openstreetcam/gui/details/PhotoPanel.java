@@ -74,9 +74,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     void updateUI(final BufferedImage image, final List<Detection> detections) {
         removeAll();
         this.image = image;
-        if (image != null) {
-            drawDetections(image.createGraphics());
-        }
         this.detections = detections;
         initializeCurrentImageView();
         revalidate();
@@ -152,7 +149,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
 
         if (wheelRotation > 0
                 || (wheelRotation <= 0 && horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
-                && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
+                        && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
             currentView = new Rectangle(horizontal.getFirst(), vertical.getFirst(),
                     horizontal.getSecond() - horizontal.getFirst(), vertical.getSecond() - vertical.getFirst());
         }
@@ -256,11 +253,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             }
             g.drawImage(image, frame.x, frame.y, frame.x + frame.width, frame.y + frame.height, currentView.x,
                     currentView.y, currentView.x + currentView.width, currentView.y + currentView.height, null);
-
-            // draw detections
-            // if (Double.valueOf(0.0).equals(currentView.getX()) && Double.valueOf(0.0).equals(currentView.getY())) {
-            // drawDetections((Graphics2D) g);
-            // }
+            drawDetections((Graphics2D) g);
         }
         size = getSize();
     }
@@ -268,25 +261,21 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     private void drawDetections(final Graphics2D graphics) {
         if (detections != null && !detections.isEmpty()) {
             graphics.setColor(Color.red);
-
             for (final Detection detection : detections) {
-                final double x = detection.getLocationOnPhoto().getX() * image.getWidth();
-                final double y = detection.getLocationOnPhoto().getY() * image.getHeight();
+                final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
+                        * frame.getWidth() / currentView.getWidth();
+                final double y = frame.y + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y)
+                        * frame.getHeight() / currentView.getHeight();
 
-                final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth();
-                final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight();
-                /*
-                 * final double x = frame.getX() + detection.getLocationOnPhoto().getX() * frame.getWidth(); final
-                 * double y = frame.getY() + detection.getLocationOnPhoto().getY() * frame.getHeight(); final double
-                 * width = (detection.getLocationOnPhoto().getWidth() * frame.getWidth()); final double height =
-                 * (detection.getLocationOnPhoto().getHeight() * frame.getHeight());
-                 */
+                final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth()
+                        / currentView.getWidth();
+                final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
+                        / currentView.getHeight();
+
                 graphics.draw(new Rectangle2D.Double(x, y, width, height));
-                graphics.fill(new Rectangle2D.Double(x, y, width, height));
             }
         }
     }
-
 
     /**
      * The method match on the panel the new part of the image.
