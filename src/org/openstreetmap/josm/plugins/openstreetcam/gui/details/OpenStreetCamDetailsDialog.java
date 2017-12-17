@@ -22,6 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
@@ -194,22 +195,25 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     }
 
     /**
-     * Registers the observers to the button panel.
+     * Registers the observers to the panels.
      *
      * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
      * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
+     * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
     public void registerObservers(final ClosestPhotoObserver closestPhotoObserver,
             final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
-            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver) {
+            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver,
+            final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(trackAutoplayObserver);
+        pnlPhoto.registerObserver(detectionSelectionObserver);
     }
 
     /**

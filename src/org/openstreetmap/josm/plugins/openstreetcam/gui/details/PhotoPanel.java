@@ -21,12 +21,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
@@ -38,11 +41,12 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
  * @author Beata
  * @version $Revision$
  */
-class PhotoPanel extends JPanel implements MouseWheelListener {
+class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectionObservable {
 
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
+    private static final Color TRANSPARENT_RED = new Color(255, 0, 0, 50);
 
     private transient BufferedImage image;
 
@@ -58,7 +62,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     /** the dimension of the panel, it is used to detect if the user had maximized or not the panel */
     private Dimension size;
 
+    /** detection related entities */
+    private DetectionSelectionObserver detectionSelectionObserver;
     private List<Detection> detections;
+    private Detection selectedDetection;
 
 
     PhotoPanel() {
@@ -75,6 +82,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         removeAll();
         this.image = image;
         this.detections = detections;
+        // TODO after SelectionHandler refactoring this functionality should be moved upper
+        selectedDetection = detections != null ? detections.get(0) : null;
         initializeCurrentImageView();
         revalidate();
         repaint();
@@ -259,8 +268,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
     }
 
     private void drawDetections(final Graphics2D graphics) {
+        graphics.setColor(Color.red);
         if (detections != null && !detections.isEmpty()) {
-            graphics.setColor(Color.red);
             for (final Detection detection : detections) {
                 final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
                         * frame.getWidth() / currentView.getWidth();
@@ -272,7 +281,14 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
                 final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
                         / currentView.getHeight();
 
-                graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                if (detection.equals(selectedDetection)) {
+                    graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                    graphics.setColor(TRANSPARENT_RED);
+                    graphics.fill(new Rectangle2D.Double(x, y, width, height));
+                    graphics.setColor(Color.red);
+                } else {
+                    graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                }
             }
         }
     }
@@ -328,6 +344,17 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
         }
     }
 
+
+    @Override
+    public void registerObserver(final DetectionSelectionObserver detectionSelectionObserver) {
+        this.detectionSelectionObserver = detectionSelectionObserver;
+    }
+
+    @Override
+    public void notifyDetectionSelectionObserver(final Detection detection) {
+        detectionSelectionObserver.selectDetection(detection);
+    }
+
     private class MousePressedAdapter extends MouseAdapter {
 
         @Override
@@ -335,6 +362,19 @@ class PhotoPanel extends JPanel implements MouseWheelListener {
             if (image != null) {
                 startPoint = getPointOnImage(e.getPoint());
             }
+        }
+
+        @Override
+        public void mouseClicked(final MouseEvent e) {
+            final Point clickedPoint = getPointOnImage(e.getPoint());
+            final Point2D translatedPoint =
+                    new Point2D.Double(clickedPoint.getX() / image.getWidth(), clickedPoint.getY() / image.getHeight());
+            selectedDetection = detections.stream()
+                    .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
+                    .sorted((d1, d2) -> Double.compare(d1.getLocationOnPhoto().surface(), d2.getLocationOnPhoto().surface()))
+                    .findFirst()
+                    .orElse(null);
+            notifyDetectionSelectionObserver(selectedDetection);
         }
     }
 

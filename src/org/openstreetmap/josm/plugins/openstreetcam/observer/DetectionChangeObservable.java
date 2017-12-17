@@ -29,5 +29,4 @@ public interface DetectionChangeObservable {
      * Notifies the observers listening.
      */
     void notifyDetectionChangeObserver(final EditStatus status, final String text);
-
 }
