@@ -25,10 +25,8 @@ public enum DetectionIconFactory {
 
     INSTANCE;
 
-    private static final String EXT_PNG = ".png";
-    private static final String EXT_SVG = ".svg";
     private static final String SIGN_POST_PREFIX = "regulatory--arrow";
-    private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1";
+    private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1.svg";
     private final Map<String, Pair<ImageIcon, ImageIcon>> iconsMap;
 
 
@@ -47,15 +45,7 @@ public enum DetectionIconFactory {
     }
 
     private ImageIcon loadIcon(final String name, final ImageSizes size) {
-        ImageIcon icon;
-        try {
-            final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name + EXT_SVG;
-            icon = ImageProvider.get(iconPath, size);
-        } catch (final Exception ex) {
-            // try to load png
-            final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name + EXT_PNG;
-            icon = ImageProvider.get(iconPath, size);
-        }
-        return icon;
+        final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name;
+        return ImageProvider.get(iconPath, size);
     }
 }

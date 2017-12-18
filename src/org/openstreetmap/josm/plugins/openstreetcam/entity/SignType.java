@@ -14,7 +14,18 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  * @version $Revision$
  */
 public enum SignType {
-    ONE_WAY, OTHER, TURN_RESTRICTION, SPEED_LIMIT, SIGN_POST;
+    INTERSECTION_LANE_CONTROL,
+    JUGHEAD,
+    LANE_CONTROL,
+    ONE_WAY,
+    OTHER,
+    ROAD_CLOSED,
+    ROUNDABOUT,
+    SIGN_POST,
+    SPEED_LIMIT,
+    STOP,
+    TRAFFIC_SIGNAL,
+    TURN_RESTRICTION;
 
     @Override
     public String toString() {
