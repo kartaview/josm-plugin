@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.awt.geom.Point2D;
+
 
 /**
  * Defines the rectangle business entity; represents the detection position in a photo.
@@ -37,5 +39,13 @@ public class Rectangle {
 
     public Double getHeight() {
         return height;
+    }
+
+    public boolean contains(final Point2D point) {
+        return point.getX() >= x && point.getX() <= x + width && point.getY() >= y && point.getY() <= y + height;
+    }
+
+    public double surface() {
+        return width * height;
     }
 }
