@@ -313,7 +313,6 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
         }
 
-
         private void handleDataDownload() {
             // clean up previous data
             SwingUtilities.invokeLater(() -> {

@@ -28,6 +28,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -82,8 +83,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         removeAll();
         this.image = image;
         this.detections = detections;
-        // TODO after SelectionHandler refactoring this functionality should be moved upper
-        selectedDetection = detections != null ? detections.get(0) : null;
+        // TODO after SelectionHandler refactoring this functionality should be replaced by a setter
+        selectedDetection = OpenStreetCamLayer.getInstance().getSelectedDetection();
         initializeCurrentImageView();
         revalidate();
         repaint();
@@ -366,15 +367,18 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
 
         @Override
         public void mouseClicked(final MouseEvent e) {
-            final Point clickedPoint = getPointOnImage(e.getPoint());
-            final Point2D translatedPoint =
-                    new Point2D.Double(clickedPoint.getX() / image.getWidth(), clickedPoint.getY() / image.getHeight());
-            selectedDetection = detections.stream()
-                    .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
-                    .sorted((d1, d2) -> Double.compare(d1.getLocationOnPhoto().surface(), d2.getLocationOnPhoto().surface()))
-                    .findFirst()
-                    .orElse(null);
-            notifyDetectionSelectionObserver(selectedDetection);
+            if (detections != null) {
+                final Point clickedPoint = getPointOnImage(e.getPoint());
+                final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
+                        clickedPoint.getY() / image.getHeight());
+                selectedDetection = detections.stream()
+                        .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
+                        .sorted((d1, d2) -> Double.compare(d1.getLocationOnPhoto().surface(),
+                                d2.getLocationOnPhoto().surface()))
+                        .findFirst()
+                        .orElse(null);
+                notifyDetectionSelectionObserver(selectedDetection);
+            }
         }
     }
 
