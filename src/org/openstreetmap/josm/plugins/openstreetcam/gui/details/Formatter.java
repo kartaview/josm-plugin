@@ -19,6 +19,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
  */
 final class Formatter {
 
+    private final static String EMPTY_DATE = "0000-00-00 00:00:00";
+
     private Formatter() {}
 
     /**
@@ -30,7 +32,9 @@ final class Formatter {
     static String formatPhotoDetails(final Photo photo) {
         final StringBuilder sb = new StringBuilder("<html>");
         sb.append("Created");
-        sb.append(" on ").append(photo.getShotDate());
+        if (photo.getShotDate() != null && !EMPTY_DATE.equals(photo.getShotDate())) {
+            sb.append(" on ").append(photo.getShotDate());
+        }
         if (photo.getUsername() != null && !photo.getUsername().isEmpty()) {
             sb.append(" by ").append("<a href='' target='_blank'>");
             sb.append(photo.getUsername()).append("</a>");
