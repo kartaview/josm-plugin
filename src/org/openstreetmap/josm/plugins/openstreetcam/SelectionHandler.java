@@ -11,7 +11,9 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -112,21 +114,29 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             }
 
             // load photo detections
-            final List<Detection> detections = ServiceHandler.getInstance()
+            final List<Detection> photoDetections = ServiceHandler.getInstance()
                     .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
-            photo.setDetections(detections);
+
+            List<Detection> exposedDetections = new ArrayList<>();
+            final List<Detection> layerDetections = OpenStreetCamLayer.getInstance().getDataSet().getDetections();
+            if (photoDetections != null && layerDetections != null) {
+                exposedDetections = photoDetections.stream()
+                        .filter(layerDetections::contains)
+                        .collect(Collectors.toList());
+                photo.setDetections(exposedDetections);
+            }
 
             final Detection selectedDetection =
-                    detection != null ? detection : detections != null ? detections.get(0) : null;
+                    detection != null ? detection : !exposedDetections.isEmpty() ? exposedDetections.get(0) : null;
 
-                    DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-                    OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+            OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
 
-                    final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
-                    final PhotoSize photoType =
-                            photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-                    selectPhoto(photo, photoType, true);
-                    OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
+            final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
+            final PhotoSize photoType =
+                    photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+            selectPhoto(photo, photoType, true);
+            OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
 
         } else if (detection != null) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);

@@ -120,12 +120,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public void setDataSet(final DataSet dataSet, final boolean checkSelectedData) {
         this.dataSet = dataSet;
         if (checkSelectedData) {
-            if (removePhotoSelection()) {
-                selectedPhoto = null;
-            }
-            if (removeDetectionSelection()) {
-                checkSelectedDetection();
-            }
+            updateSelectedPhoto();
+            updateSelectedDetection();
         }
         if (selectedPhoto != null && closestPhotos != null) {
             selectStartPhotoForClosestAction(selectedPhoto);
@@ -150,27 +146,28 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
     }
 
-    private boolean removePhotoSelection() {
-        return selectedPhoto != null
-                && (dataSet == null || dataSet.getPhotos() == null || !dataSet.getPhotos().contains(selectedPhoto));
-    }
-
-    private boolean removeDetectionSelection() {
-        return selectedDetection != null && (dataSet == null || dataSet.getDetections() == null
-                || !dataSet.getDetections().contains(selectedDetection));
-    }
-
-    private void checkSelectedDetection() {
+    private void updateSelectedDetection() {
         if (selectedDetection != null) {
             if (dataSet != null && dataSet.getDetections() != null) {
-                final int index = dataSet.getDetections().indexOf(selectedDetection);
-                if (index >= 0) {
-                    selectedDetection = dataSet.getDetections().get(index);
-                } else {
-                    selectedDetection = null;
-                }
+                selectedDetection = dataSet.getDetections().stream()
+                        .filter(detection -> detection.equals(selectedDetection))
+                        .findFirst()
+                        .orElse(null);
             } else {
                 selectedDetection = null;
+            }
+        }
+    }
+
+    private void updateSelectedPhoto() {
+        if (selectedPhoto != null) {
+            if (dataSet != null && dataSet.getPhotos() != null) {
+                selectedPhoto = dataSet.getPhotos().stream()
+                        .filter(photo -> photo.equals(selectedPhoto))
+                        .findFirst()
+                        .orElse(null);
+            } else {
+                selectedPhoto = null;
             }
         }
     }

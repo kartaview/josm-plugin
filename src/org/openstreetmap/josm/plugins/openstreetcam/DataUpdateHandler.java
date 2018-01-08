@@ -16,15 +16,19 @@
 package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
@@ -247,11 +251,28 @@ class DataUpdateHandler {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);
                 DetectionDetailsDialog.getInstance()
                         .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
-
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
                         && OpenStreetCamDetailsDialog.getInstance().isPhotoSelected()) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
                 } else {
+                    // TODO this logic is duplicated in SelectionHandler; refactoring needed
+                    final Photo photo = OpenStreetCamLayer.getInstance().getSelectedPhoto();
+                    if (OpenStreetCamLayer.getInstance().getSelectedDetection() != null) {
+                        final List<Detection> photoDetections = ServiceHandler.getInstance()
+                                .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
+                        List<Detection> exposedDetections = null;
+                        if (photoDetections != null) {
+                            exposedDetections = photoDetections.stream()
+                                    .filter(OpenStreetCamLayer.getInstance().getDataSet().getDetections()::contains)
+                                    .collect(Collectors.toList());
+                            photo.setDetections(exposedDetections);
+                        }
+                    }
+                    final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
+                    OpenStreetCamDetailsDialog.getInstance().updateUI(photo,
+                            photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL,
+                            true);
+
                     if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
                             && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()
                             && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
