@@ -73,39 +73,48 @@ public final class ServiceHandler {
      */
     public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
         Pair<PhotoDataSet, List<Detection>> result;
-        if (filter != null && filter.getPhotoType().equals(PhotoDataTypeFilter.DETECTIONS_ONLY)) {
-            final List<Detection> detections = searchDetections(area, filter);
-            result = new Pair<>(null, detections);
+        if (filter != null) {
+            if (filter.getPhotoType().equals(PhotoDataTypeFilter.DETECTIONS_ONLY)) {
+                result = new Pair<>(null, searchDetections(area, filter));
+            } else if (filter.getPhotoType().equals(PhotoDataTypeFilter.PHOTOS_ONLY)) {
+                result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
+            } else {
+                result = loadPhotosAndDetections(area, filter);
+            }
         } else {
-            final ExecutorService executorService = Executors.newFixedThreadPool(2);
-            final Future<PhotoDataSet> future1 =
-                    executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT));
-            final Future<List<Detection>> future2 = executorService.submit(() -> searchDetections(area, filter));
-
-            PhotoDataSet photoDataSet = null;
-            try {
-                photoDataSet = future1.get();
-            } catch (final Exception ex) {
-                if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                    PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
-                }
-            }
-            List<Detection> detections = null;
-            try {
-                detections = future2.get();
-            } catch (final Exception ex) {
-                if (!PreferenceManager.getInstance().loadDetectionSearchErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
-                    PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
-                }
-            }
-            executorService.shutdown();
-            result = new Pair<>(photoDataSet, detections);
+            result = loadPhotosAndDetections(area, filter);
         }
         return result;
     }
 
+    private Pair<PhotoDataSet, List<Detection>> loadPhotosAndDetections(final BoundingBox area,
+            final SearchFilter filter) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(2);
+        final Future<PhotoDataSet> future1 =
+                executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT));
+        final Future<List<Detection>> future2 = executorService.submit(() -> searchDetections(area, filter));
+
+        PhotoDataSet photoDataSet = null;
+        try {
+            photoDataSet = future1.get();
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
+                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
+            }
+        }
+        List<Detection> detections = null;
+        try {
+            detections = future2.get();
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadDetectionSearchErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
+                PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
+            }
+        }
+        executorService.shutdown();
+        return new Pair<>(photoDataSet, detections);
+    }
 
     /**
      * Lists the photos from the current area based on the given filters.
@@ -159,30 +168,36 @@ public final class ServiceHandler {
      * @return a {code Pair} of {@code Sequence} and {@code Detection}s list
      */
     public Pair<Sequence, List<Detection>> retrieveSequence(final Long sequenceId) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
-        final Future<List<Detection>> deiectionsFuture =
-                executorService.submit(() -> retrieveSequenceDetection(sequenceId));
-        Sequence sequence = null;
-        try {
-            sequence = sequenceFuture.get();
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+        Pair<Sequence, List<Detection>> result;
+        if (PreferenceManager.getInstance().loadSearchFilter().getPhotoType().equals(PhotoDataTypeFilter.PHOTOS_ONLY)) {
+            result = new Pair<>(retrieveSequencePhotos(sequenceId), null);
+        } else {
+            final ExecutorService executorService = Executors.newFixedThreadPool(2);
+            final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
+            final Future<List<Detection>> detectionsFuture =
+                    executorService.submit(() -> retrieveSequenceDetection(sequenceId));
+            Sequence sequence = null;
+            try {
+                sequence = sequenceFuture.get();
+            } catch (final Exception ex) {
+                if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                    final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                    PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+                }
             }
-        }
-        List<Detection> detections = null;
-        try {
-            detections = deiectionsFuture.get();
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            List<Detection> detections = null;
+            try {
+                detections = detectionsFuture.get();
+            } catch (final Exception ex) {
+                if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                    final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                    PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+                }
             }
+            executorService.shutdown();
+            result = new Pair<>(sequence, detections);
         }
-        executorService.shutdown();
-        return new Pair<>(sequence, detections);
+        return result;
     }
 
     private Sequence retrieveSequencePhotos(final Long id) {

@@ -117,8 +117,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             final List<Detection> photoDetections = ServiceHandler.getInstance()
                     .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
 
-            List<Detection> exposedDetections = new ArrayList<>();
             final List<Detection> layerDetections = OpenStreetCamLayer.getInstance().getDataSet().getDetections();
+            List<Detection> exposedDetections = new ArrayList<>();
             if (photoDetections != null && layerDetections != null) {
                 exposedDetections = photoDetections.stream()
                         .filter(layerDetections::contains)

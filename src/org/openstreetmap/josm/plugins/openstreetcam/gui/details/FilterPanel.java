@@ -65,6 +65,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUser;
     private JRadioButton rbDetections;
     private JRadioButton rbAll;
+    private JRadioButton rbPhotos;
     private JCheckBox cbbAutomaticMode;
     private JCheckBox cbbManualMode;
 
@@ -119,16 +120,22 @@ class FilterPanel extends JPanel {
     private void addPhotoTypeFilter(final PhotoDataTypeFilter photoType) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterPhotoTypeLbl(), Font.BOLD),
                 Constraints.LBL_PHOTO_TYPE);
+
         boolean selected = photoType != null && photoType.equals(PhotoDataTypeFilter.DETECTIONS_ONLY);
         rbDetections = ButtonBuilder.build(PhotoDataTypeFilter.DETECTIONS_ONLY.toString(), Font.PLAIN, getBackground(),
                 selected);
         add(rbDetections, Constraints.RB_DETECTIONS);
 
+        selected = photoType != null && photoType.equals(PhotoDataTypeFilter.PHOTOS_ONLY);
+        rbPhotos =
+                ButtonBuilder.build(PhotoDataTypeFilter.PHOTOS_ONLY.toString(), Font.PLAIN, getBackground(), selected);
+        add(rbPhotos, Constraints.RB_PHOTOS);
+
         selected = photoType != null && photoType.equals(PhotoDataTypeFilter.ALL);
         rbAll = ButtonBuilder.build(PhotoDataTypeFilter.ALL.toString(), Font.PLAIN, getBackground(), selected);
         add(rbAll, Constraints.RB_ALL);
 
-        ButtonBuilder.build(rbDetections, rbAll);
+        ButtonBuilder.build(rbDetections, rbPhotos, rbAll);
     }
 
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -193,15 +200,25 @@ class FilterPanel extends JPanel {
         }
         SearchFilter searchFilter;
         if (isHighLevelZoom) {
-            final PhotoDataTypeFilter photoTypeFilter =
-                    rbDetections.isSelected() ? PhotoDataTypeFilter.DETECTIONS_ONLY : PhotoDataTypeFilter.ALL;
-            searchFilter = new SearchFilter(date, cbbUser.isSelected(), photoTypeFilter,
+            searchFilter = new SearchFilter(date, cbbUser.isSelected(), getSelectedPhotoPreference(),
                     listOsmComparison.getSelectedValuesList(), listEditStatus.getSelectedValuesList(),
                     listSignType.getSelectedValuesList(), getSelectedModes());
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
         return searchFilter;
+    }
+
+    private PhotoDataTypeFilter getSelectedPhotoPreference() {
+        final PhotoDataTypeFilter photoTypeFilter;
+        if (rbDetections.isSelected()) {
+            photoTypeFilter = PhotoDataTypeFilter.DETECTIONS_ONLY;
+        } else if (rbPhotos.isSelected()) {
+            photoTypeFilter = PhotoDataTypeFilter.PHOTOS_ONLY;
+        } else {
+            photoTypeFilter = PhotoDataTypeFilter.ALL;
+        }
+        return photoTypeFilter;
     }
 
     private List<DetectionMode> getSelectedModes() {
@@ -268,6 +285,7 @@ class FilterPanel extends JPanel {
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
         private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 2, 1, 1, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 10), 0, 0);
+
         private static final GridBagConstraints LBL_USER = new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 5), 0, 0);
         private static final GridBagConstraints CBB_USER = new GridBagConstraints(1, 1, 1, 1, 0, 0,
@@ -277,34 +295,28 @@ class FilterPanel extends JPanel {
 
         private static final GridBagConstraints LBL_PHOTO_TYPE = new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 0), 0, 0);
-
         private static final GridBagConstraints RB_DETECTIONS = new GridBagConstraints(1, 2, 1, 1, 0, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
-
-        private static final GridBagConstraints RB_ALL = new GridBagConstraints(2, 2, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
+        private static final GridBagConstraints RB_PHOTOS = new GridBagConstraints(2, 2, 1, 1, 0, 0,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
+        private static final GridBagConstraints RB_ALL = new GridBagConstraints(3, 2, 1, 1, 0, 0,
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
 
         private static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
         private static final GridBagConstraints LBL_OSM_COMPARISON = new GridBagConstraints(0, 5, 2, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-
         private static final GridBagConstraints CBB_OSM_COMPARISON = new GridBagConstraints(1, 5, 2, 2, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 70);
 
-
         private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 7, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-
         private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 7, 2, 2, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
 
-
         private static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 9, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-
-
         private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 9, 2, 1, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
 

@@ -22,7 +22,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @version $Revision$
  */
 public enum PhotoDataTypeFilter {
-    DETECTIONS_ONLY, ALL;
+    DETECTIONS_ONLY, PHOTOS_ONLY, ALL;
 
     @Override
     public String toString() {

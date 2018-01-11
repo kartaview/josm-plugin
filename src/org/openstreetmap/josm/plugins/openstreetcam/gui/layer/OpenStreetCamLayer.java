@@ -89,8 +89,9 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             } else {
                 // draw photos
                 final boolean isTransparent = selectedSequence != null;
-                if (dataSet.getPhotos() != null && PreferenceManager.getInstance().loadSearchFilter().getPhotoType()
-                        .equals(PhotoDataTypeFilter.ALL)) {
+                if (dataSet.getPhotos() != null && (PreferenceManager.getInstance().loadSearchFilter().getPhotoType()
+                        .equals(PhotoDataTypeFilter.ALL) || PreferenceManager.getInstance().loadSearchFilter().getPhotoType()
+                                .equals(PhotoDataTypeFilter.PHOTOS_ONLY))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, isTransparent);
                 }
 
