@@ -300,30 +300,30 @@ class FilterPanel extends JPanel {
         private static final GridBagConstraints RB_PHOTOS = new GridBagConstraints(2, 2, 1, 1, 0, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
         private static final GridBagConstraints RB_ALL = new GridBagConstraints(3, 2, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
 
         private static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
         private static final GridBagConstraints LBL_OSM_COMPARISON = new GridBagConstraints(0, 5, 2, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_OSM_COMPARISON = new GridBagConstraints(1, 5, 2, 2, 1, 4,
+        private static final GridBagConstraints CBB_OSM_COMPARISON = new GridBagConstraints(1, 5, 3, 2, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 70);
 
         private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 7, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 7, 2, 2, 1, 4,
+        private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 7, 3, 2, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
 
         private static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 9, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 9, 2, 1, 1, 4,
+        private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 9, 3, 1, 1, 4,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
 
         private static final GridBagConstraints LBL_MODE = new GridBagConstraints(0, 10, 1, 1, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
         private static final GridBagConstraints CBB_AUTOMATIC_MODE = new GridBagConstraints(1, 10, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
+                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
         private static final GridBagConstraints CBB_MANUAL_MODE = new GridBagConstraints(2, 10, 1, 1, 0, 0,
                 GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
 
