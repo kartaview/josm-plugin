@@ -20,6 +20,7 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
@@ -46,7 +47,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  */
 // TODO: refactor this class
 final class SelectionHandler extends MouseAdapter
-implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+        implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -86,7 +87,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             }
             if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance()
-                .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
+                        .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
             }
         }
     }
@@ -172,8 +173,8 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
                 .loadMapViewSettings().getPhotoZoom()
                 || (OpenStreetCamLayer.getInstance().getDataSet() != null
-                && (OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null
-                || OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null));
+                        && (OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null
+                                || OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null));
     }
 
     /**
@@ -349,16 +350,19 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
     public void selectSequencePhoto(final int index) {
         final Photo photo = OpenStreetCamLayer.getInstance().sequencePhoto(index);
         if (photo != null) {
-            final List<Detection> detections = ServiceHandler.getInstance()
-                    .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
-            photo.setDetections(detections);
-            final Detection selectedDetection = detections != null ? detections.get(0) : null;
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-            OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
+            final List<ImageDataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+            if (dataTypes != null && dataTypes.contains(ImageDataType.DETECTIONS)) {
+                final List<Detection> detections = ServiceHandler.getInstance()
+                        .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
+                photo.setDetections(detections);
+                final Detection selectedDetection = detections != null ? detections.get(0) : null;
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+                OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
 
-            if (selectedDetection != null
-                    && !MainApplication.getMap().mapView.getRealBounds().contains(selectedDetection.getPoint())) {
-                MainApplication.getMap().mapView.zoomTo(selectedDetection.getPoint());
+                if (selectedDetection != null
+                        && !MainApplication.getMap().mapView.getRealBounds().contains(selectedDetection.getPoint())) {
+                    MainApplication.getMap().mapView.zoomTo(selectedDetection.getPoint());
+                }
             }
 
             final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
@@ -390,7 +394,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
             stopAutoplay();
             if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance()
-                .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
+                        .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
             }
         }
     }

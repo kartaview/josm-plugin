@@ -20,8 +20,8 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
@@ -73,16 +73,15 @@ public final class ServiceHandler {
      */
     public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
         Pair<PhotoDataSet, List<Detection>> result;
-        if (filter != null) {
-            if (filter.getPhotoType().equals(PhotoDataTypeFilter.DETECTIONS_ONLY)) {
-                result = new Pair<>(null, searchDetections(area, filter));
-            } else if (filter.getPhotoType().equals(PhotoDataTypeFilter.PHOTOS_ONLY)) {
-                result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
-            } else {
-                result = loadPhotosAndDetections(area, filter);
-            }
-        } else {
+        if (filter.getDataTypes() == null || ((filter.getDataTypes().contains(ImageDataType.DETECTIONS)
+                && (filter.getDataTypes().contains(ImageDataType.PHOTOS))))) {
             result = loadPhotosAndDetections(area, filter);
+        } else {
+            if (filter.getDataTypes().contains(ImageDataType.DETECTIONS)) {
+                result = new Pair<>(null, searchDetections(area, filter));
+            } else {
+                result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
+            }
         }
         return result;
     }
@@ -169,7 +168,10 @@ public final class ServiceHandler {
      */
     public Pair<Sequence, List<Detection>> retrieveSequence(final Long sequenceId) {
         Pair<Sequence, List<Detection>> result;
-        if (PreferenceManager.getInstance().loadSearchFilter().getPhotoType().equals(PhotoDataTypeFilter.PHOTOS_ONLY)) {
+        final List<ImageDataType> dataTypesPreferences =
+                PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+        if (dataTypesPreferences != null && dataTypesPreferences.contains(ImageDataType.PHOTOS)
+                && !dataTypesPreferences.contains(ImageDataType.DETECTIONS)) {
             result = new Pair<>(retrieveSequencePhotos(sequenceId), null);
         } else {
             final ExecutorService executorService = Executors.newFixedThreadPool(2);

@@ -22,7 +22,7 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -89,9 +89,10 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             } else {
                 // draw photos
                 final boolean isTransparent = selectedSequence != null;
-                if (dataSet.getPhotos() != null && (PreferenceManager.getInstance().loadSearchFilter().getPhotoType()
-                        .equals(PhotoDataTypeFilter.ALL) || PreferenceManager.getInstance().loadSearchFilter().getPhotoType()
-                                .equals(PhotoDataTypeFilter.PHOTOS_ONLY))) {
+                if (dataSet.getPhotos() != null
+                        && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes() == null
+                                || PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
+                                        .contains(ImageDataType.PHOTOS))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, isTransparent);
                 }
 

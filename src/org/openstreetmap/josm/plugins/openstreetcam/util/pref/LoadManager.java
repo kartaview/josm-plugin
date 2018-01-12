@@ -48,8 +48,8 @@ import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoDataTypeFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
@@ -60,6 +60,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 
@@ -109,14 +110,12 @@ final class LoadManager {
         }
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
-        final String photoTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
-        final PhotoDataTypeFilter photoType = photoTypeVal != null && !photoTypeVal.isEmpty()
-                ? PhotoDataTypeFilter.valueOf(photoTypeVal) : PhotoDataTypeFilter.ALL;
+        final List<ImageDataType> dataType = loadDataTypeFilter();
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
         final List<EditStatus> editStatuses = loadEditStatusFilter();
         final List<SignType> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();
-        return new SearchFilter(date, onlyUserFlag, photoType, osmComparisons, editStatuses, signTypes, modes);
+        return new SearchFilter(date, onlyUserFlag, dataType, osmComparisons, editStatuses, signTypes, modes);
     }
 
     private List<OsmComparison> loadOsmComparisonFilter() {
@@ -128,6 +127,16 @@ final class LoadManager {
             for (final OsmComparisonEntry entry : entries) {
                 list.add(OsmComparison.valueOf(entry.getName()));
             }
+        }
+        return list;
+    }
+
+    private List<ImageDataType> loadDataTypeFilter() {
+        final List<ImageDataTypeEntry> entries =
+                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
+        List<ImageDataType> list = null;
+        if (entries != null && !entries.isEmpty()) {
+            list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
         }
         return list;
     }
