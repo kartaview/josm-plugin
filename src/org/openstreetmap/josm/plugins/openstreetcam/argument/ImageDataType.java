@@ -21,11 +21,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @author beataj
  * @version $Revision$
  */
-public enum PhotoDataTypeFilter {
-    DETECTIONS_ONLY, ALL;
+public enum ImageDataType {
+
+    DETECTIONS, PHOTOS;
 
     @Override
     public String toString() {
-        return (name().substring(0, 1) + name().substring(1).toLowerCase()).replaceAll("_", " ");
+        return (name().toLowerCase());
     }
 }

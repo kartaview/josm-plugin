@@ -47,6 +47,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
@@ -57,6 +58,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 
@@ -108,12 +110,18 @@ final class SaveManager {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(FILTER_DATE, dateStr);
             Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyMineFlag());
-            Main.pref.put(FILTER_SEARCH_PHOTO_TYPE, filter.getPhotoType().name());
+            saveDataTypeFilter(filter.getDataTypes());
             saveOsmComparisonFilter(filter.getOsmComparisons());
             saveEditStatusFilter(filter.getEditStatuses());
             saveSignTypeFilter(filter.getSignTypes());
             saveModesFilter(filter.getModes());
         }
+    }
+
+    private void saveDataTypeFilter(final List<ImageDataType> types) {
+        final List<ImageDataTypeEntry> entries = types == null ? new ArrayList<>()
+                : types.stream().map(ImageDataTypeEntry::new).collect(Collectors.toList());
+        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, entries, ImageDataTypeEntry.class);
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -170,8 +178,8 @@ final class SaveManager {
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Main.pref.put(AUTOPLAY_LENGTH, length);
-                    Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+            Main.pref.put(AUTOPLAY_LENGTH, length);
+            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 

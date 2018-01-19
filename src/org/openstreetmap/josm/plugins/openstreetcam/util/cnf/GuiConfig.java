@@ -85,6 +85,8 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterValidationStatusLbl;
     private final String dlgFilterEditStatusLbl;
     private final String dlgFilterDetectionTypeLbl;
+    private final String dlgFilterDataTypeImageTxt;
+    private final String dlgFilterDataTypeDetectionsTxt;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -225,6 +227,8 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterValidationStatusLbl = readProperty("filter.validationStatus.lbl");
         dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
         dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
+        dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
+        dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -795,5 +799,13 @@ public final class GuiConfig extends BaseConfig {
 
     public String getAuthenticationNeededErrorMessage() {
         return authenticationNeededErrorMessage;
+    }
+
+    public String getDataTypeImageText() {
+        return dlgFilterDataTypeImageTxt;
+    }
+
+    public String getDataTypeDetectionText() {
+        return dlgFilterDataTypeDetectionsTxt;
     }
 }
