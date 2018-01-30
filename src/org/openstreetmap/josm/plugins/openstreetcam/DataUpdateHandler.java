@@ -194,19 +194,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-        PhotoDataSet photoDataSet = null;
-        if (currentPhotoDataSet != null) {
-            int page = currentPhotoDataSet.getPage();
-            page = loadNextResults ? page + 1 : page - 1;
-            final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
-            photoDataSet = new PhotoDataSet();
-            final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-            if (bbox != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                        new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
-            }
-        }
-        return photoDataSet;
+                PhotoDataSet photoDataSet = null;
+                if (currentPhotoDataSet != null) {
+                    int page = currentPhotoDataSet.getPage();
+                    page = loadNextResults ? page + 1 : page - 1;
+                    final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
+                    photoDataSet = new PhotoDataSet();
+                    final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+                    if (bbox != null) {
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                                new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                }
+                return photoDataSet;
     }
 
     /**
@@ -235,7 +235,7 @@ class DataUpdateHandler {
     void updateUI(final PhotoDataSet photoDataSet) {
         final List<Detection> detections = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getDetections() : null;
-        updateUI(new DataSet(null, photoDataSet, detections), true);
+                updateUI(new DataSet(null, photoDataSet, detections), true);
     }
 
     /**
@@ -245,12 +245,13 @@ class DataUpdateHandler {
      * @param checkSelection if true then the currently selected element will be removed if it is not present in the
      * given data set
      */
+    // TODO: refactore this method
     void updateUI(final DataSet dataSet, final boolean checkSelection) {
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);
                 DetectionDetailsDialog.getInstance()
-                        .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
+                .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
                         && OpenStreetCamDetailsDialog.getInstance().isPhotoSelected()) {
                     OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
@@ -261,7 +262,8 @@ class DataUpdateHandler {
                         final List<Detection> photoDetections = ServiceHandler.getInstance()
                                 .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
                         List<Detection> exposedDetections = null;
-                        if (photoDetections != null) {
+                        if (photoDetections != null && OpenStreetCamLayer.getInstance().getDataSet() != null
+                                && OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null) {
                             exposedDetections = photoDetections.stream()
                                     .filter(OpenStreetCamLayer.getInstance().getDataSet().getDetections()::contains)
                                     .collect(Collectors.toList());
@@ -271,7 +273,7 @@ class DataUpdateHandler {
                     final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
                     OpenStreetCamDetailsDialog.getInstance().updateUI(photo,
                             photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL,
-                            true);
+                                    true);
 
                     if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
                             && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()

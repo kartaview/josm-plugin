@@ -91,8 +91,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 final boolean isTransparent = selectedSequence != null;
                 if (dataSet.getPhotos() != null
                         && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes() == null
-                                || PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
-                                        .contains(ImageDataType.PHOTOS))) {
+                        || PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
+                        .contains(ImageDataType.PHOTOS))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, isTransparent);
                 }
 
@@ -130,7 +130,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
         if (dataSet != null && dataSet.getPhotoDataSet() != null) {
@@ -269,7 +269,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public Photo sequencePhoto(final int index) {
         Photo photo = null;
-        if (selectedSequence != null) {
+        if (selectedSequence != null && selectedSequence.getFirst() != null) {
             for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
                 if (elem.getSequenceIndex().equals(index)) {
                     photo = elem;
@@ -308,7 +308,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null
                 && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
-                        .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
 
@@ -437,5 +437,4 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
         return result;
     }
-
 }
