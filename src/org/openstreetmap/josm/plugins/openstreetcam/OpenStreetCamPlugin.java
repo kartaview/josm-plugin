@@ -33,7 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.OpenStreetCamDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
@@ -81,7 +81,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-        OpenStreetCamDetailsDialog.getInstance();
+        PhotoDetailsDialog.getInstance();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             detectionDetailsDialog.showDialog();
 
             // initialize details dialog
-            final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
+            final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
             detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler, this);
             newMapFrame.addToggleDialog(detailsDialog, true);
             if (PreferenceManager.getInstance().loadPanelOpenedFlag()) {
@@ -121,7 +121,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             // clean-up
             Main.pref.removePreferenceChangeListener(preferenceChangedHandler);
             layerActivatorMenuItem.setEnabled(false);
-            OpenStreetCamDetailsDialog.destroyInstance();
+            PhotoDetailsDialog.destroyInstance();
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
@@ -174,7 +174,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
             MainApplication.getLayerManager().removeLayerChangeListener(this);
             OpenStreetCamLayer.destroyInstance();
-            OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         }
     }
 
@@ -229,7 +229,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
         DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
         OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
         OpenStreetCamLayer.getInstance().invalidate();
-        OpenStreetCamDetailsDialog.getInstance().repaint();
+        PhotoDetailsDialog.getInstance().repaint();
     }
 
     /**
@@ -302,10 +302,10 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
         private void handleManualDataSwitch(final String newValue) {
             final boolean manualSwitchFlag = Boolean.parseBoolean(newValue);
             SwingUtilities.invokeLater(() -> {
-                OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
+                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                    PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
@@ -318,7 +318,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             SwingUtilities.invokeLater(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(null, false);
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                    PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
@@ -341,7 +341,7 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
             } else if (layer.getSelectedSequence() != null) {
                 layer.setSelectedSequence(null);
                 selectionHandler.play(AutoplayAction.STOP);
-                final OpenStreetCamDetailsDialog detailsDialog = OpenStreetCamDetailsDialog.getInstance();
+                final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false);
                 layer.invalidate();

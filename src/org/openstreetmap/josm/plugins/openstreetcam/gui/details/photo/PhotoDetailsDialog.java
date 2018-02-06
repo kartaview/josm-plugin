@@ -40,7 +40,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public final class OpenStreetCamDetailsDialog extends ToggleDialog {
+public final class PhotoDetailsDialog extends ToggleDialog {
 
     private static final long serialVersionUID = -8089399825436744652L;
 
@@ -50,7 +50,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     /** dialog default height */
     private static final int DLG_HEIGHT = 150;
 
-    private static OpenStreetCamDetailsDialog instance = new OpenStreetCamDetailsDialog();
+    private static PhotoDetailsDialog instance = new PhotoDetailsDialog();
 
     /* dialog components */
     private final DetailsPanel pnlDetails;
@@ -67,7 +67,7 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
     private Pair<Photo, PhotoSize> selectedElement;
 
 
-    private OpenStreetCamDetailsDialog() {
+    private PhotoDetailsDialog() {
         super(GuiConfig.getInstance().getPluginShortName(), IconConfig.getInstance().getDialogShortcutName(),
                 GuiConfig.getInstance().getPluginShortcutLongText(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginShortcutText()), DLG_HEIGHT,
@@ -88,9 +88,9 @@ public final class OpenStreetCamDetailsDialog extends ToggleDialog {
      *
      * @return a {@code OpenStreetCamDetailsDialog}
      */
-    public static OpenStreetCamDetailsDialog getInstance() {
+    public static PhotoDetailsDialog getInstance() {
         if (instance == null) {
-            instance = new OpenStreetCamDetailsDialog();
+            instance = new PhotoDetailsDialog();
         }
         return instance;
     }

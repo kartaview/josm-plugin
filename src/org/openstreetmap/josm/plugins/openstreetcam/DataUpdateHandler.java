@@ -32,7 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.OpenStreetCamDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -99,9 +99,9 @@ class DataUpdateHandler {
         // enable switch button based on zoom level
         final DataType dataType = PreferenceManager.getInstance().loadDataType();
         if (zoom >= Config.getInstance().getMapPhotoZoom()) {
-            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(dataType, true, null);
+            PhotoDetailsDialog.getInstance().updateDataSwitchButton(dataType, true, null);
         } else {
-            OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(dataType, false, null);
+            PhotoDetailsDialog.getInstance().updateDataSwitchButton(dataType, false, null);
         }
 
         if (zoom < Config.getInstance().getMapPhotoZoom()) {
@@ -144,7 +144,7 @@ class DataUpdateHandler {
             // clear view
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT, null, null);
+                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT, null, null);
                 }
                 updateUI(null, true);
             });
@@ -166,7 +166,7 @@ class DataUpdateHandler {
             // clear view
             SwingUtilities.invokeLater(() -> {
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    OpenStreetCamDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO, null, null);
+                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO, null, null);
                     DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 }
                 updateUI(null, false);
@@ -253,8 +253,8 @@ class DataUpdateHandler {
                 DetectionDetailsDialog.getInstance()
                 .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
-                        && OpenStreetCamDetailsDialog.getInstance().isPhotoSelected()) {
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(null, null, false);
+                        && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
+                    PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 } else {
                     // TODO this logic is duplicated in SelectionHandler; refactoring needed
                     final Photo photo = OpenStreetCamLayer.getInstance().getSelectedPhoto();
@@ -272,14 +272,14 @@ class DataUpdateHandler {
                         }
                     }
                     final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
-                    OpenStreetCamDetailsDialog.getInstance().updateUI(photo,
+                    PhotoDetailsDialog.getInstance().updateUI(photo,
                             photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL,
                                     true);
 
                     if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
                             && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()
                             && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
-                        OpenStreetCamDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                        PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                     }
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
