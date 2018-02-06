@@ -31,8 +31,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -258,7 +258,8 @@ class DataUpdateHandler {
                 } else {
                     // TODO this logic is duplicated in SelectionHandler; refactoring needed
                     final Photo photo = OpenStreetCamLayer.getInstance().getSelectedPhoto();
-                    if (OpenStreetCamLayer.getInstance().getSelectedDetection() != null) {
+
+                    if (OpenStreetCamLayer.getInstance().getSelectedDetection() != null && photo != null) {
                         final List<Detection> photoDetections = ServiceHandler.getInstance()
                                 .retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
                         List<Detection> exposedDetections = null;

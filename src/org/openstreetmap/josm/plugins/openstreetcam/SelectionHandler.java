@@ -27,8 +27,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.OpenStreetCamDetailsDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.OpenStreetCamDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -47,7 +47,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  */
 // TODO: refactor this class
 final class SelectionHandler extends MouseAdapter
-        implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
+implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
     private static final int UNSELECT_CLICK_COUNT = 2;
@@ -87,7 +87,7 @@ final class SelectionHandler extends MouseAdapter
             }
             if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance()
-                        .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
+                .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
             }
         }
     }
@@ -121,23 +121,22 @@ final class SelectionHandler extends MouseAdapter
             final List<Detection> layerDetections = OpenStreetCamLayer.getInstance().getDataSet().getDetections();
             List<Detection> exposedDetections = new ArrayList<>();
             if (photoDetections != null && layerDetections != null) {
-                exposedDetections = photoDetections.stream()
-                        .filter(layerDetections::contains)
-                        .collect(Collectors.toList());
+                exposedDetections =
+                        photoDetections.stream().filter(layerDetections::contains).collect(Collectors.toList());
                 photo.setDetections(exposedDetections);
             }
 
             final Detection selectedDetection =
                     detection != null ? detection : !exposedDetections.isEmpty() ? exposedDetections.get(0) : null;
 
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-            OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
+                    DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+                    OpenStreetCamLayer.getInstance().setSelectedDetection(selectedDetection);
 
-            final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
-            final PhotoSize photoType =
-                    photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
-            OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
+                    final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
+                    final PhotoSize photoType =
+                            photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+                    selectPhoto(photo, photoType, true);
+                    OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(photo);
 
         } else if (detection != null) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
@@ -173,8 +172,8 @@ final class SelectionHandler extends MouseAdapter
         return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
                 .loadMapViewSettings().getPhotoZoom()
                 || (OpenStreetCamLayer.getInstance().getDataSet() != null
-                        && (OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null
-                                || OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null));
+                && (OpenStreetCamLayer.getInstance().getDataSet().getPhotos() != null
+                || OpenStreetCamLayer.getInstance().getDataSet().getDetections() != null));
     }
 
     /**
@@ -394,7 +393,7 @@ final class SelectionHandler extends MouseAdapter
             stopAutoplay();
             if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null) {
                 OpenStreetCamDetailsDialog.getInstance()
-                        .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
+                .enableClosestPhotoButton(!OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty());
             }
         }
     }

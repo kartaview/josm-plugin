@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

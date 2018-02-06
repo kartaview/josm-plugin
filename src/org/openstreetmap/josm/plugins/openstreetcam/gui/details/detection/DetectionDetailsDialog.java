@@ -6,7 +6,7 @@
  *
  * Copyright (c) 2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,8 +43,8 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
     /** dialog components */
-    private final DetectionDetailsPanel pnlDetails;
-    private final DetectionButtonPanel pnlButtons;
+    private final DetailsPanel pnlDetails;
+    private final ButtonPanel pnlButtons;
     private final JScrollPane scrollablePanel;
 
 
@@ -55,12 +55,12 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getPluginDetectionShortcutText()),
                 DLG_HEIGHT, true, PreferenceEditor.class);
 
-        pnlDetails = new DetectionDetailsPanel();
+        pnlDetails = new DetailsPanel();
         scrollablePanel = ContainerBuilder.buildScrollPane(ContainerBuilder.buildEmptyPanel(Color.WHITE), null,
                 Color.white, null, SCROLL_BAR_UNIT, false, DIM);
         scrollablePanel.setViewportView(pnlDetails);
 
-        pnlButtons = new DetectionButtonPanel();
+        pnlButtons = new ButtonPanel();
         pnlButtons.setVisible(false);
         add(createLayout(ContainerBuilder.buildBorderLayoutPanel(null, scrollablePanel, pnlButtons, null), false,
                 null));

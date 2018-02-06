@@ -6,7 +6,7 @@
  *
  * Copyright (c) 2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details.apollo;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -31,7 +31,7 @@ import com.telenav.josm.common.gui.builder.MenuBuilder;
  * @author ioanao
  * @version $Revision$
  */
-class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
+class ButtonPanel extends JPanel implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6885598017144429682L;
 
@@ -44,7 +44,7 @@ class DetectionButtonPanel extends JPanel implements DetectionChangeObservable {
     private JMenuItem commentMenuItem;
 
 
-    DetectionButtonPanel() {
+    ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
         addFixButton();
         addAlreadyFixedButton();
