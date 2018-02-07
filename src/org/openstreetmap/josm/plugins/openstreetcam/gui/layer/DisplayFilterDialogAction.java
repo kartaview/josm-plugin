@@ -11,7 +11,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 import java.awt.event.ActionEvent;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.FilterDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.FilterDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 

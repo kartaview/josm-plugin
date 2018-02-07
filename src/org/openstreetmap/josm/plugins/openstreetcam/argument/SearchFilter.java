@@ -23,43 +23,34 @@ import com.telenav.josm.common.entity.EntityUtil;
  */
 public class SearchFilter {
 
-    private Date date;
-    private boolean onlyMineFlag;
+    private final Date date;
+    private final boolean onlyMineFlag;
 
-    private PhotoDataTypeFilter photoType;
+    private List<ImageDataType> dataTypes;
     private List<OsmComparison> osmComparisons;
     private List<EditStatus> editStatuses;
     private List<SignType> signTypes;
     private List<DetectionMode> modes;
 
 
-    public SearchFilter(final boolean onlyMineFlag) {
+    public SearchFilter(final Date date, final boolean onlyMineFlag) {
+        this.date = date;
         this.onlyMineFlag = onlyMineFlag;
     }
 
-    public SearchFilter(final Date date, final boolean onlyMineFlag) {
-        this(onlyMineFlag);
-        this.date = date;
-    }
-
-    public SearchFilter(final Date date, final boolean onlyMineFlag, final PhotoDataTypeFilter photoType,
+    public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
             final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
             final List<SignType> signTypes, final List<DetectionMode> modes) {
         this(date, onlyMineFlag);
-        this.photoType = photoType;
+        this.dataTypes = dataTypes;
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
         this.modes = modes;
     }
 
-    public SearchFilter(final PhotoDataTypeFilter photoType, final List<OsmComparison> osmComparisons) {
-        this.photoType = photoType;
-        this.osmComparisons = osmComparisons;
-    }
-
-    public PhotoDataTypeFilter getPhotoType() {
-        return photoType;
+    public List<ImageDataType> getDataTypes() {
+        return dataTypes;
     }
 
     public List<OsmComparison> getOsmComparisons() {
@@ -92,7 +83,7 @@ public class SearchFilter {
         int result = 1;
         result = prime * result + EntityUtil.hashCode(date);
         result = prime * result + EntityUtil.hashCode(onlyMineFlag);
-        result = prime * result + EntityUtil.hashCode(photoType);
+        result = prime * result + EntityUtil.hashCode(dataTypes);
         result = prime * result + EntityUtil.hashCode(osmComparisons);
         result = prime * result + EntityUtil.hashCode(editStatuses);
         result = prime * result + EntityUtil.hashCode(signTypes);
@@ -109,7 +100,7 @@ public class SearchFilter {
             final SearchFilter other = (SearchFilter) obj;
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
             result = result && (onlyMineFlag == other.isOnlyMineFlag());
-            result = result && EntityUtil.bothNullOrEqual(photoType, other.getPhotoType());
+            result = result && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes());
             result = result && EntityUtil.bothNullOrEqual(osmComparisons, other.getOsmComparisons());
             result = result && EntityUtil.bothNullOrEqual(editStatuses, other.getEditStatuses());
             result = result && EntityUtil.bothNullOrEqual(signTypes, other.getSignTypes());
