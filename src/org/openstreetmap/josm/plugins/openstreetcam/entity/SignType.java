@@ -14,6 +14,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  * @version $Revision$
  */
 public enum SignType {
+
     INTERSECTION_LANE_CONTROL,
     JUGHEAD,
     LANE_CONTROL,
@@ -23,6 +24,20 @@ public enum SignType {
     ROUNDABOUT,
     SIGN_POST,
     SPEED_LIMIT,
+    SPEED_LIMIT_ADDITIONAL,
+    SPEED_LIMIT_AHEAD,
+    SPEED_LIMIT_AREA,
+    SPEED_LIMIT_BEGIN,
+    SPEED_LIMIT_CITY,
+    SPEED_LIMIT_END,
+    SPEED_LIMIT_MINIMUM,
+    SPEED_LIMIT_NIGHT,
+    SPEED_LIMIT_SCHOOL_AHEAD,
+    SPEED_LIMIT_STATE,
+    SPEED_LIMIT_TOWN,
+    SPEED_LIMIT_TRUCKS,
+    SPEED_LIMIT_VILLAGE,
+    SPEED_LIMIT_ZONE_AHEAD,
     STOP,
     TRAFFIC_SIGNAL,
     TURN_RESTRICTION;
