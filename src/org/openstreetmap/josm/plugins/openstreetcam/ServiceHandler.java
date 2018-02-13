@@ -262,7 +262,7 @@ public final class ServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
@@ -312,22 +312,41 @@ public final class ServiceHandler {
     public void updateDetection(final Long detectionId, final EditStatus editStatus, final String comment) {
         final Long userId = UserIdentityManager.getInstance().isFullyIdentified()
                 && UserIdentityManager.getInstance().asUser().getId() > 0
-                        ? UserIdentityManager.getInstance().asUser().getId() : null;
-        final String userName = UserIdentityManager.getInstance().getUserName();
-        if (userId == null) {
-            handleAuthenticationException(GuiConfig.getInstance().getAuthenticationNeededErrorMessage());
-        } else {
-            final Author author = new Author(userId, userName);
-            try {
-                apolloService.updateDetection(new Detection(detectionId, editStatus),
-                        new Contribution(author, comment));
-            } catch (final ServiceException e) {
-                if (!PreferenceManager.getInstance().loadDetectionUpdateErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionUpdateText());
-                    PreferenceManager.getInstance().saveDetectionUpdateErrorSuppressFlag(flag);
+                ? UserIdentityManager.getInstance().asUser().getId() : null;
+                final String userName = UserIdentityManager.getInstance().getUserName();
+                if (userId == null) {
+                    handleAuthenticationException(GuiConfig.getInstance().getAuthenticationNeededErrorMessage());
+                } else {
+                    final Author author = new Author(userId, userName);
+                    try {
+                        apolloService.updateDetection(new Detection(detectionId, editStatus),
+                                new Contribution(author, comment));
+                    } catch (final ServiceException e) {
+                        if (!PreferenceManager.getInstance().loadDetectionUpdateErrorSuppressFlag()) {
+                            final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionUpdateText());
+                            PreferenceManager.getInstance().saveDetectionUpdateErrorSuppressFlag(flag);
+                        }
+                    }
                 }
+    }
+
+    /**
+     * Retrieves complete data of a specific detection
+     *
+     * @param detectionId
+     * @return
+     */
+    public Detection retrieveDetection(final Long detectionId) {
+        Detection result = null;
+        try {
+            result = apolloService.retrieveDetection(detectionId);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoLoadingText());
+                PreferenceManager.getInstance().savePhotoDetectionsErrorFlag(flag);
             }
         }
+        return result;
     }
 
     private Long osmUserId(final SearchFilter filter) {

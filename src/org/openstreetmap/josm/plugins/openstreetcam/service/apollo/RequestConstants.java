@@ -19,6 +19,7 @@ final class RequestConstants {
     static final String UPDATE_DETECTION = "updateDetection";
     static final String RETRIEVE_SEQUENCE_DETECTIONS = "retrieveSequenceDetections";
     static final String RETRIEVE_PHOTO_DETECTIONS = "retrievePhotoDetections";
+    static final String RETRIVE_DETECTION = "retrieveDetection";
 
     static final String NORTH = "north";
     static final String SOUTH = "south";
@@ -38,6 +39,7 @@ final class RequestConstants {
     static final String TYPES = "signTypes";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
+    static final String ID = "id";
 
     private RequestConstants() {}
 }

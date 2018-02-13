@@ -12,8 +12,13 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import org.openstreetmap.josm.plugins.openstreetcam.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
@@ -55,10 +60,28 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
                 addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                         widthLbl);
             }
+            final Detection completeDetection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+            addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
+                    formatDate(completeDetection.getCreationTimestamp()), widthLbl);
+            addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
+                    formatDate(completeDetection.getLatestChangeTimestamp()), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
+    }
+
+    private String formatDate(final Long timestamp) {
+        try {
+            final DateTimeFormatter dformatter =
+                    DateTimeFormatter.ofPattern(GuiConfig.getInstance().getDetectionDateFormat());
+            final LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+            return date.format(dformatter);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     private void addSign(final String label, final Sign sign, final int widthLbl) {

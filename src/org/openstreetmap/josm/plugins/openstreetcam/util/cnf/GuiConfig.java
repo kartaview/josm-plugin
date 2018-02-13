@@ -161,6 +161,9 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionUnknownOnOsmText;
     private final String dialogAddCommentText;
     private final String authenticationNeededErrorMessage;
+    private final String detectionCreatedDate;
+    private final String detectionUpdatedDate;
+    private final String detectionDateFormat;
 
 
     private GuiConfig() {
@@ -302,6 +305,9 @@ public final class GuiConfig extends BaseConfig {
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
         dialogAddCommentText = readProperty("detection.dialog.comment.text");
         authenticationNeededErrorMessage = readProperty("error.detection.authentication");
+        detectionCreatedDate = readProperty("detection.date.created");
+        detectionUpdatedDate = readProperty("detection.date.updated");
+        detectionDateFormat = readProperty("detection.date.format");
     }
 
     public static GuiConfig getInstance() {
@@ -807,5 +813,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDataTypeDetectionText() {
         return dlgFilterDataTypeDetectionsTxt;
+    }
+
+    public String getDetectionCreatedDate() {
+        return detectionCreatedDate;
+    }
+
+    public String getDetectionUpdatedDate() {
+        return detectionUpdatedDate;
+    }
+
+    public String getDetectionDateFormat() {
+        return detectionDateFormat;
     }
 }
