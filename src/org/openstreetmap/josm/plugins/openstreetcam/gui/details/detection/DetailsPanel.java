@@ -18,7 +18,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
-import org.openstreetmap.josm.plugins.openstreetcam.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
@@ -35,6 +34,8 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
  * @version $Revision$
  */
 class DetailsPanel extends BasicInfoPanel<Detection> {
+
+    private static final int _1000 = 1000;
 
     private static final long serialVersionUID = 5842933383198993565L;
 
@@ -60,11 +61,10 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
                 addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                         widthLbl);
             }
-            final Detection completeDetection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
             addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
-                    formatDate(completeDetection.getCreationTimestamp()), widthLbl);
+                    formatDate(detection.getCreationTimestamp()), widthLbl);
             addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
-                    formatDate(completeDetection.getLatestChangeTimestamp()), widthLbl);
+                    formatDate(detection.getLatestChangeTimestamp()), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
@@ -75,10 +75,10 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
         try {
             final DateTimeFormatter dformatter =
                     DateTimeFormatter.ofPattern(GuiConfig.getInstance().getDetectionDateFormat());
-            final LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+            final LocalDateTime date =
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp * _1000), ZoneId.systemDefault());
             return date.format(dformatter);
         } catch (final Exception e) {
-            e.printStackTrace();
             return null;
         }
 
