@@ -163,7 +163,6 @@ public final class GuiConfig extends BaseConfig {
     private final String authenticationNeededErrorMessage;
     private final String detectionCreatedDate;
     private final String detectionUpdatedDate;
-    private final String detectionDateFormat;
 
 
     private GuiConfig() {
@@ -307,7 +306,6 @@ public final class GuiConfig extends BaseConfig {
         authenticationNeededErrorMessage = readProperty("error.detection.authentication");
         detectionCreatedDate = readProperty("detection.date.created");
         detectionUpdatedDate = readProperty("detection.date.updated");
-        detectionDateFormat = readProperty("detection.date.format");
     }
 
     public static GuiConfig getInstance() {
@@ -823,7 +821,4 @@ public final class GuiConfig extends BaseConfig {
         return detectionUpdatedDate;
     }
 
-    public String getDetectionDateFormat() {
-        return detectionDateFormat;
-    }
 }

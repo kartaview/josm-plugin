@@ -32,8 +32,6 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
  */
 class DetailsPanel extends BasicInfoPanel<Detection> {
 
-    private static final int _1000 = 1000;
-
     private static final long serialVersionUID = 5842933383198993565L;
 
     private static final int SIGN_VALUE_EXTRA_WIDTH = 10;
