@@ -79,7 +79,9 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
                         photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                                 detection.getSequenceIndex());
                     }
-                    handleDataSelection(photo, detection);
+                    final Detection completeDetection =
+                            ServiceHandler.getInstance().retrieveDetection(detection.getId());
+                    handleDataSelection(photo, completeDetection);
                 } else {
                     final Photo photo = OpenStreetCamLayer.getInstance().nearbyPhoto(event.getPoint());
                     handleDataSelection(photo, null);

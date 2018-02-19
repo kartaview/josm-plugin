@@ -19,6 +19,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.BasicInfoPanel;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
 
@@ -55,6 +56,10 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
                 addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                         widthLbl);
             }
+            addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
+                    DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
+            addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
+                    DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;

@@ -69,36 +69,43 @@ class HttpQueryBuilder {
         return build();
     }
 
+    String buildRetrieveDetectionQuery(final Long id) {
+        query.append(RequestConstants.RETRIVE_DETECTION);
+        query.append(QUESTIONM);
+        query.append(RequestConstants.ID).append(EQ).append(id);
+        return build();
+    }
+
     private void appendFilters(final FilterPack filterPack) {
         if (filterPack.getExternalId() != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ)
-                    .append(filterPack.getExternalId().toString());
+            .append(filterPack.getExternalId().toString());
             query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
         }
 
         if (filterPack.getDate() != null) {
             query.append(AND).append(RequestConstants.DATE)
-                    .append(new SimpleDateFormat(DATE_FORMAT).format(filterPack.getDate()));
+            .append(new SimpleDateFormat(DATE_FORMAT).format(filterPack.getDate()));
         }
 
         if (filterPack.getOsmComparisons() != null && !filterPack.getOsmComparisons().isEmpty()) {
             query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
-                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getOsmComparisons())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getOsmComparisons())));
         }
 
         if (filterPack.getEditStatuses() != null && !filterPack.getEditStatuses().isEmpty()) {
             query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getEditStatuses())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getEditStatuses())));
         }
 
         if (filterPack.getSignTypes() != null && !filterPack.getSignTypes().isEmpty()) {
             query.append(AND).append(RequestConstants.TYPES).append(EQ)
-                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
         }
 
         if (filterPack.getModes() != null && !filterPack.getModes().isEmpty()) {
             query.append(AND).append(RequestConstants.MODES).append(EQ)
-                    .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getModes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getModes())));
         }
     }
 

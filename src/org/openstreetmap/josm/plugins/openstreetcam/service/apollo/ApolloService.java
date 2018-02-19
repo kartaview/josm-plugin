@@ -14,6 +14,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.DetectionResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.google.gson.Gson;
@@ -66,5 +67,12 @@ public class ApolloService extends BaseService {
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();
+    }
+
+    public Detection retrieveDetection(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveDetectionQuery(id);
+        final DetectionResponse response = executeGet(url, DetectionResponse.class);
+        verifyResponseStatus(response);
+        return response.getDetection();
     }
 }
