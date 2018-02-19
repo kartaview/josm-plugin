@@ -12,10 +12,6 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -23,6 +19,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.gui.BasicInfoPanel;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
 
@@ -62,26 +59,13 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
                         widthLbl);
             }
             addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
-                    formatDate(detection.getCreationTimestamp()), widthLbl);
+                    DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
             addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
-                    formatDate(detection.getLatestChangeTimestamp()), widthLbl);
+                    DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
-    }
-
-    private String formatDate(final Long timestamp) {
-        try {
-            final DateTimeFormatter dformatter =
-                    DateTimeFormatter.ofPattern(GuiConfig.getInstance().getDetectionDateFormat());
-            final LocalDateTime date =
-                    LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp * _1000), ZoneId.systemDefault());
-            return date.format(dformatter);
-        } catch (final Exception e) {
-            return null;
-        }
-
     }
 
     private void addSign(final String label, final Sign sign, final int widthLbl) {
