@@ -102,6 +102,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                 && (detection.getOsmComparison().equals(OsmComparison.NEW)
                         || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
             pnlButtons.setVisible(true);
+            pnlButtons.enablePanelActions(detection.getEditStatus());
         } else {
             pnlButtons.setVisible(false);
         }
