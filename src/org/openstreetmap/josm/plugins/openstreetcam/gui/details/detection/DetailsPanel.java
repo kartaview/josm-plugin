@@ -44,23 +44,22 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
                 GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText());
 
-        if (detection != null) {
-            addSign(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign(), widthLbl);
-            addDetectionInformation(GuiConfig.getInstance().getDetectionOnOsmText(), detection.getOsmComparison(),
+        addSign(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign(), widthLbl);
+        addDetectionInformation(GuiConfig.getInstance().getDetectionOnOsmText(), detection.getOsmComparison(),
+                widthLbl);
+        addDetectionInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
+        addDetectionInformation(GuiConfig.getInstance().getDetectionValidationStatusText(),
+                detection.getValidationStatus(), widthLbl);
+        if (detection.getOsmComparison() != null && (detection.getOsmComparison().equals(OsmComparison.NEW)
+                || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
+            addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                     widthLbl);
-            addDetectionInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
-            addDetectionInformation(GuiConfig.getInstance().getDetectionValidationStatusText(),
-                    detection.getValidationStatus(), widthLbl);
-            if (detection.getOsmComparison() != null && (detection.getOsmComparison().equals(OsmComparison.NEW)
-                    || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
-                addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
-                        widthLbl);
-            }
-            addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
-                    DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
-            addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
-                    DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
         }
+        addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
+                DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
+        addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
+                DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
+
 
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));

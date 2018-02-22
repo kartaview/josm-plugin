@@ -57,7 +57,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserver, LayerChangeListener,
-        LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectionObserver {
+LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectionObserver {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -217,9 +217,16 @@ public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserve
 
     @Override
     public void editDetection(final EditStatus editStatus, final String text) {
-        ServiceHandler.getInstance().updateDetection(OpenStreetCamLayer.getInstance().getSelectedDetection().getId(),
-                editStatus, text);
-        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+        ThreadPool.getInstance().execute(() -> {
+            ServiceHandler.getInstance()
+            .updateDetection(OpenStreetCamLayer.getInstance().getSelectedDetection().getId(), editStatus, text);
+            final Detection changedDetection = ServiceHandler.getInstance()
+                    .retrieveDetection(OpenStreetCamLayer.getInstance().getSelectedDetection().getId());
+            SwingUtilities.invokeLater(() -> {
+                OpenStreetCamLayer.getInstance().setSelectedDetection(changedDetection);
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(changedDetection);
+            });
+        });
     }
 
     /* implementation of DetectionSelectionObserver */

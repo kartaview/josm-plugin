@@ -41,6 +41,9 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private static final Dimension DIM = new Dimension(200, 24);
 
     private DetectionChangeObserver detectionChangeObserver;
+    private JButton btnAlreadyFixed;
+    private JButton btnFix;
+    private JMenuItem badDetectionMenuItem;
     private JMenuItem commentMenuItem;
 
 
@@ -50,6 +53,36 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         addAlreadyFixedButton();
         addCouldntFixButton();
         setPreferredSize(DIM);
+    }
+
+    void enablePanelActions(final EditStatus editStatus) {
+        switch (editStatus) {
+            case OPEN:
+                enablePanelActions(true, true, true, true);
+                break;
+            case FIXED:
+                enablePanelActions(true, false, true, true);
+                break;
+            case ALREADY_FIXED:
+                enablePanelActions(false, true, true, true);
+                break;
+            case BAD_SIGN:
+                enablePanelActions(true, true, false, true);
+                break;
+            default:
+                // OTHER
+                enablePanelActions(true, true, true, false);
+                break;
+        }
+    }
+
+    private void enablePanelActions(final boolean alreadyFixedFlag, final boolean fixFlag,
+            final boolean badDetectionFlag, final boolean otherFlag) {
+        btnAlreadyFixed.setEnabled(alreadyFixedFlag);
+        btnFix.setEnabled(fixFlag);
+        badDetectionMenuItem.setEnabled(badDetectionFlag);
+        commentMenuItem.setEnabled(otherFlag);
+
     }
 
     @Override
@@ -66,7 +99,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private void addFixButton() {
         final JosmAction action =
                 new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.FIXED);
-        final JButton btnFix = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnFixDetection());
+        btnFix = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnFixDetection());
         btnFix.setToolTipText(
                 GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
         add(btnFix);
@@ -75,18 +108,16 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private void addAlreadyFixedButton() {
         final JosmAction action = new EditAction(GuiConfig.getInstance().getBtnAlreadyFixedDetectionShortcutText(),
                 EditStatus.ALREADY_FIXED);
-        final JButton btnInvalidate =
-                ButtonBuilder.build(action, GuiConfig.getInstance().getBtnAlreadyFixedDetection());
-        btnInvalidate.setToolTipText(GuiConfig.getInstance().getBtnAlreadyFixedDetectionTlt().replace(SHORTCUT,
+        btnAlreadyFixed = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnAlreadyFixedDetection());
+        btnAlreadyFixed.setToolTipText(GuiConfig.getInstance().getBtnAlreadyFixedDetectionTlt().replace(SHORTCUT,
                 action.getShortcut().getKeyText()));
-        add(btnInvalidate);
+        add(btnAlreadyFixed);
     }
 
     private void addCouldntFixButton() {
         final EditAction badAction =
                 new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
-        final JMenuItem badDetectionMenuItem =
-                MenuBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
+        badDetectionMenuItem = MenuBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
         badDetectionMenuItem.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
                 badAction.getShortcut().getKeyText()));
 
