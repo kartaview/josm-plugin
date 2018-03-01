@@ -36,8 +36,8 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
 
         serviceBaseUrl = readProperty("service.url");
         serviceUrl = serviceBaseUrl + readProperty("service.version");
-        photoDetailsUrl = serviceBaseUrl + readProperty("service.details");
-        userPageUrl = serviceBaseUrl + readProperty("service.userPage");
+        photoDetailsUrl = readProperty("service.details.url");
+        userPageUrl = readProperty("service.user.url");
         feedbackUrl = readProperty("feedback.url");
         nearbyPhotosMaxItems = readIntegerProperty("nearbyPhotos.maxItems", MAX_ITEMS);
         tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
