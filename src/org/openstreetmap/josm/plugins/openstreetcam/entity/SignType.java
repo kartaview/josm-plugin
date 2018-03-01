@@ -40,7 +40,10 @@ public enum SignType {
     SPEED_LIMIT_ZONE_AHEAD,
     STOP,
     TRAFFIC_SIGNAL,
+    TURN_LANE,
+    TURN_LANE_ADDITIONAL,
     TURN_RESTRICTION;
+
 
     @Override
     public String toString() {
