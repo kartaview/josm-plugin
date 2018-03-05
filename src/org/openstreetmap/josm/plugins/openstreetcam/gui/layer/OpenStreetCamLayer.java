@@ -121,6 +121,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      */
     public void setDataSet(final DataSet dataSet, final boolean checkSelectedData) {
         this.dataSet = dataSet;
+
         if (checkSelectedData) {
             updateSelectedPhoto();
             updateSelectedDetection();
@@ -152,9 +153,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         if (selectedDetection != null) {
             if (dataSet != null && dataSet.getDetections() != null) {
                 selectedDetection = dataSet.getDetections().stream()
-                        .filter(detection -> detection.equals(selectedDetection))
-                        .findFirst()
-                        .orElse(null);
+                        .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null);
             } else {
                 selectedDetection = null;
             }
@@ -164,9 +163,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
     private void updateSelectedPhoto() {
         if (selectedPhoto != null) {
             if (dataSet != null && dataSet.getPhotos() != null) {
-                selectedPhoto = dataSet.getPhotos().stream()
-                        .filter(photo -> photo.equals(selectedPhoto))
-                        .findFirst()
+                selectedPhoto = dataSet.getPhotos().stream().filter(photo -> photo.equals(selectedPhoto)).findFirst()
                         .orElse(null);
             } else {
                 selectedPhoto = null;
@@ -278,7 +275,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                     break;
                 }
             }
-        } else if (dataSet != null && dataSet.getPhotos() != null) {
+        } else if (dataSet != null && dataSet.getPhotos() != null && selectedPhoto != null) {
             for (final Photo elem : dataSet.getPhotos()) {
                 if (elem.getSequenceIndex().equals(index)
                         && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {

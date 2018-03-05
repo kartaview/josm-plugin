@@ -17,10 +17,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EMPTY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -31,6 +32,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
@@ -47,6 +49,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -101,8 +104,12 @@ final class SaveManager {
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
-        Main.pref.put(FILTERS_CHANGED, "");
-        Main.pref.put(FILTERS_CHANGED, Boolean.toString(changed));
+        Main.pref.put(FILTER_CHANGED, "");
+        Main.pref.put(FILTER_CHANGED, Boolean.toString(changed));
+    }
+
+    void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
+        Main.pref.putBoolean(ONLY_DETECTION_FILTER_CHANGED, flag);
     }
 
     void saveSearchFilter(final SearchFilter filter) {
@@ -111,17 +118,25 @@ final class SaveManager {
             Main.pref.put(FILTER_DATE, dateStr);
             Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyMineFlag());
             saveDataTypeFilter(filter.getDataTypes());
-            saveOsmComparisonFilter(filter.getOsmComparisons());
-            saveEditStatusFilter(filter.getEditStatuses());
-            saveSignTypeFilter(filter.getSignTypes());
-            saveModesFilter(filter.getModes());
+            saveDetectionFilter(filter.getDetectionFilter());
         }
     }
 
     private void saveDataTypeFilter(final List<ImageDataType> types) {
-        final List<ImageDataTypeEntry> entries = types == null ? new ArrayList<>()
-                : types.stream().map(ImageDataTypeEntry::new).collect(Collectors.toList());
-        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, entries, ImageDataTypeEntry.class);
+        if (types == null || types.isEmpty()) {
+            Main.pref.put(FILTER_SEARCH_PHOTO_TYPE, FILTER_SEARCH_EMPTY);
+        } else {
+            final List<ImageDataTypeEntry> entries =
+                    types.stream().map(ImageDataTypeEntry::new).collect(Collectors.toList());
+            StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, entries, ImageDataTypeEntry.class);
+        }
+    }
+
+    private void saveDetectionFilter(final DetectionFilter filter) {
+        saveOsmComparisonFilter(filter.getOsmComparisons());
+        saveEditStatusFilter(filter.getEditStatuses());
+        saveSignTypeFilter(filter.getSignTypes());
+        saveModesFilter(filter.getModes());
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -155,11 +170,13 @@ final class SaveManager {
     }
 
     private void saveModesFilter(final List<DetectionMode> modes) {
-        List<DetectionModeEntry> entries = new ArrayList<>();
-        if (modes != null) {
-            entries = modes.stream().map(DetectionModeEntry::new).collect(Collectors.toList());
+        if (modes == null || modes.isEmpty()) {
+            Main.pref.put(FILTER_SEARCH_MODE, FILTER_SEARCH_EMPTY);
+        } else {
+            final List<DetectionModeEntry> entries =
+                    modes.stream().map(DetectionModeEntry::new).collect(Collectors.toList());
+            StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
         }
-        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
@@ -178,8 +195,8 @@ final class SaveManager {
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-            Main.pref.put(AUTOPLAY_LENGTH, length);
-            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+                    Main.pref.put(AUTOPLAY_LENGTH, length);
+                    Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 

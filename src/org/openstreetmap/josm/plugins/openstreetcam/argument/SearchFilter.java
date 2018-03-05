@@ -9,10 +9,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import java.util.Date;
 import java.util.List;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import com.telenav.josm.common.entity.EntityUtil;
 
 
@@ -25,12 +21,8 @@ public class SearchFilter {
 
     private final Date date;
     private final boolean onlyMineFlag;
-
     private List<ImageDataType> dataTypes;
-    private List<OsmComparison> osmComparisons;
-    private List<EditStatus> editStatuses;
-    private List<SignType> signTypes;
-    private List<DetectionMode> modes;
+    private DetectionFilter detectionFilter;
 
 
     public SearchFilter(final Date date, final boolean onlyMineFlag) {
@@ -39,43 +31,28 @@ public class SearchFilter {
     }
 
     public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
-            final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
-            final List<SignType> signTypes, final List<DetectionMode> modes) {
+            final DetectionFilter detectionFilter) {
         this(date, onlyMineFlag);
         this.dataTypes = dataTypes;
-        this.osmComparisons = osmComparisons;
-        this.editStatuses = editStatuses;
-        this.signTypes = signTypes;
-        this.modes = modes;
+        this.detectionFilter = detectionFilter;
     }
 
     public List<ImageDataType> getDataTypes() {
         return dataTypes;
     }
 
-    public List<OsmComparison> getOsmComparisons() {
-        return osmComparisons;
-    }
-
-    public List<EditStatus> getEditStatuses() {
-        return editStatuses;
-    }
-
-    public List<SignType> getSignTypes() {
-        return signTypes;
+    public DetectionFilter getDetectionFilter() {
+        return detectionFilter;
     }
 
     public Date getDate() {
         return date;
     }
 
-    public List<DetectionMode> getModes() {
-        return modes;
-    }
-
     public boolean isOnlyMineFlag() {
         return onlyMineFlag;
     }
+
 
     @Override
     public int hashCode() {
@@ -84,10 +61,7 @@ public class SearchFilter {
         result = prime * result + EntityUtil.hashCode(date);
         result = prime * result + EntityUtil.hashCode(onlyMineFlag);
         result = prime * result + EntityUtil.hashCode(dataTypes);
-        result = prime * result + EntityUtil.hashCode(osmComparisons);
-        result = prime * result + EntityUtil.hashCode(editStatuses);
-        result = prime * result + EntityUtil.hashCode(signTypes);
-        result = prime * result + EntityUtil.hashCode(modes);
+        result = prime * result + EntityUtil.hashCode(detectionFilter.hashCode());
         return result;
     }
 
@@ -101,11 +75,15 @@ public class SearchFilter {
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
             result = result && (onlyMineFlag == other.isOnlyMineFlag());
             result = result && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes());
-            result = result && EntityUtil.bothNullOrEqual(osmComparisons, other.getOsmComparisons());
-            result = result && EntityUtil.bothNullOrEqual(editStatuses, other.getEditStatuses());
-            result = result && EntityUtil.bothNullOrEqual(signTypes, other.getSignTypes());
-            result = result && EntityUtil.bothNullOrEqual(modes, other.getModes());
+            result = result && EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
         }
         return result;
+    }
+
+
+    public boolean onlyDetectionFilterChanged(final SearchFilter other) {
+        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (onlyMineFlag == other.isOnlyMineFlag())
+                && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes())
+                && !EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
     }
 }

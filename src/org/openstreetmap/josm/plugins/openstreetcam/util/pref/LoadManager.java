@@ -20,6 +20,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLA
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EMPTY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -30,6 +31,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
@@ -40,6 +42,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +51,7 @@ import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -102,6 +106,10 @@ final class LoadManager {
         return Main.pref.getBoolean(SUPPRESS_DETECTION_UPDATE_ERROR);
     }
 
+    boolean loadOnlyDetectionFilterChangedFlag() {
+        return Main.pref.getBoolean(ONLY_DETECTION_FILTER_CHANGED);
+    }
+
     SearchFilter loadSearchFilter() {
         final String dateStr = Main.pref.get(FILTER_DATE);
         Date date = null;
@@ -111,11 +119,16 @@ final class LoadManager {
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
         final List<ImageDataType> dataType = loadDataTypeFilter();
+        final DetectionFilter detectionFilter = loadDetectionFilter();
+        return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);
+    }
+
+    private DetectionFilter loadDetectionFilter() {
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
         final List<EditStatus> editStatuses = loadEditStatusFilter();
         final List<SignType> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();
-        return new SearchFilter(date, onlyUserFlag, dataType, osmComparisons, editStatuses, signTypes, modes);
+        return new DetectionFilter(osmComparisons, editStatuses, signTypes, modes);
     }
 
     private List<OsmComparison> loadOsmComparisonFilter() {
@@ -132,20 +145,30 @@ final class LoadManager {
     }
 
     private List<ImageDataType> loadDataTypeFilter() {
+        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
         final List<ImageDataTypeEntry> entries =
                 StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
         List<ImageDataType> list = null;
-        if (entries != null && !entries.isEmpty()) {
+        if (dataTypeVal.isEmpty() && entries.isEmpty()) {
+            list = Arrays.asList(ImageDataType.values());
+        } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
+            list = new ArrayList<>();
+        } else {
             list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
         }
         return list;
     }
 
     private List<DetectionMode> loadModes() {
+        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_MODE);
         final List<DetectionModeEntry> entries =
                 StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_MODE, DetectionModeEntry.class);
         List<DetectionMode> list = null;
-        if (entries != null && !entries.isEmpty()) {
+        if (dataTypeVal.isEmpty() && entries.isEmpty()) {
+            list = Arrays.asList(DetectionMode.values());
+        } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
+            list = new ArrayList<>();
+        } else {
             list = entries.stream().map(entry -> DetectionMode.valueOf(entry.getName())).collect(Collectors.toList());
         }
         return list;
@@ -195,11 +218,11 @@ final class LoadManager {
         final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
         int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
                 ? Integer.valueOf(mouseHoverDelayValue)
-                : org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMinDelay();
-        final int maxDelay =
-                org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMaxDelay();
-        mouseHoverDelay = mouseHoverDelay > maxDelay ? maxDelay : mouseHoverDelay;
-        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
+                        : org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMinDelay();
+                final int maxDelay =
+                        org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMaxDelay();
+                mouseHoverDelay = mouseHoverDelay > maxDelay ? maxDelay : mouseHoverDelay;
+                return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     TrackSettings loadTrackSettings() {
@@ -214,11 +237,11 @@ final class LoadManager {
         final String delayValue = Main.pref.get(AUTOPLAY_DELAY);
         Integer delay = delayValue == null || delayValue.isEmpty()
                 ? org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMinDelay()
-                : Integer.valueOf(delayValue);
-        delay = delay > org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
-                ? org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
-                : delay;
-        return new AutoplaySettings(length, delay);
+                        : Integer.valueOf(delayValue);
+                delay = delay > org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
+                        ? org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
+                                : delay;
+                        return new AutoplaySettings(length, delay);
     }
 
     boolean loadAutoplayStartedFlag() {
@@ -231,22 +254,22 @@ final class LoadManager {
                 : CacheConfig.getInstance().getDefaultMemoryCount();
         memoryCount = memoryCount > CacheConfig.getInstance().getMaxMemoryCount()
                 ? CacheConfig.getInstance().getMaxMemoryCount() : memoryCount;
-        final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
-        int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
-                : CacheConfig.getInstance().getDefaultDiskCount();
-        diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
-                ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
-        final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
-        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
-                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-        prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
-                ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
-        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                : CacheConfig.getInstance().getDefaultNearbyCount();
-        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
-                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
-        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+                final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
+                int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
+                        : CacheConfig.getInstance().getDefaultDiskCount();
+                diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
+                        ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
+                        final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
+                        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
+                                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
+                                prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
+                                        ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
+                                        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
+                                        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
+                                                : CacheConfig.getInstance().getDefaultNearbyCount();
+                                        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
+                                                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
+                                                return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     boolean loadLayerOpenedFlag() {

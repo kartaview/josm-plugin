@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -89,11 +89,13 @@ public class FilterDialog extends ModalDialog {
             if (result != null) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
                 final SearchFilter oldFilter = prefManager.loadSearchFilter();
-                if (result.equals(oldFilter)) {
-                    prefManager.saveFiltersChangedFlag(false);
-                } else {
+                if (!result.equals(oldFilter)) {
                     prefManager.saveListFilter(result);
                     prefManager.saveFiltersChangedFlag(true);
+                    prefManager.saveOnlyDetectionFilterChangedFlag(result.onlyDetectionFilterChanged(oldFilter));
+
+                } else {
+                    prefManager.saveFiltersChangedFlag(false);
                 }
                 dispose();
             }

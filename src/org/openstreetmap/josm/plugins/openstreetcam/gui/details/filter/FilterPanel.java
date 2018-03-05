@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
+package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,6 +14,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,6 +30,7 @@ import javax.swing.JPanel;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
@@ -83,10 +86,14 @@ class FilterPanel extends JPanel {
             addDataTypeFilter(filter.getDataTypes());
             add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),
                     Constraints.LBL_DETECTION);
-            addOsmComparisonFilter(filter.getOsmComparisons());
-            addEditStatusFilter(filter.getEditStatuses());
-            addDetectionTypeFilter(filter.getSignTypes());
-            addModeFilter(filter.getModes());
+            addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
+            addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
+            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes());
+            addModeFilter(filter.getDetectionFilter().getModes());
+
+            final boolean enableFilters =
+                    filter.getDataTypes() != null && filter.getDataTypes().contains(ImageDataType.DETECTIONS);
+            enableDetectionFilters(enableFilters);
         }
     }
 
@@ -98,6 +105,14 @@ class FilterPanel extends JPanel {
             pickerDate.setEnabled(false);
         }
         add(pickerDate, Constraints.PICKER_DATE);
+    }
+
+    private void enableDetectionFilters(final boolean enable) {
+        listOsmComparison.setEnabled(enable);
+        listEditStatus.setEnabled(enable);
+        listSignType.setEnabled(enable);
+        cbbAutomaticMode.setEnabled(enable);
+        cbbManualMode.setEnabled(enable);
     }
 
     private void addUserFilter(final boolean isSelected) {
@@ -125,6 +140,7 @@ class FilterPanel extends JPanel {
         cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDataTypeDetectionText(), Font.PLAIN, null,
                 types != null && types.contains(ImageDataType.DETECTIONS));
         add(cbbDetections, Constraints.CBB_DETECTIONS);
+        cbbDetections.addItemListener(new DetectionFilterSelectionListener());
     }
 
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -190,8 +206,9 @@ class FilterPanel extends JPanel {
         SearchFilter searchFilter;
         if (isHighLevelZoom) {
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), getSelectedDataTypes(),
-                    listOsmComparison.getSelectedValuesList(), listEditStatus.getSelectedValuesList(),
-                    listSignType.getSelectedValuesList(), getSelectedModes());
+                    new DetectionFilter(listOsmComparison.getSelectedValuesList(),
+                            listEditStatus.getSelectedValuesList(), listSignType.getSelectedValuesList(),
+                            getSelectedModes()));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -264,6 +281,16 @@ class FilterPanel extends JPanel {
             }
             return isValid;
         }
+    }
+
+    private final class DetectionFilterSelectionListener implements ItemListener {
+
+        @Override
+        public void itemStateChanged(final ItemEvent event) {
+            final boolean filtersEnabled = event.getStateChange() == ItemEvent.SELECTED;
+            enableDetectionFilters(filtersEnabled);
+        }
+
     }
 
 
