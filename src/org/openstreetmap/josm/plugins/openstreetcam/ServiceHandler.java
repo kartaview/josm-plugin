@@ -72,12 +72,12 @@ public final class ServiceHandler {
      * @return a {@code Pair} containing a {@code PhotoDataSet} and a list of {@code Detection}s
      */
     public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
-        Pair<PhotoDataSet, List<Detection>> result;
-        if (filter.getDataTypes() == null || ((filter.getDataTypes().contains(ImageDataType.DETECTIONS)
-                && (filter.getDataTypes().contains(ImageDataType.PHOTOS))))) {
-            result = loadPhotosAndDetections(area, filter);
-        } else {
-            if (filter.getDataTypes().contains(ImageDataType.DETECTIONS)) {
+        Pair<PhotoDataSet, List<Detection>> result = new Pair<PhotoDataSet, List<Detection>>(null, null);
+        if (filter.getDataTypes() != null) {
+            if (filter.getDataTypes().size() == 2) {
+                // load photos & detections
+                result = loadPhotosAndDetections(area, filter);
+            } else if (filter.getDataTypes().contains(ImageDataType.DETECTIONS)) {
                 result = new Pair<>(null, searchDetections(area, filter));
             } else {
                 result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
@@ -142,8 +142,10 @@ public final class ServiceHandler {
         final Long osmUserId = osmUserId(searchFilter);
         FilterPack filterPack = null;
         if (searchFilter != null) {
-            filterPack = new FilterPack(osmUserId, searchFilter.getDate(), searchFilter.getOsmComparisons(),
-                    searchFilter.getEditStatuses(), searchFilter.getSignTypes(), searchFilter.getModes());
+            filterPack = new FilterPack(osmUserId, searchFilter.getDate(),
+                    searchFilter.getDetectionFilter().getOsmComparisons(),
+                    searchFilter.getDetectionFilter().getEditStatuses(),
+                    searchFilter.getDetectionFilter().getSignTypes(), searchFilter.getDetectionFilter().getModes());
         }
 
         List<Detection> result = null;

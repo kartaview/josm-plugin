@@ -286,7 +286,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         MainApplication.getMap().repaint();
 
         OpenStreetCamLayer.getInstance().selectStartPhotoForClosestAction(null);
-        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
     }
 
     /**

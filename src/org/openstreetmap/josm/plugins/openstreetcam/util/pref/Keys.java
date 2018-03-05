@@ -24,14 +24,15 @@ final class Keys {
     static final String SUPPRESS_PHOTO_DETECTIONS_ERROR = "openstreetcam.error.photo.detections.suppress";
     static final String SUPPRESS_DETECTION_UPDATE_ERROR = "openstreetcam.error.detection.update.suppress";
 
-    static final String FILTERS_CHANGED = "openstreetcam.filter.changed";
+    static final String FILTER_CHANGED = "openstreetcam.filter.changed";
+    static final String ONLY_DETECTION_FILTER_CHANGED = "openstreetcam.filter.onlyDetection.changed";
     static final String FILTER_DATE = "openstreetcam.filter.date";
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String FILTER_SEARCH_PHOTO_TYPE = "openstreetcam.filter.search.photoType";
-    static final String FILTER_SEARCH_OSM_COMPARISON = "openstreetcam.filter.search.osmComparison";
     static final String FILTER_SEARCH_MODE = "openstreetcam.filter.search.mode";
     static final String FILTER_SEARCH_EDIT_STATUS = "openstreetcam.filter.search.editStatus";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
+    static final String FILTER_SEARCH_EMPTY = "EMPTY";
 
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
     static final String PANEL_OPENED = "openstreetcam.panelOpened";
@@ -50,6 +51,7 @@ final class Keys {
     /* track related user preference settings */
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
     static final String AUTOPLAY_LENGTH = "openstreetcam.preferences.autoplay.length";
+    static final String FILTER_SEARCH_OSM_COMPARISON = "openstreetcam.filter.search.osmComparison";
     static final String AUTOPLAY_DELAY = "openstreetcam.preferences.autoplay.delay";
     static final String AUTOPLAY_STARTED = "opensteetcam.preferences.autoplay.started";
 

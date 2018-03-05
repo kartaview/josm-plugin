@@ -10,7 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTERS_CHANGED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_AUTH_METHOD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
@@ -177,6 +177,14 @@ public final class PreferenceManager {
         return loadManager.loadMapViewSettings();
     }
 
+    public boolean loadOnlyDetectionFilterChangedFlag() {
+        return loadManager.loadOnlyDetectionFilterChangedFlag();
+    }
+
+    public void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
+        saveManager.saveOnlyDetectionFilterChangedFlag(flag);
+    }
+
     /**
      * Loads the photo settings from the preference file.
      *
@@ -271,7 +279,7 @@ public final class PreferenceManager {
      * @return true if the data download preference settings has been changed; false otherwise
      */
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
-        return isFiltersChangedKey(key) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
+        return isFiltersChangedKey(key, newValue) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
                 || isLayerOpenedFlag(key, newValue);
     }
 
@@ -279,8 +287,8 @@ public final class PreferenceManager {
         return (JOSM_AUTH_METHOD.equals(key) && JOSM_BASIC_VAL.equals(value)) || JOSM_OAUTH_SECRET.equals(key);
     }
 
-    private boolean isFiltersChangedKey(final String value) {
-        return FILTERS_CHANGED.equals(value);
+    private boolean isFiltersChangedKey(final String value, final String newValue) {
+        return FILTER_CHANGED.equals(value) && Boolean.TRUE.toString().equals(newValue);
     }
 
     private boolean isMapViewZoomKey(final String value) {

@@ -147,7 +147,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     @Override
     public void update(final DataType dataType) {
         PreferenceManager.getInstance().saveDataType(dataType);
-        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+        ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
     }
 
 
@@ -205,8 +205,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             zoomTimer.restart();
         } else {
             if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
-                zoomTimer = new Timer(SEARCH_DELAY,
-                        event -> ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(false)));
+                zoomTimer = new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance()
+                        .execute(() -> new DataUpdateHandler().updateData(false, true)));
                 zoomTimer.setRepeats(false);
                 zoomTimer.start();
             }
@@ -317,20 +317,11 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
-            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
         }
 
         private void handleDataDownload() {
-            // clean up previous data
-            SwingUtilities.invokeLater(() -> {
-                OpenStreetCamLayer.getInstance().setDataSet(null, false);
-                if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null) {
-                    PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-                }
-                OpenStreetCamLayer.getInstance().invalidate();
-                MainApplication.getMap().repaint();
-            });
-            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
         }
 
         private void handleHighQualityPhotoSelection() {
