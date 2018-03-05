@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
@@ -155,7 +155,7 @@ class DataUpdateHandler {
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, filter, zoom);
             if (PreferenceManager.getInstance().loadDataType() == null
                     || PreferenceManager.getInstance().loadDataType() == DataType.SEGMENT) {
-                updateUI(new DataSet(segments, null, null), checkSelection);
+                updateUI(new ResultSet(segments, null, null), checkSelection);
             }
         }
     }
@@ -189,7 +189,7 @@ class DataUpdateHandler {
                 dataSet = new Pair<PhotoDataSet, List<Detection>>(photoDataSet, dataSet.getSecond());
             }
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-                updateUI(new DataSet(null, dataSet.getFirst(), dataSet.getSecond()), checkSelection);
+                updateUI(new ResultSet(null, dataSet.getFirst(), dataSet.getSecond()), checkSelection);
             }
         }
     }
@@ -245,7 +245,7 @@ class DataUpdateHandler {
     void updateUI(final PhotoDataSet photoDataSet) {
         final List<Detection> detections = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getDetections() : null;
-        updateUI(new DataSet(null, photoDataSet, detections), true);
+        updateUI(new ResultSet(null, photoDataSet, detections), true);
     }
 
     /**
@@ -256,7 +256,7 @@ class DataUpdateHandler {
      * given data set
      */
     // TODO: refactore this method
-    void updateUI(final DataSet dataSet, final boolean checkSelection) {
+    void updateUI(final ResultSet dataSet, final boolean checkSelection) {
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);

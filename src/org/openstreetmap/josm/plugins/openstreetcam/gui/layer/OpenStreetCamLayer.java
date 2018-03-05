@@ -23,7 +23,7 @@ import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -45,7 +45,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
     private static OpenStreetCamLayer instance;
-    private DataSet dataSet;
+    private ResultSet dataSet;
     private Photo selectedPhoto;
     private Photo startPhoto;
     private Pair<Sequence, List<Detection>> selectedSequence;
@@ -119,7 +119,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      * @param checkSelectedData is true, verifies if the selected photo is present or not in the given photo list. The
      * selected photo is set to null, if it is not present in the given list.
      */
-    public void setDataSet(final DataSet dataSet, final boolean checkSelectedData) {
+    public void setDataSet(final ResultSet dataSet, final boolean checkSelectedData) {
         this.dataSet = dataSet;
 
         if (checkSelectedData) {
@@ -392,7 +392,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
      *
      * @return a {@code DataSet}
      */
-    public DataSet getDataSet() {
+    public ResultSet getDataSet() {
         return dataSet;
     }
 

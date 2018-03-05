@@ -18,7 +18,7 @@ import java.util.List;
  * @author beataj
  * @version $Revision$
  */
-public class DataSet {
+public class ResultSet {
 
     private final List<Segment> segments;
     private final PhotoDataSet photoDataSet;
@@ -31,7 +31,7 @@ public class DataSet {
      * @param segments represents the data for small zoom levels
      * @param photoDataSet represents the data for bigger zoom levels
      */
-    public DataSet(final List<Segment> segments, final PhotoDataSet photoDataSet, final List<Detection> detections) {
+    public ResultSet(final List<Segment> segments, final PhotoDataSet photoDataSet, final List<Detection> detections) {
         this.segments = segments;
         this.photoDataSet = photoDataSet;
         this.detections = detections;
