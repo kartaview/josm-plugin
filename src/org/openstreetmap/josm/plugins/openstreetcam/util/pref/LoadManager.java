@@ -62,6 +62,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
@@ -110,17 +111,33 @@ final class LoadManager {
         return Main.pref.getBoolean(ONLY_DETECTION_FILTER_CHANGED);
     }
 
+    boolean loadAutoplayStartedFlag() {
+        return Main.pref.getBoolean(AUTOPLAY_STARTED);
+    }
+
     SearchFilter loadSearchFilter() {
         final String dateStr = Main.pref.get(FILTER_DATE);
-        Date date = null;
-        if (!dateStr.isEmpty()) {
-            date = new Date(Long.parseLong(dateStr));
-        }
+        final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
         final List<ImageDataType> dataType = loadDataTypeFilter();
         final DetectionFilter detectionFilter = loadDetectionFilter();
         return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);
+    }
+
+    private List<ImageDataType> loadDataTypeFilter() {
+        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
+        final List<ImageDataTypeEntry> entries =
+                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
+        List<ImageDataType> list;
+        if (dataTypeVal.isEmpty() && entries.isEmpty()) {
+            list = Arrays.asList(ImageDataType.values());
+        } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
+            list = new ArrayList<>();
+        } else {
+            list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
+        }
+        return list;
     }
 
     private DetectionFilter loadDetectionFilter() {
@@ -144,26 +161,11 @@ final class LoadManager {
         return list;
     }
 
-    private List<ImageDataType> loadDataTypeFilter() {
-        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
-        final List<ImageDataTypeEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
-        List<ImageDataType> list = null;
-        if (dataTypeVal.isEmpty() && entries.isEmpty()) {
-            list = Arrays.asList(ImageDataType.values());
-        } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
-            list = new ArrayList<>();
-        } else {
-            list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
-        }
-        return list;
-    }
-
     private List<DetectionMode> loadModes() {
         final String dataTypeVal = Main.pref.get(FILTER_SEARCH_MODE);
         final List<DetectionModeEntry> entries =
                 StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_MODE, DetectionModeEntry.class);
-        List<DetectionMode> list = null;
+        List<DetectionMode> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(DetectionMode.values());
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
@@ -201,28 +203,18 @@ final class LoadManager {
     }
 
     MapViewSettings loadMapViewSettings() {
-        final String photoZoomVal = Main.pref.get(MAP_VIEW_PHOTO_ZOOM);
-        int photoZoom = (photoZoomVal != null && !photoZoomVal.isEmpty()) ? Integer.valueOf(photoZoomVal)
-                : org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMapPhotoZoom();
-        final int maxZoom =
-                org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getPreferencesMaxZoom();
-        photoZoom = photoZoom > maxZoom ? maxZoom : photoZoom;
+        final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
+                Config.getInstance().getPreferencesMaxZoom());
         final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
         return new MapViewSettings(photoZoom, manualSwitchFlag);
-
     }
 
     PhotoSettings loadPhotoSettings() {
         final boolean highQualityFlag = Main.pref.getBoolean(HIGH_QUALITY_PHOTO_FLAG);
         final boolean mouseHoverFlag = Main.pref.getBoolean(MOUSE_HOVER_FLAG);
-        final String mouseHoverDelayValue = Main.pref.get(MOUSE_HOVER_DELAY);
-        int mouseHoverDelay = (mouseHoverDelayValue != null && !mouseHoverDelayValue.isEmpty())
-                ? Integer.valueOf(mouseHoverDelayValue)
-                        : org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMinDelay();
-                final int maxDelay =
-                        org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getMouseHoverMaxDelay();
-                mouseHoverDelay = mouseHoverDelay > maxDelay ? maxDelay : mouseHoverDelay;
-                return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
+        final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(),
+                Config.getInstance().getMouseHoverMaxDelay());
+        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     TrackSettings loadTrackSettings() {
@@ -232,44 +224,22 @@ final class LoadManager {
     }
 
     AutoplaySettings loadAutoplaySettings() {
-        final String lengthValue = Main.pref.get(AUTOPLAY_LENGTH);
-        final Integer length = lengthValue == null || lengthValue.isEmpty() ? null : Integer.valueOf(lengthValue);
-        final String delayValue = Main.pref.get(AUTOPLAY_DELAY);
-        Integer delay = delayValue == null || delayValue.isEmpty()
-                ? org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMinDelay()
-                        : Integer.valueOf(delayValue);
-                delay = delay > org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
-                        ? org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config.getInstance().getAutoplayMaxDelay()
-                                : delay;
-                        return new AutoplaySettings(length, delay);
-    }
-
-    boolean loadAutoplayStartedFlag() {
-        return Main.pref.getBoolean(AUTOPLAY_STARTED);
+        final Integer length = loadIntValue(AUTOPLAY_LENGTH, null, null);
+        final int delay = loadIntValue(AUTOPLAY_DELAY, Config.getInstance().getAutoplayMinDelay(),
+                Config.getInstance().getAutoplayMaxDelay());
+        return new AutoplaySettings(length, delay);
     }
 
     CacheSettings loadCacheSettings() {
-        final String memoryCountVal = Main.pref.get(CACHE_MEMORY_COUNT);
-        int memoryCount = (memoryCountVal != null && !memoryCountVal.isEmpty()) ? Integer.valueOf(memoryCountVal)
-                : CacheConfig.getInstance().getDefaultMemoryCount();
-        memoryCount = memoryCount > CacheConfig.getInstance().getMaxMemoryCount()
-                ? CacheConfig.getInstance().getMaxMemoryCount() : memoryCount;
-                final String diskCountVal = Main.pref.get(CACHE_DISK_COUNT);
-                int diskCount = (diskCountVal != null && !diskCountVal.isEmpty()) ? Integer.valueOf(diskCountVal)
-                        : CacheConfig.getInstance().getDefaultDiskCount();
-                diskCount = diskCount > CacheConfig.getInstance().getMaxDiskCount()
-                        ? CacheConfig.getInstance().getMaxDiskCount() : diskCount;
-                        final String prevNextCountVal = Main.pref.get(CACHE_PREV_NEXT_COUNT);
-                        int prevNextCount = (prevNextCountVal != null && !prevNextCountVal.isEmpty())
-                                ? Integer.valueOf(prevNextCountVal) : CacheConfig.getInstance().getDefaultPrevNextCount();
-                                prevNextCount = prevNextCount > CacheConfig.getInstance().getMaxNearbyCount()
-                                        ? CacheConfig.getInstance().getMaxNearbyCount() : prevNextCount;
-                                        final String nearbyCountVal = Main.pref.get(CACHE_NEARBY_COUNT);
-                                        int nearbyCount = (nearbyCountVal != null && !nearbyCountVal.isEmpty()) ? Integer.valueOf(nearbyCountVal)
-                                                : CacheConfig.getInstance().getDefaultNearbyCount();
-                                        nearbyCount = nearbyCount > CacheConfig.getInstance().getMaxNearbyCount()
-                                                ? CacheConfig.getInstance().getMaxNearbyCount() : nearbyCount;
-                                                return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
+        final int memoryCount = loadIntValue(CACHE_MEMORY_COUNT, CacheConfig.getInstance().getDefaultMemoryCount(),
+                CacheConfig.getInstance().getMaxMemoryCount());
+        final int diskCount = loadIntValue(CACHE_DISK_COUNT, CacheConfig.getInstance().getDefaultDiskCount(),
+                CacheConfig.getInstance().getMaxDiskCount());
+        final int prevNextCount = loadIntValue(CACHE_PREV_NEXT_COUNT,
+                CacheConfig.getInstance().getDefaultPrevNextCount(), CacheConfig.getInstance().getMaxPrevNextCount());
+        final int nearbyCount = loadIntValue(CACHE_NEARBY_COUNT, CacheConfig.getInstance().getMaxNearbyCount(),
+                CacheConfig.getInstance().getDefaultNearbyCount());
+        return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
     boolean loadLayerOpenedFlag() {
@@ -295,5 +265,11 @@ final class LoadManager {
 
     String loadPluginLocalVersion() {
         return Main.pref.get(PLUGIN_LOCAL_VERSION);
+    }
+
+    private int loadIntValue(final String key, final Integer defaultValue, final Integer maxValue) {
+        final String valueStr = Main.pref.get(key);
+        final int value = (valueStr != null && !valueStr.isEmpty()) ? Integer.valueOf(valueStr) : defaultValue;
+        return maxValue != null ? (value > maxValue ? maxValue : value) : value;
     }
 }

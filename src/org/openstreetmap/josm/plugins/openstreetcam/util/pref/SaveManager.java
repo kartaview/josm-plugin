@@ -116,7 +116,7 @@ final class SaveManager {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyMineFlag());
+            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
             saveDataTypeFilter(filter.getDataTypes());
             saveDetectionFilter(filter.getDetectionFilter());
         }

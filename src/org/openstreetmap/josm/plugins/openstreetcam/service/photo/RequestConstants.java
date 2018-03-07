@@ -37,7 +37,5 @@ final class RequestConstants {
     static final String USER_TYPE_OSM = "osm";
     static final String EXTERNAL_USER_ID = "filterExternalUserId";
 
-    static final String USER_AGENT = "User-Agent";
-
     private RequestConstants() {}
 }

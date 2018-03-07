@@ -81,7 +81,7 @@ class FilterPanel extends JPanel {
         this.isHighLevelZoom = isHighLevelZoom;
         final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
         addDateFitler(filter.getDate());
-        addUserFilter(filter.isOnlyMineFlag());
+        addUserFilter(filter.isOlnyUserData());
         if (isHighLevelZoom) {
             addDataTypeFilter(filter.getDataTypes());
             add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),

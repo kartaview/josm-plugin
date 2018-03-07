@@ -66,7 +66,7 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
     }
 
     private void addSign(final String label, final Sign sign, final int widthLbl) {
-        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign.getIconName(), true);
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign, true);
 
         add(LabelBuilder.build(label, Font.BOLD, ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT,
                 SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, icon.getIconHeight())));

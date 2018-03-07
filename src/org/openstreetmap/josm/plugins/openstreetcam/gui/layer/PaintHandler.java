@@ -190,7 +190,7 @@ class PaintHandler {
     private void drawDetection(final Graphics2D graphics, final MapView mapView, final Detection detection,
             final boolean isSelected) {
         final Point point = mapView.getPoint(detection.getPoint());
-        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign().getIconName(), isSelected);
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign(), isSelected);
         PaintManager.drawIcon(graphics, icon, point);
     }
 

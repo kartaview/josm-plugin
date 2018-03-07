@@ -1,17 +1,9 @@
 /*
- *  Copyright 2017 Telenav, Inc.
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
 
@@ -27,10 +19,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.ResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
@@ -204,19 +196,19 @@ class DataUpdateHandler {
     PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         final PhotoDataSet currentPhotoDataSet = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getPhotoDataSet() : null;
-        PhotoDataSet photoDataSet = null;
-        if (currentPhotoDataSet != null) {
-            int page = currentPhotoDataSet.getPage();
-            page = loadNextResults ? page + 1 : page - 1;
-            final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
-            photoDataSet = new PhotoDataSet();
-            final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-            if (bbox != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                        new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
-            }
-        }
-        return photoDataSet;
+                PhotoDataSet photoDataSet = null;
+                if (currentPhotoDataSet != null) {
+                    int page = currentPhotoDataSet.getPage();
+                    page = loadNextResults ? page + 1 : page - 1;
+                    final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
+                    photoDataSet = new PhotoDataSet();
+                    final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+                    if (bbox != null) {
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                                new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                }
+                return photoDataSet;
     }
 
     /**
@@ -245,7 +237,7 @@ class DataUpdateHandler {
     void updateUI(final PhotoDataSet photoDataSet) {
         final List<Detection> detections = OpenStreetCamLayer.getInstance().getDataSet() != null
                 ? OpenStreetCamLayer.getInstance().getDataSet().getDetections() : null;
-        updateUI(new ResultSet(null, photoDataSet, detections), true);
+                updateUI(new ResultSet(null, photoDataSet, detections), true);
     }
 
     /**
@@ -262,7 +254,7 @@ class DataUpdateHandler {
                 OpenStreetCamLayer.getInstance().setDataSet(dataSet, checkSelection);
 
                 DetectionDetailsDialog.getInstance()
-                        .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
+                .updateDetectionDetails(OpenStreetCamLayer.getInstance().getSelectedDetection());
                 if (OpenStreetCamLayer.getInstance().getSelectedPhoto() == null
                         && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
                     PhotoDetailsDialog.getInstance().updateUI(null, null, false);
@@ -285,7 +277,7 @@ class DataUpdateHandler {
                     final PhotoSettings photoSettings = PreferenceManager.getInstance().loadPhotoSettings();
                     PhotoDetailsDialog.getInstance().updateUI(photo,
                             photoSettings.isHighQualityFlag() ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL,
-                            true);
+                                    true);
 
                     if (OpenStreetCamLayer.getInstance().getClosestPhotos() != null
                             && !OpenStreetCamLayer.getInstance().getClosestPhotos().isEmpty()

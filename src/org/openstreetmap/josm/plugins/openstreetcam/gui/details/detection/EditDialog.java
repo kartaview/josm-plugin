@@ -102,10 +102,11 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
     private final class EditDocument extends PlainDocument {
 
         private static final long serialVersionUID = -6861902595242696120L;
+        private static final int MAX_LENGTH = 100;
 
         @Override
         public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
-            if (str != null && txtComment.getText().length() <= 100) {
+            if (str != null && txtComment.getText().length() <= MAX_LENGTH) {
                 super.insertString(offs, str, a);
             }
         }

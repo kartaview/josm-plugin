@@ -8,8 +8,9 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
-import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -42,14 +43,22 @@ class HttpQueryBuilder {
         return build();
     }
 
-    String buildSearchQuery(final BoundingBox area, final FilterPack filterPack) {
+    String buildSearchQuery(final BoundingBox area, final Date date, final Long osmUserId,
+            final DetectionFilter filter) {
         query.append(RequestConstants.SEARCH_DETECTIONS);
         query.append(QUESTIONM);
 
         appendFormatFilter(query);
         appendBoundingBoxFilter(query, area);
-        if (filterPack != null) {
-            appendFilters(filterPack);
+        if (date != null) {
+            query.append(AND).append(RequestConstants.DATE).append(new SimpleDateFormat(DATE_FORMAT).format(date));
+        }
+        if (osmUserId != null) {
+            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
+            query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
+        }
+        if (filter != null) {
+            appendDetectionFilter(filter);
         }
         return build();
     }
@@ -76,36 +85,25 @@ class HttpQueryBuilder {
         return build();
     }
 
-    private void appendFilters(final FilterPack filterPack) {
-        if (filterPack.getExternalId() != null) {
-            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ)
-            .append(filterPack.getExternalId().toString());
-            query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
-        }
-
-        if (filterPack.getDate() != null) {
-            query.append(AND).append(RequestConstants.DATE)
-            .append(new SimpleDateFormat(DATE_FORMAT).format(filterPack.getDate()));
-        }
-
-        if (filterPack.getOsmComparisons() != null && !filterPack.getOsmComparisons().isEmpty()) {
+    private void appendDetectionFilter(final DetectionFilter filter) {
+        if (filter.getOsmComparisons() != null && !filter.getOsmComparisons().isEmpty()) {
             query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getOsmComparisons())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getOsmComparisons())));
         }
 
-        if (filterPack.getEditStatuses() != null && !filterPack.getEditStatuses().isEmpty()) {
+        if (filter.getEditStatuses() != null && !filter.getEditStatuses().isEmpty()) {
             query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getEditStatuses())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getEditStatuses())));
         }
 
-        if (filterPack.getSignTypes() != null && !filterPack.getSignTypes().isEmpty()) {
+        if (filter.getSignTypes() != null && !filter.getSignTypes().isEmpty()) {
             query.append(AND).append(RequestConstants.TYPES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getSignTypes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getSignTypes())));
         }
 
-        if (filterPack.getModes() != null && !filterPack.getModes().isEmpty()) {
+        if (filter.getModes() != null && !filter.getModes().isEmpty()) {
             query.append(AND).append(RequestConstants.MODES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filterPack.getModes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getModes())));
         }
     }
 

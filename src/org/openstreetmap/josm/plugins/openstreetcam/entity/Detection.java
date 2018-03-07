@@ -12,6 +12,8 @@ import com.telenav.josm.common.entity.EntityUtil;
  */
 public class Detection {
 
+    // setters are not required,since GSON sets the fields directly using reflection.
+
     private final Long id;
     private Long sequenceId;
     private Integer sequenceIndex;
@@ -32,28 +34,6 @@ public class Detection {
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
         this.editStatus = editStatus;
-    }
-
-
-    public Detection(final Long id, final Long sequenceId, final Integer sequenceIndex, final Long creationTimestamp,
-            final Long latestChangeTimestamp, final LatLon point, final Sign sign, final Rectangle locationOnPhoto,
-            final Double confidenceLevel, final ValidationStatus validationStatus, final EditStatus editStatus,
-            final OsmComparison osmComparison, final OsmElement osmElement, final DetectionMode mode,
-            final Author author) {
-        this(id, editStatus);
-        this.sequenceId = sequenceId;
-        this.sequenceIndex = sequenceIndex;
-        this.creationTimestamp = creationTimestamp;
-        this.latestChangeTimestamp = latestChangeTimestamp;
-        this.point = point;
-        this.sign = sign;
-        this.locationOnPhoto = locationOnPhoto;
-        this.confidenceLevel = confidenceLevel;
-        this.validationStatus = validationStatus;
-        this.osmComparison = osmComparison;
-        this.osmElement = osmElement;
-        this.mode = mode;
-        this.author = author;
     }
 
     public Long getId() {

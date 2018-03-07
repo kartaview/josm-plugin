@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
 import java.util.Date;
 import java.util.List;
+import org.openstreetmap.josm.data.UserIdentityManager;
 import com.telenav.josm.common.entity.EntityUtil;
 
 
@@ -20,14 +21,14 @@ import com.telenav.josm.common.entity.EntityUtil;
 public class SearchFilter {
 
     private final Date date;
-    private final boolean onlyMineFlag;
+    private final boolean olnyUserData;
     private List<ImageDataType> dataTypes;
     private DetectionFilter detectionFilter;
 
 
-    public SearchFilter(final Date date, final boolean onlyMineFlag) {
+    public SearchFilter(final Date date, final boolean olnyUserData) {
         this.date = date;
-        this.onlyMineFlag = onlyMineFlag;
+        this.olnyUserData = olnyUserData;
     }
 
     public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
@@ -49,8 +50,8 @@ public class SearchFilter {
         return date;
     }
 
-    public boolean isOnlyMineFlag() {
-        return onlyMineFlag;
+    public boolean isOlnyUserData() {
+        return olnyUserData;
     }
 
 
@@ -59,7 +60,7 @@ public class SearchFilter {
         final int prime = 31;
         int result = 1;
         result = prime * result + EntityUtil.hashCode(date);
-        result = prime * result + EntityUtil.hashCode(onlyMineFlag);
+        result = prime * result + EntityUtil.hashCode(olnyUserData);
         result = prime * result + EntityUtil.hashCode(dataTypes);
         result = prime * result + EntityUtil.hashCode(detectionFilter.hashCode());
         return result;
@@ -73,7 +74,7 @@ public class SearchFilter {
         } else if (obj != null && obj.getClass() == this.getClass()) {
             final SearchFilter other = (SearchFilter) obj;
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
-            result = result && (onlyMineFlag == other.isOnlyMineFlag());
+            result = result && (olnyUserData == other.isOlnyUserData());
             result = result && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes());
             result = result && EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
         }
@@ -82,8 +83,14 @@ public class SearchFilter {
 
 
     public boolean onlyDetectionFilterChanged(final SearchFilter other) {
-        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (onlyMineFlag == other.isOnlyMineFlag())
+        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (olnyUserData == other.isOlnyUserData())
                 && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes())
                 && !EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
+    }
+
+    public Long getOsmUserId() {
+        return (isOlnyUserData() && UserIdentityManager.getInstance().isFullyIdentified()
+                && UserIdentityManager.getInstance().asUser().getId() > 0)
+                ? UserIdentityManager.getInstance().asUser().getId() : null;
     }
 }
