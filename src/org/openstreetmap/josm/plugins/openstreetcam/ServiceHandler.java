@@ -172,13 +172,13 @@ public final class ServiceHandler {
      * @param osmComparisons a list of {@code OsmComparison}s
      * @return a {code Pair} of {@code Sequence} and {@code Detection}s list
      */
-    public Pair<Sequence, List<Detection>> retrieveSequence(final Long sequenceId) {
-        Pair<Sequence, List<Detection>> result;
+    public Sequence retrieveSequence(final Long sequenceId) {
+        Sequence result = null;
         final List<ImageDataType> dataTypesPreferences =
                 PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
         if (dataTypesPreferences != null && dataTypesPreferences.contains(ImageDataType.PHOTOS)
                 && !dataTypesPreferences.contains(ImageDataType.DETECTIONS)) {
-            result = new Pair<>(retrieveSequencePhotos(sequenceId), null);
+            result = null;
         } else {
             final ExecutorService executorService = Executors.newFixedThreadPool(2);
             final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
@@ -203,7 +203,7 @@ public final class ServiceHandler {
                 }
             }
             executorService.shutdown();
-            result = new Pair<>(sequence, detections);
+            result = new Sequence(sequenceId, sequence.getPhotos(), detections);
         }
         return result;
     }

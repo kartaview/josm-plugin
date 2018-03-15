@@ -8,11 +8,17 @@
 package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.io.IOException;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.xml.sax.SAXException;
 
 
@@ -84,7 +90,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
 
     @Override
     protected void realRun() throws SAXException, IOException, OsmTransferException {
-        if (!canceled && dataUpdateHandler.photoDataSetDownloadAllowed()) {
+        if (!canceled && photoDataSetDownloadAllowed()) {
             try {
                 final String taskTitle = loadNextResults ? GuiConfig.getInstance().getInfoDownloadNextPhotosTitle()
                         : GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle();
@@ -96,6 +102,29 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
                 progressMonitor.finishTask();
             }
         }
+    }
+
+    /**
+     * Verifies if the photo download is allowed or not. A new photo data set download is allowed in the following
+     * cases:
+     * <ul>
+     * <li>current zoom >=photo zoom and no track is displayed</li>
+     * <li>user has manual data switch enabled and photo locations are displayed on the map</li>
+     * </ul>
+     *
+     * @return a boolean value
+     */
+    private boolean photoDataSetDownloadAllowed() {
+        boolean result = false;
+        final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
+        final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
+        if (mapViewSettings.isManualSwitchFlag()) {
+            result = zoom >= Config.getInstance().getMapPhotoZoom()
+                    && PreferenceManager.getInstance().loadDataType() == DataType.PHOTO;
+        } else if (zoom >= mapViewSettings.getPhotoZoom()) {
+            result = !DataSet.getInstance().hasSelectedSequence();
+        }
+        return result;
     }
 
     private void waitForCompletion() {

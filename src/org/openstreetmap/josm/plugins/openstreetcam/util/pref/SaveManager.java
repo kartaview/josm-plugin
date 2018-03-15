@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -33,7 +34,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
@@ -215,8 +216,12 @@ final class SaveManager {
         Main.pref.putBoolean(LAYER_OPENED, isLayerOpened);
     }
 
-    void savePanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.putBoolean(PANEL_OPENED, isPanelOpened);
+    void savePhotoPanelOpenedFlag(final boolean isPanelOpened) {
+        Main.pref.putBoolean(PHOTO_PANEL_OPENED, isPanelOpened);
+    }
+
+    void saveDetectionPanelOpenedFlag(final boolean isPanelOpened) {
+        Main.pref.putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
     }
 
     void saveDataType(final DataType dataType) {

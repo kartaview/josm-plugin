@@ -27,8 +27,8 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -66,7 +66,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     /** detection related entities */
     private DetectionSelectionObserver detectionSelectionObserver;
     private List<Detection> detections;
-    private Detection selectedDetection;
 
 
     PhotoPanel() {
@@ -79,13 +78,21 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     }
 
 
+    List<Detection> getDetections() {
+        return detections;
+    }
+
     void updateUI(final BufferedImage image, final List<Detection> detections) {
         removeAll();
         this.image = image;
         this.detections = detections;
-        // TODO after SelectionHandler refactoring this functionality should be replaced by a setter
-        selectedDetection = OpenStreetCamLayer.getInstance().getSelectedDetection();
         initializeCurrentImageView();
+        revalidate();
+        repaint();
+    }
+
+    void updateDetections(final List<Detection> detections) {
+        this.detections = detections;
         revalidate();
         repaint();
     }
@@ -159,7 +166,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
 
         if (wheelRotation > 0
                 || (wheelRotation <= 0 && horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
-                        && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
+                && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
             currentView = new Rectangle(horizontal.getFirst(), vertical.getFirst(),
                     horizontal.getSecond() - horizontal.getFirst(), vertical.getSecond() - vertical.getFirst());
         }
@@ -271,6 +278,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private void drawDetections(final Graphics2D graphics) {
         graphics.setColor(Color.red);
         if (detections != null && !detections.isEmpty()) {
+            final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
             for (final Detection detection : detections) {
                 final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
                         * frame.getWidth() / currentView.getWidth();
@@ -371,12 +379,11 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
-                selectedDetection = detections.stream()
+                final Detection selectedDetection = detections.stream()
                         .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
                         .sorted((d1, d2) -> Double.compare(d1.getLocationOnPhoto().surface(),
                                 d2.getLocationOnPhoto().surface()))
-                        .findFirst()
-                        .orElse(null);
+                        .findFirst().orElse(null);
                 notifyDetectionSelectionObserver(selectedDetection);
             }
         }

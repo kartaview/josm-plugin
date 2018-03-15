@@ -11,14 +11,16 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
@@ -177,7 +179,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             final Pair<BufferedImage, PhotoSize> imageResult =
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
-            if (imageResult.getFirst() != null && OpenStreetCamLayer.getInstance().getSelectedPhoto() != null) {
+            if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null) {
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                         && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
                     pnlDetails.updateUI(photo, true);
@@ -191,6 +193,11 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();
         }
+        repaint();
+    }
+
+    public void updatePhotoDetections(final List<Detection> detections) {
+        pnlPhoto.updateDetections(detections);
         repaint();
     }
 
@@ -267,5 +274,9 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      */
     public boolean isPhotoSelected() {
         return pnlBtn.isPhotoSelected();
+    }
+
+    public List<Detection> getDisplayedPhotoDetections() {
+        return pnlPhoto.getDetections();
     }
 }

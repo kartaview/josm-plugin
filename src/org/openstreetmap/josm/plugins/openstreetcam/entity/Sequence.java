@@ -21,13 +21,14 @@ public class Sequence {
 
     private final Long id;
     private final List<Photo> photos;
+    private final List<Detection> detections;
 
 
-    public Sequence(final Long id, final List<Photo> photos) {
+    public Sequence(final Long id, final List<Photo> photos, final List<Detection> detections) {
         this.id = id;
         this.photos = photos;
+        this.detections = detections;
     }
-
 
     public Long getId() {
         return id;
@@ -37,7 +38,17 @@ public class Sequence {
         return photos;
     }
 
+    public List<Detection> getDetections() {
+        return detections;
+    }
+
+
     public boolean hasPhotos() {
         return photos != null && !photos.isEmpty();
+    }
+
+
+    public boolean hasDetections() {
+        return detections != null && !detections.isEmpty();
     }
 }

@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
@@ -32,7 +33,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
@@ -247,8 +248,13 @@ final class LoadManager {
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
-    boolean loadPanelOpenedFlag() {
-        final String layerOpened = Main.pref.get(PANEL_OPENED);
+    boolean loadPhotoPanelOpenedFlag() {
+        final String layerOpened = Main.pref.get(PHOTO_PANEL_OPENED);
+        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+    }
+
+    boolean loadDetectionPanelOpenedFlag() {
+        final String layerOpened = Main.pref.get(DETECTION_PANEL_OPENED);
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
@@ -267,9 +273,9 @@ final class LoadManager {
         return Main.pref.get(PLUGIN_LOCAL_VERSION);
     }
 
-    private int loadIntValue(final String key, final Integer defaultValue, final Integer maxValue) {
+    private Integer loadIntValue(final String key, final Integer defaultValue, final Integer maxValue) {
         final String valueStr = Main.pref.get(key);
-        final int value = (valueStr != null && !valueStr.isEmpty()) ? Integer.valueOf(valueStr) : defaultValue;
+        final Integer value = (valueStr != null && !valueStr.isEmpty()) ? Integer.valueOf(valueStr) : defaultValue;
         return maxValue != null ? (value > maxValue ? maxValue : value) : value;
     }
 }

@@ -42,6 +42,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
+
     /** dialog components */
     private final DetailsPanel pnlDetails;
     private final ButtonPanel pnlButtons;
@@ -107,5 +108,12 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             pnlButtons.setVisible(false);
         }
         repaint();
+    }
+
+    /**
+     * Destroys the instance of the dialog.
+     */
+    public static void destroyInstance() {
+        instance = null;
     }
 }

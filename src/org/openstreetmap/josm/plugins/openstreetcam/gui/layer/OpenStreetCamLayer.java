@@ -11,27 +11,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.RENDERING_MAP;
 import java.awt.Composite;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Stroke;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
-import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.ResultSet;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
@@ -40,18 +25,10 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-// TODO: refactore this class
 public final class OpenStreetCamLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
     private static OpenStreetCamLayer instance;
-    private ResultSet dataSet;
-    private Photo selectedPhoto;
-    private Photo startPhoto;
-    private Pair<Sequence, List<Detection>> selectedSequence;
-    private Collection<Photo> closestPhotos;
-    private Detection selectedDetection;
-
 
     private OpenStreetCamLayer() {
         super();
@@ -76,35 +53,36 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         instance = null;
     }
 
-
     @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
-        if (dataSet != null) {
+        final DataSet dataSet = DataSet.getInstance();
+        if (!dataSet.isEmpty()) {
             final Composite originalComposite = graphics.getComposite();
             final Stroke originalStorke = graphics.getStroke();
-            if (dataSet.getSegments() != null) {
+            if (dataSet.hasSegments()) {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else {
                 // draw photos
-                final boolean isTransparent = selectedSequence != null;
-                if (dataSet.getPhotos() != null
-                        && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes() == null
-                        || PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
+                final boolean isTransparent = dataSet.getSelectedSequence() != null;
+                if (dataSet.hasPhotos() && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
                         .contains(ImageDataType.PHOTOS))) {
-                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotos(), selectedPhoto, isTransparent);
+                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotos(),
+                            dataSet.getSelectedPhoto(), isTransparent);
                 }
 
                 // draw detections
-                if (dataSet.getDetections() != null) {
-                    paintHandler.drawDetections(graphics, mapView, dataSet.getDetections(), selectedDetection,
-                            isTransparent);
+                if (dataSet.getDetections() != null && (PreferenceManager.getInstance().loadSearchFilter()
+                        .getDataTypes().contains(ImageDataType.DETECTIONS))) {
+                    paintHandler.drawDetections(graphics, mapView, dataSet.getDetections(),
+                            dataSet.getSelectedDetection(), isTransparent);
                 }
 
                 // draw sequence if any
-                if (selectedSequence != null) {
-                    paintHandler.drawSequence(graphics, mapView, selectedSequence, selectedPhoto, selectedDetection);
+                if (dataSet.getSelectedSequence() != null) {
+                    paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(),
+                            dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
                 }
             }
             graphics.setComposite(originalComposite);
@@ -112,326 +90,25 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         }
     }
 
-    /**
-     * Sets the currently displayed data.
-     *
-     * @param dataSet a {@code DataSet} containing a list of photos/segments from the current view
-     * @param checkSelectedData is true, verifies if the selected photo is present or not in the given photo list. The
-     * selected photo is set to null, if it is not present in the given list.
-     */
-    public void setDataSet(final ResultSet dataSet, final boolean checkSelectedData) {
-        this.dataSet = dataSet;
-
-        if (checkSelectedData) {
-            updateSelectedPhoto();
-            updateSelectedDetection();
+    public void enablePhotoDataSetDownloadActions() {
+        final DataSet dataSet = DataSet.getInstance();
+        boolean enablePrevious = false;
+        boolean enableNext = false;
+        if (!dataSet.hasSelectedSequence() && dataSet.hasPhotos()) {
+            enablePrevious = dataSet.getPhotoDataSet().hasPreviousItems();
+            enableNext = dataSet.getPhotoDataSet().hasNextItems();
         }
-        if (selectedPhoto != null && closestPhotos != null) {
-            selectStartPhotoForClosestAction(selectedPhoto);
-            ThreadPool.getInstance().execute(() -> {
-                final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
-            });
-        }
-        if (dataSet != null && dataSet.getPhotoDataSet() != null) {
-            enablePhotoDataSetDownloadActions();
-        }
+        super.enablePhotoDataSetDownloadActions(enablePrevious, enableNext);
     }
 
-    private void enablePhotoDataSetDownloadActions() {
-        if (selectedSequence == null) {
-            enableDownloadPreviousPhotoAction(dataSet.getPhotoDataSet().hasPreviousItems());
-            enabledDownloadNextPhotosAction(dataSet.getPhotoDataSet().hasNextItems());
-        } else {
-            enableDownloadPreviousPhotoAction(false);
-            enabledDownloadNextPhotosAction(false);
-        }
-    }
-
-    private void updateSelectedDetection() {
-        if (selectedDetection != null) {
-            if (dataSet != null && dataSet.getDetections() != null) {
-                selectedDetection = dataSet.getDetections().stream()
-                        .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null);
-            } else {
-                selectedDetection = null;
-            }
-        }
-    }
-
-    private void updateSelectedPhoto() {
-        if (selectedPhoto != null) {
-            if (dataSet != null && dataSet.getPhotos() != null) {
-                selectedPhoto = dataSet.getPhotos().stream().filter(photo -> photo.equals(selectedPhoto)).findFirst()
-                        .orElse(null);
-            } else {
-                selectedPhoto = null;
-            }
-        }
-    }
-
-    /**
-     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
-     *
-     * @param point a {@code Point} represents location where the user had clicked
-     * @return a {@code Photo}
-     */
-    public Photo nearbyPhoto(final Point point) {
-        Photo photo = null;
-        if (selectedSequence != null && selectedSequence.getFirst() != null) {
-            photo = Util.nearbyPhoto(selectedSequence.getFirst().getPhotos(), point);
-            // API issue: does not return username for sequence photos
-            if (selectedPhoto != null && photo != null) {
-                photo.setUsername(selectedPhoto.getUsername());
-            }
-        }
-        if (photo == null && dataSet != null && dataSet.getPhotos() != null) {
-            photo = Util.nearbyPhoto(dataSet.getPhotos(), point);
-        }
-        return photo;
-    }
-
-
-    /**
-     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
-     *
-     * @param point a {@code Point} represents location where the user had clicked
-     * @return a {@code Photo}
-     */
-    public Detection nearbyDetection(final Point point) {
-        Detection detection = null;
-        if (selectedSequence != null && selectedSequence.getSecond() != null) {
-            detection = Util.nearbyDetection(selectedSequence.getSecond(), point);
-        }
-        if (detection == null && dataSet != null && dataSet.getDetections() != null) {
-            detection = Util.nearbyDetection(dataSet.getDetections(), point);
-        }
-        return detection;
-    }
-
-    /**
-     * Returns the photos that are either previous/next or close to the selected photo.
-     *
-     * @param prevNextCount the number of previous/next photos to be returned
-     * @param nearbyCount the number of nearby photos to be returned
-     * @return a set of {@code Photo}s
-     */
-    public Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
-        final Set<Photo> result = new HashSet<>();
-        if (selectedPhoto != null) {
-            for (int i = 1; i <= prevNextCount; i++) {
-                final Photo nextPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() + i);
-                if (nextPhoto != null) {
-                    result.add(nextPhoto);
-                }
-                final Photo prevPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() - i);
-                if (prevPhoto != null) {
-                    result.add(prevPhoto);
-                }
-            }
-            if (dataSet != null && dataSet.getPhotos() != null) {
-                result.addAll(Util.nearbyPhotos(dataSet.getPhotos(), selectedPhoto, nearbyCount));
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Checks if the given photo belongs or not to the selected sequence.
-     *
-     * @param photo a {@code Photo}
-     * @return boolean
-     */
-    public boolean isPhotoPartOfSequence(final Photo photo) {
-        boolean contains = false;
-        if (selectedSequence != null
-                && (selectedSequence.getFirst() != null && selectedSequence.getFirst().getPhotos() != null)) {
-            for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
-                if (elem.equals(photo)) {
-                    contains = true;
-                    break;
-                }
-            }
-        }
-        return contains;
-    }
-
-    /**
-     * Returns the photo from the sequence located at the given position. The method returns null if there is no
-     * corresponding element.
-     *
-     * @param index represents the location of a photo in the selected sequence
-     * @return a {@code Photo}
-     */
-    public Photo sequencePhoto(final int index) {
-        Photo photo = null;
-        if (selectedSequence != null && selectedSequence.getFirst() != null) {
-            for (final Photo elem : selectedSequence.getFirst().getPhotos()) {
-                if (elem.getSequenceIndex().equals(index)) {
-                    photo = elem;
-                    // API issue: does not return username for sequence photos
-                    photo.setUsername(selectedPhoto.getUsername());
-                    break;
-                }
-            }
-        } else if (dataSet != null && dataSet.getPhotos() != null && selectedPhoto != null) {
-            for (final Photo elem : dataSet.getPhotos()) {
-                if (elem.getSequenceIndex().equals(index)
-                        && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
-                    photo = elem;
-                    break;
-                }
-            }
-        }
-        return photo;
-    }
-
-    /**
-     * Checks if the selected photo is the first photo of the sequence.
-     *
-     * @return true/false
-     */
-    public boolean enablePreviousPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null && !selectedSequence.getFirst().getPhotos().get(0)
-                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
-    }
-
-    /**
-     * Checks if the selected photo is the last photo of the sequence.
-     *
-     * @return true/false
-     */
-    public boolean enableNextPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
-                && !selectedSequence.getFirst().getPhotos().get(selectedSequence.getFirst().getPhotos().size() - 1)
-                .getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
-    }
-
-
-    /**
-     * Sets a start photo from witch a possible closest image action should start.
-     *
-     * @param photo a {@code Photo}
-     */
-    public void selectStartPhotoForClosestAction(final Photo photo) {
-        startPhoto = photo;
-        if (photo != null && dataSet != null && dataSet.getPhotos() != null) {
-            closestPhotos =
-                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
-        } else {
-            closestPhotos = Collections.emptyList();
-        }
-    }
-
-    /**
-     * Retrieve the closest image of the currently selected image.
-     *
-     * @return a {@code Photo}
-     */
-    public Photo closestSelectedPhoto() {
-        Photo closestPhoto = null;
-        if (!closestPhotos.isEmpty()) {
-            closestPhoto = closestPhotos.iterator().next();
-            closestPhotos.remove(closestPhoto);
-        }
-        // recalculate closest photos when latest closest photo is returned
-        if (closestPhotos.isEmpty()) {
-            closestPhotos =
-                    Util.nearbyPhotos(dataSet.getPhotos(), startPhoto, Config.getInstance().getClosestPhotosMaxItems());
-        }
-        return closestPhoto;
-    }
-
-    /**
-     * Returns the currently selected photo.
-     *
-     * @return a {@code Photo}
-     */
-    public Photo getSelectedPhoto() {
-        return selectedPhoto;
-    }
-
-    /**
-     * Returns the currently selected sequence.
-     *
-     * @return a {@code Sequence}
-     */
-    public Pair<Sequence, List<Detection>> getSelectedSequence() {
-        return selectedSequence;
-    }
-
-    /**
-     * Sets the currently selected photo.
-     *
-     * @param selectedPhoto a {@code Photo} a selected photo
-     */
-    public void setSelectedPhoto(final Photo selectedPhoto) {
-        this.selectedPhoto = selectedPhoto;
-    }
-
-    public Detection getSelectedDetection() {
-        return selectedDetection;
-    }
-
-    public void setSelectedDetection(final Detection selectedDetection) {
-        this.selectedDetection = selectedDetection;
-    }
-
-    /**
-     * Sets the currently selected sequence.
-     *
-     * @param selectedSequence a {@code Sequence}
-     */
-    public void setSelectedSequence(final Pair<Sequence, List<Detection>> selectedSequence) {
-        this.selectedSequence = selectedSequence;
-    }
-
-    /**
-     * Returns the currently displayed data set.
-     *
-     * @return a {@code DataSet}
-     */
-    public ResultSet getDataSet() {
-        return dataSet;
-    }
-
-    /**
-     * Returns the list of closest photos to the currently selected photo.
-     *
-     * @return a {@code Photo} collection
-     */
-    public Collection<Photo> getClosestPhotos() {
-        return closestPhotos;
-    }
 
     @Override
     boolean addPhotoDataSetMenuItems() {
-        return dataSet != null && dataSet.getPhotoDataSet() != null;
+        return DataSet.getInstance().getPhotoDataSet() != null;
     }
 
     @Override
     boolean addSequenceMenuItem() {
-        return selectedSequence != null;
-    }
-
-    public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
-        Photo result = null;
-        List<Photo> photos = null;
-
-        if (selectedSequence != null && selectedSequence.getFirst() != null) {
-            photos = selectedSequence.getFirst().getPhotos();
-        } else if (dataSet != null && dataSet.getPhotoDataSet() != null) {
-            photos = dataSet.getPhotoDataSet().getPhotos();
-        }
-        if (photos != null) {
-            for (final Photo photo : photos) {
-                if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
-                    result = photo;
-                    break;
-                }
-            }
-        }
-        return result;
+        return DataSet.getInstance().getSelectedSequence() != null;
     }
 }

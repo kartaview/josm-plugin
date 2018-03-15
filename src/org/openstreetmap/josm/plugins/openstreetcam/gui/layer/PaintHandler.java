@@ -67,16 +67,16 @@ class PaintHandler {
     }
 
 
-    void drawSequence(final Graphics2D graphics, final MapView mapView, final Pair<Sequence, List<Detection>> sequence,
+    void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence,
             final Photo selectedPhoto, final Detection selectedDetection) {
         graphics.setComposite(OPAQUE_COMPOSITE);
         graphics.setStroke(SEQUENCE_LINE);
 
-        if (sequence.getFirst() != null) {
-            drawSequence(graphics, mapView, sequence.getFirst());
+        if (sequence != null) {
+            drawSequence(graphics, mapView, sequence);
         }
-        if (sequence.getSecond() != null) {
-            for (final Detection detection : sequence.getSecond()) {
+        if (sequence.hasDetections()) {
+            for (final Detection detection : sequence.getDetections()) {
                 if (selectedDetection == null || !selectedDetection.equals(detection)) {
                     drawDetection(graphics, mapView, detection, false);
                 }
