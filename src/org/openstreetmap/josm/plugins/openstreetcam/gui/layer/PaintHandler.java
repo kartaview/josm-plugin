@@ -61,8 +61,7 @@ class PaintHandler {
         }
 
         if (selectedPhoto != null) {
-            final boolean isSelected = isTransparent ? false : true;
-            drawPhoto(graphics, mapView, selectedPhoto, isSelected);
+            drawPhoto(graphics, mapView, selectedPhoto, !isTransparent);
         }
     }
 

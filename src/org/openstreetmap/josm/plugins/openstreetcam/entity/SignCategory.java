@@ -9,5 +9,5 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public enum SignCategory {
 
-    COMPLEMENTARY, INFORMATION, REGULATORY, WARNING;
+    COMPLEMENTARY, INFORMATION, REGULATORY, WARNING
 }

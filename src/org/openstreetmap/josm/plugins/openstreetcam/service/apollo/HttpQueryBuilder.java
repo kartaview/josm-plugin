@@ -10,7 +10,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;

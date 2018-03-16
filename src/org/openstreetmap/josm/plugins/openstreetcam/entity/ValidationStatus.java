@@ -41,5 +41,5 @@ public enum ValidationStatus {
         public String toString() {
             return GuiConfig.getInstance().getDetectionToBeCheckedValidationStatusText();
         }
-    };
+    }
 }

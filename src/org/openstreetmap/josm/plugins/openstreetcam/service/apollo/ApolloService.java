@@ -10,7 +10,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;

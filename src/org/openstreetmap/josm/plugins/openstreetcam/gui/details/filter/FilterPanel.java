@@ -30,13 +30,13 @@ import javax.swing.JPanel;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -174,10 +174,10 @@ class FilterPanel extends JPanel {
     public void addModeFilter(final List<DetectionMode> modes) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
         cbbAutomaticMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeAutomaticTxt(), Font.PLAIN,
-                null, modes == null ? false : modes.contains(DetectionMode.AUTOMATIC));
+                null, modes != null && modes.contains(DetectionMode.AUTOMATIC));
         add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
         cbbManualMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeManualTxt(), Font.PLAIN, null,
-                modes == null ? false : modes.contains(DetectionMode.MANUAL));
+                modes != null && modes.contains(DetectionMode.MANUAL));
         add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
     }
 

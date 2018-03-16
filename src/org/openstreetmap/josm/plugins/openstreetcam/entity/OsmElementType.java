@@ -9,5 +9,5 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public enum OsmElementType {
 
-    NODE, WAY, RELATION;
+    NODE, WAY, RELATION
 }
