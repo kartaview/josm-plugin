@@ -22,7 +22,6 @@ public final class Config extends BaseConfig {
     private static final String CONFIG_FILE = "openstreetcam.properties";
     private static final Config INSTANCE = new Config();
 
-    private static final int MAX_ITEMS = 5000;
     private static final int MAX_CLOSEST_ITEMS = 10;
     private static final int SEGMENT_ZOOM = 10;
     private static final int PHOTO_ZOOM = 15;
@@ -33,7 +32,6 @@ public final class Config extends BaseConfig {
     private static final int AUTOPLAY_MAX_DELAY = 2000;
 
     private final int closestPhotosMaxItems;
-    private final int tracksMaxItems;
     private final int tracksMaxZoom;
     private final int preferencesMaxZoom;
     private final int mapPhotoZoom;
@@ -48,7 +46,6 @@ public final class Config extends BaseConfig {
         super(CONFIG_FILE);
 
         closestPhotosMaxItems = readIntegerProperty("closestPhotos.maxNumber", MAX_CLOSEST_ITEMS);
-        tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
         tracksMaxZoom = readIntegerProperty("tracks.maxZoom", MAX_ZOOM);
         preferencesMaxZoom = readIntegerProperty("preferences.maxZoom", MAX_ZOOM);
         mapPhotoZoom = readIntegerProperty("map.photoZoom", PHOTO_ZOOM);
@@ -64,10 +61,6 @@ public final class Config extends BaseConfig {
         return INSTANCE;
     }
 
-
-    public int getTracksMaxItems() {
-        return tracksMaxItems;
-    }
 
     public int getTracksMaxZoom() {
         return tracksMaxZoom;

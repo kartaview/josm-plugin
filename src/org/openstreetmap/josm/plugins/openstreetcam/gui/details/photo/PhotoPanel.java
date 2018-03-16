@@ -24,6 +24,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -164,8 +165,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             }
         }
 
-        if (wheelRotation > 0
-                || (wheelRotation <= 0 && horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
+        if (wheelRotation > 0 || (horizontal.getSecond() - horizontal.getFirst() > image.getWidth() / MAX_ZOOM
                 && vertical.getSecond() - vertical.getFirst() > image.getHeight() / MAX_ZOOM)) {
             currentView = new Rectangle(horizontal.getFirst(), vertical.getFirst(),
                     horizontal.getSecond() - horizontal.getFirst(), vertical.getSecond() - vertical.getFirst());
@@ -381,9 +381,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                         clickedPoint.getY() / image.getHeight());
                 final Detection selectedDetection = detections.stream()
                         .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
-                        .sorted((d1, d2) -> Double.compare(d1.getLocationOnPhoto().surface(),
-                                d2.getLocationOnPhoto().surface()))
-                        .findFirst().orElse(null);
+                        .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
+                        .orElse(null);
                 notifyDetectionSelectionObserver(selectedDetection);
             }
         }

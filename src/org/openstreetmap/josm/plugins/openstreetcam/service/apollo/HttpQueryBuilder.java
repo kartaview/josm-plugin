@@ -119,8 +119,6 @@ class HttpQueryBuilder {
     }
 
     private String build() {
-        final StringBuilder url = new StringBuilder(ApolloServiceConfig.getInstance().getServiceUrl());
-        url.append(query);
-        return url.toString();
+        return query.insert(0, ApolloServiceConfig.getInstance().getServiceUrl()).toString();
     }
 }

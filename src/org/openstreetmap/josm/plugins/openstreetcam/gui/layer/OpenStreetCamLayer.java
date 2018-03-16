@@ -58,7 +58,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
         final DataSet dataSet = DataSet.getInstance();
-        if (!dataSet.isEmpty()) {
+        if (dataSet.hasItems()) {
             final Composite originalComposite = graphics.getComposite();
             final Stroke originalStorke = graphics.getStroke();
             if (dataSet.hasSegments()) {

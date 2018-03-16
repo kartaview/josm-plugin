@@ -141,7 +141,7 @@ public final class DataSet {
                 photo.setUsername(selectedPhoto.getUsername());
             }
         }
-        if (photo == null && photoDataSet != null && !photoDataSet.isEmpty()) {
+        if (photo == null && photoDataSet != null && photoDataSet.hasItems()) {
             photo = Util.nearbyPhoto(photoDataSet.getPhotos(), point);
         }
         return photo;
@@ -185,7 +185,7 @@ public final class DataSet {
                     result.add(prevPhoto);
                 }
             }
-            if (photoDataSet != null && !photoDataSet.isEmpty()) {
+            if (photoDataSet != null && photoDataSet.hasItems()) {
                 result.addAll(Util.nearbyPhotos(photoDataSet.getPhotos(), selectedPhoto, nearbyCount));
             }
         }
@@ -229,7 +229,7 @@ public final class DataSet {
                     break;
                 }
             }
-        } else if (photoDataSet != null && !photoDataSet.isEmpty() && selectedPhoto != null) {
+        } else if (photoDataSet != null && photoDataSet.hasItems() && selectedPhoto != null) {
             for (final Photo elem : photoDataSet.getPhotos()) {
                 if (elem.getSequenceIndex().equals(index)
                         && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
@@ -248,7 +248,7 @@ public final class DataSet {
      */
     public void selectStartPhotoForClosestAction(final Photo photo) {
         startPhoto = photo;
-        if (photo != null && photoDataSet != null && !photoDataSet.isEmpty()) {
+        if (photo != null && photoDataSet != null && photoDataSet.hasItems()) {
             closestPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         } else {
@@ -280,7 +280,7 @@ public final class DataSet {
         Photo result = null;
         final List<Photo> photos =
                 selectedSequence != null && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
-                        : (photoDataSet != null && !photoDataSet.isEmpty()) ? photoDataSet.getPhotos() : null;
+                        : (photoDataSet != null && photoDataSet.hasItems()) ? photoDataSet.getPhotos() : null;
                         if (photos != null) {
                             for (final Photo photo : photos) {
                                 if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
@@ -360,12 +360,12 @@ public final class DataSet {
         return closestPhotos;
     }
 
-    public boolean isEmpty() {
-        return !hasSegments() && !hasDetections() && !hasPhotos();
+    public boolean hasItems() {
+        return hasSegments() || hasDetections() || hasPhotos();
     }
 
     public boolean hasPhotos() {
-        return photoDataSet != null && !photoDataSet.isEmpty();
+        return photoDataSet != null && photoDataSet.hasItems();
     }
 
     public boolean hasSegments() {

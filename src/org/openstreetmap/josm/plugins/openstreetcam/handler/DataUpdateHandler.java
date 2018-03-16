@@ -173,15 +173,13 @@ public class DataUpdateHandler {
             });
         }
         final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-        if (bbox != null) {
-            if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-                filter.getDataTypes().remove(ImageDataType.PHOTOS);
-            }
-            final Pair<PhotoDataSet, List<Detection>> dataSet =
-                    ServiceHandler.getInstance().searchHighZoomData(bbox, filter);
-            if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-                updateUI(dataSet.getFirst(), dataSet.getSecond(), checkSelection);
-            }
+        if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
+            filter.getDataTypes().remove(ImageDataType.PHOTOS);
+        }
+        final Pair<PhotoDataSet, List<Detection>> dataSet =
+                ServiceHandler.getInstance().searchHighZoomData(bbox, filter);
+        if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
+            updateUI(dataSet.getFirst(), dataSet.getSecond(), checkSelection);
         }
     }
 
@@ -199,12 +197,9 @@ public class DataUpdateHandler {
             int page = DataSet.getInstance().getPhotoDataSet().getPage();
             page = loadNextResults ? page + 1 : page - 1;
             final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
-            photoDataSet = new PhotoDataSet();
             final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-            if (bbox != null) {
-                photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                        new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
-            }
+            photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                    new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
         }
         return photoDataSet;
     }
@@ -214,13 +209,6 @@ public class DataUpdateHandler {
     }
 
 
-    /**
-     * Updates the UI with the given data set.
-     *
-     * @param dataSet a {@code DataSet} represents a new data set
-     * @param checkSelection if true then the currently selected element will be removed if it is not present in the
-     * given data set
-     */
     // TODO: refactore this method
     private void updateUI(final PhotoDataSet photoDataSet, final List<Detection> detections,
             final boolean checkSelection) {

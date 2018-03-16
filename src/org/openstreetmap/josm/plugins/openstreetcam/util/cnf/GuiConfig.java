@@ -82,7 +82,6 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterModeLbl;
     private final String dlgFilterModeAutomaticTxt;
     private final String dlgFilterModeManualTxt;
-    private final String dlgFilterValidationStatusLbl;
     private final String dlgFilterEditStatusLbl;
     private final String dlgFilterDetectionTypeLbl;
     private final String dlgFilterDataTypeImageTxt;
@@ -109,9 +108,6 @@ public final class GuiConfig extends BaseConfig {
     private final String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
-
-    private final String confirmDateFilterTitle;
-    private final String confirmDateFilterTxt;
 
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
@@ -226,7 +222,6 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterModeManualTxt = readProperty("filter.mode.manual");
         dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
         dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
-        dlgFilterValidationStatusLbl = readProperty("filter.validationStatus.lbl");
         dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
         dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
         dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
@@ -252,8 +247,6 @@ public final class GuiConfig extends BaseConfig {
         warningTitle = readProperty("warning.title");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
-        confirmDateFilterTitle = readProperty("info.dateFilter.title");
-        confirmDateFilterTxt = readProperty("info.dateFilter.text");
 
         layerDeleteMenuItemLbl = readProperty("layer.menu.delete.lbl");
         layerDeleteMenuItemTlt = readProperty("layer.menu.delete.tlt");
@@ -473,10 +466,6 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterModeManualTxt;
     }
 
-    public String getDlgFilterValidationStatusLbl() {
-        return dlgFilterValidationStatusLbl;
-    }
-
     public String getDlgFilterEditStatusLbl() {
         return dlgFilterEditStatusLbl;
     }
@@ -559,14 +548,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getWarningLoadingPhoto() {
         return warningLoadingPhoto;
-    }
-
-    public String getConfirmDateFilterTitle() {
-        return confirmDateFilterTitle;
-    }
-
-    public String getConfirmDateFilterTxt() {
-        return confirmDateFilterTxt;
     }
 
     public String getLayerDeleteMenuItemLbl() {
@@ -820,5 +801,4 @@ public final class GuiConfig extends BaseConfig {
     public String getDetectionUpdatedDate() {
         return detectionUpdatedDate;
     }
-
 }

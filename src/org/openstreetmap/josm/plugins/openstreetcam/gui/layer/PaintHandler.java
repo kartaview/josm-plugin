@@ -73,11 +73,12 @@ class PaintHandler {
 
         if (sequence != null) {
             drawSequence(graphics, mapView, sequence);
-        }
-        if (sequence.hasDetections()) {
-            for (final Detection detection : sequence.getDetections()) {
-                if (selectedDetection == null || !selectedDetection.equals(detection)) {
-                    drawDetection(graphics, mapView, detection, false);
+
+            if (sequence.hasDetections()) {
+                for (final Detection detection : sequence.getDetections()) {
+                    if (selectedDetection == null || !selectedDetection.equals(detection)) {
+                        drawDetection(graphics, mapView, detection, false);
+                    }
                 }
             }
         }

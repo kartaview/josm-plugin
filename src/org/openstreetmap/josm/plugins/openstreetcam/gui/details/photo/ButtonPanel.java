@@ -445,7 +445,7 @@ SequenceObservable, TrackAutoplayObservable {
                 final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
                 final AutoplayAction autoplayAction = eventAction != null ? eventAction
                         : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
-                if (autoplayAction.equals(AutoplayAction.START)) {
+                if (autoplayAction != null && autoplayAction.equals(AutoplayAction.START)) {
                     updateAutoplayButton(AutoplayAction.STOP);
                     btnClosestPhoto.setEnabled(false);
                     btnPrevious.setEnabled(false);

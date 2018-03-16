@@ -171,7 +171,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      */
     private boolean selectionAllowed() {
         return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom() || !DataSet.getInstance().isEmpty();
+                .loadMapViewSettings().getPhotoZoom() || DataSet.getInstance().hasItems();
     }
 
     /**
@@ -262,7 +262,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final DataSet dataSet = DataSet.getInstance();
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
         CacheManager.getInstance().removePhotos(dataSet.getSelectedPhoto().getSequenceId());
-        if (dataSet.hasSelectedSequence() && !dataSet.isEmpty()) {
+        if (dataSet.hasSelectedSequence() && dataSet.hasItems()) {
             final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
             if (zoom < PreferenceManager.getInstance().loadMapViewSettings().getPhotoZoom()) {
                 dataSet.updateHighZoomLevelPhotoData(null, false);

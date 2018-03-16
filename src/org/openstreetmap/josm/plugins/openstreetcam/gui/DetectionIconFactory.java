@@ -37,11 +37,7 @@ public enum DetectionIconFactory {
 
     public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
         final String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
-        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.get(iconName);
-        if (iconPair == null) {
-            iconPair = new Pair<>(loadIcon(iconName, ImageSizes.LARGEICON), loadIcon(iconName, ImageSizes.CURSOR));
-            iconsMap.put(iconName, iconPair);
-        }
+        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName, n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
         return isSelected ? iconPair.getSecond() : iconPair.getFirst();
     }
 

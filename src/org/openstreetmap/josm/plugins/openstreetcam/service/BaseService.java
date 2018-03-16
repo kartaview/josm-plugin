@@ -47,7 +47,7 @@ public abstract class BaseService {
      * Executes a HTTP POST method and reads the service response. The response is transformed to the specified type.
      *
      * @param url represents the service URL
-     * @param content represents the request's body
+     * @param arguments represents the request's body
      * @param responseType represents the response type
      * @return a {@code T} object
      * @throws ServiceException if the operation failed

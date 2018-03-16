@@ -49,7 +49,7 @@ public class SearchFilter {
      * @param date a {@code Date} represents the starting date from which the data is returned
      * @param onlyMineFlag if true, then only the data contributed by the logged in user is returned
      * @param dataTypes a {@code DataType} specifies the type of data to be displayed
-     * @param detectionFilter a {@code DetectionFilter} specifies the {@ code Detection} related filters
+     * @param detectionFilter a {@code DetectionFilter} specifies the {@code Detection} related filters
      */
     public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
             final DetectionFilter detectionFilter) {
