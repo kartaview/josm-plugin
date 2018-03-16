@@ -36,6 +36,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.Detect
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;

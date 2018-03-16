@@ -48,16 +48,14 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
     private static final Border BORDER = new EmptyBorder(5, 5, 2, 5);
     private static final int SCROLL_BAR_UNIT = 100;
 
-    private final EditStatus status;
     private JTextArea txtComment;
     private DetectionChangeObserver observer;
 
 
-    EditDialog(final String title, final EditStatus status) {
+    EditDialog(final String title) {
         super(title, null, GuiSizesHelper.getDimensionDpiAdjusted(DIM));
         setLocationRelativeTo(MainApplication.getMap().mapView);
         createComponents();
-        this.status = status;
     }
 
     @Override
@@ -92,7 +90,7 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            notifyDetectionChangeObserver(status, txtComment.getText());
+            notifyDetectionChangeObserver(EditStatus.OTHER, txtComment.getText());
             txtComment.setText(null);
             dispose();
         }

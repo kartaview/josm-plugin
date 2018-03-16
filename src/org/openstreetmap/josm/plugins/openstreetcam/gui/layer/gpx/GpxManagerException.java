@@ -16,17 +16,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.layer.gpx;
  */
 public class GpxManagerException extends Exception {
 
-
     private static final long serialVersionUID = -5216934606681093149L;
-
-    /**
-     * Builds a new exception with the given message.
-     *
-     * @param msg the exception message
-     */
-    public GpxManagerException(final String msg) {
-        super(msg);
-    }
 
     /**
      * Builds a new exception with the given cause.
@@ -35,15 +25,5 @@ public class GpxManagerException extends Exception {
      */
     public GpxManagerException(final Throwable cause) {
         super(cause);
-    }
-
-    /**
-     * Builds a new exception with the given message and cause.
-     *
-     * @param msg the exception message
-     * @param cause the exception cause
-     */
-    public GpxManagerException(final String msg, final Throwable cause) {
-        super(msg, cause);
     }
 }

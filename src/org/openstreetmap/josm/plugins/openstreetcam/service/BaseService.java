@@ -33,15 +33,15 @@ import com.telenav.josm.common.http.HttpConnectorException;
  */
 public abstract class BaseService {
 
-    static final String USER_AGENT = "User-Agent";
+    private static final String USER_AGENT = "User-Agent";
 
     private final Gson gson;
 
-    public BaseService() {
+    protected BaseService() {
         gson = createGson();
     }
 
-    public abstract Gson createGson();
+    protected abstract Gson createGson();
 
     /**
      * Executes a HTTP POST method and reads the service response. The response is transformed to the specified type.
@@ -52,7 +52,7 @@ public abstract class BaseService {
      * @return a {@code T} object
      * @throws ServiceException if the operation failed
      */
-    public <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType)
+    protected <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType)
             throws ServiceException {
         final String response;
         try {
@@ -64,7 +64,7 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
-    public <T> T executePost(final String url, final String content, final Class<T> responseType)
+    protected <T> T executePost(final String url, final String content, final Class<T> responseType)
             throws ServiceException {
         String response;
         try {
@@ -75,7 +75,7 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
-    public <T> T executeGet(final String url, final Class<T> responseType) throws ServiceException {
+    protected <T> T executeGet(final String url, final Class<T> responseType) throws ServiceException {
         String response;
         try {
             response = new HttpConnector(url, getHeaders()).get();
@@ -103,7 +103,7 @@ public abstract class BaseService {
      * @param response a represents the response of the service
      * @throws ServiceException if the response contains a HTTP error code
      */
-    public void verifyResponseStatus(final BaseResponse response) throws ServiceException {
+    protected void verifyResponseStatus(final BaseResponse response) throws ServiceException {
         if (response != null && response.getStatus() != null && response.getStatus().isErrorHttpCode()) {
             throw new ServiceException(response.getStatus().getApiMessage());
         }
@@ -116,7 +116,7 @@ public abstract class BaseService {
      * @return a set of objects of the {@code T}
      * @throws ServiceException if the thread execution failed or if the process was interrupted.
      */
-    public <T> Set<T> readResult(final List<Future<ListResponse<T>>> futures) throws ServiceException {
+    protected <T> Set<T> readResult(final List<Future<ListResponse<T>>> futures) throws ServiceException {
         final Set<T> result = new HashSet<>();
         for (final Future<ListResponse<T>> future : futures) {
             try {
@@ -128,13 +128,13 @@ public abstract class BaseService {
         return result;
     }
 
-    public Map<String, String> getHeaders() {
+    protected Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put(USER_AGENT, new UserAgent().toString());
         return headers;
     }
 
-    public <T> String buildRequest(final T request, final Class<T> requestType) {
+    protected <T> String buildRequest(final T request, final Class<T> requestType) {
         return gson.toJson(request, requestType);
     }
 }

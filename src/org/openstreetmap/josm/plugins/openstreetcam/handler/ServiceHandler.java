@@ -5,7 +5,7 @@
  *
  * Copyright (c)2016, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.ArrayList;
 import java.util.Date;

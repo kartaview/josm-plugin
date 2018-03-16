@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;

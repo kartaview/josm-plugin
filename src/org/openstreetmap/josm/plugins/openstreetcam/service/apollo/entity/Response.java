@@ -20,7 +20,7 @@ import com.telenav.josm.common.entity.Status;
  */
 public class Response extends BaseResponse {
 
-    // setters are not required,since GSON sets the fields directly using reflection.
+    // setters and constructors are not required,since GSON sets the fields directly using reflection.
     private Detection detection;
     private List<Detection> detections;
 

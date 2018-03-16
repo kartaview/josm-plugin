@@ -161,7 +161,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         private final JPopupMenu menu;
 
 
-        public CouldntFixAction(final JMenuItem item1, final JMenuItem item2) {
+        private CouldntFixAction(final JMenuItem item1, final JMenuItem item2) {
             menu = new JPopupMenu();
             menu.add(item1);
             menu.add(item2);
@@ -188,9 +188,9 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         private final EditDialog dialog;
 
 
-        public DisplayEditDialogAction(final String title, final String shortcutText) {
+        private DisplayEditDialogAction(final String title, final String shortcutText) {
             super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
-            dialog = new EditDialog(title, EditStatus.OTHER);
+            dialog = new EditDialog(title);
 
         }
 
@@ -199,7 +199,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
             dialog.setVisible(true);
         }
 
-        void registerObserver(final DetectionChangeObserver observer) {
+        private void registerObserver(final DetectionChangeObserver observer) {
             dialog.registerObserver(observer);
         }
     }

@@ -120,7 +120,7 @@ final class LoadManager {
         final String dateStr = Main.pref.get(FILTER_DATE);
         final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
         final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
-        final boolean onlyUserFlag = onlyUserFlagStr.isEmpty() ? false : Boolean.parseBoolean(onlyUserFlagStr);
+        final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
         final List<ImageDataType> dataType = loadDataTypeFilter();
         final DetectionFilter detectionFilter = loadDetectionFilter();
         return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);

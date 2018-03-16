@@ -118,7 +118,7 @@ class HttpQueryBuilder {
         query.append(RequestConstants.FORMAT).append(EQ).append(RequestConstants.FORMAT_VAL);
     }
 
-    String build() {
+    private String build() {
         final StringBuilder url = new StringBuilder(ApolloServiceConfig.getInstance().getServiceUrl());
         url.append(query);
         return url.toString();

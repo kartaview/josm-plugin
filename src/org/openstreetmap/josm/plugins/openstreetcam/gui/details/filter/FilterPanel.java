@@ -171,7 +171,7 @@ class FilterPanel extends JPanel {
         add(ContainerBuilder.buildScrollPane(listSignType, getBackground()), Constraints.CBB_SIGN_TYPE);
     }
 
-    public void addModeFilter(final List<DetectionMode> modes) {
+    private void addModeFilter(final List<DetectionMode> modes) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
         cbbAutomaticMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeAutomaticTxt(), Font.PLAIN,
                 null, modes != null && modes.contains(DetectionMode.AUTOMATIC));

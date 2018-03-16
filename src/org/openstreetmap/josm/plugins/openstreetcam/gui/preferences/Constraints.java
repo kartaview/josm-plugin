@@ -39,10 +39,6 @@ final class Constraints {
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
     static final GridBagConstraints LBL_TRACK = new GridBagConstraints(0, 8, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
-    static final GridBagConstraints LBL_PLAY_LENGTH = new GridBagConstraints(0, 9, 1, 1, 0, 0,
-            GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(2, 9, 3, 0), 0, 0);
-    static final GridBagConstraints TXT_PLAY_LENGTH = new GridBagConstraints(1, 9, 1, 1, 0, 0,
-            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
     static final GridBagConstraints CB_TRACK_LOADING = new GridBagConstraints(0, 10, 4, 1, 1, 1,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
     static final GridBagConstraints LBL_AUTOPLAY = new GridBagConstraints(0, 11, 1, 1, 0, 0,

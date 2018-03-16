@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 
 import java.awt.event.MouseAdapter;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -45,7 +46,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 // TODO: refactor this class
-final class SelectionHandler extends MouseAdapter
+public final class SelectionHandler extends MouseAdapter
 implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
 
     /** defines the number of mouse clicks that is considered as an un-select action */
@@ -61,7 +62,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
     private double autoplayDistance = 0.0;
 
 
-    SelectionHandler() {}
+    public SelectionHandler() {}
 
 
     @Override
@@ -202,7 +203,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         }
     }
 
-    void changeMouseHoverTimerDelay() {
+    public void changeMouseHoverTimerDelay() {
         if (mouseHoverTimer != null) {
             mouseHoverTimer.setDelay(PreferenceManager.getInstance().loadPhotoSettings().getMouseHoverDelay());
             if (mouseHoverTimer.isRunning()) {
@@ -228,7 +229,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      *
      * @param photo a {@code Photo} represents the selected photo
      */
-    void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
+    public void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
         if (photo == null) {
             SwingUtilities.invokeLater(() -> handleDataUnselection());
         } else {
@@ -289,7 +290,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
      *
      * @param photo a {@code Photo} represents the selected photo
      */
-    void loadSequence(final Photo photo) {
+    public void loadSequence(final Photo photo) {
         cleanUpOldSequence();
 
         ThreadPool.getInstance().execute(() -> {
@@ -424,7 +425,6 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         selectPhoto(nextPhoto, photoType, false);
-        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         DataSet.getInstance().selectStartPhotoForClosestAction(nextPhoto);
         if (DataSet.getInstance().hasClosestPhotos()) {
             PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
@@ -443,7 +443,7 @@ implements ClosestPhotoObserver, SequenceObserver, TrackAutoplayObserver {
         autoplayDistance = 0;
     }
 
-    void changeAutoplayTimerDelay() {
+    public void changeAutoplayTimerDelay() {
         if (autoplayTimer != null) {
             autoplayTimer.setDelay(PreferenceManager.getInstance().loadAutoplaySettings().getDelay());
             if (autoplayTimer.isRunning()) {

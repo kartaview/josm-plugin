@@ -21,6 +21,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -319,14 +320,6 @@ public final class DataSet {
         return selectedSequence.getPhotos().get(index - 1);
     }
 
-    public void setPhotoDataSet(final PhotoDataSet photoDataSet) {
-        this.photoDataSet = photoDataSet;
-    }
-
-    public void setDetections(final List<Detection> detections) {
-        this.detections = detections;
-    }
-
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
     }
@@ -361,10 +354,6 @@ public final class DataSet {
 
     public Sequence getSelectedSequence() {
         return selectedSequence;
-    }
-
-    public Photo getStartPhoto() {
-        return startPhoto;
     }
 
     public Collection<Photo> getClosestPhotos() {

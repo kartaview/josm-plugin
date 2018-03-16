@@ -5,13 +5,14 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
@@ -38,7 +39,7 @@ import com.telenav.josm.common.entity.Pair;
  * @author beataj
  * @version $Revision$
  */
-class DataUpdateHandler {
+public class DataUpdateHandler {
 
 
     /**
@@ -62,7 +63,7 @@ class DataUpdateHandler {
      * @param checkSelection if true verifies if the selected element is contained or not in the new data set, selection
      * is removed for the case when the data set does not contain the selection; if false it is ignored
      */
-    void updateData(final boolean checkSelection, final boolean boundingBoxChanged) {
+    public void updateData(final boolean checkSelection, final boolean boundingBoxChanged) {
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (zoom >= Config.getInstance().getMapSegmentZoom()) {
             final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
@@ -179,7 +180,7 @@ class DataUpdateHandler {
             final Pair<PhotoDataSet, List<Detection>> dataSet =
                     ServiceHandler.getInstance().searchHighZoomData(bbox, filter);
             if (PreferenceManager.getInstance().loadDataType() == DataType.PHOTO) {
-                updateUI(null, dataSet.getFirst(), dataSet.getSecond(), checkSelection);
+                updateUI(dataSet.getFirst(), dataSet.getSecond(), checkSelection);
             }
         }
     }
@@ -192,7 +193,7 @@ class DataUpdateHandler {
      * photo location data set is downloaded
      * @return a {@code PhotoDataSet} containing the photo locations
      */
-    PhotoDataSet downloadPhotos(final boolean loadNextResults) {
+    public PhotoDataSet downloadPhotos(final boolean loadNextResults) {
         PhotoDataSet photoDataSet = null;
         if (DataSet.getInstance().hasPhotos()) {
             int page = DataSet.getInstance().getPhotoDataSet().getPage();
@@ -208,7 +209,7 @@ class DataUpdateHandler {
         return photoDataSet;
     }
 
-    void updateUI(final PhotoDataSet photoDataSet) {
+    public void updateUI(final PhotoDataSet photoDataSet) {
         // TODO: add logic
     }
 
@@ -221,7 +222,7 @@ class DataUpdateHandler {
      * given data set
      */
     // TODO: refactore this method
-    void updateUI(final List<Segment> segments, final PhotoDataSet photoDataSet, final List<Detection> detections,
+    private void updateUI(final PhotoDataSet photoDataSet, final List<Detection> detections,
             final boolean checkSelection) {
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
