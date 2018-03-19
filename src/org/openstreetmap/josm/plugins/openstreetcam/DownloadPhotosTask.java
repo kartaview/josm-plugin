@@ -8,19 +8,27 @@
 package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.io.IOException;
+import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.service.photo.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.xml.sax.SAXException;
+import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
@@ -32,9 +40,6 @@ import org.xml.sax.SAXException;
 public class DownloadPhotosTask extends PleaseWaitRunnable {
 
     private static final int SLEEP = 1000;
-
-    /** handles data update operations */
-    private final DataUpdateHandler dataUpdateHandler;
 
     /** the currently running download thread */
     private Thread downloadThread;
@@ -58,7 +63,6 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
      */
     public DownloadPhotosTask(final String taskTitle, final boolean loadNextResults) {
         super(taskTitle, new PleaseWaitProgressMonitor(taskTitle), false);
-        dataUpdateHandler = new DataUpdateHandler();
         this.loadNextResults = loadNextResults;
     }
 
@@ -78,7 +82,19 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
     protected void afterFinish() {
         synchronized (this) {
             if (!canceled && photoDataSet != null && !photoDataSet.getPhotos().isEmpty()) {
-                dataUpdateHandler.updateUI(photoDataSet);
+                SwingUtilities.invokeLater(() -> {
+                    DataSet.getInstance().updateHighZoomLevelPhotoData(photoDataSet, true);
+                    if (!DataSet.getInstance().hasSelectedPhoto()
+                            && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
+                        PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+                    }
+                    if (DataSet.getInstance().hasNearbyPhotos()
+                            && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
+                        PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                    }
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
+                });
             }
         }
     }
@@ -96,7 +112,16 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
                 final String taskTitle = loadNextResults ? GuiConfig.getInstance().getInfoDownloadNextPhotosTitle()
                         : GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle();
                 this.progressMonitor.indeterminateSubTask(taskTitle);
-                downloadThread = new Thread(() -> photoDataSet = dataUpdateHandler.downloadPhotos(loadNextResults));
+                downloadThread = new Thread(() -> {
+                    if (DataSet.getInstance().hasPhotos()) {
+                        int page = DataSet.getInstance().getPhotoDataSet().getPage();
+                        page = loadNextResults ? page + 1 : page - 1;
+                        final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
+                        final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
+                        photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
+                                new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
+                    }
+                });
                 downloadThread.start();
                 waitForCompletion();
             } finally {

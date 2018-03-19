@@ -1,5 +1,5 @@
 projectKey=org.sonarqube:openstreetcam2
 serverUrl=http://localhost:9000
 dashboardUrl=http://localhost:9000/dashboard/index/org.sonarqube:openstreetcam2
-ceTaskId=AWIt66YmUJFkaLX7mzsh
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AWIt66YmUJFkaLX7mzsh
+ceTaskId=AWI99weQ1xEb-Dx53Jdt
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWI99weQ1xEb-Dx53Jdt

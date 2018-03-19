@@ -135,7 +135,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     }
 
 
-    private class EditAction extends JosmAction {
+    private final class EditAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
 
@@ -153,7 +153,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     }
 
 
-    private class CouldntFixAction extends JosmAction {
+    private final class CouldntFixAction extends JosmAction {
 
         private static final long serialVersionUID = 191591505362305396L;
         private static final int Y_COORD = 4;
@@ -182,7 +182,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     }
 
 
-    private class DisplayEditDialogAction extends JosmAction {
+    private final class DisplayEditDialogAction extends JosmAction {
 
         private static final long serialVersionUID = 7465727160123599818L;
         private final EditDialog dialog;

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -38,7 +39,6 @@ public final class DataSet {
 
     private static final DataSet INSTANCE = new DataSet();
 
-
     private List<Segment> segments = new ArrayList<>();
     private PhotoDataSet photoDataSet = new PhotoDataSet();
     private List<Detection> detections = new ArrayList<>();
@@ -50,7 +50,7 @@ public final class DataSet {
     private Detection selectedDetection;
     private Sequence selectedSequence;
     private Photo startPhoto;
-    private Collection<Photo> closestPhotos;
+    private Collection<Photo> nearbyPhotos;
 
 
     private DataSet() {}
@@ -64,48 +64,37 @@ public final class DataSet {
         this.segments = null;
         this.detections = null;
         this.photoDataSet = null;
+        clearSelection();
+    }
+
+    public synchronized void clearSelection() {
         this.selectedDetection = null;
         this.selectedPhoto = null;
-        this.closestPhotos = null;
+        this.nearbyPhotos = null;
         this.startPhoto = null;
     }
 
-    public void updateLowZoomLevelData(final List<Segment> segments) {
-        this.segments = segments;
-
-        if (hasPhotos()) {
-            this.photoDataSet = null;
-        }
-        if (hasDetections()) {
-            this.detections = null;
-        }
-        if (hasSelectedDetection()) {
-            this.selectedDetection = null;
-        }
-        if (hasSelectedPhoto()) {
-            this.selectedPhoto = null;
-        }
-
-        if (hasClosestPhotos()) {
-            this.closestPhotos = null;
-            this.startPhoto = null;
-
-        }
-
+    public synchronized void cleaHighZoomLevelData() {
+        this.detections = null;
+        this.photoDataSet = null;
+        clearSelection();
     }
 
-    public void updateHighZoomLevelDetectionData(final List<Detection> detections, final boolean updateSelection) {
+    public synchronized void updateLowZoomLevelData(final List<Segment> segments) {
+        this.segments = segments;
+    }
+
+    public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
+            final boolean updateSelection) {
         this.detections = detections;
         if (updateSelection && selectedDetection != null) {
             selectedDetection = detections != null ? detections.stream()
                     .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null) : null;
         }
-        if (hasSegments()) {
-            this.segments = null;
-        }
     }
 
-    public void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet, final boolean updateSelection) {
+    public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
+            final boolean updateSelection) {
         this.photoDataSet = photoDataSet;
         if (updateSelection) {
             if (selectedPhoto != null) {
@@ -113,16 +102,13 @@ public final class DataSet {
                         .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
             }
         }
-        if (getSelectedPhoto() != null && getClosestPhotos() != null) {
-            selectStartPhotoForClosestAction(getSelectedPhoto());
+        if (hasSelectedPhoto() && hasNearbyPhotos()) {
+            selectNearbyPhotos(getSelectedPhoto());
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
                 .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
-        }
-        if (hasSegments()) {
-            this.segments = null;
         }
     }
 
@@ -246,13 +232,13 @@ public final class DataSet {
      *
      * @param photo a {@code Photo}
      */
-    public void selectStartPhotoForClosestAction(final Photo photo) {
+    public void selectNearbyPhotos(final Photo photo) {
         startPhoto = photo;
         if (photo != null && photoDataSet != null && photoDataSet.hasItems()) {
-            closestPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         } else {
-            closestPhotos = Collections.emptyList();
+            nearbyPhotos = Collections.emptyList();
         }
     }
 
@@ -262,34 +248,31 @@ public final class DataSet {
      *
      * @return a {@code Photo}
      */
-    public Photo closestSelectedPhoto() {
-        Photo closestPhoto = null;
-        if (!closestPhotos.isEmpty()) {
-            closestPhoto = closestPhotos.iterator().next();
-            closestPhotos.remove(closestPhoto);
+    public Photo nearbyPhoto() {
+        Photo result = null;
+        if (!nearbyPhotos.isEmpty()) {
+            result = nearbyPhotos.iterator().next();
+            nearbyPhotos.remove(result);
         }
         // recalculate closest photos when latest closest photo is returned
-        if (closestPhotos.isEmpty()) {
-            closestPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
+        if (nearbyPhotos.isEmpty()) {
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         }
-        return closestPhoto;
+        return result;
     }
 
     public Photo detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
-        final List<Photo> photos =
-                selectedSequence != null && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
-                        : (photoDataSet != null && photoDataSet.hasItems()) ? photoDataSet.getPhotos() : null;
-                        if (photos != null) {
-                            for (final Photo photo : photos) {
-                                if (photo.getSequenceId().equals(sequenceId) && photo.getSequenceIndex().equals(sequenceIndex)) {
-                                    result = photo;
-                                    break;
-                                }
-                            }
-                        }
-                        return result;
+        final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
+                : hasPhotos() ? photoDataSet.getPhotos() : null;
+        if (photos != null) {
+            final Optional<Photo> photo = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+            result = photo.isPresent() ? photo.get() : null;
+        }
+        return result;
     }
 
 
@@ -356,8 +339,8 @@ public final class DataSet {
         return selectedSequence;
     }
 
-    public Collection<Photo> getClosestPhotos() {
-        return closestPhotos;
+    public Collection<Photo> getNearbyPhotos() {
+        return nearbyPhotos;
     }
 
     public boolean hasItems() {
@@ -377,7 +360,7 @@ public final class DataSet {
     }
 
     public boolean hasNearbyPhotos() {
-        return closestPhotos != null && !closestPhotos.isEmpty();
+        return nearbyPhotos != null && !nearbyPhotos.isEmpty();
     }
 
     public boolean hasSelectedSequence() {
@@ -391,9 +374,4 @@ public final class DataSet {
     public boolean hasSelectedDetection() {
         return selectedDetection != null;
     }
-
-    public boolean hasClosestPhotos() {
-        return closestPhotos != null && !closestPhotos.isEmpty();
-    }
-
 }

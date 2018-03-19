@@ -193,6 +193,9 @@ SequenceObservable, TrackAutoplayObservable {
             btnClosestPhoto.setEnabled(false);
             btnLocation.setEnabled(false);
             btnMatchedWay.setEnabled(false);
+            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                enableDataSwitchButton(true);
+            }
         }
     }
 

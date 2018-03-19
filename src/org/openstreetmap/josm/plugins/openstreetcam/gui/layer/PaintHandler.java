@@ -65,7 +65,6 @@ class PaintHandler {
         }
     }
 
-
     void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence,
             final Photo selectedPhoto, final Detection selectedDetection) {
         graphics.setComposite(OPAQUE_COMPOSITE);
@@ -75,11 +74,7 @@ class PaintHandler {
             drawSequence(graphics, mapView, sequence);
 
             if (sequence.hasDetections()) {
-                for (final Detection detection : sequence.getDetections()) {
-                    if (selectedDetection == null || !selectedDetection.equals(detection)) {
-                        drawDetection(graphics, mapView, detection, false);
-                    }
-                }
+                drawDetections(graphics, mapView, sequence.getDetections(), null, false);
             }
         }
         if (selectedPhoto != null) {
@@ -88,65 +83,6 @@ class PaintHandler {
         if (selectedDetection != null) {
             drawDetection(graphics, mapView, selectedDetection, true);
         }
-    }
-
-    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
-            final boolean isSelected) {
-        if (Util.containsLatLon(mapView, photo.getLocation())) {
-            final Point point = mapView.getPoint(photo.getLocation());
-            if (photo.getHeading() != null) {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
-                        : IconConfig.getInstance().getPhotoIcon();
-                PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
-            } else {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
-                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
-                PaintManager.drawIcon(graphics, icon, point);
-            }
-        }
-    }
-
-    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
-        final Double length =
-                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-                graphics.setColor(PaintUtil.sequenceColor(mapView));
-
-                Photo prevPhoto = sequence.getPhotos().get(0);
-                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-                    final Photo currentPhoto = sequence.getPhotos().get(i);
-
-                    // at least one of the photos is in current view draw line
-                    if (Util.containsLatLon(mapView, prevPhoto.getLocation())
-                            || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
-                        final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
-                                mapView.getPoint(currentPhoto.getLocation()));
-                        if (length == null) {
-                            PaintManager.drawLine(graphics, lineGeometry);
-                        } else {
-                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                                    getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
-                            PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
-                        }
-                    }
-
-                    drawPhoto(graphics, mapView, prevPhoto, false);
-                    prevPhoto = currentPhoto;
-                }
-                drawPhoto(graphics, mapView, prevPhoto, false);
-    }
-
-
-    private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
-            final LatLon end, final double length) {
-        final LatLon midPoint = new LatLon((start.lat() + end.lat()) / 2, (start.lon() + end.lon()) / 2);
-        final double bearing = Math.toDegrees(start.bearing(midPoint));
-        final Pair<Coordinate, Coordinate> arrowEndCoordinates =
-                GeometryUtil.arrowEndPoints(new Coordinate(midPoint.lat(), midPoint.lon()), bearing, -length);
-        final Pair<Point, Point> arrowLine1 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
-                new LatLon(arrowEndCoordinates.getFirst().getLat(), arrowEndCoordinates.getFirst().getLon())));
-        final Pair<Point, Point> arrowLine2 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
-                new LatLon(arrowEndCoordinates.getSecond().getLat(), arrowEndCoordinates.getSecond().getLon())));
-        return new Pair<>(arrowLine1, arrowLine2);
     }
 
     /**
@@ -186,6 +122,65 @@ class PaintHandler {
             drawDetection(graphics, mapView, selectedDetection, true);
         }
     }
+
+    private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
+            final boolean isSelected) {
+        if (Util.containsLatLon(mapView, photo.getLocation())) {
+            final Point point = mapView.getPoint(photo.getLocation());
+            if (photo.getHeading() != null) {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
+                        : IconConfig.getInstance().getPhotoIcon();
+                PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+            } else {
+                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
+                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
+                PaintManager.drawIcon(graphics, icon, point);
+            }
+        }
+    }
+
+    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
+        final Double length =
+                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
+        graphics.setColor(PaintUtil.sequenceColor(mapView));
+
+        Photo prevPhoto = sequence.getPhotos().get(0);
+        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+            final Photo currentPhoto = sequence.getPhotos().get(i);
+
+            // at least one of the photos is in current view draw line
+            if (Util.containsLatLon(mapView, prevPhoto.getLocation())
+                    || Util.containsLatLon(mapView, currentPhoto.getLocation())) {
+                final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(prevPhoto.getLocation()),
+                        mapView.getPoint(currentPhoto.getLocation()));
+                if (length == null) {
+                    PaintManager.drawLine(graphics, lineGeometry);
+                } else {
+                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                            getArrowGeometry(mapView, prevPhoto.getLocation(), currentPhoto.getLocation(), length);
+                    PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                }
+            }
+
+            drawPhoto(graphics, mapView, prevPhoto, false);
+            prevPhoto = currentPhoto;
+        }
+        drawPhoto(graphics, mapView, prevPhoto, false);
+    }
+
+    private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
+            final LatLon end, final double length) {
+        final LatLon midPoint = new LatLon((start.lat() + end.lat()) / 2, (start.lon() + end.lon()) / 2);
+        final double bearing = Math.toDegrees(start.bearing(midPoint));
+        final Pair<Coordinate, Coordinate> arrowEndCoordinates =
+                GeometryUtil.arrowEndPoints(new Coordinate(midPoint.lat(), midPoint.lon()), bearing, -length);
+        final Pair<Point, Point> arrowLine1 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
+                new LatLon(arrowEndCoordinates.getFirst().getLat(), arrowEndCoordinates.getFirst().getLon())));
+        final Pair<Point, Point> arrowLine2 = new Pair<>(mapView.getPoint(midPoint), mapView.getPoint(
+                new LatLon(arrowEndCoordinates.getSecond().getLat(), arrowEndCoordinates.getSecond().getLon())));
+        return new Pair<>(arrowLine1, arrowLine2);
+    }
+
 
     private void drawDetection(final Graphics2D graphics, final MapView mapView, final Detection detection,
             final boolean isSelected) {

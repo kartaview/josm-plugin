@@ -95,9 +95,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     @Override
     public void mapFrameInitialized(final MapFrame oldMapFrame, final MapFrame newMapFrame) {
         if (MainApplication.getMap() != null && !GraphicsEnvironment.isHeadless()) {
-
             // initialize detection details dialog
-            addDetectionDetailsDialog(newMapFrame);
+            initializeDetectionDetailsDialog(newMapFrame);
 
             // initialize photo details dialog
             initializePhotoDetailsDialog(newMapFrame);
@@ -117,6 +116,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             layerActivatorMenuItem.setEnabled(false);
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
+            OpenStreetCamLayer.destroyInstance();
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
@@ -136,7 +136,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
         }
     }
 
-    private void addDetectionDetailsDialog(final MapFrame mapFrame) {
+    private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
         mapFrame.addToggleDialog(detectionDetailsDialog, true);
         detectionDetailsDialog.registerCommentObserver(this);
@@ -190,9 +190,11 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
             MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
             MainApplication.getLayerManager().removeLayerChangeListener(this);
+            PhotoDetailsDialog.destroyInstance();
+            DetectionDetailsDialog.destroyInstance();
             OpenStreetCamLayer.destroyInstance();
-            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+            // PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+            // DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
         }
     }
 
@@ -205,7 +207,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
         if (selectedPhoto != null
                 && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
             SwingUtilities.invokeLater(() -> {
-                // DataSet.getInstance().updateHighZoomLevelData(null, null, false);
                 MainApplication.getMap().mapView.zoomTo(selectedPhoto.getLocation());
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
@@ -224,12 +225,12 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
                 zoomTimer = new Timer(SEARCH_DELAY, event -> ThreadPool.getInstance()
                         .execute(() -> new DataUpdateHandler().updateData(false, true)));
-                // zoomTimer.setDelay(SEARCH_DELAY);
                 zoomTimer.setRepeats(false);
                 zoomTimer.start();
             }
         }
     }
+
 
     /* implementation of DetectionChangeObserver */
 
@@ -252,11 +253,14 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
 
     @Override
     public void selectDetection(final Detection selectedDetection) {
-        DataSet.getInstance().setSelectedDetection(selectedDetection);
-        DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-        OpenStreetCamLayer.getInstance().invalidate();
-        PhotoDetailsDialog.getInstance().repaint();
+        SwingUtilities.invokeLater(() -> {
+            DataSet.getInstance().setSelectedDetection(selectedDetection);
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
+            PhotoDetailsDialog.getInstance().repaint();
+            OpenStreetCamLayer.getInstance().invalidate();
+        });
     }
+
 
     /**
      * Activates the layer.
