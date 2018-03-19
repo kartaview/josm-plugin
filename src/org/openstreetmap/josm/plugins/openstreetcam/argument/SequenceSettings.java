@@ -15,7 +15,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  * @author beataj
  * @version $Revision$
  */
-public class TrackSettings {
+public class SequenceSettings {
 
     private final boolean displayTrack;
     private final AutoplaySettings autoplaySettings;
@@ -27,7 +27,7 @@ public class TrackSettings {
      * @param displayTrack is true then when selecting an image also the track will be displayed
      * @param autoplaySettings the track auto-play settings
      */
-    public TrackSettings(final boolean displayTrack, final AutoplaySettings autoplaySettings) {
+    public SequenceSettings(final boolean displayTrack, final AutoplaySettings autoplaySettings) {
         this.displayTrack = displayTrack;
         this.autoplaySettings = autoplaySettings;
     }

@@ -8,28 +8,23 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.observer;
 
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-
-
 /**
- * The observable interface for the {@code TrackAutoplayObserver} object.
+ * The observable interface for the {@code NearbyPhotoObserver}.
  *
- * @author beataj
+ * @author ioanao
  * @version $Revision$
  */
-public interface TrackAutoplayObservable {
+public interface NearbyPhotoObservable {
 
     /**
      * Registers the given observer.
      *
-     * @param observer a {@code TrackAutoplayObserver}
+     * @param observer a {@code ClosestImageObserver}
      */
-    void registerObserver(TrackAutoplayObserver observer);
+    void registerObserver(NearbyPhotoObserver observer);
 
     /**
-     * Notifies the observes listening.
-     *
-     * @param action the auto-play action to be performed
+     * Notifies the observers listening.
      */
-    void notifyObserver(AutoplayAction action);
+    void notifyNearbyPhotoObserver();
 }

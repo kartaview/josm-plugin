@@ -22,12 +22,12 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -211,9 +211,9 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
-    public void registerObservers(final ClosestPhotoObserver closestPhotoObserver,
+    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
             final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
-            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver,
+            final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);

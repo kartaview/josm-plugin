@@ -56,7 +56,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -218,10 +218,10 @@ final class LoadManager {
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
-    TrackSettings loadTrackSettings() {
+    SequenceSettings loadTrackSettings() {
         final String displayTrackFlagVal = Main.pref.get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
-        return new TrackSettings(displayTrackFlag, loadAutoplaySettings());
+        return new SequenceSettings(displayTrackFlag, loadAutoplaySettings());
     }
 
     AutoplaySettings loadAutoplaySettings() {

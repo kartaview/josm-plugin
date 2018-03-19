@@ -72,6 +72,7 @@ public final class DataSet {
         this.selectedPhoto = null;
         this.nearbyPhotos = null;
         this.startPhoto = null;
+        this.selectedSequence = null;
     }
 
     public synchronized void cleaHighZoomLevelData() {
@@ -266,13 +267,13 @@ public final class DataSet {
         Photo result = null;
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-        if (photos != null) {
-            final Optional<Photo> photo = photos.stream()
-                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
-            result = photo.isPresent() ? photo.get() : null;
-        }
-        return result;
+                if (photos != null) {
+                    final Optional<Photo> photo = photos.stream()
+                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                            .findFirst();
+                    result = photo.isPresent() ? photo.get() : null;
+                }
+                return result;
     }
 
 
@@ -305,6 +306,7 @@ public final class DataSet {
 
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
+        selectNearbyPhotos(selectedPhoto);
     }
 
     public void setSelectedDetection(final Detection selectedDetection) {

@@ -26,6 +26,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
+ * Handles mouse selection events.
  *
  * @author beataj
  * @version $Revision$
@@ -43,24 +44,28 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     public void mouseClicked(final MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
             if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
-                handleUnSelection();
+                SwingUtilities.invokeLater(() -> handleDataUnselection());
             } else {
-                Detection detection = DataSet.getInstance().nearbyDetection(event.getPoint());
-                Photo photo;
-                if (detection != null) {
-                    photo = loadDetectionPhoto(detection);
-                    detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
-                } else {
-                    photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
-                    if (photo != null) {
-                        final List<Detection> detections = loadPhotoDetections(photo);
-                        photo.setDetections(detections);
-                        detection = detections != null && !detections.isEmpty() ? detections.get(0) : null;
-                    }
-                }
-                handleDataSelection(photo, detection);
+                SwingUtilities.invokeLater(() -> handleDataSelection(event));
             }
         }
+    }
+
+    private void handleDataSelection(final MouseEvent event) {
+        Detection detection = DataSet.getInstance().nearbyDetection(event.getPoint());
+        Photo photo;
+        if (detection != null) {
+            photo = loadDetectionPhoto(detection);
+            detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+        } else {
+            photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
+            if (photo != null) {
+                final List<Detection> detections = loadPhotoDetections(photo);
+                photo.setDetections(detections);
+                detection = detections != null && !detections.isEmpty() ? detections.get(0) : null;
+            }
+        }
+        handleDataSelection(photo, detection);
     }
 
     private Photo loadDetectionPhoto(final Detection detection) {
@@ -69,10 +74,14 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                     detection.getSequenceIndex());
         }
+        if (photo != null) {
+            final List<Detection> detections = loadPhotoDetections(photo);
+            photo.setDetections(detections);
+        }
         return photo;
     }
 
-    private List<Detection> loadPhotoDetections(final Photo photo) {
+    List<Detection> loadPhotoDetections(final Photo photo) {
         List<Detection> photoDetections =
                 ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
         if (photoDetections != null && DataSet.getInstance().hasDetections()) {
@@ -131,10 +140,10 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 .loadMapViewSettings().getPhotoZoom() || DataSet.getInstance().hasItems();
     }
 
-    abstract void handleUnSelection();
+
+    abstract void handleDataUnselection();
 
     abstract void handleDataSelection(final Photo photo, final Detection detection);
-
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.
@@ -142,5 +151,4 @@ abstract class MouseSelectionHandler extends MouseAdapter {
      * @param photo a {@code Photo} represents the selected photo
      */
     public abstract void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage);
-
 }

@@ -24,7 +24,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -136,12 +136,12 @@ class PreferencePanel extends JPanel {
                 Constraints.LBL_AUTOPLAY_DELAY);
         final int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
                 .getTrackSettings().getAutoplaySettings().getDelay() > Config.getInstance().getAutoplayMinDelay()
-                ? Config.getInstance().getAutoplayMinDelay()
-                        : settings.getTrackSettings().getAutoplaySettings().getDelay();
-                spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
-                        Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
-                        ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
-                add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
+                        ? settings.getTrackSettings().getAutoplaySettings().getDelay()
+                        : Config.getInstance().getAutoplayMinDelay();
+        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
+                Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
+        add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
@@ -188,7 +188,7 @@ class PreferencePanel extends JPanel {
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
-        final TrackSettings trackSettings = new TrackSettings(cbDisplayTrack.isSelected(),
+        final SequenceSettings trackSettings = new SequenceSettings(cbDisplayTrack.isSelected(),
                 new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());

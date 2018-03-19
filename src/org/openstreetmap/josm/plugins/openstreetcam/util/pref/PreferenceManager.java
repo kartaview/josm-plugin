@@ -29,7 +29,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 
 
 /**
@@ -195,7 +195,7 @@ public final class PreferenceManager {
         return loadManager.loadPhotoSettings();
     }
 
-    public TrackSettings loadTrackSettings() {
+    public SequenceSettings loadTrackSettings() {
         return loadManager.loadTrackSettings();
     }
 

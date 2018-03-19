@@ -359,8 +359,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
 
         private void handleDisplayTrack(final String newValue) {
             final DataSet dataSet = DataSet.getInstance();
-            if (newValue.equals(Boolean.TRUE.toString()) && dataSet.hasSelectedPhoto()
-                    && dataSet.hasSelectedSequence()) {
+            if (newValue.equals(Boolean.TRUE.toString())
+                    && (dataSet.hasSelectedPhoto() || dataSet.hasSelectedDetection())) {
                 selectionHandler.loadSequence(dataSet.getSelectedPhoto());
             } else if (dataSet.hasSelectedSequence()) {
                 dataSet.setSelectedSequence(null);

@@ -54,7 +54,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -134,10 +134,20 @@ final class SaveManager {
     }
 
     private void saveDetectionFilter(final DetectionFilter filter) {
-        saveOsmComparisonFilter(filter.getOsmComparisons());
-        saveEditStatusFilter(filter.getEditStatuses());
-        saveSignTypeFilter(filter.getSignTypes());
-        saveModesFilter(filter.getModes());
+        List<OsmComparison> osmComparions = null;
+        List<EditStatus> editStatuses = null;
+        List<SignType> signTypes = null;
+        List<DetectionMode> detectionModes = null;
+        if (filter != null) {
+            osmComparions = filter.getOsmComparisons();
+            editStatuses = filter.getEditStatuses();
+            signTypes = filter.getSignTypes();
+            detectionModes = filter.getModes();
+        }
+        saveOsmComparisonFilter(osmComparions);
+        saveEditStatusFilter(editStatuses);
+        saveSignTypeFilter(signTypes);
+        saveModesFilter(detectionModes);
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -191,13 +201,13 @@ final class SaveManager {
         Main.pref.putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
-    void saveTrackSettings(final TrackSettings trackSettings) {
+    void saveTrackSettings(final SequenceSettings trackSettings) {
         Main.pref.putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Main.pref.put(AUTOPLAY_LENGTH, length);
-                    Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+            Main.pref.put(AUTOPLAY_LENGTH, length);
+            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
