@@ -10,8 +10,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import com.telenav.josm.common.entity.EntityUtil;
 
 
@@ -121,8 +121,6 @@ public class SearchFilter {
      * @return a {@code Long}
      */
     public Long getOsmUserId() {
-        return (isOlnyUserData() && UserIdentityManager.getInstance().isFullyIdentified()
-                && UserIdentityManager.getInstance().asUser().getId() > 0)
-                ? UserIdentityManager.getInstance().asUser().getId() : null;
+        return isOlnyUserData() ? Util.getOsmUserId() : null;
     }
 }

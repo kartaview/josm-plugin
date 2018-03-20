@@ -91,6 +91,10 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         }
         DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         DataSet.getInstance().setSelectedDetection(detection);
+        if (detection != null && !MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
+            MainApplication.getMap().mapView.zoomTo(detection.getPoint());
+        }
+        DataSet.getInstance().selectNearbyPhotos(photo);
         OpenStreetCamLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
     }
@@ -152,16 +156,16 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         cleanUpOldSequence();
 
         ThreadPool.getInstance().execute(() -> {
-            final DataSet dataSet = DataSet.getInstance();
-            final Long sequenceId = photo != null ? photo.getSequenceId() : dataSet.getSelectedPhoto().getSequenceId();
-            final Sequence result = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Long sequenceId =
+                    photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            if (photo == null || photo.equals(dataSet.getSelectedPhoto()) && result != null
-                    && (result.hasDetections() || result.hasPhotos())) {
+            if (shouldUpdateUI(photo, sequence)) {
                 SwingUtilities.invokeLater(() -> {
-                    dataSet.setSelectedSequence(result);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(dataSet.enablePreviousPhotoAction(),
-                            dataSet.enableNextPhotoAction());
+                    DataSet.getInstance().setSelectedSequence(sequence);
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction());
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                         PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
@@ -170,6 +174,11 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 });
             }
         });
+    }
+
+    private boolean shouldUpdateUI(final Photo photo, final Sequence sequence) {
+        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null
+                && (sequence.hasDetections() || sequence.hasPhotos());
     }
 
     private void cleanUpOldSequence() {
@@ -209,28 +218,18 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         final Photo photo = DataSet.getInstance().sequencePhoto(index);
         if (photo != null) {
             final List<ImageDataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+            Detection detection = null;
             if (dataTypes != null && dataTypes.contains(ImageDataType.DETECTIONS)) {
                 final List<Detection> detections = loadPhotoDetections(photo);
                 photo.setDetections(detections);
-                final Detection selectedDetection =
-                        detections != null && !detections.isEmpty() ? detections.get(0) : null;
-                        DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-                        DataSet.getInstance().setSelectedDetection(selectedDetection);
-
-                        if (selectedDetection != null
-                                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedDetection.getPoint())) {
-                            MainApplication.getMap().mapView.zoomTo(selectedDetection.getPoint());
-                        }
+                detection = detections != null && !detections.isEmpty() ? detections.get(0) : null;
             }
-            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
-            DataSet.getInstance().selectNearbyPhotos(photo);
+            handleDataSelection(photo, detection);
         }
     }
 
 
-    /* implementation of TrackAutoplayObserver */
+    /* implementation of SequenceAutoplayObserver */
 
     @Override
     public void play(final AutoplayAction action) {
@@ -274,7 +273,6 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                         ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
                 selectPhoto(nextPhoto, photoType, false);
-                DataSet.getInstance().selectNearbyPhotos(nextPhoto);
             }
         } else {
             stopAutoplay();
@@ -285,7 +283,6 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         selectPhoto(nextPhoto, photoType, false);
-        DataSet.getInstance().selectNearbyPhotos(nextPhoto);
         if (DataSet.getInstance().hasNearbyPhotos()) {
             PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
         }

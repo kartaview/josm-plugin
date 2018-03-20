@@ -43,11 +43,13 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     @Override
     public void mouseClicked(final MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
-            if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
-                SwingUtilities.invokeLater(() -> handleDataUnselection());
-            } else {
-                SwingUtilities.invokeLater(() -> handleDataSelection(event));
-            }
+            SwingUtilities.invokeLater(() -> {
+                if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
+                    handleDataUnselection();
+                } else {
+                    handleDataSelection(event);
+                }
+            });
         }
     }
 
@@ -69,7 +71,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private Photo loadDetectionPhoto(final Detection detection) {
-        Photo photo = DataSet.getInstance().detectionPhoto(detection.getSequenceId(), detection.getSequenceIndex());
+        Photo photo = DataSet.getInstance().getPhoto(detection.getSequenceId(), detection.getSequenceIndex());
         if (photo == null) {
             photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                     detection.getSequenceIndex());

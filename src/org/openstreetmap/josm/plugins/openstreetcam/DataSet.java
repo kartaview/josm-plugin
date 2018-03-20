@@ -30,7 +30,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 
 
 /**
- *
+ * Holds the plugin's data.
  *
  * @author beataj
  * @version $Revision$
@@ -48,8 +48,12 @@ public final class DataSet {
 
     /** the currently selected detection */
     private Detection selectedDetection;
+
+    /** the currently selected sequence */
     private Sequence selectedSequence;
-    private Photo startPhoto;
+
+    /** the currently selected nearby photos */
+    private Photo nearyPhotosStartPhoto;
     private Collection<Photo> nearbyPhotos;
 
 
@@ -60,6 +64,9 @@ public final class DataSet {
         return INSTANCE;
     }
 
+    /**
+     * Clears the current data set, including the selections.
+     */
     public synchronized void clear() {
         this.segments = null;
         this.detections = null;
@@ -67,24 +74,42 @@ public final class DataSet {
         clearSelection();
     }
 
+    /**
+     * Clears the currently selected items.
+     */
     public synchronized void clearSelection() {
         this.selectedDetection = null;
         this.selectedPhoto = null;
         this.nearbyPhotos = null;
-        this.startPhoto = null;
+        this.nearyPhotosStartPhoto = null;
         this.selectedSequence = null;
     }
 
+    /**
+     * Clears the high zoom level data (photo locations and detections) including selected items.
+     */
     public synchronized void cleaHighZoomLevelData() {
         this.detections = null;
         this.photoDataSet = null;
         clearSelection();
     }
 
+    /**
+     * Updates the low zoom level data with a new list of {@code Segment}s.
+     *
+     * @param segments a new list of {@code Segment}s
+     */
     public synchronized void updateLowZoomLevelData(final List<Segment> segments) {
         this.segments = segments;
     }
 
+    /**
+     * Updates the detection data with a new list of detections.
+     *
+     * @param detections a new list of {@code Detection}s
+     * @param updateSelection if true - then the currently selected detection is removed if not present in the new list
+     * of data
+     */
     public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
             final boolean updateSelection) {
         this.detections = detections;
@@ -94,14 +119,18 @@ public final class DataSet {
         }
     }
 
+    /**
+     * Updates the photo location data with a new list of photos.
+     *
+     * @param photoDataSet a {@code PhotoDataSet} containing a new list of {@code Photo}s
+     * @param updateSelection if true - then the currently selected photo is removed if not present in the new data set
+     */
     public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
             final boolean updateSelection) {
         this.photoDataSet = photoDataSet;
-        if (updateSelection) {
-            if (selectedPhoto != null) {
-                selectedPhoto = photoDataSet != null ? photoDataSet.getPhotos().stream()
-                        .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
-            }
+        if (updateSelection && hasSelectedPhoto()) {
+            selectedPhoto = photoDataSet != null ? photoDataSet.getPhotos().stream()
+                    .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
         }
         if (hasSelectedPhoto() && hasNearbyPhotos()) {
             selectNearbyPhotos(getSelectedPhoto());
@@ -135,10 +164,11 @@ public final class DataSet {
     }
 
     /**
-     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
+     * Returns the detection that is located near to the given point. The method returns null if there is no nearby
+     * item.
      *
      * @param point a {@code Point} represents location where the user had clicked
-     * @return a {@code Photo}
+     * @return a {@code Detection}
      */
     public Detection nearbyDetection(final Point point) {
         Detection detection = null;
@@ -150,7 +180,6 @@ public final class DataSet {
         }
         return detection;
     }
-
 
     /**
      * Returns the photos that are either previous/next or close to the selected photo.
@@ -234,15 +263,14 @@ public final class DataSet {
      * @param photo a {@code Photo}
      */
     public void selectNearbyPhotos(final Photo photo) {
-        startPhoto = photo;
+        nearyPhotosStartPhoto = photo;
         if (photo != null && photoDataSet != null && photoDataSet.hasItems()) {
-            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         } else {
             nearbyPhotos = Collections.emptyList();
         }
     }
-
 
     /**
      * Retrieve the closest image of the currently selected image.
@@ -257,13 +285,20 @@ public final class DataSet {
         }
         // recalculate closest photos when latest closest photo is returned
         if (nearbyPhotos.isEmpty()) {
-            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), startPhoto,
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         }
         return result;
     }
 
-    public Photo detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
+    /**
+     * Retrieve the photo identified by the given (sequenceId, sequenceIndex) pair.
+     *
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the photo index in the given sequence
+     * @return
+     */
+    public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
@@ -275,7 +310,6 @@ public final class DataSet {
                 }
                 return result;
     }
-
 
     /**
      * Checks if the selected photo is the first photo of the sequence.
@@ -298,81 +332,171 @@ public final class DataSet {
                 .equals(selectedPhoto.getSequenceIndex());
     }
 
-
+    /**
+     * Returns the selected sequence last photo.
+     *
+     * @return a {@code Photo}
+     */
     public Photo selectedSequenceLastPhoto() {
         final int index = selectedSequence.getPhotos().size();
         return selectedSequence.getPhotos().get(index - 1);
     }
 
+    /**
+     * Sets the selected photo.
+     *
+     * @param selectedPhoto a {@code Photo}
+     */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
-        selectNearbyPhotos(selectedPhoto);
     }
 
+    /**
+     * Sets the selected detection.
+     *
+     * @param selectedDetection a {@code Detection}
+     */
     public void setSelectedDetection(final Detection selectedDetection) {
         this.selectedDetection = selectedDetection;
     }
 
+    /**
+     * Sets the selected sequence.
+     *
+     * @param selectedSequence a {@code Sequence}
+     */
     public void setSelectedSequence(final Sequence selectedSequence) {
         this.selectedSequence = selectedSequence;
     }
 
+    /**
+     * Returns the list of segments.
+     *
+     * @return a list of {@code Segment}s
+     */
     public List<Segment> getSegments() {
         return segments;
     }
 
+    /**
+     * Returns the photo data set.
+     *
+     * @return a {@code PhotoDataSet}
+     */
     public PhotoDataSet getPhotoDataSet() {
         return photoDataSet;
     }
 
+    /**
+     * Returns the list of detections.
+     *
+     * @return a list of {@code Detection}
+     */
     public List<Detection> getDetections() {
         return detections;
     }
 
+    /**
+     * Returns the selected photo.
+     *
+     * @return a {@code Photo}
+     */
     public Photo getSelectedPhoto() {
         return selectedPhoto;
     }
 
+    /**
+     * Returns the selected detection.
+     *
+     * @return a {@code Detection}
+     */
     public Detection getSelectedDetection() {
         return selectedDetection;
     }
 
+    /**
+     * Returns the selected sequence.
+     *
+     * @return a {@code Sequence}
+     */
     public Sequence getSelectedSequence() {
         return selectedSequence;
     }
 
+    /**
+     * Returns the list of nearby photos.
+     *
+     * @return a list of {@code Photo}s
+     */
     public Collection<Photo> getNearbyPhotos() {
         return nearbyPhotos;
     }
 
+    /**
+     * Verifies if the data set has items or not.
+     *
+     * @return boolean
+     */
     public boolean hasItems() {
         return hasSegments() || hasDetections() || hasPhotos();
     }
 
+    /**
+     * Verifies if the data-set has photos or not.
+     *
+     * @return boolean
+     */
     public boolean hasPhotos() {
         return photoDataSet != null && photoDataSet.hasItems();
     }
 
+    /**
+     * Verifies if the data-set has segments or not.
+     *
+     * @return boolean
+     */
     public boolean hasSegments() {
         return segments != null && !segments.isEmpty();
     }
 
+    /**
+     * Verifies if the data-set has detections or not.
+     *
+     * @return boolean
+     */
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public boolean hasNearbyPhotos() {
         return nearbyPhotos != null && !nearbyPhotos.isEmpty();
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public boolean hasSelectedSequence() {
         return selectedSequence != null;
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public boolean hasSelectedPhoto() {
         return selectedPhoto != null;
     }
 
+    /**
+     * Checks if the data set has detection selected.
+     *
+     * @return boolean
+     */
     public boolean hasSelectedDetection() {
         return selectedDetection != null;
     }

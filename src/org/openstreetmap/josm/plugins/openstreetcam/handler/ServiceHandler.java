@@ -35,6 +35,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.ApolloService
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.Paging;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
@@ -104,6 +105,7 @@ public final class ServiceHandler {
                 PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
             }
         }
+
         List<Detection> detections = null;
         try {
             detections = future2.get();
@@ -113,6 +115,7 @@ public final class ServiceHandler {
                 PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
             }
         }
+
         executorService.shutdown();
         return new Pair<>(photoDataSet, detections);
     }
@@ -166,7 +169,7 @@ public final class ServiceHandler {
     }
 
     /**
-     * \ Retrieves details of the given sequence based on the given filters.
+     * Retrieves details of the given sequence based on the given filters.
      *
      * @param sequenceId the identifier of the sequence
      * @return a {code Pair} of {@code Sequence} and {@code Detection}s list
@@ -178,34 +181,38 @@ public final class ServiceHandler {
         if (dataTypesPreferences.isEmpty()) {
             result = null;
         } else if (dataTypesPreferences.size() == 1 && dataTypesPreferences.contains(ImageDataType.PHOTOS)) {
-            result = retrieveSequence(sequenceId);
+            result = retrieveSequencePhotos(sequenceId);
         } else {
-            final ExecutorService executorService = Executors.newFixedThreadPool(2);
-            final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
-            final Future<List<Detection>> detectionsFuture =
-                    executorService.submit(() -> retrieveSequenceDetection(sequenceId));
-            Sequence sequence = null;
-            try {
-                sequence = sequenceFuture.get();
-            } catch (final Exception ex) {
-                if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                    PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-                }
-            }
-            List<Detection> detections = null;
-            try {
-                detections = detectionsFuture.get();
-            } catch (final Exception ex) {
-                if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                    final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                    PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-                }
-            }
-            executorService.shutdown();
-            result = new Sequence(sequenceId, sequence != null ? sequence.getPhotos() : null, detections);
+            result = retrieveCompleteSequence(sequenceId);
         }
         return result;
+    }
+
+    private Sequence retrieveCompleteSequence(final Long sequenceId) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(MAX_DATA_TYPES);
+        final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
+        final Future<List<Detection>> detectionsFuture =
+                executorService.submit(() -> retrieveSequenceDetections(sequenceId));
+        Sequence sequence = null;
+        try {
+            sequence = sequenceFuture.get();
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        List<Detection> detections = null;
+        try {
+            detections = detectionsFuture.get();
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        executorService.shutdown();
+        return new Sequence(sequenceId, sequence != null ? sequence.getPhotos() : null, detections);
     }
 
     private Sequence retrieveSequencePhotos(final Long id) {
@@ -221,7 +228,7 @@ public final class ServiceHandler {
         return sequence;
     }
 
-    private List<Detection> retrieveSequenceDetection(final Long id) {
+    private List<Detection> retrieveSequenceDetections(final Long id) {
         List<Detection> result = null;
         try {
             result = apolloService.retrieveSequenceDetections(id);
@@ -234,6 +241,13 @@ public final class ServiceHandler {
         return result;
     }
 
+    /**
+     * Retrieve the list of detections corresponding to the given sequence.
+     *
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the photo index in the given sequence
+     * @return a list of {@code Detection}s
+     */
     public List<Detection> retrievePhotoDetections(final Long sequenceId, final Integer sequenceIndex) {
         List<Detection> result = null;
         try {
@@ -295,6 +309,13 @@ public final class ServiceHandler {
         return openStreetCamService.retrievePhoto(photoName);
     }
 
+    /**
+     * Retrieves details of the given photo.
+     *
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the photo index in the given sequence
+     * @return a {@code Photo}
+     */
     public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
         try {
@@ -309,36 +330,39 @@ public final class ServiceHandler {
     }
 
     /**
-     * Updates a detection.
+     * Updates the edit status of the given detection.
      *
      * @param detectionId the identifier of the detection that need to be updated
      * @param editStatus a new edit status
      * @param comment a descriptive comment for the update.
      */
     public void updateDetection(final Long detectionId, final EditStatus editStatus, final String comment) {
-        final Long userId = UserIdentityManager.getInstance().isFullyIdentified()
-                && UserIdentityManager.getInstance().asUser().getId() > 0
-                ? UserIdentityManager.getInstance().asUser().getId() : null;
-                final String userName = UserIdentityManager.getInstance().getUserName();
-                if (userId == null) {
-                    JOptionPane.showMessageDialog(MainApplication.getMap().mapView,
-                            GuiConfig.getInstance().getAuthenticationNeededErrorMessage(),
-                            GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE, null);
-                } else {
-                    final Author author = new Author(userId, userName);
-                    try {
-                        apolloService.updateDetection(new Detection(detectionId, editStatus),
-                                new Contribution(author, comment));
-                    } catch (final ServiceException e) {
-                        if (!PreferenceManager.getInstance().loadDetectionUpdateErrorSuppressFlag()) {
-                            final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionUpdateText());
-                            PreferenceManager.getInstance().saveDetectionUpdateErrorSuppressFlag(flag);
-                        }
-                    }
+        final Long userId = Util.getOsmUserId();
+        final String userName = UserIdentityManager.getInstance().getUserName();
+        if (userId == null) {
+            JOptionPane.showMessageDialog(MainApplication.getMap().mapView,
+                    GuiConfig.getInstance().getAuthenticationNeededErrorMessage(),
+                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE, null);
+        } else {
+            final Author author = new Author(userId, userName);
+            try {
+                apolloService.updateDetection(new Detection(detectionId, editStatus),
+                        new Contribution(author, comment));
+            } catch (final ServiceException e) {
+                if (!PreferenceManager.getInstance().loadDetectionUpdateErrorSuppressFlag()) {
+                    final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionUpdateText());
+                    PreferenceManager.getInstance().saveDetectionUpdateErrorSuppressFlag(flag);
                 }
+            }
+        }
     }
 
-
+    /**
+     * Retrieves the detection corresponding to the given identifier.
+     *
+     * @param detectionId the unique identifier of a detection
+     * @return a {@code Detection}
+     */
     public Detection retrieveDetection(final Long detectionId) {
         Detection result = null;
         try {

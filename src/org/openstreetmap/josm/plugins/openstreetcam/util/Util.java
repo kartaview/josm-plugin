@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
@@ -167,5 +168,11 @@ public final class Util {
             }
         }
         return contains;
+    }
+
+    public static Long getOsmUserId() {
+        return UserIdentityManager.getInstance().isFullyIdentified()
+                && UserIdentityManager.getInstance().asUser().getId() > 0
+                ? UserIdentityManager.getInstance().asUser().getId() : null;
     }
 }
