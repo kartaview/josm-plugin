@@ -1,9 +1,7 @@
 /*
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
- *
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
- *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
@@ -56,9 +54,7 @@ public final class DataSet {
     private Photo nearyPhotosStartPhoto;
     private Collection<Photo> nearbyPhotos;
 
-
     private DataSet() {}
-
 
     public static DataSet getInstance() {
         return INSTANCE;
@@ -107,8 +103,8 @@ public final class DataSet {
      * Updates the detection data with a new list of detections.
      *
      * @param detections a new list of {@code Detection}s
-     * @param updateSelection if true - then the currently selected detection is removed if not present in the new list
-     * of data
+     * @param updateSelection if true - then the currently selected detection is removed if not present in
+     * the new list of data
      */
     public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
             final boolean updateSelection) {
@@ -123,7 +119,8 @@ public final class DataSet {
      * Updates the photo location data with a new list of photos.
      *
      * @param photoDataSet a {@code PhotoDataSet} containing a new list of {@code Photo}s
-     * @param updateSelection if true - then the currently selected photo is removed if not present in the new data set
+     * @param updateSelection if true - then the currently selected photo is removed if not present in the
+     * new data set
      */
     public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
             final boolean updateSelection) {
@@ -143,7 +140,8 @@ public final class DataSet {
     }
 
     /**
-     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
+     * Returns the photo that is located near to the given point. The method returns null if there is no
+     * nearby item.
      *
      * @param point a {@code Point} represents location where the user had clicked
      * @return a {@code Photo}
@@ -164,8 +162,8 @@ public final class DataSet {
     }
 
     /**
-     * Returns the detection that is located near to the given point. The method returns null if there is no nearby
-     * item.
+     * Returns the detection that is located near to the given point. The method returns null if there is
+     * no nearby item.
      *
      * @param point a {@code Point} represents location where the user had clicked
      * @return a {@code Detection}
@@ -228,8 +226,8 @@ public final class DataSet {
     }
 
     /**
-     * Returns the photo from the sequence located at the given position. The method returns null if there is no
-     * corresponding element.
+     * Returns the photo from the sequence located at the given position. The method returns null if there
+     * is no corresponding element.
      *
      * @param index represents the location of a photo in the selected sequence
      * @return a {@code Photo}
@@ -260,7 +258,8 @@ public final class DataSet {
     /**
      * Sets a start photo from witch a possible closest image action should start.
      *
-     * @param photo a {@code Photo}
+     * @param photo
+     * a {@code Photo}
      */
     public void selectNearbyPhotos(final Photo photo) {
         nearyPhotosStartPhoto = photo;
@@ -296,7 +295,7 @@ public final class DataSet {
      *
      * @param sequenceId the identifier of the sequence
      * @param sequenceIndex the photo index in the given sequence
-     * @return
+     * @return a {@code Photo}
      */
     public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
@@ -469,6 +468,7 @@ public final class DataSet {
     }
 
     /**
+     * Checks is the data-set has nearby photos or not.
      *
      * @return boolean
      */
@@ -477,6 +477,7 @@ public final class DataSet {
     }
 
     /**
+     * Checks if the data-set has a selected sequence or not.
      *
      * @return boolean
      */
@@ -485,6 +486,7 @@ public final class DataSet {
     }
 
     /**
+     * Checks if the data-set has selected photo or not.
      *
      * @return boolean
      */
@@ -493,7 +495,7 @@ public final class DataSet {
     }
 
     /**
-     * Checks if the data set has detection selected.
+     * Checks if the data set has detection selected or not.
      *
      * @return boolean
      */

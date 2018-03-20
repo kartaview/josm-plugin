@@ -2,7 +2,6 @@
  * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  * The collected imagery is protected & available under the CC BY-SA version 4 International license.
  * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
- *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam;
@@ -53,13 +52,13 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
     /** the downloaded photo data set */
     private PhotoDataSet photoDataSet;
 
-
     /**
      * Builds a new task.
      *
      * @param taskTitle the title to be displayed while downloading the new set of photos
-     * @param loadNextResults if true then the next result set is loaded; if false then the previous result set is
-     * loaded
+     * @param loadNextResults
+     * if true then the next result set is loaded; if false then the
+     * previous result set is loaded
      */
     public DownloadPhotosTask(final String taskTitle, final boolean loadNextResults) {
         super(taskTitle, new PleaseWaitProgressMonitor(taskTitle), false);
@@ -104,7 +103,6 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
         // nothing to add here
     }
 
-
     @Override
     protected void realRun() throws SAXException, IOException, OsmTransferException {
         if (!canceled && photoDataSetDownloadAllowed()) {
@@ -131,11 +129,12 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
     }
 
     /**
-     * Verifies if the photo download is allowed or not. A new photo data set download is allowed in the following
-     * cases:
+     * Verifies if the photo download is allowed or not. A new photo data set
+     * download is allowed in the following cases:
      * <ul>
      * <li>current zoom >=photo zoom and no track is displayed</li>
-     * <li>user has manual data switch enabled and photo locations are displayed on the map</li>
+     * <li>user has manual data switch enabled and photo locations are displayed on
+     * the map</li>
      * </ul>
      *
      * @return a boolean value

@@ -40,8 +40,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler
-implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
+public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
+        SequenceAutoplayObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -60,9 +60,9 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
             CacheManager.getInstance().removePhotos(DataSet.getInstance().getSelectedPhoto().getSequenceId());
         }
 
-        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
-                && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom()) {
+        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems() && Util.zoom(MainApplication
+                .getMap().mapView.getRealBounds()) < PreferenceManager.getInstance().loadMapViewSettings()
+                        .getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -110,8 +110,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
      * @return true if the sequence needs to be loaded; false otherwise
      */
     private boolean shouldLoadSequence(final Photo photo) {
-        return PreferenceManager.getInstance().loadPreferenceSettings().getTrackSettings().isDisplayTrack()
-                && !DataSet.getInstance().isPhotoPartOfSequence(photo);
+        return PreferenceManager.getInstance().loadPreferenceSettings().getTrackSettings().isDisplayTrack() && !DataSet
+                .getInstance().isPhotoPartOfSequence(photo);
     }
 
     @Override
@@ -124,8 +124,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 if (DataSet.getInstance().hasNearbyPhotos()) {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
-                if (!DataSet.getInstance().hasSelectedDetection()
-                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
+                if (!DataSet.getInstance().hasSelectedDetection() && !MainApplication.getMap().mapView.getRealBounds()
+                        .contains(photo.getLocation())) {
                     MainApplication.getMap().mapView.zoomTo(photo.getLocation());
                 }
 
@@ -136,9 +136,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 }
                 PhotoDetailsDialog.getInstance().updateUI(photo, photoType, displayLoadingMessage);
                 if (DataSet.getInstance().hasSelectedSequence() && (autoplayTimer == null)) {
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(
-                            DataSet.getInstance().enablePreviousPhotoAction(),
-                            DataSet.getInstance().enableNextPhotoAction());
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(DataSet.getInstance()
+                            .enablePreviousPhotoAction(), DataSet.getInstance().enableNextPhotoAction());
                 }
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 ThreadPool.getInstance().execute(() -> PhotoHandler.getInstance().loadPhotos(DataSet.getInstance()
@@ -156,16 +155,15 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         cleanUpOldSequence();
 
         ThreadPool.getInstance().execute(() -> {
-            final Long sequenceId =
-                    photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
+            final Long sequenceId = photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto()
+                    .getSequenceId();
             final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
             if (shouldUpdateUI(photo, sequence)) {
                 SwingUtilities.invokeLater(() -> {
                     DataSet.getInstance().setSelectedSequence(sequence);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(
-                            DataSet.getInstance().enablePreviousPhotoAction(),
-                            DataSet.getInstance().enableNextPhotoAction());
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(DataSet.getInstance()
+                            .enablePreviousPhotoAction(), DataSet.getInstance().enableNextPhotoAction());
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                         PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
@@ -177,8 +175,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
     }
 
     private boolean shouldUpdateUI(final Photo photo, final Sequence sequence) {
-        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null
-                && (sequence.hasDetections() || sequence.hasPhotos());
+        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null && (sequence
+                .hasDetections() || sequence.hasPhotos());
     }
 
     private void cleanUpOldSequence() {
@@ -240,8 +238,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 autoplayTimer.stop();
             } else if (autoplayTimer == null) {
-                final AutoplaySettings autoplaySettings =
-                        PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
+                final AutoplaySettings autoplaySettings = PreferenceManager.getInstance().loadTrackSettings()
+                        .getAutoplaySettings();
                 autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
                 autoplayTimer.setDelay(autoplaySettings.getDelay());
                 autoplayTimer.start();
