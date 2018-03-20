@@ -42,10 +42,10 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
+
     /** dialog components */
     private final DetailsPanel pnlDetails;
     private final ButtonPanel pnlButtons;
-    private final JScrollPane scrollablePanel;
 
 
     private DetectionDetailsDialog() {
@@ -56,8 +56,8 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                 DLG_HEIGHT, true, PreferenceEditor.class);
 
         pnlDetails = new DetailsPanel();
-        scrollablePanel = ContainerBuilder.buildScrollPane(ContainerBuilder.buildEmptyPanel(Color.WHITE), null,
-                Color.white, null, SCROLL_BAR_UNIT, false, DIM);
+        final JScrollPane scrollablePanel = ContainerBuilder.buildScrollPane(
+                ContainerBuilder.buildEmptyPanel(Color.WHITE), null, Color.white, null, SCROLL_BAR_UNIT, false, DIM);
         scrollablePanel.setViewportView(pnlDetails);
 
         pnlButtons = new ButtonPanel();
@@ -107,5 +107,12 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             pnlButtons.setVisible(false);
         }
         repaint();
+    }
+
+    /**
+     * Destroys the instance of the dialog.
+     */
+    public static void destroyInstance() {
+        instance = null;
     }
 }

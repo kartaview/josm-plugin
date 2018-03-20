@@ -35,8 +35,10 @@ final class Keys {
     static final String FILTER_SEARCH_EMPTY = "EMPTY";
 
     static final String LAYER_OPENED = "openstreetcam.layerOpened";
-    static final String PANEL_OPENED = "openstreetcam.panelOpened";
-    static final String PANEL_ICON_VISIBILITY = "openstreetcam_logo_25x25.png.visible";
+    static final String PHOTO_PANEL_OPENED = "openstreetcam.panelOpened";
+    static final String DETECTION_PANEL_OPENED = "openstreetcam.detection.panelOpened";
+    static final String PHOTO_PANEL_ICON_VISIBILITY = "openstreetcam_logo_25x25.png.visible";
+    static final String DETECTION_PANEL_ICON_VISIBILITY = "openstreetcam_detection.png.visible";
     static final String PLUGIN_LOCAL_VERSION = "openstreetcam.localVersion";
 
     static final String JOSM_AUTH_METHOD = "osm-server.auth-method";

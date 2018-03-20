@@ -19,7 +19,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
  */
 final class Formatter {
 
-    private final static String EMPTY_DATE = "0000-00-00 00:00:00";
+    private static final String EMPTY_DATE = "0000-00-00 00:00:00";
 
     private Formatter() {}
 

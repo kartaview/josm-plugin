@@ -54,27 +54,27 @@ public class SegmentBuilder {
         this.geometry = geometry;
     }
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public Long getFrom() {
+    Long getFrom() {
         return from;
     }
 
-    public Long getTo() {
+    Long getTo() {
         return to;
     }
 
-    public Long getWayId() {
+    Long getWayId() {
         return wayId;
     }
 
-    public Integer getCoverage() {
+    Integer getCoverage() {
         return coverage;
     }
 
-    public List<LatLon> getGeometry() {
+    List<LatLon> getGeometry() {
         return geometry;
     }
 

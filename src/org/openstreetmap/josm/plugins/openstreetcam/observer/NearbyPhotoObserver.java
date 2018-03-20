@@ -15,10 +15,10 @@ package org.openstreetmap.josm.plugins.openstreetcam.observer;
  * @author ioanao
  * @version $Revision$
  */
-public interface ClosestPhotoObserver {
+public interface NearbyPhotoObserver {
 
     /**
-     * Selects the closest photo to the selected photo.
+     * Selects the nearby photo to the selected photo.
      */
-    void selectClosestPhoto();
+    void selectNearbyPhoto();
 }

@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
  * @author beataj
  * @version $Revision$
  */
-class OpenPreferenceDialogAction extends JosmAction {
+final class OpenPreferenceDialogAction extends JosmAction {
 
     private static final long serialVersionUID = -5408882391844055637L;
 

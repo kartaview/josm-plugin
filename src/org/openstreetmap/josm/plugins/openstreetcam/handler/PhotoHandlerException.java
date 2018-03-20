@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 
 /**
@@ -18,24 +18,6 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 public class PhotoHandlerException extends Exception {
 
     private static final long serialVersionUID = -6666879046927057243L;
-
-    /**
-     * Builds a new exception with the given message.
-     *
-     * @param msg the exception message
-     */
-    public PhotoHandlerException(final String msg) {
-        super(msg);
-    }
-
-    /**
-     * Builds a new exception with the given cause.
-     *
-     * @param cause the exception cause
-     */
-    public PhotoHandlerException(final Throwable cause) {
-        super(cause);
-    }
 
     /**
      * Builds a new exception with the given message and cause.

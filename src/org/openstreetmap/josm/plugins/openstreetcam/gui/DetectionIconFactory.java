@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.ImageProvider.ImageSizes;
@@ -25,7 +26,7 @@ public enum DetectionIconFactory {
 
     INSTANCE;
 
-    private static final String SIGN_POST_PREFIX = "regulatory--arrow";
+    private static final String SIGN_POST_TYPE = "SIGN_POST";
     private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1.svg";
     private final Map<String, Pair<ImageIcon, ImageIcon>> iconsMap;
 
@@ -34,13 +35,9 @@ public enum DetectionIconFactory {
         iconsMap = new HashMap<>();
     }
 
-    public ImageIcon getIcon(final String name, final boolean isSelected) {
-        final String iconName = name.startsWith(SIGN_POST_PREFIX) ? SIGN_POST_ICON_NAME : name;
-        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.get(iconName);
-        if (iconPair == null) {
-            iconPair = new Pair<>(loadIcon(iconName, ImageSizes.LARGEICON), loadIcon(iconName, ImageSizes.CURSOR));
-            iconsMap.put(name, iconPair);
-        }
+    public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
+        final String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
+        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName, n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
         return isSelected ? iconPair.getSecond() : iconPair.getFirst();
     }
 

@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_ICON_VISIBILITY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -20,7 +21,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_ICON_VISIBILITY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -28,7 +29,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 
 
 /**
@@ -194,7 +195,7 @@ public final class PreferenceManager {
         return loadManager.loadPhotoSettings();
     }
 
-    public TrackSettings loadTrackSettings() {
+    public SequenceSettings loadTrackSettings() {
         return loadManager.loadTrackSettings();
     }
 
@@ -256,8 +257,12 @@ public final class PreferenceManager {
      *
      * @return a boolean a boolean value
      */
-    public boolean loadPanelOpenedFlag() {
-        return loadManager.loadPanelOpenedFlag();
+    public boolean loadPhotoPanelOpenedFlag() {
+        return loadManager.loadPhotoPanelOpenedFlag();
+    }
+
+    public boolean loadDetectionPanelOpenedFlag() {
+        return loadManager.loadDetectionPanelOpenedFlag();
     }
 
     /**
@@ -265,9 +270,14 @@ public final class PreferenceManager {
      *
      * @param value true/false in string format
      */
-    public void savePanelOpenedFlag(final String value) {
+    public void savePhotoPanelOpenedFlag(final String value) {
         final Boolean panelOpened = Boolean.parseBoolean(value);
-        saveManager.savePanelOpenedFlag(panelOpened);
+        saveManager.savePhotoPanelOpenedFlag(panelOpened);
+    }
+
+    public void saveDetectionPanelOpenedFlag(final String value) {
+        final Boolean panelOpened = Boolean.parseBoolean(value);
+        saveManager.saveDetectionPanelOpenedFlag(panelOpened);
     }
 
     /**
@@ -368,8 +378,12 @@ public final class PreferenceManager {
      * @param key a {@code String} value
      * @return a boolean value
      */
-    public boolean isPanelIconVisibilityKey(final String key) {
-        return PANEL_ICON_VISIBILITY.equals(key);
+    public boolean isPhotoPanelIconVisibilityKey(final String key) {
+        return PHOTO_PANEL_ICON_VISIBILITY.equals(key);
+    }
+
+    public boolean isDetectionPanelIconVisibilityKey(final String key) {
+        return DETECTION_PANEL_ICON_VISIBILITY.equals(key);
     }
 
     /**

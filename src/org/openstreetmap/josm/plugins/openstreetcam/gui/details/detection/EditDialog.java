@@ -48,16 +48,14 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
     private static final Border BORDER = new EmptyBorder(5, 5, 2, 5);
     private static final int SCROLL_BAR_UNIT = 100;
 
-    private final EditStatus status;
     private JTextArea txtComment;
     private DetectionChangeObserver observer;
 
 
-    EditDialog(final String title, final EditStatus status) {
+    EditDialog(final String title) {
         super(title, null, GuiSizesHelper.getDimensionDpiAdjusted(DIM));
         setLocationRelativeTo(MainApplication.getMap().mapView);
         createComponents();
-        this.status = status;
     }
 
     @Override
@@ -92,7 +90,7 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            notifyDetectionChangeObserver(status, txtComment.getText());
+            notifyDetectionChangeObserver(EditStatus.OTHER, txtComment.getText());
             txtComment.setText(null);
             dispose();
         }
@@ -102,10 +100,11 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
     private final class EditDocument extends PlainDocument {
 
         private static final long serialVersionUID = -6861902595242696120L;
+        private static final int MAX_LENGTH = 100;
 
         @Override
         public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
-            if (str != null && txtComment.getText().length() <= 100) {
+            if (str != null && txtComment.getText().length() <= MAX_LENGTH) {
                 super.insertString(offs, str, a);
             }
         }

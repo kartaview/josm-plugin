@@ -57,7 +57,6 @@ public class DownloadWayTask extends PleaseWaitRunnable {
         tempLayer = new OsmDataLayer(new DataSet(), OsmDataLayer.createNewName(), null);
     }
 
-
     @Override
     protected void cancel() {
         synchronized (this) {

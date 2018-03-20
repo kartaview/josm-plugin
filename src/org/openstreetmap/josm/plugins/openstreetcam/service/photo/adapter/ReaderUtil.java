@@ -72,7 +72,6 @@ final class ReaderUtil {
      * @param reader a {@code JsonReader} object
      * @return a list of {@code LatLon} objects
      * @throws IOException if the read operation failed
-     * @noinspection JavadocReference
      */
     static List<LatLon> readGeometry(final JsonReader reader) throws IOException {
         final List<LatLon> geometry = new ArrayList<>();

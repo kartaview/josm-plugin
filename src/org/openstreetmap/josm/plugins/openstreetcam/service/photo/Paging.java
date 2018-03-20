@@ -6,9 +6,8 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.argument;
+package org.openstreetmap.josm.plugins.openstreetcam.service.photo;
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 
 
@@ -25,7 +24,8 @@ public class Paging {
             new Paging(1, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems());
 
     /** default paging used for the tracks method */
-    public static final Paging TRACKS_DEFAULT = new Paging(1, Config.getInstance().getTracksMaxItems());
+    public static final Paging TRACKS_DEFAULT =
+            new Paging(1, OpenStreetCamServiceConfig.getInstance().getTracksMaxItems());
 
     private final int page;
     private final int itemsPerPage;

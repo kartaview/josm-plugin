@@ -20,14 +20,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
  * @author beataj
  * @version $Revision$
  */
-public class DownloadPhotosAction extends JosmAction {
+class DownloadPhotosAction extends JosmAction {
 
     private static final long serialVersionUID = 9151442277348821560L;
 
     private final String taskTitle;
     private final boolean loadNextResults;
 
-    public DownloadPhotosAction(final String name, final String taskTitle, final boolean loadNextResults) {
+    DownloadPhotosAction(final String name, final String taskTitle, final boolean loadNextResults) {
         super(name, IconConfig.getInstance().getDownloadIconName(), name, null, true);
         this.taskTitle = taskTitle;
         this.loadNextResults = loadNextResults;

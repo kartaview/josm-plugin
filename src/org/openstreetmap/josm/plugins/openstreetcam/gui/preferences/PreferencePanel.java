@@ -24,7 +24,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -98,9 +98,8 @@ class PreferencePanel extends JPanel {
                 new SelectionListener(), Font.PLAIN, settings.getPhotoSettings().isHighQualityFlag(), enabled);
         add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
 
-        final boolean selectedMouseHoverFlag =
-                settings.getTrackSettings().isDisplayTrack() || settings.getPhotoSettings().isHighQualityFlag() ? false
-                        : settings.getPhotoSettings().isMouseHoverFlag();
+        final boolean selectedMouseHoverFlag = !settings.getTrackSettings().isDisplayTrack()
+                && !settings.getPhotoSettings().isHighQualityFlag() && settings.getPhotoSettings().isMouseHoverFlag();
         final boolean enabledMouseHoverFlag =
                 !(settings.getTrackSettings().isDisplayTrack() || settings.getPhotoSettings().isHighQualityFlag());
         cbMouseHover = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefMouseHoverLbl(), new SelectionListener(),
@@ -135,10 +134,10 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayDelayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_AUTOPLAY_DELAY);
-        int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
+        final int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
                 .getTrackSettings().getAutoplaySettings().getDelay() > Config.getInstance().getAutoplayMinDelay()
-                        ? Config.getInstance().getAutoplayMinDelay()
-                        : settings.getTrackSettings().getAutoplaySettings().getDelay();
+                        ? settings.getTrackSettings().getAutoplaySettings().getDelay()
+                        : Config.getInstance().getAutoplayMinDelay();
         spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
                 Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
@@ -189,7 +188,7 @@ class PreferencePanel extends JPanel {
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
-        final TrackSettings trackSettings = new TrackSettings(cbDisplayTrack.isSelected(),
+        final SequenceSettings trackSettings = new SequenceSettings(cbDisplayTrack.isSelected(),
                 new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());

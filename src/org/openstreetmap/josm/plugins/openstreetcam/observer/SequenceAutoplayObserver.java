@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
  * @author beataj
  * @version $Revision$
  */
-public interface TrackAutoplayObserver {
+public interface SequenceAutoplayObserver {
 
     /**
      * Starts to auto-play the track or stop an already playing track.

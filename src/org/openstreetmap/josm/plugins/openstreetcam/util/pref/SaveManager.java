@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -33,7 +34,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
@@ -49,16 +50,16 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.TrackSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
@@ -116,7 +117,7 @@ final class SaveManager {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOnlyMineFlag());
+            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
             saveDataTypeFilter(filter.getDataTypes());
             saveDetectionFilter(filter.getDetectionFilter());
         }
@@ -133,10 +134,20 @@ final class SaveManager {
     }
 
     private void saveDetectionFilter(final DetectionFilter filter) {
-        saveOsmComparisonFilter(filter.getOsmComparisons());
-        saveEditStatusFilter(filter.getEditStatuses());
-        saveSignTypeFilter(filter.getSignTypes());
-        saveModesFilter(filter.getModes());
+        List<OsmComparison> osmComparions = null;
+        List<EditStatus> editStatuses = null;
+        List<SignType> signTypes = null;
+        List<DetectionMode> detectionModes = null;
+        if (filter != null) {
+            osmComparions = filter.getOsmComparisons();
+            editStatuses = filter.getEditStatuses();
+            signTypes = filter.getSignTypes();
+            detectionModes = filter.getModes();
+        }
+        saveOsmComparisonFilter(osmComparions);
+        saveEditStatusFilter(editStatuses);
+        saveSignTypeFilter(signTypes);
+        saveModesFilter(detectionModes);
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -190,13 +201,13 @@ final class SaveManager {
         Main.pref.putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
-    void saveTrackSettings(final TrackSettings trackSettings) {
+    void saveTrackSettings(final SequenceSettings trackSettings) {
         Main.pref.putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Main.pref.put(AUTOPLAY_LENGTH, length);
-                    Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+            Main.pref.put(AUTOPLAY_LENGTH, length);
+            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
@@ -215,8 +226,12 @@ final class SaveManager {
         Main.pref.putBoolean(LAYER_OPENED, isLayerOpened);
     }
 
-    void savePanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.putBoolean(PANEL_OPENED, isPanelOpened);
+    void savePhotoPanelOpenedFlag(final boolean isPanelOpened) {
+        Main.pref.putBoolean(PHOTO_PANEL_OPENED, isPanelOpened);
+    }
+
+    void saveDetectionPanelOpenedFlag(final boolean isPanelOpened) {
+        Main.pref.putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
     }
 
     void saveDataType(final DataType dataType) {

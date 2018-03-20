@@ -7,29 +7,50 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
+ * Defines the filters that the user can use to reduce the displayed results.
  *
  * @author beataj
  * @version $Revision$
  */
 public class SearchFilter {
 
+    public static final SearchFilter DEFAULT =
+            new SearchFilter(null, false, Arrays.asList(ImageDataType.values()), DetectionFilter.DEFAULT);
+
     private final Date date;
-    private final boolean onlyMineFlag;
+    private final boolean olnyUserData;
     private List<ImageDataType> dataTypes;
     private DetectionFilter detectionFilter;
 
 
-    public SearchFilter(final Date date, final boolean onlyMineFlag) {
+    /**
+     * Builds a new filter with the given arguments.
+     *
+     * @param date a {@code Date} represents the starting date from which the data is returned
+     * @param olnyUserData if true, then only the data contributed by the logged in user is returned
+     */
+    public SearchFilter(final Date date, final boolean olnyUserData) {
         this.date = date;
-        this.onlyMineFlag = onlyMineFlag;
+        this.olnyUserData = olnyUserData;
     }
 
+    /**
+     * Builds a new filter with the given arguments.
+     *
+     * @param date a {@code Date} represents the starting date from which the data is returned
+     * @param onlyMineFlag if true, then only the data contributed by the logged in user is returned
+     * @param dataTypes a {@code DataType} specifies the type of data to be displayed
+     * @param detectionFilter a {@code DetectionFilter} specifies the {@code Detection} related filters
+     */
     public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
             final DetectionFilter detectionFilter) {
         this(date, onlyMineFlag);
@@ -49,8 +70,8 @@ public class SearchFilter {
         return date;
     }
 
-    public boolean isOnlyMineFlag() {
-        return onlyMineFlag;
+    public boolean isOlnyUserData() {
+        return olnyUserData;
     }
 
 
@@ -59,7 +80,7 @@ public class SearchFilter {
         final int prime = 31;
         int result = 1;
         result = prime * result + EntityUtil.hashCode(date);
-        result = prime * result + EntityUtil.hashCode(onlyMineFlag);
+        result = prime * result + EntityUtil.hashCode(olnyUserData);
         result = prime * result + EntityUtil.hashCode(dataTypes);
         result = prime * result + EntityUtil.hashCode(detectionFilter.hashCode());
         return result;
@@ -73,7 +94,7 @@ public class SearchFilter {
         } else if (obj != null && obj.getClass() == this.getClass()) {
             final SearchFilter other = (SearchFilter) obj;
             result = EntityUtil.bothNullOrEqual(date, other.getDate());
-            result = result && (onlyMineFlag == other.isOnlyMineFlag());
+            result = result && (olnyUserData == other.isOlnyUserData());
             result = result && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes());
             result = result && EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
         }
@@ -81,9 +102,25 @@ public class SearchFilter {
     }
 
 
+    /**
+     * Verifies if only the detection filters have been changed or not.
+     *
+     * @param other a {@code SearchFilter} a new search filter
+     * @return true/false
+     */
     public boolean onlyDetectionFilterChanged(final SearchFilter other) {
-        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (onlyMineFlag == other.isOnlyMineFlag())
+        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (olnyUserData == other.isOlnyUserData())
                 && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes())
                 && !EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
+    }
+
+    /**
+     * Returns the OSM user identifier of the currently logged in user. If the user is not logged in the method return
+     * null.
+     *
+     * @return a {@code Long}
+     */
+    public Long getOsmUserId() {
+        return isOlnyUserData() ? Util.getOsmUserId() : null;
     }
 }

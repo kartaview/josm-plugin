@@ -27,16 +27,16 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -54,8 +54,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements ClosestPhotoObservable, DataTypeChangeObservable, LocationObservable,
-SequenceObservable, TrackAutoplayObservable {
+class ButtonPanel extends JPanel implements NearbyPhotoObservable, DataTypeChangeObservable, LocationObservable,
+SequenceObservable, SequenceAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -75,11 +75,11 @@ SequenceObservable, TrackAutoplayObservable {
     private JButton btnMatchedWay;
 
     /* notifies the plugin main class */
-    private ClosestPhotoObserver closestPhotoObserver;
+    private NearbyPhotoObserver nearbyPhotoObserver;
     private DataTypeChangeObserver dataUpdateObserver;
     private LocationObserver locationObserver;
     private SequenceObserver sequenceObserver;
-    private TrackAutoplayObserver trackAutoplayObserver;
+    private SequenceAutoplayObserver sequenceAutoplayObserver;
 
     /* the currently selected photo */
     private Photo photo;
@@ -193,6 +193,9 @@ SequenceObservable, TrackAutoplayObservable {
             btnClosestPhoto.setEnabled(false);
             btnLocation.setEnabled(false);
             btnMatchedWay.setEnabled(false);
+            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                enableDataSwitchButton(true);
+            }
         }
     }
 
@@ -307,13 +310,13 @@ SequenceObservable, TrackAutoplayObservable {
     }
 
     @Override
-    public void registerObserver(final ClosestPhotoObserver closestOhotoObserver) {
-        this.closestPhotoObserver = closestOhotoObserver;
+    public void registerObserver(final NearbyPhotoObserver nearbyPhotoObserver) {
+        this.nearbyPhotoObserver = nearbyPhotoObserver;
     }
 
     @Override
-    public void notifyClosestPhotoObserver() {
-        closestPhotoObserver.selectClosestPhoto();
+    public void notifyNearbyPhotoObserver() {
+        nearbyPhotoObserver.selectNearbyPhoto();
     }
 
     @Override
@@ -327,13 +330,13 @@ SequenceObservable, TrackAutoplayObservable {
     }
 
     @Override
-    public void registerObserver(final TrackAutoplayObserver trackAutoplayObserver) {
-        this.trackAutoplayObserver = trackAutoplayObserver;
+    public void registerObserver(final SequenceAutoplayObserver sequenceAutoplayObserver) {
+        this.sequenceAutoplayObserver = sequenceAutoplayObserver;
     }
 
     @Override
     public void notifyObserver(final AutoplayAction action) {
-        trackAutoplayObserver.play(action);
+        sequenceAutoplayObserver.play(action);
     }
 
     boolean isPhotoSelected() {
@@ -417,7 +420,7 @@ SequenceObservable, TrackAutoplayObservable {
         @Override
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
-                notifyClosestPhotoObserver();
+                notifyNearbyPhotoObserver();
             }
         }
     }
@@ -445,7 +448,7 @@ SequenceObservable, TrackAutoplayObservable {
                 final AutoplayAction eventAction = AutoplayAction.getAutoplayAction(event.getActionCommand());
                 final AutoplayAction autoplayAction = eventAction != null ? eventAction
                         : AutoplayAction.getAutoplayAction(btnAutoplay.getActionCommand());
-                if (autoplayAction.equals(AutoplayAction.START)) {
+                if (autoplayAction != null && autoplayAction.equals(AutoplayAction.START)) {
                     updateAutoplayButton(AutoplayAction.STOP);
                     btnClosestPhoto.setEnabled(false);
                     btnPrevious.setEnabled(false);

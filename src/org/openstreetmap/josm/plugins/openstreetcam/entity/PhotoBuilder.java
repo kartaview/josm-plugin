@@ -78,56 +78,8 @@ public class PhotoBuilder {
         this.username = username;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getSequenceId() {
-        return sequenceId;
-    }
-
-    public Integer getSequenceIndex() {
-        return sequenceIndex;
-    }
-
-    public LatLon getLocation() {
-        return location;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLargeThumbnailName() {
-        return largeThumbnailName;
-    }
-
-    public String getThumbnailName() {
-        return thumbnailName;
-    }
-
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
-    public Double getHeading() {
-        return heading;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public Long getWayId() {
-        return wayId;
-    }
-
     public void wayId(final Long wayId) {
         this.wayId = wayId;
-    }
-
-    public String getShotDate() {
-        return shotDate;
     }
 
     public void shotDate(final String shotDate) {
@@ -138,15 +90,63 @@ public class PhotoBuilder {
         this.detections = detections;
     }
 
-    public List<Detection> getDetections() {
-        return detections;
-    }
-
     public void oriName(final String oriName) {
         this.oriName = oriName;
     }
 
-    public String getOriName() {
+    Long getId() {
+        return id;
+    }
+
+    Long getSequenceId() {
+        return sequenceId;
+    }
+
+    Integer getSequenceIndex() {
+        return sequenceIndex;
+    }
+
+    LatLon getLocation() {
+        return location;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    String getLargeThumbnailName() {
+        return largeThumbnailName;
+    }
+
+    String getThumbnailName() {
+        return thumbnailName;
+    }
+
+    Long getTimestamp() {
+        return timestamp;
+    }
+
+    Double getHeading() {
+        return heading;
+    }
+
+    String getUsername() {
+        return username;
+    }
+
+    Long getWayId() {
+        return wayId;
+    }
+
+    String getShotDate() {
+        return shotDate;
+    }
+
+    List<Detection> getDetections() {
+        return detections;
+    }
+
+    String getOriName() {
         return oriName;
     }
 

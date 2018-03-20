@@ -49,7 +49,6 @@ public class UserAgent {
 
     @Override
     public String toString() {
-        return new StringBuilder("JOSM/").append(josmVersion).append(", OpenStreetCam/").append(openStreetCamVersion)
-                .append(", User Info/").append(osmUserInfo).toString();
+        return "JOSM/" + josmVersion + ", OpenStreetCam/" + openStreetCamVersion + ", User Info/" + osmUserInfo;
     }
 }

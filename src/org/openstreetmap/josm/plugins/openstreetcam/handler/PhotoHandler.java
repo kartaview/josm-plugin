@@ -6,7 +6,7 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam;
+package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -54,10 +54,11 @@ public final class PhotoHandler {
      *
      * @param photo a {@code Photo} represents the currently selected object
      * @param type a {@code PhotoType} represents the type of photo to load
-     * @return a pair of ({@code BufferedImage}, {@code Boolean}) representing the corresponding image and boolean flag.
-     * The flag is true if the user requested the high quality image and for some reason the image could not be
-     * retrieved and instead the large thumbnail is retrieved.
-     * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be read
+     * @return a pair of ({@code BufferedImage}, {@code Boolean}) representing the corresponding image and
+     * boolean flag. The flag is true if the user requested the high quality image and for some reason the
+     * image could not be retrieved and instead the large thumbnail is retrieved.
+     * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be
+     * read
      */
     public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type)
             throws PhotoHandlerException {

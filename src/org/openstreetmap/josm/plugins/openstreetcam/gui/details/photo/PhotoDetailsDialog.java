@@ -11,21 +11,23 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
-import org.openstreetmap.josm.plugins.openstreetcam.PhotoHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.ClosestPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.TrackAutoplayObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -177,7 +179,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             final Pair<BufferedImage, PhotoSize> imageResult =
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
-            if (imageResult.getFirst() != null && OpenStreetCamLayer.getInstance().getSelectedPhoto() != null) {
+            if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null) {
                 if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                         && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
                     pnlDetails.updateUI(photo, true);
@@ -194,6 +196,11 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    public void updatePhotoDetections(final List<Detection> detections) {
+        pnlPhoto.updateDetections(detections);
+        repaint();
+    }
+
     /**
      * Registers the observers to the panels.
      *
@@ -204,9 +211,9 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
-    public void registerObservers(final ClosestPhotoObserver closestPhotoObserver,
+    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
             final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
-            final SequenceObserver sequenceObserver, final TrackAutoplayObserver trackAutoplayObserver,
+            final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
@@ -267,5 +274,9 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      */
     public boolean isPhotoSelected() {
         return pnlBtn.isPhotoSelected();
+    }
+
+    public List<Detection> getDisplayedPhotoDetections() {
+        return pnlPhoto.getDetections();
     }
 }

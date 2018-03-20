@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.gpx.GpxManager;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.gpx.GpxManagerException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -67,9 +68,8 @@ class SaveTrackAction extends JosmAction {
 
 
     private void saveSequence(final String fileName) {
-        final OpenStreetCamLayer layer = OpenStreetCamLayer.getInstance();
         try {
-            gpxManager.saveSequence(layer.getSelectedSequence().getFirst(), fileName);
+            gpxManager.saveSequence(DataSet.getInstance().getSelectedSequence(), fileName);
         } catch (final GpxManagerException e) {
             JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorSequenceSaveText(),
                     GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
@@ -77,7 +77,7 @@ class SaveTrackAction extends JosmAction {
     }
 
     private String getFileName() {
-        return TRACK + "_" + OpenStreetCamLayer.getInstance().getSelectedPhoto().getSequenceId() + EXT;
+        return TRACK + "_" + DataSet.getInstance().getSelectedPhoto().getSequenceId() + EXT;
     }
 
 

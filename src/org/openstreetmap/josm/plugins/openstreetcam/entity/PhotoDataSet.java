@@ -60,4 +60,8 @@ public class PhotoDataSet {
     public boolean hasNextItems() {
         return page != null && totalItems > page * OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems();
     }
+
+    public boolean hasItems() {
+        return photos != null && !photos.isEmpty();
+    }
 }

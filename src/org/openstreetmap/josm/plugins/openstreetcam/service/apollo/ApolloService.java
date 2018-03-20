@@ -7,14 +7,13 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
+import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
-import org.openstreetmap.josm.plugins.openstreetcam.service.FilterPack;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.DetectionResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.google.gson.Gson;
@@ -37,9 +36,9 @@ public class ApolloService extends BaseService {
     }
 
 
-    public List<Detection> searchDetections(final BoundingBox area, final FilterPack filterPack)
-            throws ServiceException {
-        final String url = new HttpQueryBuilder().buildSearchQuery(area, filterPack);
+    public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
+            final DetectionFilter detectionFilter) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildSearchQuery(area, date, osmUserId, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();
@@ -53,8 +52,7 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(root);
     }
 
-    public List<Detection> retrieveSequenceDetections(final Long sequenceId)
-            throws ServiceException {
+    public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
@@ -71,7 +69,7 @@ public class ApolloService extends BaseService {
 
     public Detection retrieveDetection(final Long id) throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveDetectionQuery(id);
-        final DetectionResponse response = executeGet(url, DetectionResponse.class);
+        final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetection();
     }

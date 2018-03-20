@@ -6,8 +6,9 @@
  *
  * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
-package org.openstreetmap.josm.plugins.openstreetcam.argument;
+package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
+import java.util.Arrays;
 import java.util.List;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -22,6 +23,9 @@ import com.telenav.josm.common.entity.EntityUtil;
  * @version $Revision$
  */
 public class DetectionFilter {
+
+    public static final DetectionFilter DEFAULT =
+            new DetectionFilter(Arrays.asList(OsmComparison.NEW, OsmComparison.SAME), null, null, null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
