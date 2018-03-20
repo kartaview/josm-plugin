@@ -14,12 +14,14 @@ import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
- * Defines the photo business entity.
+ * Defines the photo business entity. The field names originated from the OSC API and should be kept in order
+ * to avoid transformation between notions.
  *
  * @author Beata
  * @version $Revision$
  */
 public class Photo {
+
 
     private final Long id;
     private final Long sequenceId;

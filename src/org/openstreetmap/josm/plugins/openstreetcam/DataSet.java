@@ -64,9 +64,9 @@ public final class DataSet {
      * Clears the current data set, including the selections.
      */
     public synchronized void clear() {
-        this.segments = null;
-        this.detections = null;
-        this.photoDataSet = null;
+        this.segments = new ArrayList<>();
+        this.detections = new ArrayList<>();
+        this.photoDataSet = new PhotoDataSet();
         clearSelection();
     }
 
@@ -76,7 +76,7 @@ public final class DataSet {
     public synchronized void clearSelection() {
         this.selectedDetection = null;
         this.selectedPhoto = null;
-        this.nearbyPhotos = null;
+        this.nearbyPhotos = new ArrayList<>();
         this.nearyPhotosStartPhoto = null;
         this.selectedSequence = null;
     }
@@ -85,8 +85,8 @@ public final class DataSet {
      * Clears the high zoom level data (photo locations and detections) including selected items.
      */
     public synchronized void cleaHighZoomLevelData() {
-        this.detections = null;
-        this.photoDataSet = null;
+        this.detections = new ArrayList<>();
+        this.photoDataSet = new PhotoDataSet();
         clearSelection();
     }
 
