@@ -366,7 +366,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                 selectionHandler.play(AutoplayAction.STOP);
                 final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
-                detailsDialog.enableSequenceActions(false, false);
+                detailsDialog.enableSequenceActions(false, false, null);
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             }

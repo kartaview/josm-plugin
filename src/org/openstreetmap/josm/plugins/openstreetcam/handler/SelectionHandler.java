@@ -40,8 +40,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver {
+public final class SelectionHandler extends MouseSelectionHandler
+implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -60,9 +60,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             CacheManager.getInstance().removePhotos(DataSet.getInstance().getSelectedPhoto().getSequenceId());
         }
 
-        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems() && Util.zoom(MainApplication
-                .getMap().mapView.getRealBounds()) < PreferenceManager.getInstance().loadMapViewSettings()
-                        .getPhotoZoom()) {
+        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
+                && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
+                .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -75,7 +75,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     }
 
     @Override
-    void handleDataSelection(final Photo photo, final Detection detection) {
+    void handleDataSelection(final Photo photo, final Detection detection, final boolean displayLoadingMessage) {
         if (photo != null) {
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 stopAutoplay();
@@ -110,8 +110,8 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
      * @return true if the sequence needs to be loaded; false otherwise
      */
     private boolean shouldLoadSequence(final Photo photo) {
-        return PreferenceManager.getInstance().loadPreferenceSettings().getTrackSettings().isDisplayTrack() && !DataSet
-                .getInstance().isPhotoPartOfSequence(photo);
+        return PreferenceManager.getInstance().loadPreferenceSettings().getTrackSettings().isDisplayTrack()
+                && !DataSet.getInstance().isPhotoPartOfSequence(photo);
     }
 
     @Override
@@ -121,11 +121,11 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         } else {
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().setSelectedPhoto(photo);
-                if (DataSet.getInstance().hasNearbyPhotos()) {
+                if (DataSet.getInstance().hasNearbyPhotos() && (autoplayTimer == null || !autoplayTimer.isRunning())) {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
-                if (!DataSet.getInstance().hasSelectedDetection() && !MainApplication.getMap().mapView.getRealBounds()
-                        .contains(photo.getLocation())) {
+                if (!DataSet.getInstance().hasSelectedDetection()
+                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
                     MainApplication.getMap().mapView.zoomTo(photo.getLocation());
                 }
 
@@ -136,8 +136,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 }
                 PhotoDetailsDialog.getInstance().updateUI(photo, photoType, displayLoadingMessage);
                 if (DataSet.getInstance().hasSelectedSequence() && (autoplayTimer == null)) {
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(DataSet.getInstance()
-                            .enablePreviousPhotoAction(), DataSet.getInstance().enableNextPhotoAction());
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction(), null);
                 }
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 ThreadPool.getInstance().execute(() -> PhotoHandler.getInstance().loadPhotos(DataSet.getInstance()
@@ -155,28 +156,29 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         cleanUpOldSequence();
 
         ThreadPool.getInstance().execute(() -> {
-            final Long sequenceId = photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto()
-                    .getSequenceId();
-            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Long sequenceId =
+                    photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
+                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            if (shouldUpdateUI(photo, sequence)) {
-                SwingUtilities.invokeLater(() -> {
-                    DataSet.getInstance().setSelectedSequence(sequence);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(DataSet.getInstance()
-                            .enablePreviousPhotoAction(), DataSet.getInstance().enableNextPhotoAction());
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                    if (shouldUpdateUI(photo, sequence)) {
+                        SwingUtilities.invokeLater(() -> {
+                            DataSet.getInstance().setSelectedSequence(sequence);
+                            PhotoDetailsDialog.getInstance().enableSequenceActions(
+                                    DataSet.getInstance().enablePreviousPhotoAction(),
+                                    DataSet.getInstance().enableNextPhotoAction(), null);
+                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                            }
+                            OpenStreetCamLayer.getInstance().invalidate();
+                            MainApplication.getMap().repaint();
+                        });
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
-                    MainApplication.getMap().repaint();
-                });
-            }
         });
     }
 
     private boolean shouldUpdateUI(final Photo photo, final Sequence sequence) {
-        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null && (sequence
-                .hasDetections() || sequence.hasPhotos());
+        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null
+                && (sequence.hasDetections() || sequence.hasPhotos());
     }
 
     private void cleanUpOldSequence() {
@@ -185,7 +187,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             CacheManager.getInstance().removePhotos(DataSet.getInstance().getSelectedPhoto().getSequenceId());
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().setSelectedSequence(null);
-                PhotoDetailsDialog.getInstance().enableSequenceActions(false, false);
+                PhotoDetailsDialog.getInstance().enableSequenceActions(false, false, null);
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
@@ -202,9 +204,10 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
             }
-            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
+            enhancePhotoWithDetections(photo);
+            final Detection detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
+                    ? photo.getDetections().get(0) : null;
+                    handleDataSelection(photo, detection, true);
         }
     }
 
@@ -218,11 +221,11 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             final List<ImageDataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
             Detection detection = null;
             if (dataTypes != null && dataTypes.contains(ImageDataType.DETECTIONS)) {
-                final List<Detection> detections = loadPhotoDetections(photo);
-                photo.setDetections(detections);
-                detection = detections != null && !detections.isEmpty() ? detections.get(0) : null;
+                enhancePhotoWithDetections(photo);
+                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
+                        ? photo.getDetections().get(0) : null;
             }
-            handleDataSelection(photo, detection);
+            handleDataSelection(photo, detection, true);
         }
     }
 
@@ -238,8 +241,8 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 autoplayTimer.stop();
             } else if (autoplayTimer == null) {
-                final AutoplaySettings autoplaySettings = PreferenceManager.getInstance().loadTrackSettings()
-                        .getAutoplaySettings();
+                final AutoplaySettings autoplaySettings =
+                        PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
                 autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
                 autoplayTimer.setDelay(autoplaySettings.getDelay());
                 autoplayTimer.start();
@@ -248,6 +251,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             }
         } else {
             stopAutoplay();
+
             if (DataSet.getInstance().hasNearbyPhotos()) {
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
@@ -259,32 +263,48 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         final Photo photo = DataSet.getInstance().getSelectedPhoto();
         if (photo != null) {
             Photo nextPhoto = DataSet.getInstance().sequencePhoto(photo.getSequenceIndex() + 1);
+            Detection detection = null;
             if (nextPhoto != null && autoplaySettings.getLength() != null) {
                 autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
                 if (autoplayDistance > autoplaySettings.getLength()) {
                     nextPhoto = null;
                 }
             }
-            if (DataSet.getInstance().selectedSequenceLastPhoto().equals(nextPhoto)) {
-                handleLastPhotoSelection(nextPhoto);
+            if (nextPhoto != null) {
+                enhancePhotoWithDetections(nextPhoto);
+                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
+                        ? photo.getDetections().get(0) : null;
+                        handleNextPhotoSelection(nextPhoto, detection);
             } else {
-                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-                selectPhoto(nextPhoto, photoType, false);
+                stopAutoplay();
             }
         } else {
             stopAutoplay();
         }
     }
 
-    private void handleLastPhotoSelection(final Photo nextPhoto) {
+    private void handleNextPhotoSelection(final Photo photo, final Detection detection) {
+        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
+        DataSet.getInstance().setSelectedDetection(detection);
+        DataSet.getInstance().selectNearbyPhotos(photo);
+        if (detection != null && !MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
+            MainApplication.getMap().mapView.zoomTo(detection.getPoint());
+        }
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-        selectPhoto(nextPhoto, photoType, false);
-        if (DataSet.getInstance().hasNearbyPhotos()) {
-            PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+        if (DataSet.getInstance().selectedSequenceLastPhoto().equals(photo)) {
+            selectPhoto(photo, photoType, false);
+            if (DataSet.getInstance().hasNearbyPhotos()) {
+                PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+            }
+            stopAutoplay();
+            PhotoDetailsDialog.getInstance().enableSequenceActions(true, false, AutoplayAction.START);
+            if (DataSet.getInstance().hasNearbyPhotos()) {
+                PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+            }
+        } else {
+            selectPhoto(photo, photoType, false);
         }
-        stopAutoplay();
     }
 
     private void stopAutoplay() {
@@ -296,6 +316,12 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             autoplayTimer = null;
         }
         autoplayDistance = 0;
+        PhotoDetailsDialog.getInstance().enableSequenceActions(DataSet.getInstance().enablePreviousPhotoAction(),
+                DataSet.getInstance().enableNextPhotoAction(), AutoplayAction.START);
+        DataSet.getInstance().selectNearbyPhotos(DataSet.getInstance().getSelectedPhoto());
+        if (DataSet.getInstance().hasNearbyPhotos()) {
+            PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+        }
     }
 
     public void changeAutoplayTimerDelay() {
