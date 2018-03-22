@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -62,12 +63,20 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         } else {
             photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
             if (photo != null) {
-                final List<Detection> detections = loadPhotoDetections(photo);
-                photo.setDetections(detections);
-                detection = detections != null && !detections.isEmpty() ? detections.get(0) : null;
+                enhancePhotoWithDetections(photo);
+                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
+                        ? photo.getDetections().get(0) : null;
             }
         }
-        handleDataSelection(photo, detection);
+        handleDataSelection(photo, detection, true);
+    }
+
+    void enhancePhotoWithDetections(final Photo photo) {
+        if (photo != null && PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
+                .contains(ImageDataType.DETECTIONS)) {
+            final List<Detection> detections = loadPhotoDetections(photo);
+            photo.setDetections(detections);
+        }
     }
 
     private Photo loadDetectionPhoto(final Detection detection) {
@@ -83,7 +92,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         return photo;
     }
 
-    List<Detection> loadPhotoDetections(final Photo photo) {
+    private List<Detection> loadPhotoDetections(final Photo photo) {
         List<Detection> photoDetections =
                 ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
         if (photoDetections != null && DataSet.getInstance().hasDetections()) {
@@ -139,13 +148,15 @@ abstract class MouseSelectionHandler extends MouseAdapter {
      */
     private boolean selectionAllowed() {
         return Util.zoom(MainApplication.getMap().mapView.getRealBounds()) >= PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom() || DataSet.getInstance().hasItems();
+                .loadMapViewSettings().getPhotoZoom()
+                || (DataSet.getInstance().hasDetections() || DataSet.getInstance().hasPhotos());
     }
 
 
     abstract void handleDataUnselection();
 
-    abstract void handleDataSelection(final Photo photo, final Detection detection);
+    abstract void handleDataSelection(final Photo photo, final Detection detection,
+            final boolean displayLoadingMessage);
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.

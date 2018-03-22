@@ -188,7 +188,7 @@ SequenceObservable, SequenceAutoplayObservable {
                 updateAutoplayButton(AutoplayAction.START);
             }
         } else {
-            enableSequenceActions(false, false);
+            enableSequenceActions(false, false, null);
             btnWebPage.setEnabled(false);
             btnClosestPhoto.setEnabled(false);
             btnLocation.setEnabled(false);
@@ -251,14 +251,15 @@ SequenceObservable, SequenceAutoplayObservable {
      * @param isPrevious if true then the "Previous" button is enabled; if false then the button is disabled
      * @param isNext if true then the "Next" button is enabled; if false then the button is disabled
      */
-    void enableSequenceActions(final boolean isPrevious, final boolean isNext) {
+    void enableSequenceActions(final boolean isPrevious, final boolean isNext, final AutoplayAction action) {
         btnPrevious.setEnabled(isPrevious);
         btnNext.setEnabled(isNext);
         btnAutoplay.setEnabled(isNext);
-        if (!isNext) {
-            updateAutoplayButton(AutoplayAction.START);
+        if (action != null) {
+            updateAutoplayButton(action);
         }
     }
+
 
     private void updateAutoplayButton(final AutoplayAction action) {
         if (action.equals(AutoplayAction.START)) {
@@ -393,7 +394,7 @@ SequenceObservable, SequenceAutoplayObservable {
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
                 final int index = isNext ? photo.getSequenceIndex() + 1 : photo.getSequenceIndex() - 1;
-                enableSequenceActions(false, false);
+                enableSequenceActions(false, false, null);
                 notifyObserver(index);
             }
         }
