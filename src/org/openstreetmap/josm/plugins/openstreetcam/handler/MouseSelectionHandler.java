@@ -68,7 +68,9 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                         ? photo.getDetections().get(0) : null;
             }
         }
-        handleDataSelection(photo, detection, true);
+        if (photo != null || detection != null) {
+            handleDataSelection(photo, detection, true);
+        }
     }
 
     void enhancePhotoWithDetections(final Photo photo) {
