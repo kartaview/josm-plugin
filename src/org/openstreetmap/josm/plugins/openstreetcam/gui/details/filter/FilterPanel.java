@@ -133,12 +133,12 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterPhotoTypeLbl(), Font.BOLD),
                 Constraints.LBL_PHOTO_TYPE);
 
-        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDataTypeImageText(), Font.PLAIN, null,
+        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), Font.PLAIN, null,
                 types != null && types.contains(ImageDataType.PHOTOS));
         add(cbbPhotos, Constraints.CBB_PHOTOS);
 
-        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDataTypeDetectionText(), Font.PLAIN, null,
-                types != null && types.contains(ImageDataType.DETECTIONS));
+        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(), Font.PLAIN,
+                null, types != null && types.contains(ImageDataType.DETECTIONS));
         add(cbbDetections, Constraints.CBB_DETECTIONS);
         cbbDetections.addItemListener(new DetectionFilterSelectionListener());
     }
