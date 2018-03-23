@@ -99,7 +99,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private void addFixButton() {
         final JosmAction action =
                 new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.FIXED);
-        btnFix = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusFixedText());
+        btnFix = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnFixDetection());
         btnFix.setToolTipText(
                 GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
         add(btnFix);
@@ -108,7 +108,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private void addAlreadyFixedButton() {
         final JosmAction action = new EditAction(GuiConfig.getInstance().getBtnAlreadyFixedDetectionShortcutText(),
                 EditStatus.ALREADY_FIXED);
-        btnAlreadyFixed = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusAlreadyFixedText());
+        btnAlreadyFixed = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnAlreadyFixedDetection());
         btnAlreadyFixed.setToolTipText(GuiConfig.getInstance().getBtnAlreadyFixedDetectionTlt().replace(SHORTCUT,
                 action.getShortcut().getKeyText()));
         add(btnAlreadyFixed);
@@ -123,7 +123,7 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
 
 
         final DisplayEditDialogAction otherAction =
-                new DisplayEditDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
+                new DisplayEditDialogAction(GuiConfig.getInstance().getAddCommentDialogText(),
                         GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
         commentMenuItem = MenuBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
         commentMenuItem.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,

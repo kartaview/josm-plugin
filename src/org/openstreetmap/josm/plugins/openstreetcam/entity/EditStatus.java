@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
 
 /**
  * Defines the detection edit status entity.
@@ -11,23 +9,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  */
 public enum EditStatus {
 
-    OPEN, FIXED {
-
-        @Override
-        public String toString() {
-            return GuiConfig.getInstance().getDetectionEditStatusFixedText();
-        }
-    },
-
-    ALREADY_FIXED {
-
-        @Override
-        public String toString() {
-            return GuiConfig.getInstance().getDetectionEditStatusAlreadyFixedText();
-        }
-    },
-    BAD_SIGN,
-    OTHER;
+    OPEN, FIXED, ALREADY_FIXED, BAD_SIGN, OTHER;
 
     @Override
     public String toString() {
