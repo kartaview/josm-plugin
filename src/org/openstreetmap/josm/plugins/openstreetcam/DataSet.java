@@ -341,6 +341,12 @@ public final class DataSet {
         return selectedSequence.getPhotos().get(index - 1);
     }
 
+    public void removeDetection(final Detection detection) {
+        if (hasDetections()) {
+            detections.remove(detection);
+        }
+    }
+
     /**
      * Sets the selected photo.
      *
