@@ -39,6 +39,8 @@ final class RequestConstants {
     static final String TYPES = "signTypes";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
+    static final String EDIT_STATUS_FIXED = "FIXED";
+    static final String EDIT_STATUS_ALREADY_FIXED = "ALREADY_FIXED";
     static final String ID = "id";
 
     private RequestConstants() {}

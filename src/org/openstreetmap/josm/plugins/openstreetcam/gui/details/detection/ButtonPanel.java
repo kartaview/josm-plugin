@@ -10,12 +10,9 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
@@ -23,7 +20,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObse
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.gui.builder.MenuBuilder;
 
 
 /**
@@ -41,54 +37,48 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private static final Dimension DIM = new Dimension(200, 24);
 
     private DetectionChangeObserver detectionChangeObserver;
-    private JButton btnAlreadyFixed;
-    private JButton btnFix;
-    private JMenuItem badDetectionMenuItem;
-    private JMenuItem commentMenuItem;
+    private JButton btnMapped;
+    private JButton btnBadDetection;
+    private JButton btnComment;
 
 
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
-        addFixButton();
-        addAlreadyFixedButton();
-        addCouldntFixButton();
+        addMappedButton();
+        addBadDetectionButton();
+        addCommentButton();
         setPreferredSize(DIM);
     }
 
     void enablePanelActions(final EditStatus editStatus) {
         switch (editStatus) {
             case OPEN:
-                enablePanelActions(true, true, true, true);
-                break;
-            case FIXED:
-                enablePanelActions(true, false, true, true);
-                break;
-            case ALREADY_FIXED:
-                enablePanelActions(false, true, true, true);
+                enablePanelActions(true, true, true);
                 break;
             case BAD_SIGN:
-                enablePanelActions(true, true, false, true);
+                enablePanelActions(true, false, true);
+                break;
+            case MAPPED:
+                enablePanelActions(false, true, true);
                 break;
             default:
                 // OTHER
-                enablePanelActions(true, true, true, false);
+                enablePanelActions(true, true, false);
                 break;
         }
     }
 
-    private void enablePanelActions(final boolean alreadyFixedFlag, final boolean fixFlag,
-            final boolean badDetectionFlag, final boolean otherFlag) {
-        btnAlreadyFixed.setEnabled(alreadyFixedFlag);
-        btnFix.setEnabled(fixFlag);
-        badDetectionMenuItem.setEnabled(badDetectionFlag);
-        commentMenuItem.setEnabled(otherFlag);
-
+    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag) {
+        btnMapped.setEnabled(mappedFlag);
+        btnBadDetection.setEnabled(badDetectionFlag);
+        btnComment.setEnabled(otherFlag);
     }
 
     @Override
     public void registerObserver(final DetectionChangeObserver observer) {
         detectionChangeObserver = observer;
-        ((DisplayEditDialogAction) commentMenuItem.getAction()).registerObserver(observer);
+        ((DisplayEditDialogAction) btnComment.getAction()).registerObserver(observer);
+
     }
 
     @Override
@@ -96,42 +86,32 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         detectionChangeObserver.editDetection(status, text);
     }
 
-    private void addFixButton() {
+    private void addMappedButton() {
         final JosmAction action =
-                new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.FIXED);
-        btnFix = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnFixDetection());
-        btnFix.setToolTipText(
+                new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.MAPPED);
+        btnMapped = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusMappedText());
+        btnMapped.setToolTipText(
                 GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
-        add(btnFix);
+        add(btnMapped);
     }
 
-    private void addAlreadyFixedButton() {
-        final JosmAction action = new EditAction(GuiConfig.getInstance().getBtnAlreadyFixedDetectionShortcutText(),
-                EditStatus.ALREADY_FIXED);
-        btnAlreadyFixed = ButtonBuilder.build(action, GuiConfig.getInstance().getBtnAlreadyFixedDetection());
-        btnAlreadyFixed.setToolTipText(GuiConfig.getInstance().getBtnAlreadyFixedDetectionTlt().replace(SHORTCUT,
-                action.getShortcut().getKeyText()));
-        add(btnAlreadyFixed);
-    }
-
-    private void addCouldntFixButton() {
+    private void addBadDetectionButton() {
         final EditAction badAction =
                 new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
-        badDetectionMenuItem = MenuBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
-        badDetectionMenuItem.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
+        btnBadDetection = ButtonBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
+        btnBadDetection.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
                 badAction.getShortcut().getKeyText()));
+        add(btnBadDetection);
+    }
 
-
+    private void addCommentButton() {
         final DisplayEditDialogAction otherAction =
-                new DisplayEditDialogAction(GuiConfig.getInstance().getAddCommentDialogText(),
+                new DisplayEditDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
                         GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
-        commentMenuItem = MenuBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
-        commentMenuItem.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
+        btnComment = ButtonBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
+        btnMapped.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
                 otherAction.getShortcut().getKeyText()));
-
-        final JButton btnOther = ButtonBuilder.build(new CouldntFixAction(badDetectionMenuItem, commentMenuItem),
-                GuiConfig.getInstance().getBtnCouldntFixDetection());
-        add(btnOther);
+        add(btnComment);
     }
 
 
@@ -151,36 +131,6 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
             notifyDetectionChangeObserver(editStatus, null);
         }
     }
-
-
-    private final class CouldntFixAction extends JosmAction {
-
-        private static final long serialVersionUID = 191591505362305396L;
-        private static final int Y_COORD = 4;
-
-        private final JPopupMenu menu;
-
-
-        private CouldntFixAction(final JMenuItem item1, final JMenuItem item2) {
-            menu = new JPopupMenu();
-            menu.add(item1);
-            menu.add(item2);
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            final JButton cmpParent = (JButton) event.getSource();
-            final Point point = cmpParent.getMousePosition();
-            int x = 0;
-            int y = 0;
-            if (cmpParent.getMousePosition() != null) {
-                x = point.x;
-                y = point.y - cmpParent.getWidth() / Y_COORD;
-            }
-            menu.show(cmpParent, x, y);
-        }
-    }
-
 
     private final class DisplayEditDialogAction extends JosmAction {
 

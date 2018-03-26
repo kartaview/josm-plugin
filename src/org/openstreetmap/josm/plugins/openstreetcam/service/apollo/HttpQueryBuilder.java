@@ -10,6 +10,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -91,8 +93,18 @@ class HttpQueryBuilder {
         }
 
         if (filter.getEditStatuses() != null && !filter.getEditStatuses().isEmpty()) {
+            final Set<String> editStatuses = new HashSet<>();
+            for (final EditStatus editStatus : filter.getEditStatuses()) {
+                if (editStatus.equals(EditStatus.MAPPED)) {
+                    editStatuses.add(RequestConstants.EDIT_STATUS_FIXED);
+                    editStatuses.add(RequestConstants.EDIT_STATUS_ALREADY_FIXED);
+                } else {
+                    editStatuses.add(editStatus.name());
+                }
+            }
+
             query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getEditStatuses())));
+                    .append(HttpUtil.utf8Encode(editStatuses));
         }
 
         if (filter.getSignTypes() != null && !filter.getSignTypes().isEmpty()) {

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-
 /**
  * Defines the detection edit status entity.
  *
@@ -9,7 +8,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public enum EditStatus {
 
-    OPEN, FIXED, ALREADY_FIXED, BAD_SIGN, OTHER;
+    OPEN, MAPPED, BAD_SIGN, OTHER;
 
     @Override
     public String toString() {
