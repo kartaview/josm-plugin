@@ -12,6 +12,7 @@ import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
@@ -31,6 +32,7 @@ public class ApolloService extends BaseService {
     @Override
     public Gson createGson() {
         final GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(EditStatus.class, new EditStatusTypeAdapter());
         builder.registerTypeAdapter(LatLon.class, new LatLonDeserializer());
         return builder.create();
     }

@@ -126,10 +126,8 @@ public final class GuiConfig extends BaseConfig {
     private final String gpxTrackDescription;
 
     private final String detectionDialogTitleName;
-    private final String btnFixDetection;
     private final String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
-    private final String btnAlreadyFixedDetection;
     private final String btnAlreadyFixedDetectionShortcutText;
     private final String btnAlreadyFixedDetectionTlt;
     private final String btnCouldntFixDetection;
@@ -143,6 +141,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
     private final String detectionModeText;
+    private final String detectionEditStatusMappedText;
     private final String detectionValidationStatusText;
     private final String detectionChangedValidationStatusText;
     private final String detectionConfirmedValidationStatusText;
@@ -265,10 +264,8 @@ public final class GuiConfig extends BaseConfig {
 
         gpxTrackDescription = readProperty("gpx.track.description");
 
-        btnFixDetection = readProperty("btn.detection.fix");
         btnFixDetectionShortcutText = readProperty("btn.detection.fix.shortcut.text");
         btnFixDetectionTlt = readProperty("btn.detection.fix.tlt");
-        btnAlreadyFixedDetection = readProperty("btn.detection.alreadyFixed");
         btnAlreadyFixedDetectionShortcutText = readProperty("btn.detection.alreadyFixed.shortcut.text");
         btnAlreadyFixedDetectionTlt = readProperty("btn.detection.alreadyFixed.tlt");
         btnCouldntFixDetection = readProperty("btn.detection.couldntFixed");
@@ -283,6 +280,8 @@ public final class GuiConfig extends BaseConfig {
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
         detectionModeText = readProperty("detection.mode.text");
+
+        detectionEditStatusMappedText = readProperty("detection.edit.status.value.mapped");
         detectionValidationStatusText = readProperty("detection.validation.status.text");
         detectionChangedValidationStatusText = readProperty("detection.validation.status.value.changed");
         detectionConfirmedValidationStatusText = readProperty("detection.validation.status.value.confirmed");
@@ -662,14 +661,6 @@ public final class GuiConfig extends BaseConfig {
         return gpxTrackDescription;
     }
 
-    public String getBtnFixDetection() {
-        return btnFixDetection;
-    }
-
-    public String getBtnAlreadyFixedDetection() {
-        return btnAlreadyFixedDetection;
-    }
-
     public String getBtnFixDetectionShortcutText() {
         return btnFixDetectionShortcutText;
     }
@@ -754,10 +745,6 @@ public final class GuiConfig extends BaseConfig {
         return btnBadDetectionShortcutText;
     }
 
-    public String getAddCommentDialogText() {
-        return dialogAddCommentText;
-    }
-
     public String getBtnBadDetectionTlt() {
         return btnBadDetectionTlt;
     }
@@ -786,19 +773,27 @@ public final class GuiConfig extends BaseConfig {
         return authenticationNeededErrorMessage;
     }
 
-    public String getDataTypeImageText() {
-        return dlgFilterDataTypeImageTxt;
-    }
-
-    public String getDataTypeDetectionText() {
-        return dlgFilterDataTypeDetectionsTxt;
-    }
-
     public String getDetectionCreatedDate() {
         return detectionCreatedDate;
     }
 
     public String getDetectionUpdatedDate() {
         return detectionUpdatedDate;
+    }
+
+    public String getDetectionEditStatusMappedText() {
+        return detectionEditStatusMappedText;
+    }
+
+    public String getDlgFilterDataTypeImageTxt() {
+        return dlgFilterDataTypeImageTxt;
+    }
+
+    public String getDlgFilterDataTypeDetectionsTxt() {
+        return dlgFilterDataTypeDetectionsTxt;
+    }
+
+    public String getDialogAddCommentText() {
+        return dialogAddCommentText;
     }
 }
