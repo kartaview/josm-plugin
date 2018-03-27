@@ -55,11 +55,14 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
             addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                     widthLbl);
         }
-        addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
-                DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
-        addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
-                DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
-
+        if (detection.getCreationTimestamp() != null) {
+            addDetectionInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
+                    DateFormatter.formatTimestamp(detection.getCreationTimestamp()), widthLbl);
+        }
+        if (detection.getLatestChangeTimestamp() != null) {
+            addDetectionInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
+                    DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
+        }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));

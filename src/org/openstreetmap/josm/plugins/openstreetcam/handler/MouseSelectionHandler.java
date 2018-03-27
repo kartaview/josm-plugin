@@ -64,8 +64,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
             if (photo != null) {
                 enhancePhotoWithDetections(photo);
-                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
-                        ? photo.getDetections().get(0) : null;
+                detection = photoSelectedDetection(photo);
             }
         }
         if (photo != null || detection != null) {
@@ -73,6 +72,13 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
     }
 
+    Detection photoSelectedDetection(final Photo photo) {
+        Detection detection = null;
+        if (photo.getDetections() != null && !photo.getDetections().isEmpty()) {
+            detection = ServiceHandler.getInstance().retrieveDetection(photo.getDetections().get(0).getId());
+        }
+        return detection;
+    }
     void enhancePhotoWithDetections(final Photo photo) {
         if (photo != null && PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
                 .contains(ImageDataType.DETECTIONS)) {
