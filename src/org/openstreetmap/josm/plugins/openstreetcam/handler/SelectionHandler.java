@@ -205,9 +205,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 loadSequence(photo);
             }
             enhancePhotoWithDetections(photo);
-            final Detection detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
-                    ? photo.getDetections().get(0) : null;
-                    handleDataSelection(photo, detection, true);
+            final Detection detection = photoSelectedDetection(photo);
+            handleDataSelection(photo, detection, true);
         }
     }
 
@@ -222,8 +221,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
             Detection detection = null;
             if (dataTypes != null && dataTypes.contains(ImageDataType.DETECTIONS)) {
                 enhancePhotoWithDetections(photo);
-                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
-                        ? photo.getDetections().get(0) : null;
+                detection = photoSelectedDetection(photo);
             }
             handleDataSelection(photo, detection, true);
         }
@@ -272,9 +270,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
             }
             if (nextPhoto != null) {
                 enhancePhotoWithDetections(nextPhoto);
-                detection = photo.getDetections() != null && !photo.getDetections().isEmpty()
-                        ? photo.getDetections().get(0) : null;
-                        handleNextPhotoSelection(nextPhoto, detection);
+                detection = photoSelectedDetection(nextPhoto);
+                handleNextPhotoSelection(nextPhoto, detection);
             } else {
                 stopAutoplay();
             }
