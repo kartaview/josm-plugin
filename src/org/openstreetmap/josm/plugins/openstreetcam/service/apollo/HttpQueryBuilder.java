@@ -52,7 +52,8 @@ class HttpQueryBuilder {
         appendFormatFilter(query);
         appendBoundingBoxFilter(query, area);
         if (date != null) {
-            query.append(AND).append(RequestConstants.DATE).append(new SimpleDateFormat(DATE_FORMAT).format(date));
+            query.append(AND).append(RequestConstants.DATE).append(EQ)
+                    .append(new SimpleDateFormat(DATE_FORMAT).format(date));
         }
         if (osmUserId != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
@@ -104,7 +105,7 @@ class HttpQueryBuilder {
             }
 
             query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-                    .append(HttpUtil.utf8Encode(editStatuses));
+            .append(HttpUtil.utf8Encode(editStatuses));
         }
 
         if (filter.getSignTypes() != null && !filter.getSignTypes().isEmpty()) {
