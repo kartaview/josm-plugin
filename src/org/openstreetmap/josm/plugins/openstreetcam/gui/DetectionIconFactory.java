@@ -14,6 +14,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.ImageProvider.ImageSizes;
+import org.openstreetmap.josm.tools.JosmRuntimeException;
 import com.telenav.josm.common.entity.Pair;
 
 
@@ -26,6 +27,7 @@ public enum DetectionIconFactory {
 
     INSTANCE;
 
+    private static final String UNKNOWN_ICON_NAME = "unknown.png";
     private static final String SIGN_POST_TYPE = "SIGN_POST";
     private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1.svg";
     private final Map<String, Pair<ImageIcon, ImageIcon>> iconsMap;
@@ -37,12 +39,20 @@ public enum DetectionIconFactory {
 
     public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
         final String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
-        Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName, n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
+        final Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName,
+                n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
         return isSelected ? iconPair.getSecond() : iconPair.getFirst();
     }
 
     private ImageIcon loadIcon(final String name, final ImageSizes size) {
         final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name;
-        return ImageProvider.get(iconPath, size);
+        ImageIcon icon = null;
+        try {
+            icon = ImageProvider.get(iconPath, size);
+        } catch (final JosmRuntimeException ex) {
+            final String defaultIcon = IconConfig.getInstance().getDetectionIconsPath() + "/" + UNKNOWN_ICON_NAME;
+            icon = ImageProvider.get(defaultIcon, size);
+        }
+        return icon;
     }
 }
