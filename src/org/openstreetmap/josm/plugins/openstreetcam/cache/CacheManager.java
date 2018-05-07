@@ -9,7 +9,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.cache;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.engine.CompositeCacheAttributes;
@@ -42,18 +41,15 @@ public final class CacheManager {
         final String pluginLocation =
                 new File(Main.pref.getPluginsDirectory(), GuiConfig.getInstance().getPluginShortName()).getPath();
         final CacheSettings settings = PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
-        try {
-            this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),
-                    pluginLocation + CACHE_LOCATION);
-            final CompositeCacheAttributes attr = (CompositeCacheAttributes) this.cache.getCacheAttributes();
-            attr.setDiskUsagePattern(DiskUsagePattern.SWAP);
-            attr.setMemoryCacheName(MEMORY_MANAGER);
-            attr.setUseMemoryShrinker(true);
-            this.cache.setCacheAttributes(attr);
-            this.cache.clear();
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e);
-        }
+
+        this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),
+                pluginLocation + CACHE_LOCATION);
+        final CompositeCacheAttributes attr = (CompositeCacheAttributes) this.cache.getCacheAttributes();
+        attr.setDiskUsagePattern(DiskUsagePattern.SWAP);
+        attr.setMemoryCacheName(MEMORY_MANAGER);
+        attr.setUseMemoryShrinker(true);
+        this.cache.setCacheAttributes(attr);
+        this.cache.clear();
     }
 
     /**
