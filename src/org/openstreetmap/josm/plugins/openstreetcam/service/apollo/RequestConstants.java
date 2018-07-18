@@ -36,12 +36,15 @@ final class RequestConstants {
     static final String EDIT_STATUSES = "editStatuses";
     static final String MODES = "detectionModes";
     static final String VALIDATION_STATUSES = "validationStatuses";
-    static final String TYPES = "signTypes";
+    static final String INCLUDED_SIGN_TYPES = "includedSignTypes";
+    static final String EXCLUDED_SIGN_TYPES = "excludedSignTypes";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
     static final String EDIT_STATUS_FIXED = "FIXED";
     static final String EDIT_STATUS_ALREADY_FIXED = "ALREADY_FIXED";
     static final String ID = "id";
+
+    static final String BLURRING_TYPE = "BLURRING";
 
     private RequestConstants() {}
 }

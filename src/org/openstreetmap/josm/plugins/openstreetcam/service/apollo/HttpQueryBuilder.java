@@ -53,7 +53,7 @@ class HttpQueryBuilder {
         appendBoundingBoxFilter(query, area);
         if (date != null) {
             query.append(AND).append(RequestConstants.DATE).append(EQ)
-                    .append(new SimpleDateFormat(DATE_FORMAT).format(date));
+            .append(new SimpleDateFormat(DATE_FORMAT).format(date));
         }
         if (osmUserId != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
@@ -62,6 +62,7 @@ class HttpQueryBuilder {
         if (filter != null) {
             appendDetectionFilter(filter);
         }
+        appendExcludedSignTypeFitler();
         return build();
     }
 
@@ -69,6 +70,7 @@ class HttpQueryBuilder {
         query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        appendExcludedSignTypeFitler();
         return build();
     }
 
@@ -77,6 +79,7 @@ class HttpQueryBuilder {
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
         query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
+        appendExcludedSignTypeFitler();
         return build();
     }
 
@@ -109,7 +112,7 @@ class HttpQueryBuilder {
         }
 
         if (filter.getSignTypes() != null && !filter.getSignTypes().isEmpty()) {
-            query.append(AND).append(RequestConstants.TYPES).append(EQ)
+            query.append(AND).append(RequestConstants.INCLUDED_SIGN_TYPES).append(EQ)
             .append(HttpUtil.utf8Encode(new HashSet<>(filter.getSignTypes())));
         }
 
@@ -119,6 +122,10 @@ class HttpQueryBuilder {
         }
     }
 
+    private void appendExcludedSignTypeFitler() {
+        query.append(AND).append(RequestConstants.EXCLUDED_SIGN_TYPES);
+        query.append(EQ).append(HttpUtil.utf8Encode(RequestConstants.BLURRING_TYPE));
+    }
 
     private void appendBoundingBoxFilter(final StringBuilder query, final BoundingBox area) {
         query.append(AND).append(RequestConstants.NORTH).append(EQ).append(area.getNorth());
