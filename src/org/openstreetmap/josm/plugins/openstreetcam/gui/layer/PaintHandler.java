@@ -71,7 +71,9 @@ class PaintHandler {
         graphics.setStroke(SEQUENCE_LINE);
 
         if (sequence != null) {
-            drawSequence(graphics, mapView, sequence);
+            if (sequence.hasPhotos()) {
+                drawSequence(graphics, mapView, sequence);
+            }
 
             if (sequence.hasDetections()) {
                 drawDetections(graphics, mapView, sequence.getDetections(), null, false);

@@ -134,7 +134,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -301,13 +301,13 @@ public final class DataSet {
         Photo result = null;
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                if (photos != null) {
-                    final Optional<Photo> photo = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                    result = photo.isPresent() ? photo.get() : null;
-                }
-                return result;
+        if (photos != null) {
+            final Optional<Photo> photo = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+            result = photo.isPresent() ? photo.get() : null;
+        }
+        return result;
     }
 
     /**
@@ -316,7 +316,7 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enablePreviousPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
@@ -326,9 +326,9 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enableNextPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex());
+                        .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
