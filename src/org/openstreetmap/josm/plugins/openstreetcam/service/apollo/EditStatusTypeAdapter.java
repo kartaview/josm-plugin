@@ -12,7 +12,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -30,7 +29,7 @@ public class EditStatusTypeAdapter implements JsonSerializer<EditStatus>, JsonDe
 
     @Override
     public EditStatus deserialize(final JsonElement jsonElement, final Type type,
-            final JsonDeserializationContext context) throws JsonParseException {
+            final JsonDeserializationContext context) {
         final String editStatusValue = jsonElement.getAsString();
         EditStatus editStatus = null;
         if (editStatusValue != null && !editStatusValue.isEmpty()) {
