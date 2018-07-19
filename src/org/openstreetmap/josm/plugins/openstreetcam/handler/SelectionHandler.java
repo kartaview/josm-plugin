@@ -41,7 +41,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler
-implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
+        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -62,7 +62,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
 
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom()) {
+                        .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -89,14 +89,28 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         } else {
             selectPhoto(null, null, false);
         }
-        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-        DataSet.getInstance().setSelectedDetection(detection);
-        if (detection != null && !MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
-            MainApplication.getMap().mapView.zoomTo(detection.getPoint());
-        }
+        selectDetection(detection);
         DataSet.getInstance().selectNearbyPhotos(photo);
         OpenStreetCamLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
+    }
+
+    private void selectDetection(final Detection detection) {
+        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
+        DataSet.getInstance().setSelectedDetection(detection);
+        if (detection != null) {
+            if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
+                MainApplication.getMap().mapView.zoomTo(detection.getPoint());
+            }
+            if (!PhotoDetailsDialog.getInstance().isDialogShowing()) {
+                DetectionDetailsDialog.getInstance().expand();
+            } else {
+                if (DetectionDetailsDialog.getInstance().getButton() != null
+                        && !DetectionDetailsDialog.getInstance().getButton().isSelected()) {
+                    DetectionDetailsDialog.getInstance().getButton().doClick();
+                }
+            }
+        }
     }
 
     /**
@@ -131,7 +145,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
 
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
-                if (!PhotoDetailsDialog.getInstance().getButton().isSelected()) {
+                if (PhotoDetailsDialog.getInstance().getButton() != null
+                        && !PhotoDetailsDialog.getInstance().getButton().isSelected()) {
                     PhotoDetailsDialog.getInstance().getButton().doClick();
                 }
                 PhotoDetailsDialog.getInstance().updateUI(photo, photoType, displayLoadingMessage);
@@ -158,28 +173,24 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-                    if (shouldUpdateUI(photo, sequence)) {
-                        SwingUtilities.invokeLater(() -> {
-                            DataSet.getInstance().setSelectedSequence(sequence);
-                            PhotoDetailsDialog.getInstance().enableSequenceActions(
-                                    DataSet.getInstance().enablePreviousPhotoAction(),
-                                    DataSet.getInstance().enableNextPhotoAction(), null);
-                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
-                            }
-                            OpenStreetCamLayer.getInstance().invalidate();
-                            MainApplication.getMap().repaint();
-                        });
+            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                SwingUtilities.invokeLater(() -> {
+                    DataSet.getInstance().setSelectedSequence(sequence);
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction(), null);
+                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
+                });
+            }
         });
     }
 
-    private boolean shouldUpdateUI(final Photo photo, final Sequence sequence) {
-        return photo == null || photo.equals(DataSet.getInstance().getSelectedPhoto()) && sequence != null
-                && (sequence.hasDetections() || sequence.hasPhotos());
-    }
 
     private void cleanUpOldSequence() {
         if (DataSet.getInstance().hasSelectedPhoto() && DataSet.getInstance().hasSelectedSequence()) {
@@ -261,7 +272,6 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         final Photo photo = DataSet.getInstance().getSelectedPhoto();
         if (photo != null) {
             Photo nextPhoto = DataSet.getInstance().sequencePhoto(photo.getSequenceIndex() + 1);
-            Detection detection = null;
             if (nextPhoto != null && autoplaySettings.getLength() != null) {
                 autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
                 if (autoplayDistance > autoplaySettings.getLength()) {
@@ -270,7 +280,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
             }
             if (nextPhoto != null) {
                 enhancePhotoWithDetections(nextPhoto);
-                detection = photoSelectedDetection(nextPhoto);
+                final Detection detection = photoSelectedDetection(nextPhoto);
                 handleNextPhotoSelection(nextPhoto, detection);
             } else {
                 stopAutoplay();

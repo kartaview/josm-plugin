@@ -51,4 +51,8 @@ public class Sequence {
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();
     }
+
+    public boolean hasData() {
+        return hasPhotos() || hasDetections();
+    }
 }
