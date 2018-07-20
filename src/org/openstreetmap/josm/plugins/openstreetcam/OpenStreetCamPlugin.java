@@ -246,8 +246,13 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
 
             // remove selected detection if new status is not selected
-            final Detection detection = (filter != null && filter.getEditStatuses() != null
-                    && !filter.getEditStatuses().contains(editStatus)) ? null : changedDetection;
+            final Detection detection =
+                    DataSet.getInstance()
+                    .hasSelectedSequence()
+                    ? changedDetection
+                            : (filter != null && filter.getEditStatuses() != null
+                            && !filter.getEditStatuses().contains(editStatus)) ? null
+                                    : changedDetection;
             SwingUtilities.invokeLater(() -> {
                 if (detection == null) {
                     DataSet.getInstance().removeDetection(changedDetection);
@@ -260,7 +265,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                     OpenStreetCamLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 }
-                DataSet.getInstance().setSelectedDetection(detection);
+                DataSet.getInstance().updateSelectedDetection(detection);
                 DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
             });
         });

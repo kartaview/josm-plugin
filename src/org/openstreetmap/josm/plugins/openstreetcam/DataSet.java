@@ -134,7 +134,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -301,13 +301,13 @@ public final class DataSet {
         Photo result = null;
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-        if (photos != null) {
-            final Optional<Photo> photo = photos.stream()
-                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
-            result = photo.isPresent() ? photo.get() : null;
-        }
-        return result;
+                if (photos != null) {
+                    final Optional<Photo> photo = photos.stream()
+                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                            .findFirst();
+                    result = photo.isPresent() ? photo.get() : null;
+                }
+                return result;
     }
 
     /**
@@ -328,7 +328,7 @@ public final class DataSet {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                        .equals(selectedPhoto.getSequenceIndex());
+                .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -363,6 +363,23 @@ public final class DataSet {
      */
     public void setSelectedDetection(final Detection selectedDetection) {
         this.selectedDetection = selectedDetection;
+    }
+
+    public void updateSelectedDetection(final Detection detection) {
+        final Detection oldDetection = getSelectedDetection();
+        setSelectedDetection(detection);
+        if (hasSelectedSequence()) {
+            selectedSequence.getDetections().remove(oldDetection);
+            if (detection != null) {
+                selectedSequence.getDetections().add(detection);
+            }
+        }
+        if (hasDetections()) {
+            detections.remove(oldDetection);
+            if (detection != null) {
+                detections.add(detection);
+            }
+        }
     }
 
     /**
