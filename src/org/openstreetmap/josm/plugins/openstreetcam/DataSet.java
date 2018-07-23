@@ -365,7 +365,14 @@ public final class DataSet {
         this.selectedDetection = selectedDetection;
     }
 
-    public void updateSelectedDetection(final Detection detection) {
+    /**
+     * Updates the selected detection with a newer version of the detection. The method removes the old
+     * detection from the data store (selected sequence and detections list) and adds the new version.
+     * If the new detection is null then the selected detection will be removed.
+     *
+     * @param detection a {@code Detection} object
+     */
+    public synchronized void updateSelectedDetection(final Detection detection) {
         final Detection oldDetection = getSelectedDetection();
         setSelectedDetection(detection);
         if (hasSelectedSequence()) {

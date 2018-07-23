@@ -9,7 +9,6 @@ package org.openstreetmap.josm.plugins.openstreetcam;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -242,33 +241,28 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                     editStatus, text);
             final Detection changedDetection = ServiceHandler.getInstance()
                     .retrieveDetection(DataSet.getInstance().getSelectedDetection().getId());
-
-            final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
-
-            // remove selected detection if new status is not selected
-            final Detection detection =
-                    DataSet.getInstance()
-                    .hasSelectedSequence()
-                    ? changedDetection
-                            : (filter != null && filter.getEditStatuses() != null
-                            && !filter.getEditStatuses().contains(editStatus)) ? null
-                                    : changedDetection;
-            SwingUtilities.invokeLater(() -> {
-                if (detection == null) {
-                    DataSet.getInstance().removeDetection(changedDetection);
-                    final List<Detection> photoDetections =
-                            PhotoDetailsDialog.getInstance().getDisplayedPhotoDetections();
-                    if (photoDetections != null) {
-                        photoDetections.remove(changedDetection);
-                    }
-                    PhotoDetailsDialog.getInstance().updatePhotoDetections(photoDetections);
-                    OpenStreetCamLayer.getInstance().invalidate();
-                    MainApplication.getMap().repaint();
-                }
-                DataSet.getInstance().updateSelectedDetection(detection);
-                DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-            });
+            SwingUtilities.invokeLater(() -> updateDetection(changedDetection));
         });
+    }
+
+    private void updateDetection(final Detection detection) {
+        final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
+        if (!DataSet.getInstance().hasSelectedSequence()
+                && (filter != null && !filter.containsEditStatus(detection.getEditStatus()))) {
+            // remove detection
+            DataSet.getInstance().removeDetection(detection);
+            PhotoDetailsDialog.getInstance().removePhotoDetection(detection);
+            OpenStreetCamLayer.getInstance().invalidate();
+            MainApplication.getMap().repaint();
+            DataSet.getInstance().updateSelectedDetection(null);
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+        } else {
+            // update detection
+            DataSet.getInstance().updateSelectedDetection(detection);
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
+            OpenStreetCamLayer.getInstance().invalidate();
+            MainApplication.getMap().repaint();
+        }
     }
 
 

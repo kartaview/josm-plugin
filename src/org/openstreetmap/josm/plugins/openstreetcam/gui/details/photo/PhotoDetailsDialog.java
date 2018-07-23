@@ -192,6 +192,11 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    public void removePhotoDetection(final Detection detection) {
+        pnlPhoto.removeDetection(detection);
+        repaint();
+    }
+
     public void updatePhotoDetections(final List<Detection> detections) {
         pnlPhoto.updateDetections(detections);
         repaint();
