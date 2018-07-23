@@ -99,7 +99,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     }
 
     void removeDetection(final Detection detection) {
-        if (detection != null) {
+        if (detection != null && detections != null) {
             detections.remove(detection);
             revalidate();
             repaint();

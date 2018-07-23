@@ -79,6 +79,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
         return detection;
     }
+
     void enhancePhotoWithDetections(final Photo photo) {
         if (photo != null && PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
                 .contains(ImageDataType.DETECTIONS)) {
