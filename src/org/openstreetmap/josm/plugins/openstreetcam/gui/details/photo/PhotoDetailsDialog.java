@@ -192,6 +192,21 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    /**
+     * Removes the given detection from the list of displayed detections.
+     *
+     * @param detection a {@code Detection} to be removed
+     */
+    public void removePhotoDetection(final Detection detection) {
+        pnlPhoto.removeDetection(detection);
+        repaint();
+    }
+
+    /**
+     * Updates the list of displayed detections. If the list is null, then no detection is displayed.
+     *
+     * @param detections a list of {@code Detection}s to be displayed.
+     */
     public void updatePhotoDetections(final List<Detection> detections) {
         pnlPhoto.updateDetections(detections);
         repaint();

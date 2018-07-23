@@ -78,11 +78,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         addMouseMotionListener(new MouseDraggedAdapter());
     }
 
-
-    List<Detection> getDetections() {
-        return detections;
-    }
-
     void updateUI(final BufferedImage image, final List<Detection> detections) {
         removeAll();
         this.image = image;
@@ -96,6 +91,14 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         this.detections = detections;
         revalidate();
         repaint();
+    }
+
+    void removeDetection(final Detection detection) {
+        if (detection != null && detections != null) {
+            detections.remove(detection);
+            revalidate();
+            repaint();
+        }
     }
 
     /**
@@ -353,7 +356,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         }
     }
 
-
     @Override
     public void registerObserver(final DetectionSelectionObserver detectionSelectionObserver) {
         this.detectionSelectionObserver = detectionSelectionObserver;
@@ -362,6 +364,11 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     @Override
     public void notifyDetectionSelectionObserver(final Detection detection) {
         detectionSelectionObserver.selectDetection(detection);
+    }
+
+
+    List<Detection> getDetections() {
+        return detections;
     }
 
     private class MousePressedAdapter extends MouseAdapter {
