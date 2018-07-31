@@ -157,7 +157,6 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterEditStatusLbl(), Font.BOLD),
                 Constraints.LBL_EDIT_STATUS);
 
-        // TODO - add a set
         listEditStatus = ListBuilder.build(Arrays.asList(EditStatus.values()), editStatuses,
                 new DefaultListCellRenderer(), Font.PLAIN);
         listEditStatus.setLayoutOrientation(JList.VERTICAL);

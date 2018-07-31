@@ -76,7 +76,8 @@ public final class BoundingBoxUtil {
     private static List<Bounds> editLayerDataBounds() {
         List<Bounds> osmDataLayerBounds = null;
         if (MainApplication.getLayerManager().getEditLayer() != null
-                && (MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer)) {
+                && (MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer)
+                && MainApplication.getLayerManager().getActiveLayer().isVisible()) {
             osmDataLayerBounds = MainApplication.getLayerManager().getEditLayer().data.getDataSourceBounds();
         }
         return osmDataLayerBounds;

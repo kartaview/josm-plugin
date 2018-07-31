@@ -60,9 +60,6 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     private final PhotoPanel pnlPhoto;
     private final ButtonPanel pnlBtn;
 
-    /** flag that indicates if the dialog window was already destroyed or not */
-    private boolean destroyed = false;
-
     /** the dimension of the dialog window, it is used to detect if the user had maximized or not the dialog window */
     private Dimension size;
 
@@ -91,7 +88,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      *
      * @return a {@code OpenStreetCamDetailsDialog}
      */
-    public static PhotoDetailsDialog getInstance() {
+    public static synchronized PhotoDetailsDialog getInstance() {
         if (instance == null) {
             instance = new PhotoDetailsDialog();
         }
@@ -101,7 +98,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     /**
      * Destroys the instance of the dialog.
      */
-    public static void destroyInstance() {
+    public static synchronized void destroyInstance() {
         instance = null;
     }
 
@@ -117,15 +114,6 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     private boolean isPanelMaximized() {
         return !size.equals(getSize())
                 && (size.getHeight() < getSize().getHeight() || size.getWidth() < getSize().getWidth());
-    }
-
-    @Override
-    public void destroy() {
-        if (!destroyed) {
-            super.destroy();
-            destroyed = true;
-        }
-        dock();
     }
 
     /**
@@ -144,6 +132,13 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     protected void dock() {
         pnlPhoto.initializeCurrentImageView();
         super.dock();
+    }
+
+    @Override
+    public void expand() {
+        if (isCollapsed) {
+            super.expand();
+        }
     }
 
     /**
@@ -197,6 +192,21 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    /**
+     * Removes the given detection from the list of displayed detections.
+     *
+     * @param detection a {@code Detection} to be removed
+     */
+    public void removePhotoDetection(final Detection detection) {
+        pnlPhoto.removeDetection(detection);
+        repaint();
+    }
+
+    /**
+     * Updates the list of displayed detections. If the list is null, then no detection is displayed.
+     *
+     * @param detections a list of {@code Detection}s to be displayed.
+     */
     public void updatePhotoDetections(final List<Detection> detections) {
         pnlPhoto.updateDetections(detections);
         repaint();

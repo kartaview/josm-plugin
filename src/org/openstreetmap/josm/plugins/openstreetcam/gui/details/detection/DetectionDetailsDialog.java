@@ -42,7 +42,6 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
-
     /** dialog components */
     private final DetailsPanel pnlDetails;
     private final ButtonPanel pnlButtons;
@@ -67,7 +66,6 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
         setPreferredSize(DIM);
         pnlDetails.setSize(getPreferredSize());
-        updateDetectionDetails(null);
     }
 
     /**
@@ -75,7 +73,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      *
      * @return a {@code DetectionDetailsDialog}
      */
-    public static DetectionDetailsDialog getInstance() {
+    public static synchronized DetectionDetailsDialog getInstance() {
         if (instance == null) {
             instance = new DetectionDetailsDialog();
         }
@@ -99,8 +97,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     public void updateDetectionDetails(final Detection detection) {
         pnlDetails.updateData(detection);
         if (detection != null && detection.getOsmComparison() != null
-                && (detection.getOsmComparison().equals(OsmComparison.NEW)
-                        || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
+                && !detection.getOsmComparison().equals(OsmComparison.SAME)) {
             pnlButtons.setVisible(true);
             pnlButtons.enablePanelActions(detection.getEditStatus());
         } else {
@@ -112,7 +109,19 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     /**
      * Destroys the instance of the dialog.
      */
-    public static void destroyInstance() {
+    public static synchronized void destroyInstance() {
         instance = null;
+    }
+
+    @Override
+    public void expand() {
+        showDialog();
+        if (!getButton().isSelected()) {
+            getButton().setSelected(true);
+        }
+        DetectionDetailsDialog.getInstance().getButton().setSelected(true);
+        if (isCollapsed) {
+            super.expand();
+        }
     }
 }

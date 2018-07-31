@@ -316,7 +316,7 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enablePreviousPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
     }
 
@@ -326,7 +326,7 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enableNextPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
                 .equals(selectedPhoto.getSequenceIndex());
     }
@@ -363,6 +363,30 @@ public final class DataSet {
      */
     public void setSelectedDetection(final Detection selectedDetection) {
         this.selectedDetection = selectedDetection;
+    }
+
+    /**
+     * Updates the selected detection with a newer version of the detection. The method removes the old
+     * detection from the data store (selected sequence and detections list) and adds the new version.
+     * If the new detection is null then the selected detection will be removed.
+     *
+     * @param detection a {@code Detection} object
+     */
+    public synchronized void updateSelectedDetection(final Detection detection) {
+        final Detection oldDetection = getSelectedDetection();
+        setSelectedDetection(detection);
+        if (hasSelectedSequence()) {
+            selectedSequence.getDetections().remove(oldDetection);
+            if (detection != null) {
+                selectedSequence.getDetections().add(detection);
+            }
+        }
+        if (hasDetections()) {
+            detections.remove(oldDetection);
+            if (detection != null) {
+                detections.add(detection);
+            }
+        }
     }
 
     /**

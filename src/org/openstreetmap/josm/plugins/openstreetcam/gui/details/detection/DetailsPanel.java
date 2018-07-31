@@ -50,8 +50,7 @@ class DetailsPanel extends BasicInfoPanel<Detection> {
         addDetectionInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
         addDetectionInformation(GuiConfig.getInstance().getDetectionValidationStatusText(),
                 detection.getValidationStatus(), widthLbl);
-        if (detection.getOsmComparison() != null && (detection.getOsmComparison().equals(OsmComparison.NEW)
-                || (detection.getOsmComparison().equals(OsmComparison.CHANGED)))) {
+        if (detection.getOsmComparison() != null && (!detection.getOsmComparison().equals(OsmComparison.SAME))) {
             addDetectionInformation(GuiConfig.getInstance().getDetectionTaskStatusText(), detection.getEditStatus(),
                     widthLbl);
         }

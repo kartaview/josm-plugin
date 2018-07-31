@@ -80,7 +80,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 }
 
                 // draw sequence if any
-                if (dataSet.getSelectedSequence() != null) {
+                if (dataSet.getSelectedSequence() != null && dataSet.getSelectedSequence().hasData()) {
                     paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(),
                             dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
                 }

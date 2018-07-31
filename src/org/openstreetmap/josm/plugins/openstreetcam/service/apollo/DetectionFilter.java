@@ -58,6 +58,9 @@ public class DetectionFilter {
         return modes;
     }
 
+    public boolean containsEditStatus(final EditStatus editStatus) {
+        return editStatuses != null && editStatuses.contains(editStatus);
+    }
 
     @Override
     public int hashCode() {
