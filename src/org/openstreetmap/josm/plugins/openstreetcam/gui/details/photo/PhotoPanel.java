@@ -323,36 +323,37 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     }
 
     private void panelDimensionsChanged() {
-        if ((currentView != null)
-                && (currentView.width != image.getWidth() || currentView.height != image.getHeight())) {
-            if (getWidth() != size.width) {
-                final Pair<Integer, Integer> newDimension = getImagePart(currentView.x + currentView.width / HALF, 0,
-                        image.getWidth(), (currentView.height * getWidth() / frame.height) / HALF);
-                currentView.x = newDimension.getFirst();
-                currentView.width = newDimension.getSecond() - newDimension.getFirst();
+        if (currentView != null) {
+            if (currentView.width != image.getWidth() || currentView.height != image.getHeight()) {
+                if (getWidth() != size.width) {
+                    final Pair<Integer, Integer> newDimension = getImagePart(currentView.x + currentView.width / HALF,
+                            0, image.getWidth(), (currentView.height * getWidth() / frame.height) / HALF);
+                    currentView.x = newDimension.getFirst();
+                    currentView.width = newDimension.getSecond() - newDimension.getFirst();
 
-                if (currentView.height == image.getHeight() || currentView.width < image.getWidth()) {
-                    frame.x = 0;
-                    frame.width = getWidth();
-                } else {
-                    matchImageOnPanel();
+                    if (currentView.height == image.getHeight() || currentView.width < image.getWidth()) {
+                        frame.x = 0;
+                        frame.width = getWidth();
+                    } else {
+                        matchImageOnPanel();
+                    }
                 }
-            }
-            if (getHeight() != size.height) {
-                final Pair<Integer, Integer> newDimension = getImagePart(currentView.y + currentView.height / HALF, 0,
-                        image.getHeight(), (currentView.width * getHeight() / frame.width) / HALF);
-                currentView.y = newDimension.getFirst();
-                currentView.height = newDimension.getSecond() - newDimension.getFirst();
+                if (getHeight() != size.height) {
+                    final Pair<Integer, Integer> newDimension = getImagePart(currentView.y + currentView.height / HALF,
+                            0, image.getHeight(), (currentView.width * getHeight() / frame.width) / HALF);
+                    currentView.y = newDimension.getFirst();
+                    currentView.height = newDimension.getSecond() - newDimension.getFirst();
 
-                if (currentView.width == image.getWidth() || currentView.height < image.getHeight()) {
-                    frame.y = 0;
-                    frame.height = getHeight();
-                } else {
-                    matchImageOnPanel();
+                    if (currentView.width == image.getWidth() || currentView.height < image.getHeight()) {
+                        frame.y = 0;
+                        frame.height = getHeight();
+                    } else {
+                        matchImageOnPanel();
+                    }
                 }
+            } else {
+                matchImageOnPanel();
             }
-        } else {
-            matchImageOnPanel();
         }
     }
 
