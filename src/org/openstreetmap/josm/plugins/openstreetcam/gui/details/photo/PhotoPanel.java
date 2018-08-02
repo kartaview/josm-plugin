@@ -351,7 +351,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                     matchImageOnPanel();
                 }
             }
-        } else {
+        } else if (currentView != null) {
             matchImageOnPanel();
         }
     }
