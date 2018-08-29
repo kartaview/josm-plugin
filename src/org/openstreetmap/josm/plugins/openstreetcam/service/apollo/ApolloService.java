@@ -41,6 +41,7 @@ public class ApolloService extends BaseService {
     public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
             final DetectionFilter detectionFilter) throws ServiceException {
         final String url = new HttpQueryBuilder().buildSearchQuery(area, date, osmUserId, detectionFilter);
+        System.out.println(url);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();

@@ -8,8 +8,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
 import java.awt.event.ActionEvent;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.preferences.PreferenceDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -35,7 +35,7 @@ final class OpenPreferenceDialogAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        final PreferenceDialog dialog = new PreferenceDialog(Main.parent);
+        final PreferenceDialog dialog = new PreferenceDialog(MainApplication.getMainFrame());
         dialog.selectPreferencesTabByClass(PreferenceEditor.class);
         dialog.setVisible(true);
     }

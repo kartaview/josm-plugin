@@ -14,7 +14,7 @@ import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.engine.CompositeCacheAttributes;
 import org.apache.commons.jcs.engine.behavior.ICompositeCacheAttributes.DiskUsagePattern;
 import org.apache.commons.jcs.engine.control.CompositeCacheManager;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.cache.JCSCacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -39,7 +39,8 @@ public final class CacheManager {
 
     private CacheManager() {
         final String pluginLocation =
-                new File(Main.pref.getPluginsDirectory(), GuiConfig.getInstance().getPluginShortName()).getPath();
+                new File(Preferences.main().getPluginsDirectory(), GuiConfig.getInstance().getPluginShortName())
+                .getPath();
         final CacheSettings settings = PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
 
         this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),

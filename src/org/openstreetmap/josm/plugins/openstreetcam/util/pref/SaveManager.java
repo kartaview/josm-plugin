@@ -46,7 +46,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -77,47 +77,47 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
 final class SaveManager {
 
     void savePhotosErrorSuppressFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
     }
 
     void saveSequenceErrorSuppressFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_SEQUENCE_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_SEQUENCE_ERROR, flag);
     }
 
     void saveSegmentsErrorSuppressFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
     void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_DETECTION_SEARCH_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_DETECTION_SEARCH_ERROR, flag);
     }
 
     void saveSequenceDetectionsErrorFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
     }
 
     void savePhotoDetectionsErrorFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR, flag);
     }
 
     void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
-        Main.pref.putBoolean(SUPPRESS_DETECTION_UPDATE_ERROR, flag);
+        Preferences.main().putBoolean(SUPPRESS_DETECTION_UPDATE_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
-        Main.pref.put(FILTER_CHANGED, "");
-        Main.pref.put(FILTER_CHANGED, Boolean.toString(changed));
+        Preferences.main().put(FILTER_CHANGED, "");
+        Preferences.main().put(FILTER_CHANGED, Boolean.toString(changed));
     }
 
     void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
-        Main.pref.putBoolean(ONLY_DETECTION_FILTER_CHANGED, flag);
+        Preferences.main().putBoolean(ONLY_DETECTION_FILTER_CHANGED, flag);
     }
 
     void saveSearchFilter(final SearchFilter filter) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
-            Main.pref.put(FILTER_DATE, dateStr);
-            Main.pref.putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
+            Preferences.main().put(FILTER_DATE, dateStr);
+            Preferences.main().putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
             saveDataTypeFilter(filter.getDataTypes());
             saveDetectionFilter(filter.getDetectionFilter());
         }
@@ -125,11 +125,12 @@ final class SaveManager {
 
     private void saveDataTypeFilter(final List<ImageDataType> types) {
         if (types == null || types.isEmpty()) {
-            Main.pref.put(FILTER_SEARCH_PHOTO_TYPE, FILTER_SEARCH_EMPTY);
+            Preferences.main().put(FILTER_SEARCH_PHOTO_TYPE, FILTER_SEARCH_EMPTY);
         } else {
             final List<ImageDataTypeEntry> entries =
                     types.stream().map(ImageDataTypeEntry::new).collect(Collectors.toList());
-            StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, entries, ImageDataTypeEntry.class);
+            StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, entries,
+                    ImageDataTypeEntry.class);
         }
     }
 
@@ -157,7 +158,8 @@ final class SaveManager {
                 entries.add(new OsmComparisonEntry(osmComparison));
             }
         }
-        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_OSM_COMPARISON, entries, OsmComparisonEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_OSM_COMPARISON, entries,
+                OsmComparisonEntry.class);
     }
 
     private void saveEditStatusFilter(final List<EditStatus> editStatuses) {
@@ -167,7 +169,7 @@ final class SaveManager {
                 entries.add(new EditStatusEntry(editStatus));
             }
         }
-        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
     }
 
     private void saveSignTypeFilter(final List<SignType> signTypes) {
@@ -177,69 +179,69 @@ final class SaveManager {
                 entries.add(new SignTypeEntry(signType));
             }
         }
-        StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
     }
 
     private void saveModesFilter(final List<DetectionMode> modes) {
         if (modes == null || modes.isEmpty()) {
-            Main.pref.put(FILTER_SEARCH_MODE, FILTER_SEARCH_EMPTY);
+            Preferences.main().put(FILTER_SEARCH_MODE, FILTER_SEARCH_EMPTY);
         } else {
             final List<DetectionModeEntry> entries =
                     modes.stream().map(DetectionModeEntry::new).collect(Collectors.toList());
-            StructUtils.putListOfStructs(Main.pref, FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
+            StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
         }
     }
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
-        Main.pref.putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
-        Main.pref.putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
+        Preferences.main().putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
+        Preferences.main().putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
     }
 
     void savePhotoSettings(final PhotoSettings photoSettings) {
-        Main.pref.putBoolean(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
-        Main.pref.putBoolean(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
-        Main.pref.putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
+        Preferences.main().putBoolean(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
+        Preferences.main().putBoolean(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
+        Preferences.main().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
     void saveTrackSettings(final SequenceSettings trackSettings) {
-        Main.pref.putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
+        Preferences.main().putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
             final String length = trackSettings.getAutoplaySettings().getLength() != null
                     ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-            Main.pref.put(AUTOPLAY_LENGTH, length);
-            Main.pref.putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+                    Preferences.main().put(AUTOPLAY_LENGTH, length);
+                    Preferences.main().putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
     void saveAutoplayStartedFlag(final boolean flag) {
-        Main.pref.putBoolean(AUTOPLAY_STARTED, flag);
+        Preferences.main().putBoolean(AUTOPLAY_STARTED, flag);
     }
 
     void saveCacheSettings(final CacheSettings cacheSettings) {
-        Main.pref.putInt(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
-        Main.pref.putInt(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
-        Main.pref.putInt(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
-        Main.pref.putInt(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
+        Preferences.main().putInt(CACHE_MEMORY_COUNT, cacheSettings.getMemoryCount());
+        Preferences.main().putInt(CACHE_DISK_COUNT, cacheSettings.getDiskCount());
+        Preferences.main().putInt(CACHE_PREV_NEXT_COUNT, cacheSettings.getPrevNextCount());
+        Preferences.main().putInt(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
     }
 
     void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        Main.pref.putBoolean(LAYER_OPENED, isLayerOpened);
+        Preferences.main().putBoolean(LAYER_OPENED, isLayerOpened);
     }
 
     void savePhotoPanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.putBoolean(PHOTO_PANEL_OPENED, isPanelOpened);
+        Preferences.main().putBoolean(PHOTO_PANEL_OPENED, isPanelOpened);
     }
 
     void saveDetectionPanelOpenedFlag(final boolean isPanelOpened) {
-        Main.pref.putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
+        Preferences.main().putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
     }
 
     void saveDataType(final DataType dataType) {
         final String value = dataType != null ? dataType.name() : "";
-        Main.pref.put(DATA_TYPE, value);
+        Preferences.main().put(DATA_TYPE, value);
     }
 
     void savePluginLocalVersion(final String localVersion) {
-        Main.pref.put(PLUGIN_LOCAL_VERSION, localVersion);
+        Preferences.main().put(PLUGIN_LOCAL_VERSION, localVersion);
     }
 }

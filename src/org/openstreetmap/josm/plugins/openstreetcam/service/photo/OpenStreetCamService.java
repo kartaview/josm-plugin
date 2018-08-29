@@ -116,6 +116,7 @@ public class OpenStreetCamService extends BaseService {
      */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
         final String url = OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl().concat(photoName);
+        System.out.println(url);
         byte[] image;
         try {
             final HttpConnector connector = new HttpConnector(url, getHeaders());

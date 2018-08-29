@@ -12,8 +12,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.gpx.GpxManager;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.gpx.GpxManagerException;
@@ -50,12 +50,12 @@ class SaveTrackAction extends JosmAction {
         fileChooser.setSelectedFile(new File(getFileName()));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new GPXFilter());
-        if (fileChooser.showSaveDialog(Main.parent) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(MainApplication.getMainFrame()) == JFileChooser.APPROVE_OPTION) {
             final String absPath = fileChooser.getSelectedFile().getAbsolutePath();
             if (new File(absPath).exists()) {
                 final String msgTxt =
                         fileChooser.getSelectedFile().getName() + " " + GuiConfig.getInstance().getInfoFileExistsText();
-                final int overwriteResp = JOptionPane.showConfirmDialog(Main.parent, msgTxt,
+                final int overwriteResp = JOptionPane.showConfirmDialog(MainApplication.getMainFrame(), msgTxt,
                         GuiConfig.getInstance().getInfoFileExistsTitle(), JOptionPane.YES_NO_OPTION);
                 if (overwriteResp == JOptionPane.YES_OPTION) {
                     saveSequence(absPath);
@@ -71,8 +71,9 @@ class SaveTrackAction extends JosmAction {
         try {
             gpxManager.saveSequence(DataSet.getInstance().getSelectedSequence(), fileName);
         } catch (final GpxManagerException e) {
-            JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorSequenceSaveText(),
-                    GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
+                    GuiConfig.getInstance().getErrorSequenceSaveText(), GuiConfig.getInstance().getErrorTitle(),
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
