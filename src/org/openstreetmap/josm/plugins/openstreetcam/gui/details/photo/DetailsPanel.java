@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -75,8 +75,9 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
             try {
                 OpenBrowser.displayUrl(new URI(link.toString()));
             } catch (final Exception e) {
-                JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorUserPageText(),
-                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
+                        GuiConfig.getInstance().getErrorUserPageText(), GuiConfig.getInstance().getErrorTitle(),
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

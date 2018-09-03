@@ -12,8 +12,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.gui.MapFrame;
@@ -108,12 +108,11 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                 addLayer();
             }
 
-            Main.pref.addPreferenceChangeListener(preferenceChangedHandler);
+            Preferences.main().addPreferenceChangeListener(preferenceChangedHandler);
         }
 
         if (oldMapFrame != null && newMapFrame == null) {
             // clean-up
-            Main.pref.removePreferenceChangeListener(preferenceChangedHandler);
             layerActivatorMenuItem.setEnabled(false);
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();

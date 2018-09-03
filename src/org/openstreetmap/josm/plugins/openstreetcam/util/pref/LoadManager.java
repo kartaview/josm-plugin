@@ -47,7 +47,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -81,45 +81,45 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
 final class LoadManager {
 
     boolean loadPhotosErrorSuppressFlag() {
-        return Main.pref.getBoolean(SUPPRESS_PHOTOS_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_PHOTOS_ERROR);
     }
 
     boolean loadSegmentsErrorSuppressFlag() {
-        return Main.pref.getBoolean(SUPPRESS_SEGMENTS_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_SEGMENTS_ERROR);
     }
 
     boolean loadSequenceErrorSuppressFlag() {
-        return Main.pref.getBoolean(SUPPRESS_SEQUENCE_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_SEQUENCE_ERROR);
     }
 
     boolean loadDetectionSearchErrorSuppressFlag() {
-        return Main.pref.getBoolean(SUPPRESS_DETECTION_SEARCH_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_DETECTION_SEARCH_ERROR);
     }
 
     boolean loadSequenceDetectionsErrorFlag() {
-        return Main.pref.getBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR);
     }
 
     boolean loadPhotoDetectionsErrorFlag() {
-        return Main.pref.getBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_PHOTO_DETECTIONS_ERROR);
     }
 
     boolean loadDetectionUpdateErrorSuppressFlag() {
-        return Main.pref.getBoolean(SUPPRESS_DETECTION_UPDATE_ERROR);
+        return Preferences.main().getBoolean(SUPPRESS_DETECTION_UPDATE_ERROR);
     }
 
     boolean loadOnlyDetectionFilterChangedFlag() {
-        return Main.pref.getBoolean(ONLY_DETECTION_FILTER_CHANGED);
+        return Preferences.main().getBoolean(ONLY_DETECTION_FILTER_CHANGED);
     }
 
     boolean loadAutoplayStartedFlag() {
-        return Main.pref.getBoolean(AUTOPLAY_STARTED);
+        return Preferences.main().getBoolean(AUTOPLAY_STARTED);
     }
 
     SearchFilter loadSearchFilter() {
-        final String dateStr = Main.pref.get(FILTER_DATE);
+        final String dateStr = Preferences.main().get(FILTER_DATE);
         final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
-        final String onlyUserFlagStr = Main.pref.get(FILTER_ONLY_USER_FLAG);
+        final String onlyUserFlagStr = Preferences.main().get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
         final List<ImageDataType> dataType = loadDataTypeFilter();
         final DetectionFilter detectionFilter = loadDetectionFilter();
@@ -127,9 +127,9 @@ final class LoadManager {
     }
 
     private List<ImageDataType> loadDataTypeFilter() {
-        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_PHOTO_TYPE);
+        final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_PHOTO_TYPE);
         final List<ImageDataTypeEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
+                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
         List<ImageDataType> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(ImageDataType.values());
@@ -150,8 +150,8 @@ final class LoadManager {
     }
 
     private List<OsmComparison> loadOsmComparisonFilter() {
-        final List<OsmComparisonEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
+        final List<OsmComparisonEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
         List<OsmComparison> list = null;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
@@ -163,9 +163,9 @@ final class LoadManager {
     }
 
     private List<DetectionMode> loadModes() {
-        final String dataTypeVal = Main.pref.get(FILTER_SEARCH_MODE);
+        final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_MODE);
         final List<DetectionModeEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_MODE, DetectionModeEntry.class);
+                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_MODE, DetectionModeEntry.class);
         List<DetectionMode> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(DetectionMode.values());
@@ -179,7 +179,7 @@ final class LoadManager {
 
     private List<EditStatus> loadEditStatusFilter() {
         final List<EditStatusEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
+                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
         List<EditStatus> list = null;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
@@ -192,7 +192,7 @@ final class LoadManager {
 
     private List<SignType> loadSignTypeFilter() {
         final List<SignTypeEntry> entries =
-                StructUtils.getListOfStructs(Main.pref, FILTER_SEARCH_SIGN_TYPE, SignTypeEntry.class);
+                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, SignTypeEntry.class);
         List<SignType> list = null;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
@@ -206,20 +206,20 @@ final class LoadManager {
     MapViewSettings loadMapViewSettings() {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
-        final boolean manualSwitchFlag = Main.pref.getBoolean(MAP_VIEW_MANUAL_SWITCH);
+        final boolean manualSwitchFlag = Preferences.main().getBoolean(MAP_VIEW_MANUAL_SWITCH);
         return new MapViewSettings(photoZoom, manualSwitchFlag);
     }
 
     PhotoSettings loadPhotoSettings() {
-        final boolean highQualityFlag = Main.pref.getBoolean(HIGH_QUALITY_PHOTO_FLAG);
-        final boolean mouseHoverFlag = Main.pref.getBoolean(MOUSE_HOVER_FLAG);
+        final boolean highQualityFlag = Preferences.main().getBoolean(HIGH_QUALITY_PHOTO_FLAG);
+        final boolean mouseHoverFlag = Preferences.main().getBoolean(MOUSE_HOVER_FLAG);
         final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(),
                 Config.getInstance().getMouseHoverMaxDelay());
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
     SequenceSettings loadTrackSettings() {
-        final String displayTrackFlagVal = Main.pref.get(DISPLAY_TRACK_FLAG);
+        final String displayTrackFlagVal = Preferences.main().get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
         return new SequenceSettings(displayTrackFlag, loadAutoplaySettings());
     }
@@ -244,22 +244,22 @@ final class LoadManager {
     }
 
     boolean loadLayerOpenedFlag() {
-        final String layerOpened = Main.pref.get(LAYER_OPENED);
+        final String layerOpened = Preferences.main().get(LAYER_OPENED);
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
     boolean loadPhotoPanelOpenedFlag() {
-        final String layerOpened = Main.pref.get(PHOTO_PANEL_OPENED);
+        final String layerOpened = Preferences.main().get(PHOTO_PANEL_OPENED);
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
     boolean loadDetectionPanelOpenedFlag() {
-        final String layerOpened = Main.pref.get(DETECTION_PANEL_OPENED);
+        final String layerOpened = Preferences.main().get(DETECTION_PANEL_OPENED);
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
     DataType loadDataType() {
-        final String value = Main.pref.get(DATA_TYPE);
+        final String value = Preferences.main().get(DATA_TYPE);
         DataType dataType;
         try {
             dataType = DataType.valueOf(value);
@@ -270,11 +270,11 @@ final class LoadManager {
     }
 
     String loadPluginLocalVersion() {
-        return Main.pref.get(PLUGIN_LOCAL_VERSION);
+        return Preferences.main().get(PLUGIN_LOCAL_VERSION);
     }
 
     private Integer loadIntValue(final String key, final Integer defaultValue, final Integer maxValue) {
-        final String valueStr = Main.pref.get(key);
+        final String valueStr = Preferences.main().get(key);
         final Integer value = (valueStr != null && !valueStr.isEmpty()) ? Integer.valueOf(valueStr) : defaultValue;
         return maxValue != null ? (value > maxValue ? maxValue : value) : value;
     }

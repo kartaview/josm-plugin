@@ -15,7 +15,6 @@ import java.net.URI;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
@@ -515,7 +514,8 @@ SequenceObservable, SequenceAutoplayObservable {
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));
                 } catch (final Exception e) {
-                    JOptionPane.showMessageDialog(Main.parent, GuiConfig.getInstance().getErrorPhotoPageText(),
+                    JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
+                            GuiConfig.getInstance().getErrorPhotoPageText(),
                             GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
