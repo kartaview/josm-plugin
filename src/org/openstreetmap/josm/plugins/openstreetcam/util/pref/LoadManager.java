@@ -136,7 +136,7 @@ final class LoadManager {
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
             list = new ArrayList<>();
         } else {
-            list = entries.stream().map(entry -> DataType.valueOf(entry.getName())).collect(Collectors.toList());
+            list = entries.stream().map(entry -> DataType.getDataType(entry.getName())).collect(Collectors.toList());
         }
         return list;
     }

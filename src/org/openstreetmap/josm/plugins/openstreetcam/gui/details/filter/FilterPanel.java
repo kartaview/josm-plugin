@@ -367,6 +367,7 @@ class FilterPanel extends JPanel {
             listSignType.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
+            enableDetectionFilters(SearchFilter.DEFAULT.getDataTypes());
         }
     }
 
