@@ -32,7 +32,7 @@ import javax.swing.JSeparator;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -70,7 +70,7 @@ class FilterPanel extends JPanel {
 
     private JCheckBox cbbPhotos;
     private JCheckBox cbbDetections;
-    private JCheckBox cbbAggregatedDetections;
+    private JCheckBox cbbCluster;
 
     private JCheckBox cbbAutomaticMode;
     private JCheckBox cbbManualMode;
@@ -108,32 +108,25 @@ class FilterPanel extends JPanel {
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
             addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes());
-            final boolean enableCommonFilters = filter.getDataTypes() != null
-                    && (filter.getDataTypes().contains(ImageDataType.AGGREGATED_DETECTIONS)
-                            || filter.getDataTypes().contains(ImageDataType.DETECTIONS));
-            final boolean enableAllFilters =
-                    filter.getDataTypes() != null && filter.getDataTypes().contains(ImageDataType.DETECTIONS);
-            enableDetectionFilters(enableCommonFilters, enableAllFilters);
+            enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
             addDateFitler(filter.getDate());
         }
     }
 
-    private void addDataTypeFilter(final List<ImageDataType> types) {
+    private void addDataTypeFilter(final List<DataType> types) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeLbl(), Font.BOLD),
                 Constraints.LBL_DATA_TYPE);
         cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), Font.PLAIN, null,
-                types != null && types.contains(ImageDataType.PHOTOS));
+                types != null && types.contains(DataType.PHOTO));
         add(cbbPhotos, Constraints.CBB_PHOTOS);
         cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(),
-                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(ImageDataType.DETECTIONS),
-                true);
+                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
         add(cbbDetections, Constraints.CBB_DETECTIONS);
-        cbbAggregatedDetections = CheckBoxBuilder.build(
-                GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(), new DataTypeSelectionListener(),
-                Font.PLAIN, types != null && types.contains(ImageDataType.AGGREGATED_DETECTIONS), true);
-        add(cbbAggregatedDetections, Constraints.CBB_AGGREGATED_DETECTIONS);
+        cbbCluster = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(),
+                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.CLUSTER), true);
+        add(cbbCluster, Constraints.CBB_AGGREGATED_DETECTIONS);
     }
 
     private void addUserFilter(final boolean isSelected) {
@@ -163,8 +156,8 @@ class FilterPanel extends JPanel {
 
     private void addModeFilter(final List<DetectionMode> modes) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
-        cbbAutomaticMode = CheckBoxBuilder.build(DetectionMode.AUTOMATIC.toString(), Font.PLAIN,
-                null, modes != null && modes.contains(DetectionMode.AUTOMATIC));
+        cbbAutomaticMode = CheckBoxBuilder.build(DetectionMode.AUTOMATIC.toString(), Font.PLAIN, null,
+                modes != null && modes.contains(DetectionMode.AUTOMATIC));
         add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
         cbbManualMode = CheckBoxBuilder.build(DetectionMode.MANUAL.toString(), Font.PLAIN, null,
                 modes != null && modes.contains(DetectionMode.MANUAL));
@@ -224,7 +217,15 @@ class FilterPanel extends JPanel {
         add(pnlButton, Constraints.PNL_BTN);
     }
 
-    private void enableDetectionFilters(final boolean enableCommonFilters, final boolean enableAllFilters) {
+    private void enableDetectionFilters(final List<DataType> dataTypes) {
+        boolean enableCommonFilters = false;
+        boolean enableDetectionFilters = false;
+        if (dataTypes != null) {
+            enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
+            enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
+
+        }
+
         // common filters
         cbbNewOsmComparison.setEnabled(enableCommonFilters);
         cbbChangedOsmComparison.setEnabled(enableCommonFilters);
@@ -235,12 +236,12 @@ class FilterPanel extends JPanel {
         btnClearSignTypes.setEnabled(enableCommonFilters);
 
         // detection only filters
-        cbbAutomaticMode.setEnabled(enableAllFilters);
-        cbbManualMode.setEnabled(enableAllFilters);
-        cbbOpenEditStatus.setEnabled(enableAllFilters);
-        cbbMappedEditStatus.setEnabled(enableAllFilters);
-        cbbBadSignEditStatus.setEnabled(enableAllFilters);
-        cbbOtherEditStatus.setEnabled(enableAllFilters);
+        cbbAutomaticMode.setEnabled(enableDetectionFilters);
+        cbbManualMode.setEnabled(enableDetectionFilters);
+        cbbOpenEditStatus.setEnabled(enableDetectionFilters);
+        cbbMappedEditStatus.setEnabled(enableDetectionFilters);
+        cbbBadSignEditStatus.setEnabled(enableDetectionFilters);
+        cbbOtherEditStatus.setEnabled(enableDetectionFilters);
     }
 
 
@@ -311,16 +312,16 @@ class FilterPanel extends JPanel {
         return editStatuses;
     }
 
-    private List<ImageDataType> selectedDataTypes() {
-        final List<ImageDataType> selected = new ArrayList<>();
+    private List<DataType> selectedDataTypes() {
+        final List<DataType> selected = new ArrayList<>();
         if (cbbPhotos.isSelected()) {
-            selected.add(ImageDataType.PHOTOS);
+            selected.add(DataType.PHOTO);
         }
         if (cbbDetections.isSelected()) {
-            selected.add(ImageDataType.DETECTIONS);
+            selected.add(DataType.DETECTION);
         }
-        if (cbbAggregatedDetections.isSelected()) {
-            selected.add(ImageDataType.AGGREGATED_DETECTIONS);
+        if (cbbCluster.isSelected()) {
+            selected.add(DataType.CLUSTER);
         }
         return selected;
     }
@@ -344,10 +345,9 @@ class FilterPanel extends JPanel {
         pickerDate.setDate(SearchFilter.DEFAULT.getDate());
         cbbUser.setSelected(SearchFilter.DEFAULT.isOlnyUserData());
         if (isHighZoomLevel) {
-            cbbPhotos.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(ImageDataType.PHOTOS));
-            cbbDetections.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(ImageDataType.DETECTIONS));
-            cbbAggregatedDetections
-            .setSelected(SearchFilter.DEFAULT.getDataTypes().contains(ImageDataType.AGGREGATED_DETECTIONS));
+            cbbPhotos.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.PHOTO));
+            cbbDetections.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.DETECTION));
+            cbbCluster.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.CLUSTER));
             cbbNewOsmComparison.setSelected(
                     SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW));
             cbbChangedOsmComparison.setSelected(
@@ -402,11 +402,8 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final List<ImageDataType> dataTypes = selectedDataTypes();
-            final boolean enableCommonFilters = dataTypes.contains(ImageDataType.AGGREGATED_DETECTIONS)
-                    || dataTypes.contains(ImageDataType.DETECTIONS);
-            final boolean enableDetectionFilters = dataTypes.contains(ImageDataType.DETECTIONS);
-            enableDetectionFilters(enableCommonFilters, enableDetectionFilters);
+            final List<DataType> dataTypes = selectedDataTypes();
+            enableDetectionFilters(dataTypes);
         }
 
     }

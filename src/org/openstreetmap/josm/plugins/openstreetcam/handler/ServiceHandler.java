@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
@@ -80,7 +80,7 @@ public final class ServiceHandler {
             if (filter.getDataTypes().size() == MAX_DATA_TYPES) {
                 // load photos & detections
                 result = loadPhotosAndDetections(area, filter);
-            } else if (filter.getDataTypes().contains(ImageDataType.DETECTIONS)) {
+            } else if (filter.getDataTypes().contains(DataType.DETECTION)) {
                 result = new Pair<>(null, searchDetections(area, filter));
             } else {
                 result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
@@ -176,11 +176,11 @@ public final class ServiceHandler {
      */
     public Sequence retrieveSequence(final Long sequenceId) {
         Sequence result;
-        final List<ImageDataType> dataTypesPreferences =
+        final List<DataType> dataTypesPreferences =
                 PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
         if (dataTypesPreferences.isEmpty()) {
             result = null;
-        } else if (dataTypesPreferences.size() == 1 && dataTypesPreferences.contains(ImageDataType.PHOTOS)) {
+        } else if (dataTypesPreferences.size() == 1 && dataTypesPreferences.contains(DataType.PHOTO)) {
             result = retrieveSequencePhotos(sequenceId);
         } else {
             result = retrieveCompleteSequence(sequenceId);
