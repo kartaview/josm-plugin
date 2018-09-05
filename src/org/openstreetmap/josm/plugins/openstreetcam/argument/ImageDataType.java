@@ -15,7 +15,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.argument;
  */
 public enum ImageDataType {
 
-    DETECTIONS, PHOTOS;
+    DETECTIONS, PHOTOS, AGGREGATED_DETECTIONS;
 
     @Override
     public String toString() {
