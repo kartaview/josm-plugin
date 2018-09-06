@@ -24,8 +24,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
@@ -355,21 +355,21 @@ public final class PreferenceManager {
     }
 
     /**
-     * Saves the selected data type to the preference file.
+     * Saves the selected map view type to the preference file.
      *
-     * @param dataType the currently selected {@code DataType}
+     * @param mapViewType the currently selected {@code MapViewType}
      */
-    public void saveDataType(final DataType dataType) {
-        saveManager.saveDataType(dataType);
+    public void saveMapViewType(final MapViewType mapViewType) {
+        saveManager.saveMapViewType(mapViewType);
     }
 
     /**
-     * Loads the data type.
+     * Loads the map view type.
      *
-     * @return a {@code DataType} object
+     * @return a {@code MapViewType} object
      */
-    public DataType loadDataType() {
-        return loadManager.loadDataType();
+    public MapViewType loadMapViewType() {
+        return loadManager.loadMapViewType();
     }
 
     /**

@@ -12,8 +12,8 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
@@ -145,7 +145,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (mapViewSettings.isManualSwitchFlag()) {
             result = zoom >= Config.getInstance().getMapPhotoZoom()
-                    && PreferenceManager.getInstance().loadDataType() == DataType.PHOTO;
+                    && PreferenceManager.getInstance().loadMapViewType() == MapViewType.ELEMENT;
         } else if (zoom >= mapViewSettings.getPhotoZoom()) {
             result = !DataSet.getInstance().hasSelectedSequence();
         }

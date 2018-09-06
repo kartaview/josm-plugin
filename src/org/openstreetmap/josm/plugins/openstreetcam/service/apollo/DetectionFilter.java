@@ -25,7 +25,8 @@ import com.telenav.josm.common.entity.EntityUtil;
 public class DetectionFilter {
 
     public static final DetectionFilter DEFAULT =
-            new DetectionFilter(Arrays.asList(OsmComparison.NEW, OsmComparison.SAME), null, null, null);
+            new DetectionFilter(Arrays.asList(OsmComparison.NEW, OsmComparison.UNKNOWN, OsmComparison.CHANGED),
+                    Arrays.asList(EditStatus.OPEN), null, null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;

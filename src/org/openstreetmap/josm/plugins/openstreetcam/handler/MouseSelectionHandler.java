@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -82,7 +82,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     void enhancePhotoWithDetections(final Photo photo) {
         if (photo != null && PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
-                .contains(ImageDataType.DETECTIONS)) {
+                .contains(DataType.DETECTION)) {
             final List<Detection> detections = loadPhotoDetections(photo);
             photo.setDetections(detections);
         }

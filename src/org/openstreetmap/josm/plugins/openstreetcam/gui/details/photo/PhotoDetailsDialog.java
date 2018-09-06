@@ -16,14 +16,14 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
@@ -223,7 +223,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
     public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
-            final DataTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
+            final MapViewTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
             final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
@@ -264,7 +264,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param isEnabled enables/disables the data switch button
      * @param isVisible specifies the button visibility
      */
-    public void updateDataSwitchButton(final DataType dataType, final Boolean isEnabled, final Boolean isVisible) {
+    public void updateDataSwitchButton(final MapViewType dataType, final Boolean isEnabled, final Boolean isVisible) {
         if (dataType != null) {
             pnlBtn.updateDataSwitchButton(dataType);
         }

@@ -9,7 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity;
 
 import org.openstreetmap.josm.data.StructUtils.StructEntry;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 
 
 /**
@@ -25,7 +25,7 @@ public class ImageDataTypeEntry {
     public ImageDataTypeEntry() {}
 
 
-    public ImageDataTypeEntry(final ImageDataType type) {
+    public ImageDataTypeEntry(final DataType type) {
         this.name = type.name();
     }
 

@@ -17,7 +17,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -229,9 +229,9 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
     public void selectSequencePhoto(final int index) {
         final Photo photo = DataSet.getInstance().sequencePhoto(index);
         if (photo != null) {
-            final List<ImageDataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+            final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
             Detection detection = null;
-            if (dataTypes != null && dataTypes.contains(ImageDataType.DETECTIONS)) {
+            if (dataTypes != null && dataTypes.contains(DataType.DETECTION)) {
                 enhancePhotoWithDetections(photo);
                 detection = photoSelectedDetection(photo);
             }

@@ -37,7 +37,7 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
 public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
-    private static final Dimension HIGH_ZOOM_DIM = new Dimension(450, 470);
+    private static final Dimension HIGH_ZOOM_DIM = new Dimension(500, 470);
     private static final Dimension DIM = new Dimension(380, 150);
 
     private FilterPanel pnlFilter;
@@ -64,7 +64,7 @@ public class FilterDialog extends ModalDialog {
     protected void createComponents() {
         pnlFilter = new FilterPanel(isHighLevelZoom);
         final JButton btnOk = ButtonBuilder.build(new OkAction(), GuiConfig.getInstance().getBtnOkLbl());
-        final JButton btnClear = ButtonBuilder.build(new ClearAction(), GuiConfig.getInstance().getBtnClearLbl());
+        final JButton btnClear = ButtonBuilder.build(new ResetAction(), GuiConfig.getInstance().getBtnResetLbl());
         final JButton btnCancel =
                 ButtonBuilder.build(new CancelAction(this), GuiConfig.getInstance().getBtnCancelLbl());
         final JPanel pnlButton = ContainerBuilder.buildFlowLayoutPanel(FlowLayout.RIGHT, btnOk, btnClear, btnCancel);
@@ -109,13 +109,13 @@ public class FilterDialog extends ModalDialog {
      * @author beataj
      * @version $Revision$
      */
-    private final class ClearAction extends AbstractAction {
+    private final class ResetAction extends AbstractAction {
 
         private static final long serialVersionUID = -8589369992232950474L;
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            pnlFilter.clearFilters();
+            pnlFilter.resetFilters();
         }
     }
 }

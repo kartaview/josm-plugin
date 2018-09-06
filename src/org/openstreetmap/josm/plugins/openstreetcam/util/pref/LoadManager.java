@@ -15,7 +15,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -30,6 +29,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
@@ -52,8 +52,8 @@ import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
@@ -121,22 +121,22 @@ final class LoadManager {
         final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
         final String onlyUserFlagStr = Preferences.main().get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
-        final List<ImageDataType> dataType = loadDataTypeFilter();
+        final List<DataType> dataType = loadDataTypeFilter();
         final DetectionFilter detectionFilter = loadDetectionFilter();
         return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);
     }
 
-    private List<ImageDataType> loadDataTypeFilter() {
+    private List<DataType> loadDataTypeFilter() {
         final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_PHOTO_TYPE);
         final List<ImageDataTypeEntry> entries =
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
-        List<ImageDataType> list;
+        List<DataType> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
-            list = Arrays.asList(ImageDataType.values());
+            list = Arrays.asList(DataType.values());
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
             list = new ArrayList<>();
         } else {
-            list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
+            list = entries.stream().map(entry -> DataType.getDataType(entry.getName())).collect(Collectors.toList());
         }
         return list;
     }
@@ -258,11 +258,11 @@ final class LoadManager {
         return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
     }
 
-    DataType loadDataType() {
-        final String value = Preferences.main().get(DATA_TYPE);
-        DataType dataType;
+    MapViewType loadMapViewType() {
+        final String value = Preferences.main().get(MAP_VIEW_TYPE);
+        MapViewType dataType;
         try {
-            dataType = DataType.valueOf(value);
+            dataType = MapViewType.valueOf(value);
         } catch (final RuntimeException e) {
             dataType = null;
         }

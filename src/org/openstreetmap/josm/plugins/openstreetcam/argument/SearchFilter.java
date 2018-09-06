@@ -24,11 +24,11 @@ import com.telenav.josm.common.entity.EntityUtil;
 public class SearchFilter {
 
     public static final SearchFilter DEFAULT =
-            new SearchFilter(null, false, Arrays.asList(ImageDataType.values()), DetectionFilter.DEFAULT);
+            new SearchFilter(null, false, Arrays.asList(DataType.values()), DetectionFilter.DEFAULT);
 
     private final Date date;
     private final boolean olnyUserData;
-    private List<ImageDataType> dataTypes;
+    private List<DataType> dataTypes;
     private DetectionFilter detectionFilter;
 
 
@@ -51,14 +51,14 @@ public class SearchFilter {
      * @param dataTypes a {@code DataType} specifies the type of data to be displayed
      * @param detectionFilter a {@code DetectionFilter} specifies the {@code Detection} related filters
      */
-    public SearchFilter(final Date date, final boolean onlyMineFlag, final List<ImageDataType> dataTypes,
+    public SearchFilter(final Date date, final boolean onlyMineFlag, final List<DataType> dataTypes,
             final DetectionFilter detectionFilter) {
         this(date, onlyMineFlag);
         this.dataTypes = dataTypes;
         this.detectionFilter = detectionFilter;
     }
 
-    public List<ImageDataType> getDataTypes() {
+    public List<DataType> getDataTypes() {
         return dataTypes;
     }
 

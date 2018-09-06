@@ -76,20 +76,21 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
-    private final String dlgFilterPhotoTypeLbl;
+    private final String dlgFilterDataTypeLbl;
     private final String dlgFilterDetectionLbl;
     private final String dlgFilterOsmComparisonLbl;
     private final String dlgFilterModeLbl;
-    private final String dlgFilterModeAutomaticTxt;
-    private final String dlgFilterModeManualTxt;
     private final String dlgFilterEditStatusLbl;
     private final String dlgFilterDetectionTypeLbl;
     private final String dlgFilterDataTypeImageTxt;
     private final String dlgFilterDataTypeDetectionsTxt;
+    private final String dlgFilterDataTypeAggregatedDetectionsTxt;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
+    private final String btnSelectLbl;
+    private final String btnResetLbl;
 
     private final String errorTitle;
     private final String errorPhotoListText;
@@ -217,18 +218,19 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
         dlgFilterDetectionLbl = readProperty("filter.detection.lbl");
         dlgFilterModeLbl = readProperty("filter.mode.lbl");
-        dlgFilterModeAutomaticTxt = readProperty("filter.mode.automatic");
-        dlgFilterModeManualTxt = readProperty("filter.mode.manual");
-        dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
+        dlgFilterDataTypeLbl = readProperty("filter.dataType.lbl");
         dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
         dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
         dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
         dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
+        dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
         btnCancelLbl = readProperty("btn.cancel.lbl");
+        btnSelectLbl = readProperty("btn.select.lbl");
+        btnResetLbl = readProperty("btn.reset.lbl");
 
         errorTitle = readProperty("error.title");
         errorPhotoListText = readProperty("error.photo.list");
@@ -445,8 +447,8 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDetectionLbl;
     }
 
-    public String getDlgFilterPhotoTypeLbl() {
-        return dlgFilterPhotoTypeLbl;
+    public String getDlgFilterDataTypeLbl() {
+        return dlgFilterDataTypeLbl;
     }
 
     public String getDlgFilterOsmComparisonLbl() {
@@ -455,14 +457,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterModeLbl() {
         return dlgFilterModeLbl;
-    }
-
-    public String getDlgFilterModeAutomaticTxt() {
-        return dlgFilterModeAutomaticTxt;
-    }
-
-    public String getDlgFilterModeManualTxt() {
-        return dlgFilterModeManualTxt;
     }
 
     public String getDlgFilterEditStatusLbl() {
@@ -483,6 +477,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnCancelLbl() {
         return btnCancelLbl;
+    }
+
+    public String getBtnSelectLbl() {
+        return btnSelectLbl;
+    }
+
+    public String getBtnResetLbl() {
+        return btnResetLbl;
     }
 
     public String getErrorTitle() {
@@ -791,6 +793,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterDataTypeDetectionsTxt() {
         return dlgFilterDataTypeDetectionsTxt;
+    }
+
+    public String getDlgFilterDataTypeAggregatedDetectionsTxt() {
+        return dlgFilterDataTypeAggregatedDetectionsTxt;
     }
 
     public String getDialogAddCommentText() {

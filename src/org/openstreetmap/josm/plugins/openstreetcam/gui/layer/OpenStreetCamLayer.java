@@ -15,7 +15,7 @@ import java.awt.Stroke;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -67,14 +67,14 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 // draw photos
                 final boolean isTransparent = dataSet.getSelectedSequence() != null;
                 if (dataSet.hasPhotos() && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
-                        .contains(ImageDataType.PHOTOS))) {
+                        .contains(DataType.PHOTO))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotos(),
                             dataSet.getSelectedPhoto(), isTransparent);
                 }
 
                 // draw detections
                 if (dataSet.getDetections() != null && (PreferenceManager.getInstance().loadSearchFilter()
-                        .getDataTypes().contains(ImageDataType.DETECTIONS))) {
+                        .getDataTypes().contains(DataType.DETECTION))) {
                     paintHandler.drawDetections(graphics, mapView, dataSet.getDetections(),
                             dataSet.getSelectedDetection(), isTransparent);
                 }

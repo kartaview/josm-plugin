@@ -27,7 +27,7 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -39,7 +39,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEd
 import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
@@ -60,7 +60,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserver, LayerChangeListener,
+public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObserver, LayerChangeListener,
 LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectionObserver {
 
     private static final int SEARCH_DELAY = 500;
@@ -162,8 +162,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     /* implementation of DataTypeChangeObserver */
 
     @Override
-    public void update(final DataType dataType) {
-        PreferenceManager.getInstance().saveDataType(dataType);
+    public void update(final MapViewType mapViewType) {
+        PreferenceManager.getInstance().saveMapViewType(mapViewType);
         ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
     }
 

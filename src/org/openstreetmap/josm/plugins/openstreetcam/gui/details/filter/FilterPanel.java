@@ -10,27 +10,29 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -42,6 +44,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
 import com.telenav.josm.common.gui.builder.DatePickerBuilder;
@@ -64,103 +67,137 @@ class FilterPanel extends JPanel {
     /* panel components */
     private JXDatePicker pickerDate;
     private JCheckBox cbbUser;
-    private JCheckBox cbbDetections;
+
     private JCheckBox cbbPhotos;
+    private JCheckBox cbbDetections;
+    private JCheckBox cbbCluster;
+
     private JCheckBox cbbAutomaticMode;
     private JCheckBox cbbManualMode;
 
-    private JList<OsmComparison> listOsmComparison;
-    private JList<EditStatus> listEditStatus;
+    /* edit status filter */
+    private JCheckBox cbbOpenEditStatus;
+    private JCheckBox cbbMappedEditStatus;
+    private JCheckBox cbbBadSignEditStatus;
+    private JCheckBox cbbOtherEditStatus;
+
+    /* osm comparison filter */
+    private JCheckBox cbbNewOsmComparison;
+    private JCheckBox cbbChangedOsmComparison;
+    private JCheckBox cbbUnknownOsmComparison;
+    private JCheckBox cbbSameOsmComparison;
+
     private JList<SignType> listSignType;
+    private JButton btnSelectSignTypes;
+    private JButton btnClearSignTypes;
+    private final boolean isHighZoomLevel;
 
-    private final boolean isHighLevelZoom;
 
-
-    FilterPanel(final boolean isHighLevelZoom) {
+    FilterPanel(final boolean isHighZoomLevel) {
         super(new GridBagLayout());
-        this.isHighLevelZoom = isHighLevelZoom;
+        this.isHighZoomLevel = isHighZoomLevel;
         final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
-        addDateFitler(filter.getDate());
-        addUserFilter(filter.isOlnyUserData());
-        if (isHighLevelZoom) {
+        if (isHighZoomLevel) {
             addDataTypeFilter(filter.getDataTypes());
+            addUserFilter(filter.isOlnyUserData());
+            addDateFilter(filter.getDate());
+            add(new JSeparator(JSeparator.HORIZONTAL), Constraints.SEPARATOR);
             add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),
                     Constraints.LBL_DETECTION);
-            addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
-            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes());
             addModeFilter(filter.getDetectionFilter().getModes());
-
-            final boolean enableFilters =
-                    filter.getDataTypes() != null && filter.getDataTypes().contains(ImageDataType.DETECTIONS);
-            enableDetectionFilters(enableFilters);
+            addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
+            addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
+            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes());
+            enableDetectionFilters(filter.getDataTypes());
+        } else {
+            addUserFilter(filter.isOlnyUserData());
+            addDateFilter(filter.getDate());
         }
     }
 
-    private void addDateFitler(final Date date) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD), Constraints.LBL_DATE);
-        pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
-        pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
-        if (Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
-            pickerDate.setEnabled(false);
-        }
-        add(pickerDate, Constraints.PICKER_DATE);
-    }
-
-    private void enableDetectionFilters(final boolean enable) {
-        listOsmComparison.setEnabled(enable);
-        listEditStatus.setEnabled(enable);
-        listSignType.setEnabled(enable);
-        cbbAutomaticMode.setEnabled(enable);
-        cbbManualMode.setEnabled(enable);
+    private void addDataTypeFilter(final List<DataType> types) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeLbl(), Font.BOLD),
+                Constraints.LBL_DATA_TYPE);
+        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), Font.PLAIN, null,
+                types != null && types.contains(DataType.PHOTO));
+        add(cbbPhotos, Constraints.CBB_PHOTOS);
+        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(),
+                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
+        add(cbbDetections, Constraints.CBB_DETECTIONS);
+        cbbCluster = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(),
+                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.CLUSTER), true);
+        add(cbbCluster, Constraints.CBB_AGGREGATED_DETECTIONS);
     }
 
     private void addUserFilter(final boolean isSelected) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD), Constraints.LBL_USER);
-
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterUserLbl(), Font.BOLD),
+                Constraints.getLblUser(isHighZoomLevel));
         final JLabel lblLoginWarning =
                 LabelBuilder.build(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(), Font.ITALIC);
         final boolean enabled = true;
         if (UserIdentityManager.getInstance().asUser().getId() <= 0) {
             lblLoginWarning.setForeground(Color.red);
-            add(lblLoginWarning, Constraints.LBL_LOGIN_WARNING);
+            add(lblLoginWarning, Constraints.geLblLoginWarning(isHighZoomLevel));
         }
         cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
-        add(cbbUser, Constraints.CBB_USER);
+        add(cbbUser, Constraints.getCbbUser(isHighZoomLevel));
     }
 
-    private void addDataTypeFilter(final List<ImageDataType> types) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterPhotoTypeLbl(), Font.BOLD),
-                Constraints.LBL_PHOTO_TYPE);
-
-        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), Font.PLAIN, null,
-                types != null && types.contains(ImageDataType.PHOTOS));
-        add(cbbPhotos, Constraints.CBB_PHOTOS);
-
-        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(), Font.PLAIN,
-                null, types != null && types.contains(ImageDataType.DETECTIONS));
-        add(cbbDetections, Constraints.CBB_DETECTIONS);
-        cbbDetections.addItemListener(new DetectionFilterSelectionListener());
+    private void addDateFilter(final Date date) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD),
+                Constraints.getLblDate(isHighZoomLevel));
+        pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
+        pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
+        if (Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
+            pickerDate.setEnabled(false);
+        }
+        add(pickerDate, Constraints.getPickerDate(isHighZoomLevel));
     }
 
-    private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterOsmComparisonLbl(), Font.BOLD),
-                Constraints.LBL_OSM_COMPARISON);
-        listOsmComparison = ListBuilder.build(Arrays.asList(OsmComparison.values()), osmComparisons,
-                new DefaultListCellRenderer(), Font.PLAIN);
-        listOsmComparison.setLayoutOrientation(JList.VERTICAL);
-
-        add(ContainerBuilder.buildScrollPane(listOsmComparison, getBackground()), Constraints.CBB_OSM_COMPARISON);
+    private void addModeFilter(final List<DetectionMode> modes) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
+        cbbAutomaticMode = CheckBoxBuilder.build(DetectionMode.AUTOMATIC.toString(), Font.PLAIN, null,
+                modes != null && modes.contains(DetectionMode.AUTOMATIC));
+        add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
+        cbbManualMode = CheckBoxBuilder.build(DetectionMode.MANUAL.toString(), Font.PLAIN, null,
+                modes != null && modes.contains(DetectionMode.MANUAL));
+        add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
     }
 
     private void addEditStatusFilter(final List<EditStatus> editStatuses) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterEditStatusLbl(), Font.BOLD),
                 Constraints.LBL_EDIT_STATUS);
 
-        listEditStatus = ListBuilder.build(Arrays.asList(EditStatus.values()), editStatuses,
-                new DefaultListCellRenderer(), Font.PLAIN);
-        listEditStatus.setLayoutOrientation(JList.VERTICAL);
-        add(ContainerBuilder.buildScrollPane(listEditStatus, getBackground()), Constraints.CBB_EDIT_STATUS);
+        cbbOpenEditStatus = CheckBoxBuilder.build(EditStatus.OPEN.toString(), Font.PLAIN, null,
+                editStatuses != null && editStatuses.contains(EditStatus.OPEN));
+        add(cbbOpenEditStatus, Constraints.CBB_OPEN_EDIT_STATUS);
+        cbbMappedEditStatus = CheckBoxBuilder.build(EditStatus.MAPPED.toString(), Font.PLAIN, null,
+                editStatuses != null && editStatuses.contains(EditStatus.MAPPED));
+        add(cbbMappedEditStatus, Constraints.CBB_MAPPED_EDIT_STATUS);
+        cbbBadSignEditStatus = CheckBoxBuilder.build(EditStatus.BAD_SIGN.toString(), Font.PLAIN, null,
+                editStatuses != null && editStatuses.contains(EditStatus.BAD_SIGN));
+        add(cbbBadSignEditStatus, Constraints.CBB_BAD_SIGN_EDIT_STATUS);
+        cbbOtherEditStatus = CheckBoxBuilder.build(EditStatus.OTHER.toString(), Font.PLAIN, null,
+                editStatuses != null && editStatuses.contains(EditStatus.OTHER));
+        add(cbbOtherEditStatus, Constraints.CBB_OTHER_EDIT_STATUS);
+    }
+
+    private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterOsmComparisonLbl(), Font.BOLD),
+                Constraints.LBL_OSM_COMPARISON);
+
+        cbbNewOsmComparison = CheckBoxBuilder.build(OsmComparison.NEW.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.NEW));
+        add(cbbNewOsmComparison, Constraints.CBB_NEW_OSM_COMPARISON);
+        cbbChangedOsmComparison = CheckBoxBuilder.build(OsmComparison.CHANGED.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.CHANGED));
+        add(cbbChangedOsmComparison, Constraints.CBB_CHANGED_OSM_COMPARISON);
+        cbbUnknownOsmComparison = CheckBoxBuilder.build(OsmComparison.UNKNOWN.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.UNKNOWN));
+        add(cbbUnknownOsmComparison, Constraints.CBB_UNKNOWN_OSM_COMPARISON);
+        cbbSameOsmComparison = CheckBoxBuilder.build(OsmComparison.SAME.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
+        add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
 
     private void addDetectionTypeFilter(final List<SignType> signTypes) {
@@ -170,17 +207,43 @@ class FilterPanel extends JPanel {
                 Font.PLAIN);
         listSignType.setLayoutOrientation(JList.VERTICAL);
         add(ContainerBuilder.buildScrollPane(listSignType, getBackground()), Constraints.CBB_SIGN_TYPE);
+
+
+        btnSelectSignTypes =
+                ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
+        btnClearSignTypes = ButtonBuilder.build(new SignTypesClearAction(), GuiConfig.getInstance().getBtnClearLbl());
+        final JPanel pnlButton =
+                ContainerBuilder.buildFlowLayoutPanel(FlowLayout.RIGHT, btnSelectSignTypes, btnClearSignTypes);
+        add(pnlButton, Constraints.PNL_BTN);
     }
 
-    private void addModeFilter(final List<DetectionMode> modes) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
-        cbbAutomaticMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeAutomaticTxt(), Font.PLAIN,
-                null, modes != null && modes.contains(DetectionMode.AUTOMATIC));
-        add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
-        cbbManualMode = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterModeManualTxt(), Font.PLAIN, null,
-                modes != null && modes.contains(DetectionMode.MANUAL));
-        add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
+    private void enableDetectionFilters(final List<DataType> dataTypes) {
+        boolean enableCommonFilters = false;
+        boolean enableDetectionFilters = false;
+        if (dataTypes != null) {
+            enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
+            enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
+
+        }
+
+        // common filters
+        cbbNewOsmComparison.setEnabled(enableCommonFilters);
+        cbbChangedOsmComparison.setEnabled(enableCommonFilters);
+        cbbUnknownOsmComparison.setEnabled(enableCommonFilters);
+        cbbSameOsmComparison.setEnabled(enableCommonFilters);
+        listSignType.setEnabled(enableCommonFilters);
+        btnSelectSignTypes.setEnabled(enableCommonFilters);
+        btnClearSignTypes.setEnabled(enableCommonFilters);
+
+        // detection only filters
+        cbbAutomaticMode.setEnabled(enableDetectionFilters);
+        cbbManualMode.setEnabled(enableDetectionFilters);
+        cbbOpenEditStatus.setEnabled(enableDetectionFilters);
+        cbbMappedEditStatus.setEnabled(enableDetectionFilters);
+        cbbBadSignEditStatus.setEnabled(enableDetectionFilters);
+        cbbOtherEditStatus.setEnabled(enableDetectionFilters);
     }
+
 
     /**
      * Returns the currently selected filters, considering also the uncommitted date case.
@@ -205,24 +268,60 @@ class FilterPanel extends JPanel {
             }
         }
         SearchFilter searchFilter;
-        if (isHighLevelZoom) {
-            searchFilter = new SearchFilter(date, cbbUser.isSelected(), getSelectedDataTypes(),
-                    new DetectionFilter(listOsmComparison.getSelectedValuesList(),
-                            listEditStatus.getSelectedValuesList(), listSignType.getSelectedValuesList(),
-                            getSelectedModes()));
+        if (isHighZoomLevel) {
+            searchFilter = new SearchFilter(date, cbbUser.isSelected(), selectedDataTypes(),
+                    new DetectionFilter(selectedOsmComparisons(), selectedEditStatuses(),
+                            listSignType.getSelectedValuesList(), getSelectedModes()));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
         return searchFilter;
     }
 
-    private List<ImageDataType> getSelectedDataTypes() {
-        final List<ImageDataType> selected = new ArrayList<>();
+    private List<OsmComparison> selectedOsmComparisons() {
+        final List<OsmComparison> osmComparisons = new ArrayList<>();
+        if (cbbNewOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.NEW);
+        }
+        if (cbbChangedOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.CHANGED);
+        }
+        if (cbbUnknownOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.UNKNOWN);
+        }
+        if (cbbSameOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.SAME);
+        }
+        return osmComparisons;
+    }
+
+    private List<EditStatus> selectedEditStatuses() {
+        final List<EditStatus> editStatuses = new ArrayList<>();
+        if (cbbOpenEditStatus.isSelected()) {
+            editStatuses.add(EditStatus.OPEN);
+        }
+        if (cbbMappedEditStatus.isSelected()) {
+            editStatuses.add(EditStatus.MAPPED);
+        }
+        if (cbbBadSignEditStatus.isSelected()) {
+            editStatuses.add(EditStatus.BAD_SIGN);
+        }
+        if (cbbOtherEditStatus.isSelected()) {
+            editStatuses.add(EditStatus.OTHER);
+        }
+        return editStatuses;
+    }
+
+    private List<DataType> selectedDataTypes() {
+        final List<DataType> selected = new ArrayList<>();
         if (cbbPhotos.isSelected()) {
-            selected.add(ImageDataType.PHOTOS);
+            selected.add(DataType.PHOTO);
         }
         if (cbbDetections.isSelected()) {
-            selected.add(ImageDataType.DETECTIONS);
+            selected.add(DataType.DETECTION);
+        }
+        if (cbbCluster.isSelected()) {
+            selected.add(DataType.CLUSTER);
         }
         return selected;
     }
@@ -241,18 +340,34 @@ class FilterPanel extends JPanel {
     /**
      * Clears the filters.
      */
-    void clearFilters() {
+    void resetFilters() {
         pickerDate.getEditor().setText("");
-        pickerDate.setDate(null);
-        cbbUser.setSelected(false);
-        if (isHighLevelZoom) {
-            cbbPhotos.setSelected(false);
-            cbbDetections.setSelected(false);
-            listOsmComparison.clearSelection();
-            listEditStatus.clearSelection();
+        pickerDate.setDate(SearchFilter.DEFAULT.getDate());
+        cbbUser.setSelected(SearchFilter.DEFAULT.isOlnyUserData());
+        if (isHighZoomLevel) {
+            cbbPhotos.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.PHOTO));
+            cbbDetections.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.DETECTION));
+            cbbCluster.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.CLUSTER));
+            cbbNewOsmComparison.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW));
+            cbbChangedOsmComparison.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.CHANGED));
+            cbbUnknownOsmComparison.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN));
+            cbbSameOsmComparison.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME));
+            cbbOpenEditStatus
+            .setSelected(SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OPEN));
+            cbbMappedEditStatus.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.MAPPED));
+            cbbBadSignEditStatus.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.BAD_SIGN));
+            cbbOtherEditStatus.setSelected(
+                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OTHER));
             listSignType.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
+            enableDetectionFilters(SearchFilter.DEFAULT.getDataTypes());
         }
     }
 
@@ -284,63 +399,34 @@ class FilterPanel extends JPanel {
         }
     }
 
-    private final class DetectionFilterSelectionListener implements ItemListener {
+    private final class DataTypeSelectionListener implements ActionListener {
 
         @Override
-        public void itemStateChanged(final ItemEvent event) {
-            final boolean filtersEnabled = event.getStateChange() == ItemEvent.SELECTED;
-            enableDetectionFilters(filtersEnabled);
+        public void actionPerformed(final ActionEvent event) {
+            final List<DataType> dataTypes = selectedDataTypes();
+            enableDetectionFilters(dataTypes);
         }
 
     }
 
+    private final class SignTypesSelectAction extends AbstractAction {
 
-    /* Holds UI constraints */
-    private static final class Constraints {
+        private static final long serialVersionUID = -7171771571524168530L;
 
-        private static final GridBagConstraints LBL_DATE = new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 5), 0, 0);
-        private static final GridBagConstraints PICKER_DATE = new GridBagConstraints(1, 0, 2, 1, 1, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 10), 0, 0);
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            final int end = listSignType.getModel().getSize() - 1;
+            listSignType.setSelectionInterval(0, end);
+        }
+    }
 
-        private static final GridBagConstraints LBL_USER = new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_USER = new GridBagConstraints(1, 1, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
-        private static final GridBagConstraints LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 1, 1, 1, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 0);
+    private final class SignTypesClearAction extends AbstractAction {
 
-        private static final GridBagConstraints LBL_PHOTO_TYPE = new GridBagConstraints(0, 2, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(10, 5, 3, 0), 0, 0);
-        private static final GridBagConstraints CBB_DETECTIONS = new GridBagConstraints(1, 2, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
-        private static final GridBagConstraints CBB_PHOTOS = new GridBagConstraints(2, 2, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
+        private static final long serialVersionUID = -8589369992232950474L;
 
-        private static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 4, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
-        private static final GridBagConstraints LBL_OSM_COMPARISON = new GridBagConstraints(0, 5, 2, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_OSM_COMPARISON = new GridBagConstraints(1, 5, 3, 2, 1, 4,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 70);
-
-        private static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 7, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_EDIT_STATUS = new GridBagConstraints(1, 7, 3, 2, 1, 4,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
-
-        private static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 9, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 9, 3, 1, 1, 4,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 10), 0, 90);
-
-        private static final GridBagConstraints LBL_MODE = new GridBagConstraints(0, 10, 1, 1, 1, 1,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 3, 5), 0, 0);
-        private static final GridBagConstraints CBB_AUTOMATIC_MODE = new GridBagConstraints(1, 10, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
-        private static final GridBagConstraints CBB_MANUAL_MODE = new GridBagConstraints(2, 10, 1, 1, 0, 0,
-                GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
-
-        private Constraints() {}
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            listSignType.clearSelection();
+        }
     }
 }
