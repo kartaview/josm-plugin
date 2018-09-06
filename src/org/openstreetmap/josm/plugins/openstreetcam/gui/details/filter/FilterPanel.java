@@ -84,7 +84,7 @@ class FilterPanel extends JPanel {
     /* osm comparison filter */
     private JCheckBox cbbNewOsmComparison;
     private JCheckBox cbbChangedOsmComparison;
-    private JCheckBox cbbUnknowOsmComparison;
+    private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
 
     private JList<SignType> listSignType;
@@ -100,8 +100,8 @@ class FilterPanel extends JPanel {
         if (isHighZoomLevel) {
             addDataTypeFilter(filter.getDataTypes());
             addUserFilter(filter.isOlnyUserData());
-            addDateFitler(filter.getDate());
-            add(new JSeparator(JSeparator.HORIZONTAL), Constraints.SEPARTOR);
+            addDateFilter(filter.getDate());
+            add(new JSeparator(JSeparator.HORIZONTAL), Constraints.SEPARATOR);
             add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),
                     Constraints.LBL_DETECTION);
             addModeFilter(filter.getDetectionFilter().getModes());
@@ -111,7 +111,7 @@ class FilterPanel extends JPanel {
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
-            addDateFitler(filter.getDate());
+            addDateFilter(filter.getDate());
         }
     }
 
@@ -143,7 +143,7 @@ class FilterPanel extends JPanel {
         add(cbbUser, Constraints.getCbbUser(isHighZoomLevel));
     }
 
-    private void addDateFitler(final Date date) {
+    private void addDateFilter(final Date date) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDateLbl(), Font.BOLD),
                 Constraints.getLblDate(isHighZoomLevel));
         pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
@@ -192,9 +192,9 @@ class FilterPanel extends JPanel {
         cbbChangedOsmComparison = CheckBoxBuilder.build(OsmComparison.CHANGED.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.CHANGED));
         add(cbbChangedOsmComparison, Constraints.CBB_CHANGED_OSM_COMPARISON);
-        cbbUnknowOsmComparison = CheckBoxBuilder.build(OsmComparison.UNKNOWN.toString(), Font.PLAIN, null,
+        cbbUnknownOsmComparison = CheckBoxBuilder.build(OsmComparison.UNKNOWN.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.UNKNOWN));
-        add(cbbUnknowOsmComparison, Constraints.CBB_UNKNOWN_OSM_COMPARISON);
+        add(cbbUnknownOsmComparison, Constraints.CBB_UNKNOWN_OSM_COMPARISON);
         cbbSameOsmComparison = CheckBoxBuilder.build(OsmComparison.SAME.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
@@ -229,7 +229,7 @@ class FilterPanel extends JPanel {
         // common filters
         cbbNewOsmComparison.setEnabled(enableCommonFilters);
         cbbChangedOsmComparison.setEnabled(enableCommonFilters);
-        cbbUnknowOsmComparison.setEnabled(enableCommonFilters);
+        cbbUnknownOsmComparison.setEnabled(enableCommonFilters);
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
         listSignType.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
@@ -286,7 +286,7 @@ class FilterPanel extends JPanel {
         if (cbbChangedOsmComparison.isSelected()) {
             osmComparisons.add(OsmComparison.CHANGED);
         }
-        if (cbbUnknowOsmComparison.isSelected()) {
+        if (cbbUnknownOsmComparison.isSelected()) {
             osmComparisons.add(OsmComparison.UNKNOWN);
         }
         if (cbbSameOsmComparison.isSelected()) {
@@ -352,7 +352,7 @@ class FilterPanel extends JPanel {
                     SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW));
             cbbChangedOsmComparison.setSelected(
                     SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.CHANGED));
-            cbbUnknowOsmComparison.setSelected(
+            cbbUnknownOsmComparison.setSelected(
                     SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN));
             cbbSameOsmComparison.setSelected(
                     SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME));

@@ -12,7 +12,7 @@ import java.awt.Insets;
 
 
 /**
- * Holds grid bag constraints for the
+ * Holds grid bag constraints for the {@code FilterPanel}.
  *
  * @author beataj
  * @version $Revision$
@@ -50,7 +50,7 @@ final class Constraints {
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
     private static final GridBagConstraints HIGH_ZOOM_PICKER_DATE = new GridBagConstraints(1, 2, 2, 1, 1, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 10), 0, 0);
-    static final GridBagConstraints SEPARTOR = new GridBagConstraints(0, 3, 5, 1, 1, 1, GridBagConstraints.PAGE_START,
+    static final GridBagConstraints SEPARATOR = new GridBagConstraints(0, 3, 5, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
     static final GridBagConstraints LBL_DETECTION = new GridBagConstraints(0, 4, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 3, 5), 0, 0);
