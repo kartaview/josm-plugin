@@ -140,8 +140,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
                 if (!DataSet.getInstance().hasSelectedDetection()
-                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
-                    MainApplication.getMap().mapView.zoomTo(photo.getLocation());
+                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getPoint())) {
+                    MainApplication.getMap().mapView.zoomTo(photo.getPoint());
                 }
 
                 OpenStreetCamLayer.getInstance().invalidate();
@@ -274,7 +274,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         if (photo != null) {
             Photo nextPhoto = DataSet.getInstance().sequencePhoto(photo.getSequenceIndex() + 1);
             if (nextPhoto != null && autoplaySettings.getLength() != null) {
-                autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
+                autoplayDistance += photo.getPoint().greatCircleDistance(nextPhoto.getPoint());
                 if (autoplayDistance > autoplaySettings.getLength()) {
                     nextPhoto = null;
                 }

@@ -10,9 +10,11 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
@@ -40,10 +42,18 @@ public class ApolloService extends BaseService {
 
     public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
             final DetectionFilter detectionFilter) throws ServiceException {
-        final String url = new HttpQueryBuilder().buildSearchQuery(area, date, osmUserId, detectionFilter);
+        final String url = new HttpQueryBuilder().buildSearchDetectionsQuery(area, date, osmUserId, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();
+    }
+
+    public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
+            throws ServiceException {
+        final String url = new HttpQueryBuilder().buildSearchClustersQuery(area, date, detectionFilter);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getClusters();
     }
 
     public void updateDetection(final Detection detection, final Contribution contribution) throws ServiceException {
@@ -74,5 +84,19 @@ public class ApolloService extends BaseService {
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetection();
+    }
+
+    public List<Detection> retrieveClusterDetections(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterDetectionsQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getDetections();
+    }
+
+    public List<Photo> retrieveClusterPhotos(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterPhotosQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getPhotos();
     }
 }

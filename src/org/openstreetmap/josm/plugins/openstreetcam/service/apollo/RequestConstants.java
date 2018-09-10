@@ -20,6 +20,9 @@ final class RequestConstants {
     static final String RETRIEVE_SEQUENCE_DETECTIONS = "retrieveSequenceDetections";
     static final String RETRIEVE_PHOTO_DETECTIONS = "retrievePhotoDetections";
     static final String RETRIVE_DETECTION = "retrieveDetection";
+    static final String SEARCH_CLUSTERS = "searchClusters";
+    static final String RETRIEVE_CLUSTER_DETECTIONS = "retrieveClusterDetections";
+    static final String RETRIEVE_CLUSTER_PHOTOS = "retrieveClusterPhotos";
 
     static final String NORTH = "north";
     static final String SOUTH = "south";

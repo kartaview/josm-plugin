@@ -22,17 +22,17 @@ import com.telenav.josm.common.entity.EntityUtil;
  */
 public class Photo {
 
-
     private final Long id;
     private final Long sequenceId;
     private final Integer sequenceIndex;
-    private final LatLon location;
+    private final LatLon point;
     private final String name;
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final String oriName;
     private final Long timestamp;
     private final Double heading;
+    private Double gpsAccuracy;
     private String username;
     private Long wayId;
     private String shotDate;
@@ -43,7 +43,7 @@ public class Photo {
         this.id = builder.getId();
         this.sequenceId = builder.getSequenceId();
         this.sequenceIndex = builder.getSequenceIndex();
-        this.location = builder.getLocation();
+        this.point = builder.getPoint();
         this.name = builder.getName();
         this.largeThumbnailName = builder.getLargeThumbnailName();
         this.thumbnailName = builder.getThumbnailName();
@@ -68,8 +68,8 @@ public class Photo {
         return sequenceIndex;
     }
 
-    public LatLon getLocation() {
-        return location;
+    public LatLon getPoint() {
+        return point;
     }
 
     public String getName() {
@@ -126,6 +126,10 @@ public class Photo {
 
     public String getOriName() {
         return oriName;
+    }
+
+    public Double getGpsAccuracy() {
+        return gpsAccuracy;
     }
 
     @Override
