@@ -139,7 +139,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
         mapFrame.addToggleDialog(detectionDetailsDialog, true);
-        detectionDetailsDialog.registerCommentObserver(this);
+        detectionDetailsDialog.registerObservers(this, selectionHandler);
         if (PreferenceManager.getInstance().loadDetectionPanelOpenedFlag()) {
             detectionDetailsDialog.showDialog();
         } else {

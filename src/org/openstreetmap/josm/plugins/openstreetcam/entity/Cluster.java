@@ -25,14 +25,15 @@ public class Cluster {
     private final Sign sign;
     private final Double confidenceLevel;
     private final List<Long> detectionIds;
-    private final String osmComparison;
+    private final OsmComparison osmComparison;
     private final OsmElement osmElement;
     private List<Detection> detections;
     private List<Photo> photos;
 
 
     public Cluster(final Long id, final Long latestChangeTimestamp, final LatLon point, final Double facing,
-            final Sign sign, final Double confidenceLevel, final List<Long> detectionIds, final String osmComparison,
+            final Sign sign, final Double confidenceLevel, final List<Long> detectionIds,
+            final OsmComparison osmComparison,
             final OsmElement osmElement) {
         this.id = id;
         this.latestChangeTimestamp = latestChangeTimestamp;
@@ -74,7 +75,7 @@ public class Cluster {
         return detectionIds;
     }
 
-    public String getOsmComparison() {
+    public OsmComparison getOsmComparison() {
         return osmComparison;
     }
 

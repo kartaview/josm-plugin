@@ -8,11 +8,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
@@ -23,18 +20,15 @@ import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 
 /**
+ * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user
+ * can: mark the detection as "mapped", "bad detection" or add a new comment.
  *
  * @author ioanao
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements DetectionChangeObservable {
+class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6885598017144429682L;
-
-    private static final String SHORTCUT = "sc";
-    private static final int COLS = 3;
-    private static final int ROWS = 1;
-    private static final Dimension DIM = new Dimension(200, 24);
 
     private DetectionChangeObserver detectionChangeObserver;
     private JButton btnMapped;
@@ -42,12 +36,43 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
     private JButton btnComment;
 
 
-    ButtonPanel() {
-        super(new GridLayout(ROWS, COLS));
+    DetectionButtonPanel() {
+        super();
+    }
+
+    @Override
+    void createComponents() {
         addMappedButton();
         addBadDetectionButton();
         addCommentButton();
-        setPreferredSize(DIM);
+    }
+
+    private void addMappedButton() {
+        final JosmAction action =
+                new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.MAPPED);
+        btnMapped = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusMappedText());
+        btnMapped.setToolTipText(
+                GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
+        add(btnMapped);
+    }
+
+    private void addBadDetectionButton() {
+        final EditAction badAction =
+                new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
+        btnBadDetection = ButtonBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
+        btnBadDetection.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
+                badAction.getShortcut().getKeyText()));
+        add(btnBadDetection);
+    }
+
+    private void addCommentButton() {
+        final DisplayEditDialogAction otherAction =
+                new DisplayEditDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
+                        GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
+        btnComment = ButtonBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
+        btnMapped.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
+                otherAction.getShortcut().getKeyText()));
+        add(btnComment);
     }
 
     void enablePanelActions(final EditStatus editStatus) {
@@ -86,34 +111,6 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         detectionChangeObserver.editDetection(status, text);
     }
 
-    private void addMappedButton() {
-        final JosmAction action =
-                new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.MAPPED);
-        btnMapped = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusMappedText());
-        btnMapped.setToolTipText(
-                GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
-        add(btnMapped);
-    }
-
-    private void addBadDetectionButton() {
-        final EditAction badAction =
-                new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
-        btnBadDetection = ButtonBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
-        btnBadDetection.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
-                badAction.getShortcut().getKeyText()));
-        add(btnBadDetection);
-    }
-
-    private void addCommentButton() {
-        final DisplayEditDialogAction otherAction =
-                new DisplayEditDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
-                        GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
-        btnComment = ButtonBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
-        btnMapped.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
-                otherAction.getShortcut().getKeyText()));
-        add(btnComment);
-    }
-
 
     private final class EditAction extends JosmAction {
 
@@ -141,7 +138,6 @@ class ButtonPanel extends JPanel implements DetectionChangeObservable {
         private DisplayEditDialogAction(final String title, final String shortcutText) {
             super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
             dialog = new EditDialog(title);
-
         }
 
         @Override
