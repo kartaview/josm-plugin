@@ -39,10 +39,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEd
 import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -139,7 +139,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
         mapFrame.addToggleDialog(detectionDetailsDialog, true);
-        detectionDetailsDialog.registerCommentObserver(this);
+        detectionDetailsDialog.registerObservers(this, selectionHandler);
         if (PreferenceManager.getInstance().loadDetectionPanelOpenedFlag()) {
             detectionDetailsDialog.showDialog();
         } else {
@@ -204,9 +204,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     public void zoomToSelectedPhoto() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
         if (selectedPhoto != null
-                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
+                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getPoint())) {
             SwingUtilities.invokeLater(() -> {
-                MainApplication.getMap().mapView.zoomTo(selectedPhoto.getLocation());
+                MainApplication.getMap().mapView.zoomTo(selectedPhoto.getPoint());
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });

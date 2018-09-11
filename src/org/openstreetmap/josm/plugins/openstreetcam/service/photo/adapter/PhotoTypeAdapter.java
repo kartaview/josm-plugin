@@ -97,7 +97,7 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
             }
         }
-        builder.location(latitude, longitude);
+        builder.point(latitude, longitude);
         reader.endObject();
         return builder.build();
     }
@@ -108,9 +108,9 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
         writer.name(PHOTO_ID).value(photo.getId());
         writer.name(PHOTO_SEQUENCE_ID).value(photo.getSequenceId());
         writer.name(PHOTO_SEQUENCE_IDX).value(photo.getSequenceIndex());
-        if (photo.getLocation() != null) {
-            writer.name(PHOTO_LATITUDE).value(photo.getLocation().getY());
-            writer.name(PHOTO_LONGITUDE).value(photo.getLocation().getX());
+        if (photo.getPoint() != null) {
+            writer.name(PHOTO_LATITUDE).value(photo.getPoint().getY());
+            writer.name(PHOTO_LONGITUDE).value(photo.getPoint().getX());
         }
         writer.name(PHOTO_NAME).value(photo.getName());
         writer.name(PHOTO_LTH_NAME).value(photo.getLargeThumbnailName());
