@@ -23,7 +23,7 @@ import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 /**
  * Defines a button panel with cluster specific actions that an user can perform. If a cluster (aggregated detection)
- * is selected an user can: visualize the next/previous photo belonging to the cluster and download the corresponding
+ * is selected a user can: visualize the next/previous photo belonging to the cluster and download the corresponding
  * OSM element to which the cluster was matched.
  *
  * @author beataj

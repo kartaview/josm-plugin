@@ -66,11 +66,11 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     }
 
     private void addCommentButton() {
-        final DisplayEditDialogAction otherAction =
-                new DisplayEditDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
+        final DisplayCommentDialogAction otherAction =
+                new DisplayCommentDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
                         GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
         btnComment = ButtonBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
-        btnMapped.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
+        btnComment.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
                 otherAction.getShortcut().getKeyText()));
         add(btnComment);
     }
@@ -102,7 +102,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     @Override
     public void registerObserver(final DetectionChangeObserver observer) {
         detectionChangeObserver = observer;
-        ((DisplayEditDialogAction) btnComment.getAction()).registerObserver(observer);
+        ((DisplayCommentDialogAction) btnComment.getAction()).registerObserver(observer);
 
     }
 
@@ -129,15 +129,15 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         }
     }
 
-    private final class DisplayEditDialogAction extends JosmAction {
+    private final class DisplayCommentDialogAction extends JosmAction {
 
         private static final long serialVersionUID = 7465727160123599818L;
-        private final EditDialog dialog;
+        private final CommentDialog dialog;
 
 
-        private DisplayEditDialogAction(final String title, final String shortcutText) {
+        private DisplayCommentDialogAction(final String title, final String shortcutText) {
             super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
-            dialog = new EditDialog(title);
+            dialog = new CommentDialog(title);
         }
 
         @Override

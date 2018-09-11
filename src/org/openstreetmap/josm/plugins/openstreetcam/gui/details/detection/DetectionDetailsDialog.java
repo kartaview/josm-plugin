@@ -140,13 +140,9 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         pnlClusterButtons.updateUI(cluster);
         cmpBtn.removeAll();
         cmpBtn.add(pnlClusterButtons);
-        if (cluster != null) {
-            pnlClusterButtons.setVisible(true);
-            cmpBtn.setVisible(true);
-        } else {
-            pnlClusterButtons.setVisible(false);
-            cmpBtn.setVisible(false);
-        }
+        final boolean enableButtonPanel = cluster != null;
+        pnlClusterButtons.setVisible(enableButtonPanel);
+        cmpBtn.setVisible(enableButtonPanel);
         cmpInfo.getViewport().revalidate();
         cmpInfo.revalidate();
         revalidate();
