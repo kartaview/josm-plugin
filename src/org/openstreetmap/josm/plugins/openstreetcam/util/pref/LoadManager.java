@@ -218,6 +218,12 @@ final class LoadManager {
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
+    AggregatedDetectionSettings loadAggregatedSettings() {
+        final boolean displayImageLocations = Preferences.main().getBoolean(DISPLAY_IMAGE_LOCATIONS);
+        final boolean displayDetectionLocations = Preferences.main().getBoolean(DISPLAY_DETECTION_LOCATIONS);
+        return new AggregatedDetectionSettings(displayImageLocations, displayDetectionLocations);
+    }
+
     SequenceSettings loadTrackSettings() {
         final String displayTrackFlagVal = Preferences.main().get(DISPLAY_TRACK_FLAG);
         final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);

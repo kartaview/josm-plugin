@@ -203,6 +203,11 @@ final class SaveManager {
         Preferences.main().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
+    void saveAggregatedSettings(final AggregatedDetectionSettings aggregatedSettings){
+        Preferences.main().putBoolean(DISPLAY_IMAGE_LOCATIONS, aggregatedSettings.isDisplayImageLocations());
+        Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());
+    }
+
     void saveTrackSettings(final SequenceSettings trackSettings) {
         Preferences.main().putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {

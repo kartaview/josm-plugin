@@ -165,7 +165,7 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadTrackSettings(),
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadAggregatedSettings(), loadTrackSettings(),
                 loadCacheSettings());
     }
 
@@ -193,6 +193,10 @@ public final class PreferenceManager {
      */
     public PhotoSettings loadPhotoSettings() {
         return loadManager.loadPhotoSettings();
+    }
+
+    private AggregatedDetectionSettings loadAggregatedSettings() {
+        return loadManager.loadAggregatedSettings();
     }
 
     public SequenceSettings loadTrackSettings() {
@@ -229,6 +233,7 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
+            saveManager.saveAggregatedSettings(preferenceSettings.getAggregatedSettings());
             saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
