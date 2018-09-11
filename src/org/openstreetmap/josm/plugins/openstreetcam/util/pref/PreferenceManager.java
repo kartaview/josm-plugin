@@ -22,14 +22,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+
+import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
 
 
 /**
