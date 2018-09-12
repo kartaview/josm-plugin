@@ -20,23 +20,21 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.util.GuiHelper;
-import org.openstreetmap.josm.plugins.openstreetcam.DownloadWayTask;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -185,6 +183,9 @@ SequenceObservable, SequenceAutoplayObservable {
             }
             if (!autoplayStartedFlag) {
                 updateAutoplayButton(AutoplayAction.START);
+            }
+            if (photo.getWayId() != null) {
+                btnMatchedWay.setEnabled(true);
             }
         } else {
             enableSequenceActions(false, false, null);
@@ -515,36 +516,26 @@ SequenceObservable, SequenceAutoplayObservable {
                     OpenBrowser.displayUrl(new URI(link.toString()));
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
-                            GuiConfig.getInstance().getErrorPhotoPageText(),
-                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                            GuiConfig.getInstance().getErrorPhotoPageText(), GuiConfig.getInstance().getErrorTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
 
 
-    private final class DownloadMatchedWayId extends JosmAction {
+    private final class DownloadMatchedWayId extends DownloadMatchedOsmElement {
 
         private static final long serialVersionUID = 7626759776502632881L;
 
         private DownloadMatchedWayId() {
-            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), null, GuiConfig.getInstance().getBtnMatchedWayTlt(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnMatchedWayShortcutTlt()),
-                    true);
+            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), GuiConfig.getInstance().getBtnMatchedWayTlt());
         }
 
         @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (photo != null && photo.getWayId() != null) {
-                final PrimitiveId wayId = new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY);
-                final boolean downloaded = Util.editLayerContainsWay(wayId);
-                if (downloaded) {
-                    GuiHelper.runInEDT(() -> MainApplication.getLayerManager().getEditDataSet().setSelected(wayId));
-                } else {
-                    final DownloadWayTask task = new DownloadWayTask(wayId);
-                    MainApplication.worker.submit(task);
-                }
-            }
+        protected PrimitiveId getPrimitiveId() {
+            return photo != null && photo.getWayId() != null
+                    ? new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY) : null;
         }
     }
 }

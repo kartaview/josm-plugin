@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.List;
+import org.openstreetmap.josm.data.osm.PrimitiveId;
+import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 
 
 /**
@@ -33,5 +35,9 @@ public class OsmElement {
 
     public List<Long> getMembers() {
         return members;
+    }
+
+    public PrimitiveId getPrimitiveId() {
+        return osmId != null ? new SimplePrimitiveId(osmId, type.getOsmPrimitiveType()) : null;
     }
 }

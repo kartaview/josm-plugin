@@ -44,7 +44,7 @@ final class Constraints {
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
     private static final GridBagConstraints HIGH_ZOOM_CBB_USER = new GridBagConstraints(1, 1, 1, 1, 0, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 3, 3, 0), 0, 0);
-    private static final GridBagConstraints HIGH_ZOOM_LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 1, 1, 1, 0,
+    private static final GridBagConstraints HIGH_ZOOM_LBL_LOGIN_WARNING = new GridBagConstraints(2, 1, 3, 1, 1, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(5, 3, 3, 0), 0, 0);
     private static final GridBagConstraints HIGH_ZOOM_LBL_DATE = new GridBagConstraints(0, 2, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);

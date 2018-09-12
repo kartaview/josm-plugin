@@ -20,12 +20,15 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -41,7 +44,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler
-implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
+implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -96,7 +99,14 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
     }
 
     private void selectDetection(final Detection detection) {
-        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
+        if (detection.getOsmComparison() == OsmComparison.SAME) {
+            DetectionDetailsDialog.getInstance()
+            .updateClusterDetails(new Cluster(12345L, detection.getCreationTimestamp(), detection.getPoint(),
+                    null, detection.getSign(), null, null, detection.getOsmComparison(),
+                    detection.getOsmElement()));
+        } else {
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
+        }
         DataSet.getInstance().setSelectedDetection(detection);
         if (detection != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
@@ -140,8 +150,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
                 if (!DataSet.getInstance().hasSelectedDetection()
-                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getLocation())) {
-                    MainApplication.getMap().mapView.zoomTo(photo.getLocation());
+                        && !MainApplication.getMap().mapView.getRealBounds().contains(photo.getPoint())) {
+                    MainApplication.getMap().mapView.zoomTo(photo.getPoint());
                 }
 
                 OpenStreetCamLayer.getInstance().invalidate();
@@ -274,7 +284,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
         if (photo != null) {
             Photo nextPhoto = DataSet.getInstance().sequencePhoto(photo.getSequenceIndex() + 1);
             if (nextPhoto != null && autoplaySettings.getLength() != null) {
-                autoplayDistance += photo.getLocation().greatCircleDistance(nextPhoto.getLocation());
+                autoplayDistance += photo.getPoint().greatCircleDistance(nextPhoto.getPoint());
                 if (autoplayDistance > autoplaySettings.getLength()) {
                     nextPhoto = null;
                 }
@@ -339,5 +349,10 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver {
                 autoplayTimer.restart();
             }
         }
+    }
+
+    @Override
+    public void selectPhoto(final boolean isNext) {
+        // TODO add implementation in task APO-4729
     }
 }

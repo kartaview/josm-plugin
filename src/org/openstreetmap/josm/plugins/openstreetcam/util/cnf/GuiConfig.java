@@ -130,6 +130,7 @@ public final class GuiConfig extends BaseConfig {
     private final String gpxTrackDescription;
 
     private final String detectionDialogTitleName;
+    private final String clusterDialogTitleName;
     private final String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
     private final String btnAlreadyFixedDetectionShortcutText;
@@ -162,6 +163,7 @@ public final class GuiConfig extends BaseConfig {
     private final String authenticationNeededErrorMessage;
     private final String detectionCreatedDate;
     private final String detectionUpdatedDate;
+    private final String clusterDetectionsLbl;
 
 
     private GuiConfig() {
@@ -285,6 +287,7 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
 
         detectionDialogTitleName = readProperty("detection.dialog.title");
+        clusterDialogTitleName = readProperty("cluster.dialog.title");
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
         detectionModeText = readProperty("detection.mode.text");
@@ -306,6 +309,7 @@ public final class GuiConfig extends BaseConfig {
         authenticationNeededErrorMessage = readProperty("error.detection.authentication");
         detectionCreatedDate = readProperty("detection.date.created");
         detectionUpdatedDate = readProperty("detection.date.updated");
+        clusterDetectionsLbl = readProperty("cluster.detections.lbl");
     }
 
     public static GuiConfig getInstance() {
@@ -819,5 +823,13 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDialogAddCommentText() {
         return dialogAddCommentText;
+    }
+
+    public String getClusterDetectionsLbl() {
+        return clusterDetectionsLbl;
+    }
+
+    public String getClusterDialogTitleName() {
+        return clusterDialogTitleName;
     }
 }

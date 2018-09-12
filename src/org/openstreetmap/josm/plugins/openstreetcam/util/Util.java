@@ -74,7 +74,7 @@ public final class Util {
         Photo result = null;
         for (final Photo photo : photos) {
             final double dist = new Point2D.Double(point.getX(), point.getY())
-                    .distance(MainApplication.getMap().mapView.getPoint(photo.getLocation()));
+                    .distance(MainApplication.getMap().mapView.getPoint(photo.getPoint()));
             if (dist <= maxDist) {
                 result = photo;
                 break;
@@ -107,13 +107,12 @@ public final class Util {
      * @return a set of {@code Photo}
      */
     public static Collection<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
-        final BBox bbox =
-                new BBox(selectedPhoto.getLocation().getX() - RADIUS, selectedPhoto.getLocation().getY() - RADIUS,
-                        selectedPhoto.getLocation().getX() + RADIUS, selectedPhoto.getLocation().getY() + RADIUS);
+        final BBox bbox = new BBox(selectedPhoto.getPoint().getX() - RADIUS, selectedPhoto.getPoint().getY() - RADIUS,
+                selectedPhoto.getPoint().getX() + RADIUS, selectedPhoto.getPoint().getY() + RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
-            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getLocation())) {
-                final double dist = selectedPhoto.getLocation().distance(photo.getLocation());
+            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getPoint())) {
+                final double dist = selectedPhoto.getPoint().distance(photo.getPoint());
                 if (dist <= MAX_DISTANCE) {
                     candidateMap.put(dist, photo);
                 }
