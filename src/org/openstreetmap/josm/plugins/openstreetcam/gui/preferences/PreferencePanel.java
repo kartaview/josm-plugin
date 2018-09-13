@@ -19,12 +19,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+
+import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -48,6 +44,8 @@ class PreferencePanel extends JPanel {
     private JSpinner spPhotoZoom;
     private JCheckBox cbManualSwitch;
     private JCheckBox cbHighQualityPhoto;
+    private JCheckBox agDisplayImage;
+    private JCheckBox agDisplayDetection;
     private JCheckBox cbDisplayTrack;
     private JCheckBox cbMouseHover;
     private JSpinner spMouseHoverDelay;
@@ -64,6 +62,7 @@ class PreferencePanel extends JPanel {
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         createMapViewSettings(preferenceSettings.getMapViewSettings());
         createPhotoSettingsComponents(preferenceSettings);
+        createAggregatedSettingComponents(preferenceSettings);
         createTrackVisualizationSettings(preferenceSettings);
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
     }
@@ -114,6 +113,17 @@ class PreferencePanel extends JPanel {
                         Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(),
                         Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false, enabledMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
+    }
+
+    private void createAggregatedSettingComponents(final PreferenceSettings settings){
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAggregatedLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_AGGREGATED);
+        agDisplayImage = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefAggregatedDisplayImageLbl(),
+                new SelectionListener(), Font.PLAIN, settings.getAggregatedSettings().isDisplayImageLocations(), true);
+        add(agDisplayImage, Constraints.CB_DISPLAY_IMAGE);
+        agDisplayDetection = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefAggregatedDisplayDetectionLbl(),
+                new SelectionListener(), Font.PLAIN, settings.getAggregatedSettings().isDisplayDetectionLocations(), true);
+        add(agDisplayDetection, Constraints.CB_DISPLAY_DETECTION);
     }
 
     private void createTrackVisualizationSettings(final PreferenceSettings settings) {
@@ -182,17 +192,20 @@ class PreferencePanel extends JPanel {
     PreferenceSettings getSelectedSettings() {
         final MapViewSettings mapViewSettings =
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
-        final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
-                cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
-
+        final PhotoSettings photoSettings =
+                new PhotoSettings(cbHighQualityPhoto.isSelected(), cbMouseHover.isSelected(),
+                        (int) spMouseHoverDelay.getValue());
+        final AggregatedDetectionSettings aggregatedSettings =
+                new AggregatedDetectionSettings(agDisplayImage.isSelected(), agDisplayDetection.isSelected());
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
         final SequenceSettings trackSettings = new SequenceSettings(cbDisplayTrack.isSelected(),
                 new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
-        final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
-                (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
-        return new PreferenceSettings(mapViewSettings, photoSettings, trackSettings, cacheSettings);
+        final CacheSettings cacheSettings =
+                new CacheSettings((int) spMemoryCount.getValue(), (int) spDiskCount.getValue(),
+                        (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
+        return new PreferenceSettings(mapViewSettings, photoSettings, aggregatedSettings, trackSettings, cacheSettings);
     }
 
 
