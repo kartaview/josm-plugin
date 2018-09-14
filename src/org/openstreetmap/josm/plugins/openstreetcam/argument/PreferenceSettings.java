@@ -19,6 +19,7 @@ public class PreferenceSettings {
 
     private final MapViewSettings mapViewSettings;
     private final PhotoSettings photoSettings;
+    private final AggregatedDetectionSettings aggregatedSettings;
     private final SequenceSettings trackSettings;
     private final CacheSettings cacheSettings;
 
@@ -32,9 +33,11 @@ public class PreferenceSettings {
      * @param cacheSettings specifies the cache user configurable settings
      */
     public PreferenceSettings(final MapViewSettings mapViewSettings, final PhotoSettings photoSettings,
-            final SequenceSettings trackSettings, final CacheSettings cacheSettings) {
+            final AggregatedDetectionSettings aggregatedSettings, final SequenceSettings trackSettings,
+            final CacheSettings cacheSettings) {
         this.mapViewSettings = mapViewSettings;
         this.photoSettings = photoSettings;
+        this.aggregatedSettings = aggregatedSettings;
         this.trackSettings = trackSettings;
         this.cacheSettings = cacheSettings;
     }
@@ -46,6 +49,10 @@ public class PreferenceSettings {
 
     public PhotoSettings getPhotoSettings() {
         return photoSettings;
+    }
+
+    public AggregatedDetectionSettings getAggregatedSettings(){
+        return aggregatedSettings;
     }
 
     public SequenceSettings getTrackSettings() {

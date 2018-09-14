@@ -57,6 +57,10 @@ final class Keys {
     static final String MOUSE_HOVER_FLAG = "openstreetcam.preferences.mouseHover";
     static final String MOUSE_HOVER_DELAY = "openstreetcam.preferences.mouseHover.delay";
 
+    /* aggregated detections user preference settings */
+    static final String DISPLAY_IMAGE_LOCATIONS = "openstreetcam.preferences.aggregated.displayImageLoc";
+    static final String DISPLAY_DETECTION_LOCATIONS = "openstreetcam.preferences.aggregated.displayDetectionLoc";
+
     /* track related user preference settings */
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";
     static final String AUTOPLAY_LENGTH = "openstreetcam.preferences.autoplay.length";

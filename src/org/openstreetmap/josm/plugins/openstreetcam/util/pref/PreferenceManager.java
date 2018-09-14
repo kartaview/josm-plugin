@@ -22,14 +22,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+
+import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
 
 
 /**
@@ -181,7 +175,7 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadTrackSettings(),
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadAggregatedSettings(), loadTrackSettings(),
                 loadCacheSettings());
     }
 
@@ -209,6 +203,10 @@ public final class PreferenceManager {
      */
     public PhotoSettings loadPhotoSettings() {
         return loadManager.loadPhotoSettings();
+    }
+
+    private AggregatedDetectionSettings loadAggregatedSettings() {
+        return loadManager.loadAggregatedSettings();
     }
 
     public SequenceSettings loadTrackSettings() {
@@ -245,6 +243,7 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
+            saveManager.saveAggregatedSettings(preferenceSettings.getAggregatedSettings());
             saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
