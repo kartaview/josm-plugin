@@ -19,8 +19,13 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
-
-import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AggregatedDetectionSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
