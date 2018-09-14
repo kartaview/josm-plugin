@@ -98,6 +98,10 @@ class HttpQueryBuilder {
         return buildRetrieveByIdQuery(RequestConstants.RETRIVE_DETECTION, id);
     }
 
+    String buildRetrieveClusterQuery(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER, id);
+    }
+
     String buildRetrieveClusterDetectionsQuery(final Long id) {
         return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER_DETECTIONS, id);
     }

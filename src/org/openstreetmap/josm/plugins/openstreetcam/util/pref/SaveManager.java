@@ -36,9 +36,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
@@ -76,6 +78,18 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
  */
 final class SaveManager {
 
+    void savePhotosSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_PHOTOS_SEARCH_ERROR, flag);
+    }
+
+    void saveDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR, flag);
+    }
+
+    void saveClustersSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR, flag);
+    }
+
     void savePhotosErrorSuppressFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
     }
@@ -88,9 +102,7 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
-    void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        Preferences.main().putBoolean(SUPPRESS_DETECTION_SEARCH_ERROR, flag);
-    }
+
 
     void saveSequenceDetectionsErrorFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);

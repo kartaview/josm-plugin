@@ -50,6 +50,10 @@ public class PhotoBuilder {
         this.sequenceIndex = sequenceIndex;
     }
 
+    public void point(final LatLon point) {
+        this.point = point;
+    }
+
     public void point(final Double latitude, final Double longitude) {
         this.point = new LatLon(latitude, longitude);
     }

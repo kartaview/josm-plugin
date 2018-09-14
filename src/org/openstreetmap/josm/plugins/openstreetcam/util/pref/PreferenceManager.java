@@ -54,6 +54,30 @@ public final class PreferenceManager {
         return INSTANCE;
     }
 
+    public void savePhotosSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.savePhotosSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadPhotosSearchErrorSuppressFlag() {
+        return loadManager.loadPhotosSearchErrorSuppressFlag();
+    }
+
+    public void saveDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionsSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadDetectionsSearchErrorSuppressFlag() {
+        return loadManager.loadDetectionsSearchErrorSuppressFlag();
+    }
+
+    public boolean loadClustersSearchErrorSuppressFlag() {
+        return loadManager.loadClustersSearchErrorSuppressFlag();
+    }
+
+    public void saveClustersSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveClustersSearchErrorSuppressFlag(flag);
+    }
+
     /**
      * Loads the photo search error suppress flag. If this value is true, then all the future photo search service
      * errors will be suppressed.
@@ -73,10 +97,6 @@ public final class PreferenceManager {
         saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
-    public void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        saveManager.saveDetectionSearchErrorSuppressFlag(flag);
-    }
-
     public void saveSequenceDetectionsErrorFlag(final boolean flag) {
         saveManager.saveSequenceDetectionsErrorFlag(flag);
     }
@@ -87,10 +107,6 @@ public final class PreferenceManager {
 
     public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
         saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
-    }
-
-    public boolean loadDetectionSearchErrorSuppressFlag() {
-        return loadManager.loadDetectionSearchErrorSuppressFlag();
     }
 
     public boolean loadSequenceDetectionsErrorFlag() {

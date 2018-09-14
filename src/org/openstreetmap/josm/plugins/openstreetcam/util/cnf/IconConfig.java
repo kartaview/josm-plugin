@@ -52,6 +52,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
+    private final ImageIcon clusterBackgroundIcon;
+    private final ImageIcon clusterBackgroundSelectedIcon;
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
@@ -87,6 +89,13 @@ public final class IconConfig extends BaseConfig {
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
+
+        final ImageProvider imageProvider = new ImageProvider(readProperty("cluster.background.icon"));
+        imageProvider.setSize(42, 42);
+        clusterBackgroundIcon = imageProvider.get();
+
+        imageProvider.setSize(55, 55);
+        clusterBackgroundSelectedIcon = imageProvider.get();
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
@@ -205,6 +214,14 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getDownloadIcon() {
         return downloadIcon;
+    }
+
+    public ImageIcon getClusterBackgroundIcon() {
+        return clusterBackgroundIcon;
+    }
+
+    public ImageIcon getClusterBackgroundSelectedIcon() {
+        return clusterBackgroundSelectedIcon;
     }
 
     public String getPreferenceIconName() {

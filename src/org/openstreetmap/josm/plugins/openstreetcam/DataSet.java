@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
@@ -40,12 +41,16 @@ public final class DataSet {
     private List<Segment> segments = new ArrayList<>();
     private PhotoDataSet photoDataSet = new PhotoDataSet();
     private List<Detection> detections = new ArrayList<>();
+    private List<Cluster> clusters = new ArrayList<>();
 
     /** the currently selected photo */
     private Photo selectedPhoto;
 
     /** the currently selected detection */
     private Detection selectedDetection;
+
+    /** the currently selected cluster */
+    private Cluster selectedCluster;
 
     /** the currently selected sequence */
     private Sequence selectedSequence;
@@ -67,6 +72,7 @@ public final class DataSet {
         this.segments = new ArrayList<>();
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
+        this.clusters = new ArrayList<>();
         clearSelection();
     }
 
@@ -79,6 +85,7 @@ public final class DataSet {
         this.nearbyPhotos = new ArrayList<>();
         this.nearyPhotosStartPhoto = null;
         this.selectedSequence = null;
+        this.selectedCluster = null;
     }
 
     /**
@@ -87,6 +94,7 @@ public final class DataSet {
     public synchronized void cleaHighZoomLevelData() {
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
+        this.clusters = new ArrayList<>();
         clearSelection();
     }
 
@@ -112,6 +120,23 @@ public final class DataSet {
         if (updateSelection && selectedDetection != null) {
             selectedDetection = detections != null ? detections.stream()
                     .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null) : null;
+        }
+    }
+
+    /**
+     * Updates the cluster data with a new list of clusters.
+     *
+     * @param clusters a list of {@code Cluster}s
+     * @param updateSelection if true - then the currently selected cluster is removed if not present in the
+     * new list of data
+     */
+    public synchronized void updateHighZoomLevelClusterData(final List<Cluster> clusters,
+            final boolean updateSelection) {
+        this.clusters = clusters;
+        if (updateSelection && selectedCluster != null) {
+            selectedCluster = clusters != null
+                    ? clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null)
+                            : null;
         }
     }
 
@@ -180,6 +205,17 @@ public final class DataSet {
     }
 
     /**
+     * Returns the cluster that is located near to the given point. The method returns null if there is no
+     * nearby item.
+     *
+     * @param point a {@code Point} represents the location on the screen where the user had clicked
+     * @return a {@code Cluster}
+     */
+    public Cluster nearbyCluster(final Point point) {
+        return clusters != null ? Util.nearbyCluster(clusters, point) : null;
+    }
+
+    /**
      * Returns the photos that are either previous/next or close to the selected photo.
      *
      * @param prevNextCount the number of previous/next photos to be returned
@@ -232,7 +268,7 @@ public final class DataSet {
      * @param index represents the location of a photo in the selected sequence
      * @return a {@code Photo}
      */
-    public Photo sequencePhoto(final int index) {
+    synchronized public Photo sequencePhoto(final int index) {
         Photo photo = null;
         if (selectedSequence != null && selectedSequence.hasPhotos()) {
             for (final Photo elem : selectedSequence.getPhotos()) {
@@ -245,12 +281,38 @@ public final class DataSet {
             }
         } else if (photoDataSet != null && photoDataSet.hasItems() && selectedPhoto != null) {
             for (final Photo elem : photoDataSet.getPhotos()) {
+
                 if (elem.getSequenceIndex().equals(index)
                         && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
+                    // todo add case
                     photo = elem;
                     break;
                 }
             }
+        }
+        return photo;
+    }
+
+    public Photo clusterPhoto(final boolean isNext) {
+        Photo photo = null;
+        int index;
+        if (selectedPhoto != null) {
+            int selectedIndex = 0;
+            for (int i = 0; i < selectedCluster.getPhotos().size(); i++) {
+                if (selectedPhoto.equals(selectedCluster.getPhotos().get(i))) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            index = isNext ? ++selectedIndex : --selectedIndex;
+            if (index > selectedCluster.getPhotos().size() - 1) {
+                index = 0;
+            }
+            if (index < 0) {
+                index = selectedCluster.getPhotos().size() - 1;
+            }
+            photo = selectedCluster.getPhotos().get(index);
         }
         return photo;
     }
@@ -365,6 +427,10 @@ public final class DataSet {
         this.selectedDetection = selectedDetection;
     }
 
+    public void setSelectedCluster(final Cluster selectedCluster) {
+        this.selectedCluster = selectedCluster;
+    }
+
     /**
      * Updates the selected detection with a newer version of the detection. The method removes the old
      * detection from the data store (selected sequence and detections list) and adds the new version.
@@ -425,6 +491,10 @@ public final class DataSet {
         return detections;
     }
 
+    public List<Cluster> getClusters() {
+        return clusters;
+    }
+
     /**
      * Returns the selected photo.
      *
@@ -441,6 +511,10 @@ public final class DataSet {
      */
     public Detection getSelectedDetection() {
         return selectedDetection;
+    }
+
+    public Cluster getSelectedCluster() {
+        return selectedCluster;
     }
 
     /**
@@ -467,7 +541,7 @@ public final class DataSet {
      * @return boolean
      */
     public boolean hasItems() {
-        return hasSegments() || hasDetections() || hasPhotos();
+        return hasSegments() || hasDetections() || hasPhotos() || hasClusters();
     }
 
     /**
@@ -495,6 +569,10 @@ public final class DataSet {
      */
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();
+    }
+
+    public boolean hasClusters() {
+        return clusters != null && !clusters.isEmpty();
     }
 
     /**

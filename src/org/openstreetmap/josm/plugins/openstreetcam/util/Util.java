@@ -23,6 +23,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 
@@ -92,6 +93,21 @@ public final class Util {
                     .distance(MainApplication.getMap().mapView.getPoint(detection.getPoint()));
             if (dist <= maxDist) {
                 result = detection;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static Cluster nearbyCluster(final List<Cluster> clusters, final Point point) {
+        final double maxDist =
+                MainApplication.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
+        Cluster result = null;
+        for (final Cluster cluster : clusters) {
+            final double dist = new Point2D.Double(point.getX(), point.getY())
+                    .distance(MainApplication.getMap().mapView.getPoint(cluster.getPoint()));
+            if (dist <= maxDist) {
+                result = cluster;
                 break;
             }
         }

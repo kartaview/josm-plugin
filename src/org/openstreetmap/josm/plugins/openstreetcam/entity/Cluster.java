@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
@@ -18,23 +19,24 @@ import org.openstreetmap.josm.data.coor.LatLon;
  */
 public class Cluster {
 
-    private final Long id;
-    private final Long latestChangeTimestamp;
-    private final LatLon point;
-    private final Double facing;
-    private final Sign sign;
-    private final Double confidenceLevel;
-    private final List<Long> detectionIds;
-    private final OsmComparison osmComparison;
-    private final OsmElement osmElement;
+    private Long id;
+    private Long latestChangeTimestamp;
+    private LatLon point;
+    private Double facing;
+    private Sign sign;
+    private Double confidenceLevel;
+    private List<Long> detectionIds;
+    private OsmComparison osmComparison;
+    private OsmElement osmElement;
     private List<Detection> detections;
     private List<Photo> photos;
 
 
+    public Cluster() {}
+
     public Cluster(final Long id, final Long latestChangeTimestamp, final LatLon point, final Double facing,
             final Sign sign, final Double confidenceLevel, final List<Long> detectionIds,
-            final OsmComparison osmComparison,
-            final OsmElement osmElement) {
+            final OsmComparison osmComparison, final OsmElement osmElement) {
         this.id = id;
         this.latestChangeTimestamp = latestChangeTimestamp;
         this.point = point;
@@ -83,6 +85,10 @@ public class Cluster {
         return osmElement;
     }
 
+    public void setOsmElement(final OsmElement osmElement) {
+        this.osmElement = osmElement;
+    }
+
     public List<Detection> getDetections() {
         return detections;
     }
@@ -97,5 +103,25 @@ public class Cluster {
 
     public void setPhotos(final List<Photo> photos) {
         this.photos = photos;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + EntityUtil.hashCode(id);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        boolean result = false;
+        if (this == obj) {
+            result = true;
+        } else if (obj != null && obj.getClass() == this.getClass()) {
+            final Cluster other = (Cluster) obj;
+            result = EntityUtil.bothNullOrEqual(id, other.getId());
+        }
+        return result;
     }
 }

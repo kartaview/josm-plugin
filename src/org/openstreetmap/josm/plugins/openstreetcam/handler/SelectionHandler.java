@@ -22,7 +22,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
@@ -78,35 +77,47 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
     }
 
     @Override
-    void handleDataSelection(final Photo photo, final Detection detection, final boolean displayLoadingMessage) {
-        if (photo != null) {
-            if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                stopAutoplay();
+    void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
+            final boolean displayLoadingMessage) {
+        if (cluster != null) {
+            selectCluster(cluster);
+            if (photo != null) {
+                if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                    stopAutoplay();
+                }
+                if (shouldLoadSequence(photo)) {
+                    loadSequence(photo);
+                }
+                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+                selectPhoto(photo, photoType, true);
+                DataSet.getInstance().selectNearbyPhotos(photo);
+            } else {
+                selectPhoto(null, null, false);
             }
-            if (shouldLoadSequence(photo)) {
-                loadSequence(photo);
-            }
-            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
         } else {
-            selectPhoto(null, null, false);
+            if (photo != null) {
+                if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                    stopAutoplay();
+                }
+                if (shouldLoadSequence(photo)) {
+                    loadSequence(photo);
+                }
+                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+                selectPhoto(photo, photoType, true);
+            } else {
+                selectPhoto(null, null, false);
+            }
+            selectDetection(detection);
+            DataSet.getInstance().selectNearbyPhotos(photo);
         }
-        selectDetection(detection);
-        DataSet.getInstance().selectNearbyPhotos(photo);
         OpenStreetCamLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
     }
 
     private void selectDetection(final Detection detection) {
-        if (detection.getOsmComparison() == OsmComparison.SAME) {
-            DetectionDetailsDialog.getInstance()
-            .updateClusterDetails(new Cluster(12345L, detection.getCreationTimestamp(), detection.getPoint(),
-                    null, detection.getSign(), null, null, detection.getOsmComparison(),
-                    detection.getOsmElement()));
-        } else {
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-        }
+        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         DataSet.getInstance().setSelectedDetection(detection);
         if (detection != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
@@ -121,6 +132,25 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                 }
             }
         }
+    }
+
+    private void selectCluster(final Cluster cluster) {
+        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster);
+        DataSet.getInstance().setSelectedCluster(cluster);
+        if (cluster != null) {
+            if (!MainApplication.getMap().mapView.getRealBounds().contains(cluster.getPoint())) {
+                MainApplication.getMap().mapView.zoomTo(cluster.getPoint());
+            }
+            if (!PhotoDetailsDialog.getInstance().isDialogShowing()) {
+                DetectionDetailsDialog.getInstance().expand();
+            } else {
+                if (DetectionDetailsDialog.getInstance().getButton() != null
+                        && !DetectionDetailsDialog.getInstance().getButton().isSelected()) {
+                    DetectionDetailsDialog.getInstance().getButton().doClick();
+                }
+            }
+        }
+
     }
 
     /**
@@ -228,7 +258,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
             }
             enhancePhotoWithDetections(photo);
             final Detection detection = photoSelectedDetection(photo);
-            handleDataSelection(photo, detection, true);
+            handleDataSelection(photo, detection, null, true);
         }
     }
 
@@ -245,7 +275,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                 enhancePhotoWithDetections(photo);
                 detection = photoSelectedDetection(photo);
             }
-            handleDataSelection(photo, detection, true);
+            handleDataSelection(photo, detection, null, true);
         }
     }
 
@@ -353,6 +383,14 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
 
     @Override
     public void selectPhoto(final boolean isNext) {
-        // TODO add implementation in task APO-4729
+        final Photo clusterPhoto = DataSet.getInstance().clusterPhoto(isNext);
+        final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
+                clusterPhoto.getSequenceIndex());
+        photo.setHeading(clusterPhoto.getHeading());
+        enhancePhotoWithDetections(photo);
+        final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+        selectPhoto(photo, photoType, true);
+        DataSet.getInstance().selectNearbyPhotos(photo);
     }
 }

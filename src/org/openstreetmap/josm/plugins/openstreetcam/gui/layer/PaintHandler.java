@@ -25,6 +25,7 @@ import java.util.SortedMap;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
@@ -125,6 +126,24 @@ class PaintHandler {
         }
     }
 
+    void drawClusters(final Graphics2D graphics, final MapView mapView, final List<Cluster> clusters,
+            final Cluster selectedCluster, final Photo selectedPhoto) {
+        final Composite composite = selectedCluster != null ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+        graphics.setComposite(composite);
+        for (final Cluster cluster : clusters) {
+            if (selectedCluster == null || !cluster.equals(selectedCluster)) {
+                drawCluster(graphics, mapView, cluster, false);
+            }
+        }
+        if (selectedCluster != null) {
+            graphics.setComposite(OPAQUE_COMPOSITE);
+            drawCluster(graphics, mapView, selectedCluster, true);
+            if (selectedPhoto != null) {
+                drawPhoto(graphics, mapView, selectedPhoto, true);
+            }
+        }
+    }
+
     private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
             final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
@@ -151,15 +170,15 @@ class PaintHandler {
                     final Photo currentPhoto = sequence.getPhotos().get(i);
 
                     // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getPoint())
-                    || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
-                final Pair<Point, Point> lineGeometry =
-                        new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
+                    if (Util.containsLatLon(mapView, prevPhoto.getPoint())
+                            || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
+                        final Pair<Point, Point> lineGeometry =
+                                new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
                         if (length == null) {
                             PaintManager.drawLine(graphics, lineGeometry);
                         } else {
                             final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
+                                    getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
                             PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
                         }
                     }
@@ -190,6 +209,21 @@ class PaintHandler {
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign(), isSelected);
         PaintManager.drawIcon(graphics, icon, point);
     }
+
+    private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
+            final boolean isSelected) {
+        final Point point = mapView.getPoint(cluster.getPoint());
+        final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
+                : IconConfig.getInstance().getClusterBackgroundIcon();
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
+        PaintManager.drawIcon(graphics, backgroundIcon, point);
+        PaintManager.drawIcon(graphics, icon, point);
+
+        if (isSelected && cluster.getPhotos() != null) {
+            drawPhotos(graphics, mapView, cluster.getPhotos(), null, false);
+        }
+    }
+
 
     private List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {
         final List<Point> points = new ArrayList<>();

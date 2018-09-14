@@ -8,7 +8,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,23 +22,21 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.ApolloService;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamService;
-import org.openstreetmap.josm.plugins.openstreetcam.service.photo.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.entity.Pair;
 
 
 /**
@@ -49,9 +46,7 @@ import com.telenav.josm.common.entity.Pair;
  * @author Beata
  * @version $Revision$
  */
-public final class ServiceHandler {
-
-    private static final int MAX_DATA_TYPES = 2;
+public final class ServiceHandler extends SearchServiceHandler {
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
     private final OpenStreetCamService openStreetCamService;
@@ -67,135 +62,32 @@ public final class ServiceHandler {
         return INSTANCE;
     }
 
-    /**
-     * Searches for photos and detections from the given area based on the given filters.
-     *
-     * @param area a {@code Circle} representing the search area.
-     * @param filter a {@code SearchFilter} represents the user's search filters. Null values are ignored.
-     * @return a {@code Pair} containing a {@code PhotoDataSet} and a list of {@code Detection}s
-     */
-    public Pair<PhotoDataSet, List<Detection>> searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
-        Pair<PhotoDataSet, List<Detection>> result = new Pair<>(null, null);
-        if (filter.getDataTypes() != null) {
-            if (filter.getDataTypes().size() == MAX_DATA_TYPES) {
-                // load photos & detections
-                result = loadPhotosAndDetections(area, filter);
-            } else if (filter.getDataTypes().contains(DataType.DETECTION)) {
-                result = new Pair<>(null, searchDetections(area, filter));
-            } else {
-                result = new Pair<>(listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT), null);
-            }
-        }
-        return result;
+    @Override
+    public HighZoomResultSet searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
+        return filter != null && filter.getDataTypes() != null ? super.searchHighZoomData(area, filter)
+                : new HighZoomResultSet();
     }
 
-    private Pair<PhotoDataSet, List<Detection>> loadPhotosAndDetections(final BoundingBox area,
-            final SearchFilter filter) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        final Future<PhotoDataSet> future1 =
-                executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT));
-        final Future<List<Detection>> future2 = executorService.submit(() -> searchDetections(area, filter));
-
-        PhotoDataSet photoDataSet = null;
-        try {
-            photoDataSet = future1.get();
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
-            }
-        }
-
-        List<Detection> detections = null;
-        try {
-            detections = future2.get();
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadDetectionSearchErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
-                PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
-            }
-        }
-
-        executorService.shutdown();
-        return new Pair<>(photoDataSet, detections);
-    }
 
     /**
-     * Lists the photos from the current area based on the given filters.
-     *
-     * @param area a {@code Circle} representing the search areas.
-     * @param filter a {@code Filter} represents the user's search filters. Null values are ignored.
-     * @param paging a {@code Paging} representing the pagination
-     * @return a list of {@code Photo}s
-     */
-    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final SearchFilter filter, final Paging paging) {
-        Long osmUserId = null;
-        Date date = null;
-        if (filter != null) {
-            osmUserId = filter.getOsmUserId();
-            date = filter.getDate();
-        }
-        PhotoDataSet result = new PhotoDataSet();
-        try {
-            result = openStreetCamService.listNearbyPhotos(area, date, osmUserId, paging);
-        } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                PreferenceManager.getInstance().savePhotosErrorSuppressFlag(flag);
-            }
-        }
-        return result;
-    }
-
-    private List<Detection> searchDetections(final BoundingBox area, final SearchFilter filter) {
-        Long osmUserId = null;
-        Date date = null;
-        DetectionFilter detectionFilter = null;
-        if (filter != null) {
-            osmUserId = filter.getOsmUserId();
-            date = filter.getDate();
-            detectionFilter = filter.getDetectionFilter();
-        }
-        List<Detection> result = null;
-        try {
-            result = apolloService.searchDetections(area, date, osmUserId, detectionFilter);
-        } catch (final ServiceException e) {
-            if (!PreferenceManager.getInstance().loadDetectionSearchErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
-                PreferenceManager.getInstance().saveDetectionSearchErrorSuppressFlag(flag);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Retrieves details of the given sequence based on the given filters.
-     *
+     * Retrieves the sequence identified by the given id.
+     * 
      * @param sequenceId the identifier of the sequence
-     * @return a {code Pair} of {@code Sequence} and {@code Detection}s list
+     * @return a {@code Sequence} object
      */
     public Sequence retrieveSequence(final Long sequenceId) {
-        Sequence result;
-        final List<DataType> dataTypesPreferences =
-                PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
-        if (dataTypesPreferences.isEmpty()) {
-            result = null;
-        } else if (dataTypesPreferences.size() == 1 && dataTypesPreferences.contains(DataType.PHOTO)) {
-            result = retrieveSequencePhotos(sequenceId);
-        } else {
-            result = retrieveCompleteSequence(sequenceId);
-        }
-        return result;
-    }
-
-    private Sequence retrieveCompleteSequence(final Long sequenceId) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(MAX_DATA_TYPES);
-        final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
-        final Future<List<Detection>> detectionsFuture =
-                executorService.submit(() -> retrieveSequenceDetections(sequenceId));
-        Sequence sequence = null;
+        final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+        final ExecutorService executorService = Executors.newFixedThreadPool(dataTypes.size());
+        final Future<Sequence> sequenceFuture = dataTypes.contains(DataType.PHOTO)
+                ? executorService.submit(() -> retrieveSequencePhotos(sequenceId)) : null;
+        final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
+                ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
+        List<Photo> photos = null;
         try {
-            sequence = sequenceFuture.get();
+            if (sequenceFuture != null) {
+                final Sequence sequence = sequenceFuture.get();
+                photos = sequence != null ? sequence.getPhotos() : null;
+            }
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -204,7 +96,7 @@ public final class ServiceHandler {
         }
         List<Detection> detections = null;
         try {
-            detections = detectionsFuture.get();
+            detections = detectionsFuture != null ? detectionsFuture.get() : null;
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -212,8 +104,47 @@ public final class ServiceHandler {
             }
         }
         executorService.shutdown();
-        return new Sequence(sequenceId, sequence != null ? sequence.getPhotos() : null, detections);
+        return new Sequence(sequenceId, photos, detections);
     }
+
+    public Cluster retrieveClusterDetails(final Long id) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        final Future<Cluster> clusterFuture = executorService.submit(() -> apolloService.retrieveCluster(id));
+        final Future<List<Photo>> photosFuture = executorService.submit(() -> apolloService.retrieveClusterPhotos(id));
+        final Future<List<Detection>> detectionsFuture =
+                executorService.submit(() -> apolloService.retrieveClusterDetections(id));
+
+        Cluster cluster = new Cluster();
+        try {
+            cluster = clusterFuture.get();
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+
+        try {
+            cluster.setPhotos(photosFuture.get());
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+
+        try {
+            cluster.setDetections(detectionsFuture.get());
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        executorService.shutdown();
+        return cluster;
+    }
+
 
     private Sequence retrieveSequencePhotos(final Long id) {
         Sequence sequence = null;
@@ -282,7 +213,7 @@ public final class ServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                            futures.add(executor.submit(callable));
+                    futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
@@ -357,6 +288,7 @@ public final class ServiceHandler {
         }
     }
 
+
     /**
      * Retrieves the detection corresponding to the given identifier.
      *
@@ -376,7 +308,6 @@ public final class ServiceHandler {
         return result;
     }
 
-
     private <T> Set<T> readResult(final List<Future<List<T>>> futures) throws ServiceException {
         final Set<T> result = new HashSet<>();
         for (final Future<List<T>> future : futures) {
@@ -387,12 +318,5 @@ public final class ServiceHandler {
             }
         }
         return result;
-    }
-
-    private boolean handleException(final String message) {
-        final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView, message,
-                GuiConfig.getInstance().getErrorTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                null, null);
-        return val == JOptionPane.YES_OPTION;
     }
 }

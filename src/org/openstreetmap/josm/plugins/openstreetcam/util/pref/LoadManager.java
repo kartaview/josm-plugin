@@ -35,9 +35,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
@@ -80,6 +82,18 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
  */
 final class LoadManager {
 
+    boolean loadPhotosSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_PHOTOS_SEARCH_ERROR);
+    }
+
+    boolean loadDetectionsSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR);
+    }
+
+    boolean loadClustersSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR);
+    }
+
     boolean loadPhotosErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_PHOTOS_ERROR);
     }
@@ -90,10 +104,6 @@ final class LoadManager {
 
     boolean loadSequenceErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_SEQUENCE_ERROR);
-    }
-
-    boolean loadDetectionSearchErrorSuppressFlag() {
-        return Preferences.main().getBoolean(SUPPRESS_DETECTION_SEARCH_ERROR);
     }
 
     boolean loadSequenceDetectionsErrorFlag() {

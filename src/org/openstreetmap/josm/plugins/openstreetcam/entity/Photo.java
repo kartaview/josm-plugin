@@ -31,7 +31,7 @@ public class Photo {
     private final String thumbnailName;
     private final String oriName;
     private final Long timestamp;
-    private final Double heading;
+    private Double heading;
     private Double gpsAccuracy;
     private String username;
     private Long wayId;
@@ -120,6 +120,7 @@ public class Photo {
         this.detections = detections;
     }
 
+
     public List<Detection> getDetections() {
         return detections;
     }
@@ -132,11 +133,15 @@ public class Photo {
         return gpsAccuracy;
     }
 
+    public void setHeading(final Double heading) {
+        this.heading = heading;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + EntityUtil.hashCode(id);
+        result = prime * result + EntityUtil.hashCode(sequenceIndex);
         result = prime * result + EntityUtil.hashCode(sequenceId);
         return result;
     }
@@ -148,8 +153,8 @@ public class Photo {
             result = true;
         } else if (obj != null && obj.getClass() == this.getClass()) {
             final Photo other = (Photo) obj;
-            result = EntityUtil.bothNullOrEqual(id, other.getId());
-            result = result && EntityUtil.bothNullOrEqual(sequenceId, other.getSequenceId());
+            result = EntityUtil.bothNullOrEqual(sequenceId, other.getSequenceId());
+            result = result && EntityUtil.bothNullOrEqual(sequenceIndex, other.getSequenceIndex());
         }
         return result;
     }

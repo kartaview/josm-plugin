@@ -86,6 +86,13 @@ public class ApolloService extends BaseService {
         return response.getDetection();
     }
 
+    public Cluster retrieveCluster(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getCluster();
+    }
+
     public List<Detection> retrieveClusterDetections(final Long id) throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveClusterDetectionsQuery(id);
         final Response response = executeGet(url, Response.class);
