@@ -51,6 +51,7 @@ public class ApolloService extends BaseService {
     public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
             throws ServiceException {
         final String url = new HttpQueryBuilder().buildSearchClustersQuery(area, date, detectionFilter);
+        System.out.println(url);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getClusters();

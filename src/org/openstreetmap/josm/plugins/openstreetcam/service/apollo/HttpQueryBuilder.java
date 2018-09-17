@@ -49,32 +49,35 @@ class HttpQueryBuilder {
 
     String buildSearchDetectionsQuery(final BoundingBox area, final Date date, final Long osmUserId,
             final DetectionFilter filter) {
-        return buildSearchQuery(RequestConstants.SEARCH_DETECTIONS, area, date, osmUserId, filter, true);
-    }
-
-    String buildSearchClustersQuery(final BoundingBox area, final Date date, final DetectionFilter filter) {
-        return buildSearchQuery(RequestConstants.SEARCH_CLUSTERS, area, date, null, filter, false);
-    }
-
-    private String buildSearchQuery(final String method, final BoundingBox area, final Date date, final Long osmUserId,
-            final DetectionFilter filter, final boolean excludeSignTypes) {
-        query.append(method);
+        query.append(RequestConstants.SEARCH_DETECTIONS);
         query.append(QUESTIONM);
-
-        appendFormatFilter(query);
-        appendBoundingBoxFilter(query, area);
-        appendDateFilter(date);
-        appendUserFilter(osmUserId);
+        appendCommonSearchFilters(area, date, osmUserId);
         if (filter != null) {
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendEditStatusFilter(filter.getEditStatuses());
             appendSignTypeFilter(filter.getSignTypes());
             appendDetectionModeFilter(filter.getModes());
         }
-        if (excludeSignTypes) {
-            appendExcludedSignTypeFitler();
+        appendExcludedSignTypeFitler();
+        return build();
+    }
+
+    String buildSearchClustersQuery(final BoundingBox area, final Date date, final DetectionFilter filter) {
+        query.append(RequestConstants.SEARCH_CLUSTERS);
+        query.append(QUESTIONM);
+        appendCommonSearchFilters(area, date, null);
+        if (filter != null) {
+            appendOsmComparisonFilter(filter.getOsmComparisons());
+            appendSignTypeFilter(filter.getSignTypes());
         }
         return build();
+    }
+
+    private void appendCommonSearchFilters(final BoundingBox area, final Date date, final Long osmUserId) {
+        appendFormatFilter(query);
+        appendBoundingBoxFilter(query, area);
+        appendDateFilter(date);
+        appendUserFilter(osmUserId);
     }
 
     String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {

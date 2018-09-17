@@ -135,8 +135,17 @@ final class LoadManager {
         final String onlyUserFlagStr = Preferences.main().get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
         final List<DataType> dataType = loadDataTypeFilter();
-        final DetectionFilter detectionFilter = loadDetectionFilter();
-        return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);
+
+        final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
+        List<EditStatus> editStatuses = null;
+        final List<SignType> signTypes = loadSignTypeFilter();
+        List<DetectionMode> modes = null;
+        if (dataType.contains(DataType.DETECTION)) {
+            editStatuses = loadEditStatusFilter();
+            modes = loadModes();
+        }
+        return new SearchFilter(date, onlyUserFlag, dataType,
+                new DetectionFilter(osmComparisons, editStatuses, signTypes, modes));
     }
 
     private List<DataType> loadDataTypeFilter() {
@@ -152,14 +161,6 @@ final class LoadManager {
             list = entries.stream().map(entry -> DataType.getDataType(entry.getName())).collect(Collectors.toList());
         }
         return list;
-    }
-
-    private DetectionFilter loadDetectionFilter() {
-        final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
-        final List<EditStatus> editStatuses = loadEditStatusFilter();
-        final List<SignType> signTypes = loadSignTypeFilter();
-        final List<DetectionMode> modes = loadModes();
-        return new DetectionFilter(osmComparisons, editStatuses, signTypes, modes);
     }
 
     private List<OsmComparison> loadOsmComparisonFilter() {
