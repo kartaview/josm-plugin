@@ -174,4 +174,23 @@ public final class Util {
                 && UserIdentityManager.getInstance().asUser().getId() > 0
                 ? UserIdentityManager.getInstance().asUser().getId() : null;
     }
+
+    /**
+     * This method compares two unordered lists and return if they are equal based on contained values.
+     * A null list is considered equal to an empty list.
+     * The method checks if all each list contains all the elements from the other.
+     * @param one - The first list to compare
+     * @param two - The second list to compare
+     * @param <T> - The type of the elements contained in the lists
+     * @return true if the lists contain the same values or false otherwise
+     */
+    public static <T> boolean equalUnorderedPreferenceLists(List<T> one, List<T> two){
+        if ((one == null && two == null) || (one == null && two.isEmpty()) || (two == null && one.isEmpty())) {
+            return true;
+        }
+        if (one == null || two == null || one.size() != two.size()) {
+            return false;
+        }
+        return one.containsAll(two) && two.containsAll(one);
+    }
 }
