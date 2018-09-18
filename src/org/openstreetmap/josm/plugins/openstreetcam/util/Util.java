@@ -176,9 +176,9 @@ public final class Util {
     }
 
     /**
-     * This method compares two unordered lists and return if they are equal based on contained values.
+     * This method compares two unordered lists and returns if they are equal based on contained values.
      * A null list is considered equal to an empty list.
-     * The method checks if all each list contains all the elements from the other.
+     * The method checks if each list contains all the elements from the other.
      * @param one - The first list to compare
      * @param two - The second list to compare
      * @param <T> - The type of the elements contained in the lists

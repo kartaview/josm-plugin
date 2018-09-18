@@ -428,36 +428,35 @@ public final class PreferenceManager {
      * @return true if the current search filter is the default one.
      */
     public boolean isSearchFilterDefault(){
-        boolean isDefaultSearchFilter = true;
         SearchFilter currentFilter = loadManager.loadSearchFilter();
         if (currentFilter.getDate() != null && !currentFilter.getDate().equals(SearchFilter.DEFAULT.getDate())) {
-            isDefaultSearchFilter = false;
+           return false;
         }
         if (currentFilter.isOlnyUserData() != SearchFilter.DEFAULT.isOlnyUserData()) {
-            isDefaultSearchFilter = false;
+            return false;
         }
         if (!Util.equalUnorderedPreferenceLists(currentFilter.getDataTypes(), SearchFilter.DEFAULT.getDataTypes())) {
-            isDefaultSearchFilter = false;
+            return false;
         }
         final List<OsmComparison> currentOsmComparisons = currentFilter.getDetectionFilter().getOsmComparisons();
         final List<OsmComparison> defaultOsmComparisons = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
         if (!Util.equalUnorderedPreferenceLists(currentOsmComparisons, defaultOsmComparisons)) {
-            isDefaultSearchFilter = false;
+            return false;
         }
         final List<EditStatus> currentEditStatuses = currentFilter.getDetectionFilter().getEditStatuses();
         final List<EditStatus> defaultEditStatuses = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
         if (!Util.equalUnorderedPreferenceLists(currentEditStatuses, defaultEditStatuses)) {
-            isDefaultSearchFilter = false;
+            return false;
         }
         if (currentFilter.getDetectionFilter().getSignTypes() != null && !currentFilter.getDetectionFilter()
                 .getSignTypes().equals(SearchFilter.DEFAULT.getDetectionFilter().getSignTypes())) {
-            isDefaultSearchFilter = false;
+            return false;
         }
         final List<DetectionMode> currentModes = currentFilter.getDetectionFilter().getModes();
         final List<DetectionMode> defaultModes = SearchFilter.DEFAULT.getDetectionFilter().getModes();
         if (!Util.equalUnorderedPreferenceLists(currentModes, defaultModes)) {
-            isDefaultSearchFilter = false;
+            return false;
         }
-        return isDefaultSearchFilter;
+        return true;
     }
 }
