@@ -84,7 +84,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 // draw clusters
                 if (dataSet.getClusters() != null && dataTypes.contains(DataType.CLUSTER)) {
                     paintHandler.drawClusters(graphics, mapView, dataSet.getClusters(), dataSet.getSelectedCluster(),
-                            dataSet.getSelectedPhoto());
+                            dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
 
                 }
             }

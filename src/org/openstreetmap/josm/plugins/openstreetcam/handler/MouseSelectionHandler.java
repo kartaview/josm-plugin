@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
@@ -63,11 +64,25 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             enhanceCluster(cluster);
             final Photo clusterPhoto = cluster.getPhotos() != null ? cluster.getPhotos().get(0) : null;
             if (clusterPhoto != null) {
-                System.out.println(clusterPhoto.getSequenceId() + " - " + clusterPhoto.getSequenceIndex());
                 photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
                         clusterPhoto.getSequenceIndex());
                 photo.setHeading(clusterPhoto.getHeading());
-                enhancePhotoWithDetections(photo);
+                detection =
+                        cluster.getDetections().stream()
+                        .filter(d -> d.getSequenceId().equals(clusterPhoto.getSequenceId())
+                                && d.getSequenceIndex().equals(clusterPhoto.getSequenceIndex()))
+                        .findFirst().get();
+                if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                    enhancePhotoWithDetections(photo);
+                    if (!photo.getDetections().contains(detection)) {
+                        photo.getDetections().add(detection);
+                    }
+                } else {
+                    photo.setDetections(Collections.singletonList(detection));
+                }
+
+            } else if (cluster.getDetections() != null) {
+                detection = cluster.getDetections().get(0);
             }
         } else {
             detection = DataSet.getInstance().nearbyDetection(event.getPoint());
@@ -112,8 +127,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     void enhancePhotoWithDetections(final Photo photo) {
         if (photo != null
-                && PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)
-                || PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.CLUSTER)) {
+                && PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
             final List<Detection> detections = loadPhotoDetections(photo);
             photo.setDetections(detections);
         }

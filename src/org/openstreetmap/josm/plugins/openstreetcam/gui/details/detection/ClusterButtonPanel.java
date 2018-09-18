@@ -85,7 +85,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         boolean enableMatchedDataButton = false;
         if (cluster != null) {
             enableMatchedDataButton = cluster.getOsmElement() != null && cluster.getOsmElement().getOsmId() != null;
-            enablePhotoButtons = cluster.getDetectionIds() != null && !cluster.getDetectionIds().isEmpty();
+            enablePhotoButtons = cluster.getDetectionIds() != null && cluster.getDetectionIds().size() > 0;
         }
         btnNext.setEnabled(enablePhotoButtons);
         btnPrevious.setEnabled(enablePhotoButtons);
@@ -101,7 +101,6 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     public void notifyObserver(final boolean isNext) {
         this.clusterObserver.selectPhoto(isNext);
     }
-
 
     /**
      * Selects the next or previous photo belonging to the cluster. The next/previous photo is computed related to the

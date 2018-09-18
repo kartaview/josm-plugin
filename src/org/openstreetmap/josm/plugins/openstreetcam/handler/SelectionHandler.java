@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 
+import java.util.Collections;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -95,6 +96,10 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
             } else {
                 selectPhoto(null, null, false);
             }
+            if (detection != null) {
+                // special case
+                DataSet.getInstance().setSelectedDetection(detection);
+            }
         } else {
             if (photo != null) {
                 if (autoplayTimer != null && autoplayTimer.isRunning()) {
@@ -117,18 +122,22 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
     }
 
     private void selectDetection(final Detection detection) {
-        DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-        DataSet.getInstance().setSelectedDetection(detection);
-        if (detection != null) {
-            if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
-                MainApplication.getMap().mapView.zoomTo(detection.getPoint());
+        if (DataSet.getInstance().getSelectedCluster() != null) {
+            if (DataSet.getInstance().getSelectedCluster() == null) {
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
             }
-            if (!PhotoDetailsDialog.getInstance().isDialogShowing()) {
-                DetectionDetailsDialog.getInstance().expand();
-            } else {
-                if (DetectionDetailsDialog.getInstance().getButton() != null
-                        && !DetectionDetailsDialog.getInstance().getButton().isSelected()) {
-                    DetectionDetailsDialog.getInstance().getButton().doClick();
+            DataSet.getInstance().setSelectedDetection(detection);
+            if (detection != null) {
+                if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
+                    MainApplication.getMap().mapView.zoomTo(detection.getPoint());
+                }
+                if (!PhotoDetailsDialog.getInstance().isDialogShowing()) {
+                    DetectionDetailsDialog.getInstance().expand();
+                } else {
+                    if (DetectionDetailsDialog.getInstance().getButton() != null
+                            && !DetectionDetailsDialog.getInstance().getButton().isSelected()) {
+                        DetectionDetailsDialog.getInstance().getButton().doClick();
+                    }
                 }
             }
         }
@@ -384,12 +393,22 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
     @Override
     public void selectPhoto(final boolean isNext) {
         final Photo clusterPhoto = DataSet.getInstance().clusterPhoto(isNext);
+        final Detection clusterDetection =
+                DataSet.getInstance().clusterDetection(clusterPhoto.getSequenceId(), clusterPhoto.getSequenceIndex());
         final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
                 clusterPhoto.getSequenceIndex());
         photo.setHeading(clusterPhoto.getHeading());
-        enhancePhotoWithDetections(photo);
+        if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+            enhancePhotoWithDetections(photo);
+            if (!photo.getDetections().contains(clusterDetection)) {
+                photo.getDetections().add(clusterDetection);
+            }
+        } else {
+            photo.setDetections(Collections.singletonList(clusterDetection));
+        }
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+        DataSet.getInstance().setSelectedDetection(clusterDetection);
         selectPhoto(photo, photoType, true);
         DataSet.getInstance().selectNearbyPhotos(photo);
     }

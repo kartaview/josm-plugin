@@ -173,7 +173,10 @@ public final class DataSet {
      */
     public Photo nearbyPhoto(final Point point) {
         Photo photo = null;
-        if (selectedSequence != null && selectedSequence.hasPhotos()) {
+        if (selectedCluster != null && selectedCluster.hasPhotos()) {
+            photo = Util.nearbyPhoto(selectedCluster.getPhotos(), point);
+        }
+        if (photo == null && selectedSequence != null && selectedSequence.hasPhotos()) {
             photo = Util.nearbyPhoto(selectedSequence.getPhotos(), point);
             // API issue: does not return username for sequence photos
             if (selectedPhoto != null && photo != null) {
@@ -195,7 +198,10 @@ public final class DataSet {
      */
     public Detection nearbyDetection(final Point point) {
         Detection detection = null;
-        if (selectedSequence != null && selectedSequence.hasDetections()) {
+        if (selectedCluster != null && selectedCluster.hasDetections()) {
+            detection = Util.nearbyDetection(selectedCluster.getDetections(), point);
+        }
+        if (detection != null && selectedSequence != null && selectedSequence.hasDetections()) {
             detection = Util.nearbyDetection(selectedSequence.getDetections(), point);
         }
         if (detection == null && detections != null) {
@@ -222,7 +228,7 @@ public final class DataSet {
      * @param nearbyCount the number of nearby photos to be returned
      * @return a set of {@code Photo}s
      */
-    public Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
+    public synchronized Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
         final Set<Photo> result = new HashSet<>();
         if (selectedPhoto != null) {
             for (int i = 1; i <= prevNextCount; i++) {
@@ -268,7 +274,7 @@ public final class DataSet {
      * @param index represents the location of a photo in the selected sequence
      * @return a {@code Photo}
      */
-    synchronized public Photo sequencePhoto(final int index) {
+    public synchronized Photo sequencePhoto(final int index) {
         Photo photo = null;
         if (selectedSequence != null && selectedSequence.hasPhotos()) {
             for (final Photo elem : selectedSequence.getPhotos()) {
@@ -315,6 +321,12 @@ public final class DataSet {
             photo = selectedCluster.getPhotos().get(index);
         }
         return photo;
+    }
+
+    public Detection clusterDetection(final Long sequenceId, final Integer sequenceIndex) {
+        return selectedCluster.getDetections().stream()
+                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
+                .findFirst().get();
     }
 
     /**

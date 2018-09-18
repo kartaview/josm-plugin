@@ -105,6 +105,16 @@ public class Cluster {
         this.photos = photos;
     }
 
+
+    public boolean hasPhotos() {
+        return photos != null && !photos.isEmpty();
+    }
+
+
+    public boolean hasDetections() {
+        return detections != null && !detections.isEmpty();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
