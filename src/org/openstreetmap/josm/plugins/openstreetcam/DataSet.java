@@ -323,10 +323,10 @@ public final class DataSet {
         return photo;
     }
 
-    public Detection clusterDetection(final Long sequenceId, final Integer sequenceIndex) {
+    public Optional<Detection> clusterDetection(final Long sequenceId, final Integer sequenceIndex) {
         return selectedCluster.getDetections().stream()
                 .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                .findFirst().get();
+                .findFirst();
     }
 
     /**
@@ -621,5 +621,9 @@ public final class DataSet {
      */
     public boolean hasSelectedDetection() {
         return selectedDetection != null;
+    }
+
+    public boolean selectedPhotoBelongsToCluster() {
+        return selectedCluster != null && selectedPhoto != null && selectedCluster.getPhotos().contains(selectedPhoto);
     }
 }
