@@ -42,16 +42,21 @@ public class DataUpdateHandler {
      * Updates the current map view with new data. The data type displayed depends on the current zoom level. Segments
      * that have OpenStreetCam coverage are displayed in the following cases:
      * <ul>
-     * <li>current zoom level>=minimum map data zoom (~10) and current zoom level < default photo location zoom</li>
-     * <li>current zoom level>=minimum map data zoom (~10) and user enabled manual data switch and zoom level <=minimum
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and current zoom level less than the
+     * default photo
+     * location zoom</li>
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
+     * and zoom level less or equals than the minimum
      * photo location zoom</li>
-     * <li>current zoom level>=minimum map data zoom (~10) and user enabled manual data switch and had switched to
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
+     * and had switched to
      * segment view</li>
      * </ul>
      * Photo locations and/or detections are displayed in the following cases:
      * <ul>
-     * <li>current zoom level >= default photo zoom level</li>
-     * <li>current zoom level >= default photo zoom level and user had enabled manual data switch and had switched to
+     * <li>current zoom level grater or equals to the default photo zoom level</li>
+     * <li>current zoom level grater or equals to the default photo zoom level and user had enabled manual data switch
+     * and had switched to
      * photo location view</li>
      * <li>a track is displayed (we displayed photo and detection locations near the a track)</li>
      * </ul>

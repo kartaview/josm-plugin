@@ -27,7 +27,7 @@ public interface MapViewTypeChangeObserver {
     /**
      * Updates the map view with the given data type.
      *
-     * @param dataType the new {@code MapViewType} that will be displayed
+     * @param mapViewType the new {@code MapViewType} that will be displayed
      */
     void update(MapViewType mapViewType);
 }

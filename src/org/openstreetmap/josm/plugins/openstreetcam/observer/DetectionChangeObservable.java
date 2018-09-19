@@ -27,6 +27,9 @@ public interface DetectionChangeObservable {
 
     /**
      * Notifies the observers listening.
+     *
+     * @param status the new status to be set
+     * @param text an addition comment to be added to a detection
      */
     void notifyDetectionChangeObserver(final EditStatus status, final String text);
 }

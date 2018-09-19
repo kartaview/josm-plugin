@@ -13,39 +13,37 @@ import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
+ * Defines the cluster entity.
  *
  * @author beataj
- * @version $Revision$
  */
 public class Cluster {
 
-    private Long id;
-    private Long latestChangeTimestamp;
-    private LatLon point;
-    private Double facing;
-    private Sign sign;
-    private Double confidenceLevel;
-    private List<Long> detectionIds;
-    private OsmComparison osmComparison;
-    private OsmElement osmElement;
-    private List<Detection> detections;
-    private List<Photo> photos;
+    private final Long id;
+    private final Long latestChangeTimestamp;
+    private final LatLon point;
+    private final Double facing;
+    private final Sign sign;
+    private final Double confidenceLevel;
+    private final List<Long> detectionIds;
+    private final OsmComparison osmComparison;
+    private final OsmElement osmElement;
+    private final List<Detection> detections;
+    private final List<Photo> photos;
 
 
-    public Cluster() {}
-
-    public Cluster(final Long id, final Long latestChangeTimestamp, final LatLon point, final Double facing,
-            final Sign sign, final Double confidenceLevel, final List<Long> detectionIds,
-            final OsmComparison osmComparison, final OsmElement osmElement) {
-        this.id = id;
-        this.latestChangeTimestamp = latestChangeTimestamp;
-        this.point = point;
-        this.facing = facing;
-        this.sign = sign;
-        this.confidenceLevel = confidenceLevel;
-        this.detectionIds = detectionIds;
-        this.osmComparison = osmComparison;
-        this.osmElement = osmElement;
+    Cluster(final ClusterBuilder builder) {
+        this.id = builder.getId();
+        this.latestChangeTimestamp = builder.getLatestChangeTimestamp();
+        this.point = builder.getPoint();
+        this.facing = builder.getFacing();
+        this.sign = builder.getSign();
+        this.confidenceLevel = builder.getConfidenceLevel();
+        this.detectionIds = builder.getDetectionIds();
+        this.osmComparison = builder.getOsmComparison();
+        this.osmElement = builder.getOsmElement();
+        this.detections = builder.getDetections();
+        this.photos = builder.getPhotos();
     }
 
 
@@ -85,31 +83,17 @@ public class Cluster {
         return osmElement;
     }
 
-    public void setOsmElement(final OsmElement osmElement) {
-        this.osmElement = osmElement;
-    }
-
     public List<Detection> getDetections() {
         return detections;
-    }
-
-    public void setDetections(final List<Detection> detections) {
-        this.detections = detections;
     }
 
     public List<Photo> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(final List<Photo> photos) {
-        this.photos = photos;
-    }
-
-
     public boolean hasPhotos() {
         return photos != null && !photos.isEmpty();
     }
-
 
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();

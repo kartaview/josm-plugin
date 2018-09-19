@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -20,6 +21,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
@@ -57,11 +59,11 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private void handleDataSelection(final MouseEvent event) {
-        final Cluster cluster = DataSet.getInstance().nearbyCluster(event.getPoint());
+        Cluster cluster = DataSet.getInstance().nearbyCluster(event.getPoint());
         Detection detection = null;
         Photo photo = null;
         if (cluster != null) {
-            enhanceCluster(cluster);
+            cluster = enhanceCluster(cluster);
             final Photo clusterPhoto = cluster.getPhotos() != null ? cluster.getPhotos().get(0) : null;
             if (clusterPhoto != null) {
                 photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
@@ -104,17 +106,19 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
 
-    void enhanceCluster(final Cluster selectedCluster) {
+    Cluster enhanceCluster(final Cluster selectedCluster) {
         final Cluster cluster = ServiceHandler.getInstance().retrieveClusterDetails(selectedCluster.getId());
+        final ClusterBuilder builder = new ClusterBuilder(selectedCluster);
         if (cluster.getOsmElement() != null) {
-            selectedCluster.setOsmElement(cluster.getOsmElement());
+            builder.osmElement(cluster.getOsmElement());
         }
         if (cluster.getPhotos() != null) {
-            selectedCluster.setPhotos(cluster.getPhotos());
+            builder.photos(cluster.getPhotos());
         }
         if (cluster.getDetections() != null) {
-            selectedCluster.setDetections(cluster.getDetections());
+            builder.detections(cluster.getDetections());
         }
+        return builder.build();
     }
 
     Detection photoSelectedDetection(final Photo photo) {
@@ -134,14 +138,16 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private Photo loadDetectionPhoto(final Detection detection) {
-        Photo photo = DataSet.getInstance().getPhoto(detection.getSequenceId(), detection.getSequenceIndex());
-        if (photo == null) {
-            photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
-                    detection.getSequenceIndex());
-        }
-        if (photo != null) {
+        final Optional<Photo> dataSetPhoto =
+                DataSet.getInstance().getPhoto(detection.getSequenceId(), detection.getSequenceIndex());
+        Photo photo;
+        if (dataSetPhoto.isPresent()) {
+            photo = dataSetPhoto.get();
             final List<Detection> detections = loadPhotoDetections(photo);
             photo.setDetections(detections);
+        } else {
+            photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
+                    detection.getSequenceIndex());
         }
         return photo;
     }
@@ -206,16 +212,28 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 || (DataSet.getInstance().hasDetections() || DataSet.getInstance().hasPhotos());
     }
 
-
+    /**
+     * Handles the situation when the previously selected data is unselected.
+     */
     abstract void handleDataUnselection();
 
+    /**
+     * Handles the situation when a new data element is selected from the map.
+     *
+     * @param photo represents the currently selected photo
+     * @param detection represents the currently selected detection
+     * @param cluster represents the currently selected cluster
+     * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
+     */
     abstract void handleDataSelection(final Photo photo, final Detection detection, Cluster cluster,
             final boolean displayLoadingMessage);
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.
      *
-     * @param photo a {@code Photo} represents the selected photo
+     * @param photo represents the photo to be selected
+     * @param photoSize represents the photo size to be displayed
+     * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
      */
-    public abstract void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage);
+    public abstract void selectPhoto(final Photo photo, final PhotoSize photoSize, final boolean displayLoadingMessage);
 }

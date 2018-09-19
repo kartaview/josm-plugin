@@ -38,9 +38,16 @@ public final class DataSet {
 
     private static final DataSet INSTANCE = new DataSet();
 
+    /** the segments from the current map view; available only for small zoom levels */
     private List<Segment> segments = new ArrayList<>();
+
+    /** the photos from the current map view; available only for high zoom levels */
     private PhotoDataSet photoDataSet = new PhotoDataSet();
+
+    /** the detections from the current map view; available only for high zoom levels */
     private List<Detection> detections = new ArrayList<>();
+
+    /** the clusters from the current map view; available only for high zoom levels */
     private List<Cluster> clusters = new ArrayList<>();
 
     /** the currently selected photo */
@@ -287,10 +294,8 @@ public final class DataSet {
             }
         } else if (photoDataSet != null && photoDataSet.hasItems() && selectedPhoto != null) {
             for (final Photo elem : photoDataSet.getPhotos()) {
-
                 if (elem.getSequenceIndex().equals(index)
                         && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
-                    // todo add case
                     photo = elem;
                     break;
                 }
@@ -299,9 +304,15 @@ public final class DataSet {
         return photo;
     }
 
+    /**
+     * Returns the next or previous photo belonging to the selected cluster that is relative to the currently selected
+     * cluster photo.
+     *
+     * @param isNext specifies if the next of previous cluster photo is returned
+     * @return a {@code Photo} object
+     */
     public Photo clusterPhoto(final boolean isNext) {
         Photo photo = null;
-        int index;
         if (selectedPhoto != null) {
             int selectedIndex = 0;
             for (int i = 0; i < selectedCluster.getPhotos().size(); i++) {
@@ -310,19 +321,22 @@ public final class DataSet {
                     break;
                 }
             }
-
-            index = isNext ? ++selectedIndex : --selectedIndex;
-            if (index > selectedCluster.getPhotos().size() - 1) {
-                index = 0;
-            }
-            if (index < 0) {
-                index = selectedCluster.getPhotos().size() - 1;
-            }
-            photo = selectedCluster.getPhotos().get(index);
+            int index = isNext ? ++selectedIndex : --selectedIndex;
+            index = index > selectedCluster.getPhotos().size() - 1 ? 0
+                    : index < 0 ? selectedCluster.getPhotos().size() - 1 : index;
+                    photo = selectedCluster.getPhotos().get(index);
         }
         return photo;
     }
 
+    /**
+     * Returns the detection of a cluster associated with the given sequence id and sequence index.
+     *
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the index of the photo from the sequence to which the detection belongs
+     * @return an {@code Optional} containing the corresponding detection, if there is no corresponding detection the
+     * method returns empty
+     */
     public Optional<Detection> clusterDetection(final Long sequenceId, final Integer sequenceIndex) {
         return selectedCluster.getDetections().stream()
                 .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
@@ -332,8 +346,7 @@ public final class DataSet {
     /**
      * Sets a start photo from witch a possible closest image action should start.
      *
-     * @param photo
-     * a {@code Photo}
+     * @param photo a {@code Photo}, representing the photo for which the nearby photos is computed
      */
     public void selectNearbyPhotos(final Photo photo) {
         nearyPhotosStartPhoto = photo;
@@ -369,17 +382,17 @@ public final class DataSet {
      *
      * @param sequenceId the identifier of the sequence
      * @param sequenceIndex the photo index in the given sequence
-     * @return a {@code Photo}
+     * @return an {@code Optional} containing the corresponding photo, if there is no corresponding photo the
+     * method returns empty
      */
-    public Photo getPhoto(final Long sequenceId, final Integer sequenceIndex) {
-        Photo result = null;
+    public Optional<Photo> getPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
+                Optional<Photo> result = Optional.empty();
                 if (photos != null) {
-                    final Optional<Photo> photo = photos.stream()
+                    result = photos.stream()
                             .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
                             .findFirst();
-                    result = photo.isPresent() ? photo.get() : null;
                 }
                 return result;
     }
@@ -415,6 +428,11 @@ public final class DataSet {
         return selectedSequence.getPhotos().get(index - 1);
     }
 
+    /**
+     * Removes the specified detection from the list of detections.
+     *
+     * @param detection a {@code Detection}s to be removed
+     */
     public void removeDetection(final Detection detection) {
         if (hasDetections()) {
             detections.remove(detection);
@@ -439,6 +457,12 @@ public final class DataSet {
         this.selectedDetection = selectedDetection;
     }
 
+    /**
+     * Sets the selected cluster.
+     *
+     * @param selectedCluster a {@code Cluster}
+     *
+     */
     public void setSelectedCluster(final Cluster selectedCluster) {
         this.selectedCluster = selectedCluster;
     }
@@ -503,6 +527,11 @@ public final class DataSet {
         return detections;
     }
 
+    /**
+     * Returns the list of clusters.
+     *
+     * @return a list of {@code Cluster}
+     */
     public List<Cluster> getClusters() {
         return clusters;
     }
@@ -525,6 +554,11 @@ public final class DataSet {
         return selectedDetection;
     }
 
+    /**
+     * Returns the selected cluster.
+     *
+     * @return a {@code Cluster}
+     */
     public Cluster getSelectedCluster() {
         return selectedCluster;
     }
@@ -583,6 +617,11 @@ public final class DataSet {
         return detections != null && !detections.isEmpty();
     }
 
+    /**
+     * Verifies if the data-set has clusters or not.
+     *
+     * @return boolean
+     */
     public boolean hasClusters() {
         return clusters != null && !clusters.isEmpty();
     }

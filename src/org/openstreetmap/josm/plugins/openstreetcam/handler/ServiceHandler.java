@@ -23,6 +23,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -71,7 +72,7 @@ public final class ServiceHandler extends SearchServiceHandler {
 
     /**
      * Retrieves the sequence identified by the given id.
-     * 
+     *
      * @param sequenceId the identifier of the sequence
      * @return a {@code Sequence} object
      */
@@ -80,31 +81,31 @@ public final class ServiceHandler extends SearchServiceHandler {
         final ExecutorService executorService = Executors.newFixedThreadPool(dataTypes.size());
         final Future<Sequence> sequenceFuture = dataTypes.contains(DataType.PHOTO)
                 ? executorService.submit(() -> retrieveSequencePhotos(sequenceId)) : null;
-        final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
-                ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
-        List<Photo> photos = null;
-        try {
-            if (sequenceFuture != null) {
-                final Sequence sequence = sequenceFuture.get();
-                photos = sequence != null ? sequence.getPhotos() : null;
-            }
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-            }
-        }
-        List<Detection> detections = null;
-        try {
-            detections = detectionsFuture != null ? detectionsFuture.get() : null;
-        } catch (final Exception ex) {
-            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-            }
-        }
-        executorService.shutdown();
-        return new Sequence(sequenceId, photos, detections);
+                final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
+                        ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
+                        List<Photo> photos = null;
+                        try {
+                            if (sequenceFuture != null) {
+                                final Sequence sequence = sequenceFuture.get();
+                                photos = sequence != null ? sequence.getPhotos() : null;
+                            }
+                        } catch (final Exception ex) {
+                            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+                            }
+                        }
+                        List<Detection> detections = null;
+                        try {
+                            detections = detectionsFuture != null ? detectionsFuture.get() : null;
+                        } catch (final Exception ex) {
+                            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+                            }
+                        }
+                        executorService.shutdown();
+                        return new Sequence(sequenceId, photos, detections);
     }
 
     public Cluster retrieveClusterDetails(final Long id) {
@@ -114,9 +115,9 @@ public final class ServiceHandler extends SearchServiceHandler {
         final Future<List<Detection>> detectionsFuture =
                 executorService.submit(() -> apolloService.retrieveClusterDetections(id));
 
-        Cluster cluster = new Cluster();
+        ClusterBuilder clusterBuilder = new ClusterBuilder();
         try {
-            cluster = clusterFuture.get();
+            clusterBuilder = new ClusterBuilder(clusterFuture.get());
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -125,7 +126,7 @@ public final class ServiceHandler extends SearchServiceHandler {
         }
 
         try {
-            cluster.setPhotos(photosFuture.get());
+            clusterBuilder.photos(photosFuture.get());
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -134,7 +135,7 @@ public final class ServiceHandler extends SearchServiceHandler {
         }
 
         try {
-            cluster.setDetections(detectionsFuture.get());
+            clusterBuilder.detections(detectionsFuture.get());
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -142,7 +143,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             }
         }
         executorService.shutdown();
-        return cluster;
+        return clusterBuilder.build();
     }
 
 
@@ -213,7 +214,7 @@ public final class ServiceHandler extends SearchServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();

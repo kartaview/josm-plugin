@@ -124,11 +124,9 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
     }
 
     private void selectDetection(final Detection detection) {
-        if (DataSet.getInstance().getSelectedCluster() == null
-                || (DataSet.getInstance().getSelectedSequence() != null)) {
-            if (!DataSet.getInstance().selectedPhotoBelongsToCluster()) {
-                DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-            }
+        if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
+                && !DataSet.getInstance().selectedPhotoBelongsToCluster())) {
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         }
         DataSet.getInstance().setSelectedDetection(detection);
         if (detection != null) {

@@ -19,7 +19,7 @@ public interface ClusterObservable {
     /**
      * Registers the given observer.
      *
-     * @param observer
+     * @param observer a {@code ClusterObserver} to be registered
      */
     void registerObserver(ClusterObserver observer);
 

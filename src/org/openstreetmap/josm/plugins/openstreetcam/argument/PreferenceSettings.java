@@ -29,6 +29,7 @@ public class PreferenceSettings {
      *
      * @param mapViewSettings specifies the map view user configurable settings
      * @param photoSettings specifies the photo loading user configurable settings
+     * @param aggregatedSettings specifies the selected cluster user configurable settings
      * @param trackSettings specifies the track display user configurable settings
      * @param cacheSettings specifies the cache user configurable settings
      */
