@@ -140,7 +140,6 @@ class PaintHandler {
             }
         }
         if (selectedCluster != null) {
-
             graphics.setComposite(OPAQUE_COMPOSITE);
             drawCluster(graphics, mapView, selectedCluster, true);
             if (selectedPhoto != null && selectedDetection != null) {
@@ -157,7 +156,6 @@ class PaintHandler {
             }
         }
     }
-
 
     private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
             final boolean isSelected) {
@@ -229,7 +227,6 @@ class PaintHandler {
             final boolean isSelected) {
         final Point point = mapView.getPoint(cluster.getPoint());
 
-
         if (isSelected) {
             final Map<Photo, List<Detection>> metadata = new HashMap<>();
             for (final Photo photo : cluster.getPhotos()) {
@@ -240,22 +237,18 @@ class PaintHandler {
                         .collect(Collectors.toList());
                 metadata.put(photo, photoDetections);
             }
-
-            graphics.setColor(PaintUtil.sequenceColor(mapView));
+            graphics.setColor(Constants.CLUSTER_DATA_LINE_COLOR);
             for (final Entry<Photo, List<Detection>> entry : metadata.entrySet()) {
                 // draw line
                 final Point photoPoint = mapView.getPoint(entry.getKey().getPoint());
-
                 for (final Detection d : entry.getValue()) {
                     final Point detectionPoint = mapView.getPoint(d.getPoint());
                     if (!photoPoint.equals(detectionPoint)) {
                         final Pair<Point, Point> lineGeometry = new Pair<>(photoPoint, detectionPoint);
                         PaintManager.drawLine(graphics, lineGeometry);
                     }
-                    // drawDetection(graphics, mapView, d, false);
                 }
                 drawPhoto(graphics, mapView, entry.getKey(), false);
-
                 drawDetections(graphics, mapView, entry.getValue(), null, false);
             }
         }
@@ -264,9 +257,7 @@ class PaintHandler {
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
         PaintManager.drawIcon(graphics, backgroundIcon, point);
         PaintManager.drawIcon(graphics, icon, point);
-
     }
-
 
     private List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {
         final List<Point> points = new ArrayList<>();

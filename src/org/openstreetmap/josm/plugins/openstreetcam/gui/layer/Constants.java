@@ -31,6 +31,7 @@ final class Constants {
     static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.10f);
     static final BasicStroke SEQUENCE_LINE = new BasicStroke(2.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     static final Color SEQUENCE_LINE_COLOR = new Color(0, 143, 222);
+    static final Color CLUSTER_DATA_LINE_COLOR = new Color(46, 139, 87);
     static final int MIN_ARROW_ZOOM = 16;
     static final double ARROW_LENGTH = 3.5D;
 
