@@ -33,6 +33,7 @@ public final class IconConfig extends BaseConfig {
     private final String downloadIconName;
     private final String saveIconName;
     private final Icon layerIcon;
+    private final Icon layerIconFiltered;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
     private final ImageIcon photoNoHeadingIcon;
@@ -68,6 +69,7 @@ public final class IconConfig extends BaseConfig {
         downloadIconName = readProperty("download.icon");
         saveIconName = readProperty("save.icon");
         layerIcon = ImageProvider.get(layerIconName);
+        layerIconFiltered = ImageProvider.get(readProperty("layer.icon.filtered"));
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
@@ -129,6 +131,10 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getLayerIcon() {
         return layerIcon;
+    }
+
+    public Icon getLayerIconFiltered(){
+        return layerIconFiltered;
     }
 
     public ImageIcon getPhotoIcon() {

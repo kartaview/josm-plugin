@@ -24,6 +24,12 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
 
 import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+
+import java.util.List;
 
 
 /**
@@ -415,5 +421,42 @@ public final class PreferenceManager {
      */
     public String loadPluginLocalVersion() {
         return loadManager.loadPluginLocalVersion();
+    }
+
+    /**
+     * Checks if the currently set search filter is equal with the default search filter.
+     * @return true if the current search filter is the default one.
+     */
+    public boolean isSearchFilterDefault(){
+        SearchFilter currentFilter = loadManager.loadSearchFilter();
+        if (currentFilter.getDate() != null && !currentFilter.getDate().equals(SearchFilter.DEFAULT.getDate())) {
+           return false;
+        }
+        if (currentFilter.isOlnyUserData() != SearchFilter.DEFAULT.isOlnyUserData()) {
+            return false;
+        }
+        if (!Util.equalUnorderedPreferenceLists(currentFilter.getDataTypes(), SearchFilter.DEFAULT.getDataTypes())) {
+            return false;
+        }
+        final List<OsmComparison> currentOsmComparisons = currentFilter.getDetectionFilter().getOsmComparisons();
+        final List<OsmComparison> defaultOsmComparisons = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
+        if (!Util.equalUnorderedPreferenceLists(currentOsmComparisons, defaultOsmComparisons)) {
+            return false;
+        }
+        final List<EditStatus> currentEditStatuses = currentFilter.getDetectionFilter().getEditStatuses();
+        final List<EditStatus> defaultEditStatuses = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
+        if (!Util.equalUnorderedPreferenceLists(currentEditStatuses, defaultEditStatuses)) {
+            return false;
+        }
+        if (currentFilter.getDetectionFilter().getSignTypes() != null && !currentFilter.getDetectionFilter()
+                .getSignTypes().equals(SearchFilter.DEFAULT.getDetectionFilter().getSignTypes())) {
+            return false;
+        }
+        final List<DetectionMode> currentModes = currentFilter.getDetectionFilter().getModes();
+        final List<DetectionMode> defaultModes = SearchFilter.DEFAULT.getDetectionFilter().getModes();
+        if (!Util.equalUnorderedPreferenceLists(currentModes, defaultModes)) {
+            return false;
+        }
+        return true;
     }
 }
