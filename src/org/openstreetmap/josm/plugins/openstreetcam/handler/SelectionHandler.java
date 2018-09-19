@@ -287,6 +287,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                     enhancePhotoWithDetections(photo);
                     detection = photoSelectedDetection(photo);
                 } else if (DataSet.getInstance().getSelectedCluster() != null) {
+                    // special case we need to display information of the already selected cluster
                     final Optional<Detection> clusterDetection =
                             DataSet.getInstance().clusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     if (clusterDetection.isPresent()) {
@@ -295,13 +296,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                         cluster = DataSet.getInstance().getSelectedCluster();
                     }
                 }
-
             }
-
-            // if (dataTypes != null && dataTypes.contains(DataType.DETECTION)) {
-            // enhancePhotoWithDetections(photo);
-            // detection = photoSelectedDetection(photo);
-            // }
             handleDataSelection(photo, detection, cluster, true);
         }
     }
@@ -413,24 +408,9 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
         final Photo clusterPhoto = DataSet.getInstance().clusterPhoto(isNext);
         final Optional<Detection> clusterDetection =
                 DataSet.getInstance().clusterDetection(clusterPhoto.getSequenceId(), clusterPhoto.getSequenceIndex());
-        final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
-                clusterPhoto.getSequenceIndex());
-        photo.setHeading(clusterPhoto.getHeading());
-
-        if (clusterDetection.isPresent()) {
-            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
-                enhancePhotoWithDetections(photo);
-                if (!photo.getDetections().contains(clusterDetection.get())) {
-                    photo.getDetections().add(clusterDetection.get());
-                }
-            } else {
-                photo.setDetections(Collections.singletonList(clusterDetection.get()));
-            }
-            DataSet.getInstance().setSelectedDetection(clusterDetection.get());
-        } else {
-            DataSet.getInstance().setSelectedDetection(null);
-        }
-
+        final Detection detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
+        final Photo photo = enhanceClusterPhoto(clusterPhoto, detection);
+        DataSet.getInstance().setSelectedDetection(detection);
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         selectPhoto(photo, photoType, true);
