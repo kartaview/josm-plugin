@@ -27,7 +27,6 @@ public final class IconConfig extends BaseConfig {
     private static final int CLUSTER_BACKGROUND_SIZE = 42;
     private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 55;
 
-
     private final String pluginIconName;
     private final String dialogShortcutName;
     private final String detectionDialogShortcutName;
