@@ -45,7 +45,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler
-implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
+        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -66,7 +66,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
 
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom()) {
+                        .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -83,47 +83,37 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
             final boolean displayLoadingMessage) {
         if (cluster != null) {
             selectCluster(cluster);
-            if (photo != null) {
-                if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                    stopAutoplay();
-                }
-                if (shouldLoadSequence(photo)) {
-                    loadSequence(photo);
-                }
-                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-                selectPhoto(photo, photoType, true);
-                DataSet.getInstance().selectNearbyPhotos(photo);
-            } else {
-                selectPhoto(null, null, false);
-            }
+            selectPhoto(photo);
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
             }
         } else {
-            if (photo != null) {
-                if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                    stopAutoplay();
-                }
-                if (shouldLoadSequence(photo)) {
-                    loadSequence(photo);
-                }
-                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-                selectPhoto(photo, photoType, true);
-            } else {
-                selectPhoto(null, null, false);
-            }
+            selectPhoto(photo);
             if (!DataSet.getInstance().detectionBelongsToCluster(detection)) {
                 DetectionDetailsDialog.getInstance().updateClusterDetails(null);
             }
-
             selectDetection(detection);
-            DataSet.getInstance().selectNearbyPhotos(photo);
         }
         OpenStreetCamLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
+    }
+
+    private void selectPhoto(final Photo photo) {
+        if (photo != null) {
+            if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                stopAutoplay();
+            }
+            if (shouldLoadSequence(photo)) {
+                loadSequence(photo);
+            }
+            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+            selectPhoto(photo, photoType, true);
+        } else {
+            selectPhoto(null, null, false);
+        }
+        DataSet.getInstance().selectNearbyPhotos(photo);
     }
 
     private void selectDetection(final Detection detection) {
@@ -227,21 +217,21 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                        SwingUtilities.invokeLater(() -> {
-                            DataSet.getInstance().setSelectedSequence(sequence);
-                            PhotoDetailsDialog.getInstance().enableSequenceActions(
-                                    DataSet.getInstance().enablePreviousPhotoAction(),
-                                    DataSet.getInstance().enableNextPhotoAction(), null);
-                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
-                            }
-                            OpenStreetCamLayer.getInstance().invalidate();
-                            MainApplication.getMap().repaint();
-                        });
+            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                SwingUtilities.invokeLater(() -> {
+                    DataSet.getInstance().setSelectedSequence(sequence);
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction(), null);
+                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
+                });
+            }
         });
     }
 
