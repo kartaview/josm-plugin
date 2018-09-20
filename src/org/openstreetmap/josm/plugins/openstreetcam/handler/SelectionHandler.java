@@ -115,7 +115,10 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
             } else {
                 selectPhoto(null, null, false);
             }
-            DetectionDetailsDialog.getInstance().updateClusterDetails(null);
+            if (!DataSet.getInstance().detectionBelongsToCluster(detection)) {
+                DetectionDetailsDialog.getInstance().updateClusterDetails(null);
+            }
+
             selectDetection(detection);
             DataSet.getInstance().selectNearbyPhotos(photo);
         }
@@ -303,7 +306,6 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
 
 
     /* implementation of SequenceAutoplayObserver */
-
     @Override
     public void play(final AutoplayAction action) {
         if (AutoplayAction.START.equals(action)) {

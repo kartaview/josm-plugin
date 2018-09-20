@@ -143,7 +143,7 @@ public final class DataSet {
         if (updateSelection && selectedCluster != null) {
             selectedCluster = clusters != null
                     ? clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null)
-                            : null;
+                    : null;
         }
     }
 
@@ -166,7 +166,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -324,7 +324,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getPhotos().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getPhotos().size() - 1 : index;
-                    photo = selectedCluster.getPhotos().get(index);
+            photo = selectedCluster.getPhotos().get(index);
         }
         return photo;
     }
@@ -388,13 +388,13 @@ public final class DataSet {
     public Optional<Photo> getPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                Optional<Photo> result = Optional.empty();
-                if (photos != null) {
-                    result = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                }
-                return result;
+        Optional<Photo> result = Optional.empty();
+        if (photos != null) {
+            result = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+        }
+        return result;
     }
 
     /**
@@ -415,7 +415,7 @@ public final class DataSet {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex());
+                        .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -446,6 +446,14 @@ public final class DataSet {
      */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
+
+        // workaround for the case when the cluster photo is selected and object is not complete
+        // (avoiding to load more than once the same photo from OpenStreetCam API
+        if (selectedPhoto != null && selectedCluster != null && selectedCluster.getPhotos() != null
+                && selectedCluster.getPhotos().contains(selectedPhoto)) {
+            selectedCluster.getPhotos().remove(selectedPhoto);
+            selectedCluster.getPhotos().add(selectedPhoto);
+        }
     }
 
     /**
@@ -664,5 +672,14 @@ public final class DataSet {
 
     public boolean selectedPhotoBelongsToCluster() {
         return selectedCluster != null && selectedPhoto != null && selectedCluster.getPhotos().contains(selectedPhoto);
+    }
+
+    public boolean detectionBelongsToCluster(final Detection detection) {
+        return selectedCluster != null && detection != null && selectedCluster.getDetections().contains(detection);
+    }
+
+    public boolean photoBelongsToCluster(final Photo photo) {
+        return selectedCluster != null && selectedCluster.getPhotos() != null
+                && selectedCluster.getPhotos().contains(photo);
     }
 }

@@ -72,14 +72,27 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             } else {
                 photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    enhancePhotoWithDetections(photo);
-                    detection = photoSelectedDetection(photo);
+                    if (DataSet.getInstance().photoBelongsToCluster(photo)) {
+                        photo = enhanceClusterPhoto(photo, detection);
+                        detection = getClusterDetection(DataSet.getInstance().getSelectedCluster(),
+                                photo.getSequenceId(), photo.getSequenceIndex());
+                    } else {
+                        enhancePhotoWithDetections(photo);
+                        detection = photoSelectedDetection(photo);
+                    }
                 }
             }
             if (photo != null || detection != null) {
                 handleDataSelection(photo, detection, null, true);
             }
         }
+    }
+
+    private Detection getClusterDetection(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
+        final Optional<Detection> clusterDetection = cluster != null ? cluster.getDetections().stream()
+                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
+                .findFirst() : Optional.empty();
+                return clusterDetection.isPresent() ? clusterDetection.get() : null;
     }
 
     Photo enhanceClusterPhoto(final Photo clusterPhoto, final Detection detection) {
@@ -105,10 +118,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         Photo photo = null;
         Detection detection = null;
         if (clusterPhoto != null) {
-            final Optional<Detection> clusterDetection =
-                    cluster.getDetections().stream().filter(d -> d.getSequenceId().equals(clusterPhoto.getSequenceId())
-                            && d.getSequenceIndex().equals(clusterPhoto.getSequenceIndex())).findFirst();
-            detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
+            detection = getClusterDetection(cluster, clusterPhoto.getSequenceId(), clusterPhoto.getSequenceIndex());
             photo = enhanceClusterPhoto(clusterPhoto, detection);
         } else if (cluster.getDetections() != null) {
             detection = cluster.getDetections().get(0);
