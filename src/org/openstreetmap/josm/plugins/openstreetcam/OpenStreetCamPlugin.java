@@ -117,6 +117,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
             OpenStreetCamLayer.destroyInstance();
+            Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
