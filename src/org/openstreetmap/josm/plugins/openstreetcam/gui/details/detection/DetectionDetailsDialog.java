@@ -93,7 +93,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      *
      * @param detectionChangeObserver a {@code DetectionChangeObserver} listens for the detection
      * status/comment changes
-     * @param detectionChangeObserver a {@code ClusterObserver} listens for the cluster next/previous photo
+     * @param clusterObserver a {@code ClusterObserver} listens for the cluster next/previous photo
      * actions
      */
     public void registerObservers(final DetectionChangeObserver detectionChangeObserver,

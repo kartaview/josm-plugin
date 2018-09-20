@@ -55,38 +55,41 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     }
 
     private void addPreviousButton() {
-        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnPreviousShortcutText(), false);
+        final JosmAction action =
+                new SelectPhotoAction(GuiConfig.getInstance().getBtnClusterPreviousShortcutText(), false);
         final String tooltip =
                 GuiConfig.getInstance().getBtnPreviousTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnPrevious = ButtonBuilder.build(action, IconConfig.getInstance().getPreviousIcon(), tooltip, true);
+        btnPrevious = ButtonBuilder.build(action, IconConfig.getInstance().getPreviousIcon(), tooltip, false);
         add(btnPrevious);
     }
 
     private void addNextButton() {
-        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true);
+        final JosmAction action = new SelectPhotoAction(GuiConfig.getInstance().getBtnClusterNextShortcutText(), true);
         final String tooltip =
                 GuiConfig.getInstance().getBtnNextTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnNext = ButtonBuilder.build(new SelectPhotoAction(GuiConfig.getInstance().getBtnNextShortcutText(), true),
-                IconConfig.getInstance().getNextIcon(), tooltip, true);
+        btnNext = ButtonBuilder.build(action, IconConfig.getInstance().getNextIcon(), tooltip, false);
         add(btnNext);
     }
 
     private void addMatchedDataButton() {
         final JosmAction action = new DownloadMatchedData();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnMatchedWayTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnMatchedData = ButtonBuilder.build(new DownloadMatchedData(), IconConfig.getInstance().getMatchedWayIcon(),
-                tooltip, true);
+        final String tooltip = GuiConfig.getInstance().getBtnClusterMatchedDataTlt().replace(SHORTCUT,
+                action.getShortcut().getKeyText());
+        btnMatchedData = ButtonBuilder.build(action, IconConfig.getInstance().getMatchedWayIcon(), tooltip, false);
         add(btnMatchedData);
     }
 
     void updateUI(final Cluster cluster) {
         this.cluster = cluster;
+        boolean enablePhotoButtons = false;
+        boolean enableMatchedDataButton = false;
         if (cluster != null) {
-            final boolean enableMatchedDataButton =
-                    cluster.getOsmElement() != null && cluster.getOsmElement().getOsmId() != null;
-            btnMatchedData.setEnabled(enableMatchedDataButton);
+            enableMatchedDataButton = cluster.getOsmElement() != null && cluster.getOsmElement().getOsmId() != null;
+            enablePhotoButtons = cluster.getDetectionIds() != null && cluster.getDetectionIds().size() > 1;
         }
+        btnNext.setEnabled(enablePhotoButtons);
+        btnPrevious.setEnabled(enablePhotoButtons);
+        btnMatchedData.setEnabled(enableMatchedDataButton);
     }
 
     @Override
@@ -98,7 +101,6 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     public void notifyObserver(final boolean isNext) {
         this.clusterObserver.selectPhoto(isNext);
     }
-
 
     /**
      * Selects the next or previous photo belonging to the cluster. The next/previous photo is computed related to the
@@ -134,7 +136,8 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         private static final long serialVersionUID = 7626759776502632881L;
 
         private DownloadMatchedData() {
-            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), GuiConfig.getInstance().getBtnMatchedWayTlt());
+            super(GuiConfig.getInstance().getBtnClusterMatchedDataTlt(),
+                    GuiConfig.getInstance().getBtnClusterMatchedDataTlt());
         }
 
         @Override

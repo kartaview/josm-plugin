@@ -24,6 +24,8 @@ public final class IconConfig extends BaseConfig {
 
     private static final IconConfig INSTANCE = new IconConfig();
     private static final String CONFIG_FILE = "openstreetcam_icon.properties";
+    private static final int CLUSTER_BACKGROUND_SIZE = 42;
+    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 55;
 
     private final String pluginIconName;
     private final String dialogShortcutName;
@@ -53,6 +55,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
+    private final ImageIcon clusterBackgroundIcon;
+    private final ImageIcon clusterBackgroundSelectedIcon;
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
@@ -89,6 +93,11 @@ public final class IconConfig extends BaseConfig {
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
+        final ImageProvider imageProvider = new ImageProvider(readProperty("cluster.background.icon"));
+        imageProvider.setSize(CLUSTER_BACKGROUND_SIZE, CLUSTER_BACKGROUND_SIZE);
+        clusterBackgroundIcon = imageProvider.get();
+        imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
+        clusterBackgroundSelectedIcon = imageProvider.get();
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
@@ -211,6 +220,14 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getDownloadIcon() {
         return downloadIcon;
+    }
+
+    public ImageIcon getClusterBackgroundIcon() {
+        return clusterBackgroundIcon;
+    }
+
+    public ImageIcon getClusterBackgroundSelectedIcon() {
+        return clusterBackgroundSelectedIcon;
     }
 
     public String getPreferenceIconName() {

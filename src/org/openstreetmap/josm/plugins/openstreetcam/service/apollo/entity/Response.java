@@ -24,6 +24,7 @@ public class Response extends BaseResponse {
 
     // setters and constructors are not required,since GSON sets the fields directly using reflection.
     private Detection detection;
+    private Cluster cluster;
     private List<Detection> detections;
     private List<Cluster> clusters;
     private List<Photo> photos;
@@ -35,6 +36,10 @@ public class Response extends BaseResponse {
 
     public List<Detection> getDetections() {
         return detections;
+    }
+
+    public Cluster getCluster() {
+        return cluster;
     }
 
     public Detection getDetection() {

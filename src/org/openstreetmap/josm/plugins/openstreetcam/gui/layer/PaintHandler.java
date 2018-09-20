@@ -20,11 +20,16 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
@@ -125,6 +130,33 @@ class PaintHandler {
         }
     }
 
+    void drawClusters(final Graphics2D graphics, final MapView mapView, final List<Cluster> clusters,
+            final Cluster selectedCluster, final Photo selectedPhoto, final Detection selectedDetection) {
+        final Composite composite = selectedCluster != null ? TRANSPARENT_COMPOSITE : graphics.getComposite();
+        graphics.setComposite(composite);
+        for (final Cluster cluster : clusters) {
+            if (selectedCluster == null || !cluster.equals(selectedCluster)) {
+                drawCluster(graphics, mapView, cluster, false);
+            }
+        }
+        if (selectedCluster != null) {
+            graphics.setComposite(OPAQUE_COMPOSITE);
+            drawCluster(graphics, mapView, selectedCluster, true);
+            if (selectedPhoto != null && selectedDetection != null) {
+                graphics.setComposite(OPAQUE_COMPOSITE);
+                drawPhoto(graphics, mapView, selectedPhoto, true);
+                drawDetection(graphics, mapView, selectedDetection, true);
+            } else {
+                if (selectedPhoto != null) {
+                    drawPhoto(graphics, mapView, selectedPhoto, true);
+                }
+                if (selectedDetection != null) {
+                    drawDetection(graphics, mapView, selectedDetection, true);
+                }
+            }
+        }
+    }
+
     private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
             final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
@@ -151,15 +183,15 @@ class PaintHandler {
                     final Photo currentPhoto = sequence.getPhotos().get(i);
 
                     // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getPoint())
-                    || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
-                final Pair<Point, Point> lineGeometry =
-                        new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
+                    if (Util.containsLatLon(mapView, prevPhoto.getPoint())
+                            || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
+                        final Pair<Point, Point> lineGeometry =
+                                new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
                         if (length == null) {
                             PaintManager.drawLine(graphics, lineGeometry);
                         } else {
                             final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
+                                    getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
                             PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
                         }
                     }
@@ -188,6 +220,42 @@ class PaintHandler {
             final boolean isSelected) {
         final Point point = mapView.getPoint(detection.getPoint());
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign(), isSelected);
+        PaintManager.drawIcon(graphics, icon, point);
+    }
+
+    private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
+            final boolean isSelected) {
+        final Point point = mapView.getPoint(cluster.getPoint());
+
+        if (isSelected) {
+            final Map<Photo, List<Detection>> metadata = new HashMap<>();
+            for (final Photo photo : cluster.getPhotos()) {
+                final List<Detection> photoDetections =
+                        cluster.getDetections().stream()
+                        .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
+                                && d.getSequenceIndex().equals(photo.getSequenceIndex()))
+                        .collect(Collectors.toList());
+                metadata.put(photo, photoDetections);
+            }
+            graphics.setColor(Constants.CLUSTER_DATA_LINE_COLOR);
+            for (final Entry<Photo, List<Detection>> entry : metadata.entrySet()) {
+                // draw line
+                final Point photoPoint = mapView.getPoint(entry.getKey().getPoint());
+                for (final Detection d : entry.getValue()) {
+                    final Point detectionPoint = mapView.getPoint(d.getPoint());
+                    if (!photoPoint.equals(detectionPoint)) {
+                        final Pair<Point, Point> lineGeometry = new Pair<>(photoPoint, detectionPoint);
+                        PaintManager.drawLine(graphics, lineGeometry);
+                    }
+                }
+                drawPhoto(graphics, mapView, entry.getKey(), false);
+                drawDetections(graphics, mapView, entry.getValue(), null, false);
+            }
+        }
+        final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
+                : IconConfig.getInstance().getClusterBackgroundIcon();
+        final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
+        PaintManager.drawIcon(graphics, backgroundIcon, point);
         PaintManager.drawIcon(graphics, icon, point);
     }
 

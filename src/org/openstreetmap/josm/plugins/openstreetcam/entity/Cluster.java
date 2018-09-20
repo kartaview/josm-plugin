@@ -9,12 +9,13 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
+ * Defines the cluster entity.
  *
  * @author beataj
- * @version $Revision$
  */
 public class Cluster {
 
@@ -27,23 +28,22 @@ public class Cluster {
     private final List<Long> detectionIds;
     private final OsmComparison osmComparison;
     private final OsmElement osmElement;
-    private List<Detection> detections;
-    private List<Photo> photos;
+    private final List<Detection> detections;
+    private final List<Photo> photos;
 
 
-    public Cluster(final Long id, final Long latestChangeTimestamp, final LatLon point, final Double facing,
-            final Sign sign, final Double confidenceLevel, final List<Long> detectionIds,
-            final OsmComparison osmComparison,
-            final OsmElement osmElement) {
-        this.id = id;
-        this.latestChangeTimestamp = latestChangeTimestamp;
-        this.point = point;
-        this.facing = facing;
-        this.sign = sign;
-        this.confidenceLevel = confidenceLevel;
-        this.detectionIds = detectionIds;
-        this.osmComparison = osmComparison;
-        this.osmElement = osmElement;
+    Cluster(final ClusterBuilder builder) {
+        this.id = builder.getId();
+        this.latestChangeTimestamp = builder.getLatestChangeTimestamp();
+        this.point = builder.getPoint();
+        this.facing = builder.getFacing();
+        this.sign = builder.getSign();
+        this.confidenceLevel = builder.getConfidenceLevel();
+        this.detectionIds = builder.getDetectionIds();
+        this.osmComparison = builder.getOsmComparison();
+        this.osmElement = builder.getOsmElement();
+        this.detections = builder.getDetections();
+        this.photos = builder.getPhotos();
     }
 
 
@@ -87,15 +87,35 @@ public class Cluster {
         return detections;
     }
 
-    public void setDetections(final List<Detection> detections) {
-        this.detections = detections;
-    }
-
     public List<Photo> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(final List<Photo> photos) {
-        this.photos = photos;
+    public boolean hasPhotos() {
+        return photos != null && !photos.isEmpty();
+    }
+
+    public boolean hasDetections() {
+        return detections != null && !detections.isEmpty();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + EntityUtil.hashCode(id);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        boolean result = false;
+        if (this == obj) {
+            result = true;
+        } else if (obj != null && obj.getClass() == this.getClass()) {
+            final Cluster other = (Cluster) obj;
+            result = EntityUtil.bothNullOrEqual(id, other.getId());
+        }
+        return result;
     }
 }

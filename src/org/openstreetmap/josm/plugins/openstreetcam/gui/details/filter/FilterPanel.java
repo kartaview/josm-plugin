@@ -269,9 +269,15 @@ class FilterPanel extends JPanel {
         }
         SearchFilter searchFilter;
         if (isHighZoomLevel) {
-            searchFilter = new SearchFilter(date, cbbUser.isSelected(), selectedDataTypes(),
-                    new DetectionFilter(selectedOsmComparisons(), selectedEditStatuses(),
-                            listSignType.getSelectedValuesList(), getSelectedModes()));
+            final List<DataType> dataTypes = selectedDataTypes();
+            List<EditStatus> editStatuses = new ArrayList<>();
+            List<DetectionMode> detectionModes = new ArrayList<>();
+            if (dataTypes.contains(DataType.DETECTION)) {
+                editStatuses = selectedEditStatuses();
+                detectionModes = selectedModes();
+            }
+            searchFilter = new SearchFilter(date, cbbUser.isSelected(), selectedDataTypes(), new DetectionFilter(
+                    selectedOsmComparisons(), editStatuses, listSignType.getSelectedValuesList(), detectionModes));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -326,7 +332,7 @@ class FilterPanel extends JPanel {
         return selected;
     }
 
-    private List<DetectionMode> getSelectedModes() {
+    private List<DetectionMode> selectedModes() {
         final List<DetectionMode> selectedModes = new ArrayList<>();
         if (cbbAutomaticMode.isSelected()) {
             selectedModes.add(DetectionMode.AUTOMATIC);

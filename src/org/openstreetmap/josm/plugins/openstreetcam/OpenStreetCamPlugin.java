@@ -107,13 +107,13 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
                 addLayer();
             }
-
             Preferences.main().addPreferenceChangeListener(preferenceChangedHandler);
         }
 
         if (oldMapFrame != null && newMapFrame == null) {
             // clean-up
             layerActivatorMenuItem.setEnabled(false);
+            Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
             OpenStreetCamLayer.destroyInstance();

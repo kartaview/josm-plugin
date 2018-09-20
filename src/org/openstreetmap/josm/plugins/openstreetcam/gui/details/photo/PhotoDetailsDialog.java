@@ -23,9 +23,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -239,6 +239,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      *
      * @param isPrevious if true/false the previous photo action button is enabled
      * @param isNext is true the next photo action button is enabled
+     * @param action represents the track play current situation
      */
     public void enableSequenceActions(final boolean isPrevious, final boolean isNext, final AutoplayAction action) {
         pnlBtn.enableSequenceActions(isPrevious, isNext, action);

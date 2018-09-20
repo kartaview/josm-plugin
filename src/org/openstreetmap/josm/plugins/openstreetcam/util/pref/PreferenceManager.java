@@ -22,14 +22,20 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
-
-import org.openstreetmap.josm.plugins.openstreetcam.argument.*;
+import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AggregatedDetectionSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-
-import java.util.List;
 
 
 /**
@@ -54,6 +60,30 @@ public final class PreferenceManager {
         return INSTANCE;
     }
 
+    public void savePhotosSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.savePhotosSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadPhotosSearchErrorSuppressFlag() {
+        return loadManager.loadPhotosSearchErrorSuppressFlag();
+    }
+
+    public void saveDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionsSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadDetectionsSearchErrorSuppressFlag() {
+        return loadManager.loadDetectionsSearchErrorSuppressFlag();
+    }
+
+    public boolean loadClustersSearchErrorSuppressFlag() {
+        return loadManager.loadClustersSearchErrorSuppressFlag();
+    }
+
+    public void saveClustersSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveClustersSearchErrorSuppressFlag(flag);
+    }
+
     /**
      * Loads the photo search error suppress flag. If this value is true, then all the future photo search service
      * errors will be suppressed.
@@ -73,10 +103,6 @@ public final class PreferenceManager {
         saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
-    public void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        saveManager.saveDetectionSearchErrorSuppressFlag(flag);
-    }
-
     public void saveSequenceDetectionsErrorFlag(final boolean flag) {
         saveManager.saveSequenceDetectionsErrorFlag(flag);
     }
@@ -87,10 +113,6 @@ public final class PreferenceManager {
 
     public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
         saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
-    }
-
-    public boolean loadDetectionSearchErrorSuppressFlag() {
-        return loadManager.loadDetectionSearchErrorSuppressFlag();
     }
 
     public boolean loadSequenceDetectionsErrorFlag() {
@@ -428,7 +450,7 @@ public final class PreferenceManager {
      * @return true if the current search filter is the default one.
      */
     public boolean isSearchFilterDefault(){
-        SearchFilter currentFilter = loadManager.loadSearchFilter();
+        final SearchFilter currentFilter = loadManager.loadSearchFilter();
         if (currentFilter.getDate() != null && !currentFilter.getDate().equals(SearchFilter.DEFAULT.getDate())) {
            return false;
         }
