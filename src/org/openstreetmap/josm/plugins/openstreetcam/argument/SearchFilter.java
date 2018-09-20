@@ -24,7 +24,7 @@ import com.telenav.josm.common.entity.EntityUtil;
 public class SearchFilter {
 
     public static final SearchFilter DEFAULT =
-            new SearchFilter(null, false, Arrays.asList(DataType.values()), DetectionFilter.DEFAULT);
+            new SearchFilter(null, false, Arrays.asList(DataType.PHOTO, DataType.CLUSTER), DetectionFilter.DEFAULT);
 
     private final Date date;
     private final boolean olnyUserData;
