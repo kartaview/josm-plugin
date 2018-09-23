@@ -36,7 +36,11 @@ final class Constants {
     static final Color CLUSTER_DATA_LINE_COLOR = new Color(255, 69, 0);
     static final int MIN_ARROW_ZOOM = 16;
     static final double ARROW_LENGTH = 3.5D;
-    static final double CLUSTER_EXTRAPOLATE_DISTANCE = 0.3;
+
+    static final double ZOOM_16 = 3.825;
+
+
+    static final double CLUSTER_EXTRAPOLATE_DISTANCE = 0.02;
 
     static final String BING_LAYER_NAME = "Bing aerial imagery";
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";

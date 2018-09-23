@@ -175,29 +175,29 @@ class PaintHandler {
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
         final Double length =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-        graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
+                graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
 
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
+                Photo prevPhoto = sequence.getPhotos().get(0);
+                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
 
-            // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getPoint())
-                    || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
-                final Pair<Point, Point> lineGeometry =
-                        new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
-                if (length == null) {
-                    PaintManager.drawLine(graphics, lineGeometry);
-                } else {
-                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
-                    PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                    // at least one of the photos is in current view draw line
+                    if (Util.containsLatLon(mapView, prevPhoto.getPoint())
+                            || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
+                        final Pair<Point, Point> lineGeometry =
+                                new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
+                        if (length == null) {
+                            PaintManager.drawLine(graphics, lineGeometry);
+                        } else {
+                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                                    getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
+                            PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                        }
+                    }
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
                 }
-            }
-            drawPhoto(graphics, mapView, prevPhoto, false);
-            prevPhoto = currentPhoto;
-        }
-        drawPhoto(graphics, mapView, prevPhoto, false);
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
@@ -230,9 +230,9 @@ class PaintHandler {
             for (final Photo photo : cluster.getPhotos()) {
                 final List<Detection> photoDetections =
                         cluster.getDetections().stream()
-                                .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
-                                        && d.getSequenceIndex().equals(photo.getSequenceIndex()))
-                                .collect(Collectors.toList());
+                        .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
+                                && d.getSequenceIndex().equals(photo.getSequenceIndex()))
+                        .collect(Collectors.toList());
                 metadata.put(photo, photoDetections);
             }
             graphics.setColor(PaintUtil.lineColor(mapView, Constants.CLUSTER_DATA_LINE_COLOR));
@@ -261,9 +261,10 @@ class PaintHandler {
         } else {
             PaintManager.drawIcon(graphics, backgroundIcon, point);
         }
+        mapView.getDist100Pixel();
         final Coordinate coord =
                 GeometryUtil.extrapolate(new Coordinate(cluster.getPoint().lat(), cluster.getPoint().lon()), bearing,
-                        Constants.CLUSTER_EXTRAPOLATE_DISTANCE);
+                        mapView.getDist100Pixel() * Constants.CLUSTER_EXTRAPOLATE_DISTANCE);
         point = mapView.getPoint(new LatLon(coord.getLat(), coord.getLon()));
         PaintManager.drawIcon(graphics, icon, point);
     }
