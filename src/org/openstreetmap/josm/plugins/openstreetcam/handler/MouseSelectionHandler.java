@@ -164,12 +164,12 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         Photo photo;
         if (dataSetPhoto.isPresent()) {
             photo = dataSetPhoto.get();
-            final List<Detection> detections = loadPhotoDetections(photo);
-            photo.setDetections(detections);
         } else {
             photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                     detection.getSequenceIndex());
         }
+        final List<Detection> detections = loadPhotoDetections(photo);
+        photo.setDetections(detections);
         return photo;
     }
 
