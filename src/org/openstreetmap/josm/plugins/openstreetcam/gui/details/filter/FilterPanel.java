@@ -354,22 +354,43 @@ class FilterPanel extends JPanel {
             cbbPhotos.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.PHOTO));
             cbbDetections.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.DETECTION));
             cbbCluster.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.CLUSTER));
-            cbbNewOsmComparison.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW));
-            cbbChangedOsmComparison.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.CHANGED));
-            cbbUnknownOsmComparison.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN));
-            cbbSameOsmComparison.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME));
-            cbbOpenEditStatus
-            .setSelected(SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OPEN));
-            cbbMappedEditStatus.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.MAPPED));
-            cbbBadSignEditStatus.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.BAD_SIGN));
-            cbbOtherEditStatus.setSelected(
-                    SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OTHER));
+            boolean newOsmComparisonSelected = false;
+            boolean changedOsmComparisonSelected = false;
+            boolean unknownOsmComparisonSelected = false;
+            boolean sameOsmComparisonSelected = false;
+            if (SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons() != null) {
+                newOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW);
+                changedOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.CHANGED);
+                unknownOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN);
+                sameOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME);
+            }
+            cbbNewOsmComparison.setSelected(newOsmComparisonSelected);
+            cbbChangedOsmComparison.setSelected(changedOsmComparisonSelected);
+            cbbUnknownOsmComparison.setSelected(unknownOsmComparisonSelected);
+            cbbSameOsmComparison.setSelected(sameOsmComparisonSelected);
+
+            boolean openEditStatusSelected = false;
+            boolean mappedEditStatusSelected = false;
+            boolean badEditStatusSelected = false;
+            boolean otherEditStatusSelected = false;
+            if (SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses() != null) {
+                openEditStatusSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OPEN);
+                mappedEditStatusSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.MAPPED);
+                badEditStatusSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.BAD_SIGN);
+                otherEditStatusSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses().contains(EditStatus.OTHER);
+            }
+            cbbOpenEditStatus.setSelected(openEditStatusSelected);
+            cbbMappedEditStatus.setSelected(mappedEditStatusSelected);
+            cbbBadSignEditStatus.setSelected(badEditStatusSelected);
+            cbbOtherEditStatus.setSelected(otherEditStatusSelected);
             listSignType.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);

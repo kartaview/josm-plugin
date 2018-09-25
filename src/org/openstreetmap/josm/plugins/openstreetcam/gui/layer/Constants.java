@@ -29,6 +29,7 @@ final class Constants {
     /* constants used for drawing a sequence */
     static final Composite OPAQUE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
     static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.10f);
+
     static final BasicStroke SEQUENCE_LINE = new BasicStroke(2.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     static final BasicStroke CLUSTER_DATA_LINE = new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 

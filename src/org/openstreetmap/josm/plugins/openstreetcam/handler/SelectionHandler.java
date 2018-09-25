@@ -45,7 +45,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler
-        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
+implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -66,7 +66,7 @@ public final class SelectionHandler extends MouseSelectionHandler
 
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                        .loadMapViewSettings().getPhotoZoom()) {
+                .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -217,21 +217,21 @@ public final class SelectionHandler extends MouseSelectionHandler
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                SwingUtilities.invokeLater(() -> {
-                    DataSet.getInstance().setSelectedSequence(sequence);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(
-                            DataSet.getInstance().enablePreviousPhotoAction(),
-                            DataSet.getInstance().enableNextPhotoAction(), null);
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                        SwingUtilities.invokeLater(() -> {
+                            DataSet.getInstance().setSelectedSequence(sequence);
+                            PhotoDetailsDialog.getInstance().enableSequenceActions(
+                                    DataSet.getInstance().enablePreviousPhotoAction(),
+                                    DataSet.getInstance().enableNextPhotoAction(), null);
+                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                            }
+                            OpenStreetCamLayer.getInstance().invalidate();
+                            MainApplication.getMap().repaint();
+                        });
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
-                    MainApplication.getMap().repaint();
-                });
-            }
         });
     }
 

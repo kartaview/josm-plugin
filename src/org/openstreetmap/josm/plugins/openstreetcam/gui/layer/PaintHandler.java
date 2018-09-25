@@ -136,12 +136,12 @@ class PaintHandler {
         graphics.setComposite(composite);
         for (final Cluster cluster : clusters) {
             if (selectedCluster == null || !cluster.equals(selectedCluster)) {
-                drawCluster(graphics, mapView, cluster, false);
+                drawCluster(graphics, mapView, cluster, selectedPhoto, false);
             }
         }
         if (selectedCluster != null) {
             graphics.setComposite(OPAQUE_COMPOSITE);
-            drawCluster(graphics, mapView, selectedCluster, true);
+            drawCluster(graphics, mapView, selectedCluster, selectedPhoto, true);
             if (selectedPhoto != null && selectedDetection != null) {
                 graphics.setComposite(OPAQUE_COMPOSITE);
                 drawPhoto(graphics, mapView, selectedPhoto, true);
@@ -222,7 +222,7 @@ class PaintHandler {
     }
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
-            final boolean isSelected) {
+            final Photo selectedPhoto, final boolean isSelected) {
         Point point = mapView.getPoint(cluster.getPoint());
 
         if (isSelected) {
@@ -240,6 +240,11 @@ class PaintHandler {
             for (final Entry<Photo, List<Detection>> entry : metadata.entrySet()) {
                 // draw line
                 final Point photoPoint = mapView.getPoint(entry.getKey().getPoint());
+                final Composite origComposite = graphics.getComposite();
+                final boolean isPhotoSelected = selectedPhoto != null && selectedPhoto.equals(entry.getKey());
+                final Composite composite =
+                        isPhotoSelected ? Constants.OPAQUE_COMPOSITE : Constants.TRANSPARENT_COMPOSITE;
+                graphics.setComposite(composite);
                 for (final Detection d : entry.getValue()) {
                     final Point detectionPoint = mapView.getPoint(d.getPoint());
                     if (!photoPoint.equals(detectionPoint)) {
@@ -247,8 +252,11 @@ class PaintHandler {
                         PaintManager.drawLine(graphics, lineGeometry);
                     }
                 }
+                graphics.setComposite(origComposite);
                 drawPhoto(graphics, mapView, entry.getKey(), false);
-                drawDetections(graphics, mapView, entry.getValue(), null, false);
+                for (final Detection detection : entry.getValue()) {
+                    drawDetection(graphics, mapView, detection, isPhotoSelected);
+                }
             }
         }
         final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
