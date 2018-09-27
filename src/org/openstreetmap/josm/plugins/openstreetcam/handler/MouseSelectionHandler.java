@@ -72,10 +72,11 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             } else {
                 photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
                 if (photo != null) {
-                    if (DataSet.getInstance().photoBelongsToCluster(photo)) {
+                    if (DataSet.getInstance().photoBelongsToSelectedCluster(photo)) {
+                        final Optional<Detection> clusterDetection = DataSet.getInstance()
+                                .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
+                        detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                         photo = enhanceClusterPhoto(photo, detection);
-                        detection = getClusterDetection(DataSet.getInstance().getSelectedCluster(),
-                                photo.getSequenceId(), photo.getSequenceIndex());
                     } else {
                         enhancePhotoWithDetections(photo);
                         detection = photoSelectedDetection(photo);
@@ -88,12 +89,6 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
     }
 
-    private Detection getClusterDetection(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
-        final Optional<Detection> clusterDetection = cluster != null ? cluster.getDetections().stream()
-                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                .findFirst() : Optional.empty();
-                return clusterDetection.isPresent() ? clusterDetection.get() : null;
-    }
 
     Photo enhanceClusterPhoto(final Photo clusterPhoto, final Detection detection) {
         // special case we need the complete Photo object and part of it needs to be loaded from OSC
@@ -114,16 +109,18 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     private void handleClusterSelection(final Cluster selectedCluster) {
         final Cluster cluster = enhanceCluster(selectedCluster);
-        final Photo clusterPhoto = cluster.getPhotos() != null ? cluster.getPhotos().get(0) : null;
-        Photo photo = null;
-        Detection detection = null;
-        if (clusterPhoto != null) {
-            detection = getClusterDetection(cluster, clusterPhoto.getSequenceId(), clusterPhoto.getSequenceIndex());
-            photo = enhanceClusterPhoto(clusterPhoto, detection);
-        } else if (cluster.getDetections() != null) {
-            detection = cluster.getDetections().get(0);
+
+        // select photo belonging to the first detection
+        final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
+        Photo clusterPhoto = null;
+        if (clusterDetection != null) {
+            final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster, clusterDetection.getSequenceId(),
+                    clusterDetection.getSequenceIndex());
+            if (photo.isPresent()) {
+                clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
+            }
         }
-        handleDataSelection(photo, detection, cluster, true);
+        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
     }
 
     private Cluster enhanceCluster(final Cluster selectedCluster) {
@@ -160,7 +157,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     private Photo loadDetectionPhoto(final Detection detection) {
         final Optional<Photo> dataSetPhoto =
-                DataSet.getInstance().getPhoto(detection.getSequenceId(), detection.getSequenceIndex());
+                DataSet.getInstance().detectionPhoto(detection.getSequenceId(), detection.getSequenceIndex());
         Photo photo;
         if (dataSetPhoto.isPresent()) {
             photo = dataSetPhoto.get();
@@ -168,9 +165,10 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                     detection.getSequenceIndex());
         }
-        final List<Detection> detections = loadPhotoDetections(photo);
-        photo.setDetections(detections);
-        return photo;
+        final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
+                ? Collections.singletonList(detection) : loadPhotoDetections(photo);
+                photo.setDetections(detections);
+                return photo;
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {

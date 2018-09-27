@@ -90,7 +90,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
             }
         } else {
             selectPhoto(photo);
-            if (!DataSet.getInstance().detectionBelongsToCluster(detection)) {
+            if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
                 DetectionDetailsDialog.getInstance().updateClusterDetails(null);
             }
             selectDetection(detection);
@@ -281,8 +281,8 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                     detection = photoSelectedDetection(photo);
                 } else if (DataSet.getInstance().getSelectedCluster() != null) {
                     // special case we need to display information of the already selected cluster
-                    final Optional<Detection> clusterDetection =
-                            DataSet.getInstance().clusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
+                    final Optional<Detection> clusterDetection = DataSet.getInstance()
+                            .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     if (clusterDetection.isPresent()) {
                         detection = clusterDetection.get();
                         photo.setDetections(Collections.singletonList(detection));
@@ -397,12 +397,12 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
 
     @Override
     public void selectPhoto(final boolean isNext) {
-        final Photo clusterPhoto = DataSet.getInstance().clusterPhoto(isNext);
-        final Optional<Detection> clusterDetection =
-                DataSet.getInstance().clusterDetection(clusterPhoto.getSequenceId(), clusterPhoto.getSequenceIndex());
-        final Detection detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
-        final Photo photo = enhanceClusterPhoto(clusterPhoto, detection);
-        DataSet.getInstance().setSelectedDetection(detection);
+        final Detection clusterDetection = DataSet.getInstance().clusterDetection(isNext);
+        final Optional<Photo> clusterPhoto = DataSet.getInstance()
+                .selectedClusterPhoto(clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
+        Photo photo = clusterPhoto.isPresent() ? clusterPhoto.get() : null;
+        photo = enhanceClusterPhoto(photo, clusterDetection);
+        DataSet.getInstance().setSelectedDetection(clusterDetection);
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         selectPhoto(photo, photoType, true);

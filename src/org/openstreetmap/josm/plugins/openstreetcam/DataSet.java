@@ -143,7 +143,7 @@ public final class DataSet {
         if (updateSelection && selectedCluster != null) {
             selectedCluster = clusters != null
                     ? clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null)
-                    : null;
+                            : null;
         }
     }
 
@@ -166,7 +166,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -194,6 +194,33 @@ public final class DataSet {
             photo = Util.nearbyPhoto(photoDataSet.getPhotos(), point);
         }
         return photo;
+    }
+
+    /**
+     * Returns the photos that are either previous/next or close to the selected photo.
+     *
+     * @param prevNextCount the number of previous/next photos to be returned
+     * @param nearbyCount the number of nearby photos to be returned
+     * @return a set of {@code Photo}s
+     */
+    public synchronized Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
+        final Set<Photo> result = new HashSet<>();
+        if (selectedPhoto != null) {
+            for (int i = 1; i <= prevNextCount; i++) {
+                final Photo nextPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() + i);
+                if (nextPhoto != null) {
+                    result.add(nextPhoto);
+                }
+                final Photo prevPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() - i);
+                if (prevPhoto != null) {
+                    result.add(prevPhoto);
+                }
+            }
+            if (photoDataSet != null && photoDataSet.hasItems()) {
+                result.addAll(Util.nearbyPhotos(photoDataSet.getPhotos(), selectedPhoto, nearbyCount));
+            }
+        }
+        return result;
     }
 
     /**
@@ -226,33 +253,6 @@ public final class DataSet {
      */
     public Cluster nearbyCluster(final Point point) {
         return clusters != null ? Util.nearbyCluster(clusters, point) : null;
-    }
-
-    /**
-     * Returns the photos that are either previous/next or close to the selected photo.
-     *
-     * @param prevNextCount the number of previous/next photos to be returned
-     * @param nearbyCount the number of nearby photos to be returned
-     * @return a set of {@code Photo}s
-     */
-    public synchronized Set<Photo> nearbyPhotos(final int prevNextCount, final int nearbyCount) {
-        final Set<Photo> result = new HashSet<>();
-        if (selectedPhoto != null) {
-            for (int i = 1; i <= prevNextCount; i++) {
-                final Photo nextPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() + i);
-                if (nextPhoto != null) {
-                    result.add(nextPhoto);
-                }
-                final Photo prevPhoto = sequencePhoto(selectedPhoto.getSequenceIndex() - i);
-                if (prevPhoto != null) {
-                    result.add(prevPhoto);
-                }
-            }
-            if (photoDataSet != null && photoDataSet.hasItems()) {
-                result.addAll(Util.nearbyPhotos(photoDataSet.getPhotos(), selectedPhoto, nearbyCount));
-            }
-        }
-        return result;
     }
 
     /**
@@ -305,28 +305,28 @@ public final class DataSet {
     }
 
     /**
-     * Returns the next or previous photo belonging to the selected cluster that is relative to the currently selected
-     * cluster photo.
+     * Returns the next or previous detection belonging to the selected cluster that is relative to
+     * the currently selected cluster detection.
      *
-     * @param isNext specifies if the next of previous cluster photo is returned
-     * @return a {@code Photo} object
+     * @param isNext specifies if the next or previous detection is returned
+     * @return a {@code Detection} object
      */
-    public Photo clusterPhoto(final boolean isNext) {
-        Photo photo = null;
-        if (selectedPhoto != null) {
+    public Detection clusterDetection(final boolean isNext) {
+        Detection detection = null;
+        if (selectedDetection != null) {
             int selectedIndex = 0;
-            for (int i = 0; i < selectedCluster.getPhotos().size(); i++) {
-                if (selectedPhoto.equals(selectedCluster.getPhotos().get(i))) {
+            for (int i = 0; i < selectedCluster.getDetections().size(); i++) {
+                if (selectedDetection.equals(selectedCluster.getDetections().get(i))) {
                     selectedIndex = i;
                     break;
                 }
             }
             int index = isNext ? ++selectedIndex : --selectedIndex;
-            index = index > selectedCluster.getPhotos().size() - 1 ? 0
-                    : index < 0 ? selectedCluster.getPhotos().size() - 1 : index;
-            photo = selectedCluster.getPhotos().get(index);
+            index = index > selectedCluster.getDetections().size() - 1 ? 0
+                    : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
+                    detection = selectedCluster.getDetections().get(index);
         }
-        return photo;
+        return detection;
     }
 
     /**
@@ -337,10 +337,37 @@ public final class DataSet {
      * @return an {@code Optional} containing the corresponding detection, if there is no corresponding detection the
      * method returns empty
      */
-    public Optional<Detection> clusterDetection(final Long sequenceId, final Integer sequenceIndex) {
-        return selectedCluster.getDetections().stream()
+    public Optional<Detection> selectedClusterDetection(final Long sequenceId, final Integer sequenceIndex) {
+        return selectedCluster != null ? selectedCluster.getDetections().stream()
                 .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                .findFirst();
+                .findFirst() : Optional.empty();
+    }
+
+    /**
+     * Returns the photo of the selected cluster associated with the given sequence identifier and index.
+     *
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the index of the photo from the sequence to which the detection belongs
+     * @return an {@code Optional} containing the corresponding photo, if there is no corresponding photo the
+     * method returns empty
+     */
+    public Optional<Photo> selectedClusterPhoto(final Long sequenceId, final Integer sequenceIndex) {
+        return clusterPhoto(selectedCluster, sequenceId, sequenceIndex);
+    }
+
+    /**
+     * Returns the photo of the cluster associated with the sequence identifier and index.
+     *
+     * @param cluster a {@code Cluster} object
+     * @param sequenceId the identifier of the sequence
+     * @param sequenceIndex the index of the photo from the sequence to which the detection belongs
+     * @return an {@code Optional} containing the corresponding photo, if there is no corresponding photo the
+     * method returns empty
+     */
+    public Optional<Photo> clusterPhoto(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
+        return cluster != null ? cluster.getPhotos().stream()
+                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
+                .findFirst() : Optional.empty();
     }
 
     /**
@@ -385,16 +412,16 @@ public final class DataSet {
      * @return an {@code Optional} containing the corresponding photo, if there is no corresponding photo the
      * method returns empty
      */
-    public Optional<Photo> getPhoto(final Long sequenceId, final Integer sequenceIndex) {
+    public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-        Optional<Photo> result = Optional.empty();
-        if (photos != null) {
-            result = photos.stream()
-                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
-        }
-        return result;
+                Optional<Photo> result = Optional.empty();
+                if (photos != null) {
+                    result = photos.stream()
+                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                            .findFirst();
+                }
+                return result;
     }
 
     /**
@@ -415,7 +442,7 @@ public final class DataSet {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                        .equals(selectedPhoto.getSequenceIndex());
+                .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -670,15 +697,30 @@ public final class DataSet {
         return selectedDetection != null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean selectedPhotoBelongsToCluster() {
-        return selectedCluster != null && selectedPhoto != null && selectedCluster.getPhotos().contains(selectedPhoto);
+        return photoBelongsToSelectedCluster(selectedPhoto);
     }
 
-    public boolean detectionBelongsToCluster(final Detection detection) {
+    /**
+     *
+     * @param detection
+     * @return
+     */
+    public boolean detectionBelongsToSelectedCluster(final Detection detection) {
         return selectedCluster != null && detection != null && selectedCluster.getDetections().contains(detection);
     }
 
-    public boolean photoBelongsToCluster(final Photo photo) {
+    /**
+     * Checks if the given photo belongs to the selected cluster or not.
+     *
+     * @param photo
+     * @return
+     */
+    public boolean photoBelongsToSelectedCluster(final Photo photo) {
         return selectedCluster != null && selectedCluster.getPhotos() != null
                 && selectedCluster.getPhotos().contains(photo);
     }

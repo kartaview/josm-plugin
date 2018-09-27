@@ -102,6 +102,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         this.clusterObserver.selectPhoto(isNext);
     }
 
+
     /**
      * Selects the next or previous photo belonging to the cluster. The next/previous photo is computed related to the
      * currently selected photo.
