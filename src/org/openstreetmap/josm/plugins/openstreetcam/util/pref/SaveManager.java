@@ -17,7 +17,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_IMAGE_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -52,8 +51,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AggregatedDetectionSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
@@ -218,8 +217,7 @@ final class SaveManager {
         Preferences.main().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
-    void saveAggregatedSettings(final AggregatedDetectionSettings aggregatedSettings){
-        Preferences.main().putBoolean(DISPLAY_IMAGE_LOCATIONS, aggregatedSettings.isDisplayImageLocations());
+    void saveClusterSettings(final ClusterSettings aggregatedSettings) {
         Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());
     }
 

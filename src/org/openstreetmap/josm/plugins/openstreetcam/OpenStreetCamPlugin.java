@@ -336,6 +336,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                     handleMouseHover();
                 } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
                     selectionHandler.changeAutoplayTimerDelay();
+                } else if (prefManager.isDisplayDetectionLocationFlag(event.getKey())) {
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
                 }
             }
         }

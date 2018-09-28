@@ -38,7 +38,6 @@ public final class GuiConfig extends BaseConfig {
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
     private final String prefAggregatedLbl;
-    private final String prefAggregatedDisplayImageLbl;
     private final String prefAggregatedDisplayDetectionLbl;
 
     private final String prefTrackLbl;
@@ -190,7 +189,6 @@ public final class GuiConfig extends BaseConfig {
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
-        prefAggregatedDisplayImageLbl = readProperty("preference.aggregated.image");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
@@ -381,10 +379,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefAggregatedLbl() {
         return prefAggregatedLbl;
-    }
-
-    public String getPrefAggregatedDisplayImageLbl() {
-        return prefAggregatedDisplayImageLbl;
     }
 
     public String getPrefAggregatedDisplayDetectionLbl() {
