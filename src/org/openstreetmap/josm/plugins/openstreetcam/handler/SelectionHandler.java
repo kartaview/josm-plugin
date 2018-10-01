@@ -83,24 +83,24 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
     void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
             final boolean displayLoadingMessage) {
         if (cluster != null) {
-            handleClusterSelection(cluster);
-            handlePhotoSelection(photo);
+            selectCluster(cluster);
+            selectPhoto(photo);
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
             }
         } else {
-            handlePhotoSelection(photo);
+            selectPhoto(photo);
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
                 DetectionDetailsDialog.getInstance().updateClusterDetails(null);
             }
-            handleDetectionSelection(detection);
+            selectDetection(detection);
         }
         OpenStreetCamLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
     }
 
-    private void handlePhotoSelection(final Photo photo) {
+    private void selectPhoto(final Photo photo) {
         if (photo != null) {
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 stopAutoplay();
@@ -117,7 +117,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         DataSet.getInstance().selectNearbyPhotos(photo);
     }
 
-    private void handleDetectionSelection(final Detection detection) {
+    private void selectDetection(final Detection detection) {
         if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
                 && !DataSet.getInstance().selectedPhotoBelongsToCluster())) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
@@ -138,7 +138,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         }
     }
 
-    private void handleClusterSelection(final Cluster cluster) {
+    private void selectCluster(final Cluster cluster) {
         DetectionDetailsDialog.getInstance().updateClusterDetails(cluster);
         DataSet.getInstance().setSelectedCluster(cluster);
         if (cluster != null) {
@@ -412,11 +412,11 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
 
 
     @Override
-    public void selectDetection(final Detection selectedDetection) {
+    public void selectPhotoDetection(final Detection selectedDetection) {
         SwingUtilities.invokeLater(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
-            handleDetectionSelection(detection);
+                    selectDetection(detection);
         });
     }
 }
