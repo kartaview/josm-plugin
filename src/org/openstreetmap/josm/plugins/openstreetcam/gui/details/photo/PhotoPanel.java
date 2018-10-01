@@ -364,7 +364,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
 
     @Override
     public void notifyDetectionSelectionObserver(final Detection detection) {
-        detectionSelectionObserver.selectDetection(detection);
+        detectionSelectionObserver.selectPhotoDetection(detection);
     }
 
 

@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_ICON_VISIBILITY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -23,9 +24,9 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
 import java.util.List;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AggregatedDetectionSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
@@ -187,8 +188,8 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadAggregatedSettings(), loadTrackSettings(),
-                loadCacheSettings());
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadClusterSettings(),
+                loadTrackSettings(), loadCacheSettings());
     }
 
     /**
@@ -217,8 +218,8 @@ public final class PreferenceManager {
         return loadManager.loadPhotoSettings();
     }
 
-    private AggregatedDetectionSettings loadAggregatedSettings() {
-        return loadManager.loadAggregatedSettings();
+    public ClusterSettings loadClusterSettings() {
+        return loadManager.loadClusterSettings();
     }
 
     public SequenceSettings loadTrackSettings() {
@@ -255,7 +256,7 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
-            saveManager.saveAggregatedSettings(preferenceSettings.getAggregatedSettings());
+            saveManager.saveClusterSettings(preferenceSettings.getClusterSettings());
             saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
@@ -334,6 +335,10 @@ public final class PreferenceManager {
 
     private boolean isLayerOpenedFlag(final String key, final String newValue) {
         return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    public boolean isDisplayDetectionLocationFlag(final String key) {
+        return DISPLAY_DETECTION_LOCATIONS.equals(key);
     }
 
     /**
@@ -447,12 +452,13 @@ public final class PreferenceManager {
 
     /**
      * Checks if the currently set search filter is equal with the default search filter.
+     *
      * @return true if the current search filter is the default one.
      */
-    public boolean isSearchFilterDefault(){
+    public boolean isSearchFilterDefault() {
         final SearchFilter currentFilter = loadManager.loadSearchFilter();
         if (currentFilter.getDate() != null && !currentFilter.getDate().equals(SearchFilter.DEFAULT.getDate())) {
-           return false;
+            return false;
         }
         if (currentFilter.isOlnyUserData() != SearchFilter.DEFAULT.isOlnyUserData()) {
             return false;
