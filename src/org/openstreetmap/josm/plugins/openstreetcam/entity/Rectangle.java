@@ -45,7 +45,7 @@ public class Rectangle {
         return point.getX() >= x && point.getX() <= x + width && point.getY() >= y && point.getY() <= y + height;
     }
 
-    public double surface() {
+    public Double surface() {
         return width * height;
     }
 }

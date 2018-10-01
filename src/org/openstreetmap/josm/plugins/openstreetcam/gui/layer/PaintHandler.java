@@ -53,6 +53,35 @@ import com.telenav.josm.common.util.GeometryUtil;
  */
 class PaintHandler {
 
+    /**
+     * Draws a list of segments to the map.
+     *
+     * @param graphics a {@code Graphics2D} used to draw elements to the map
+     * @param mapView a {@code MapView} represents the current map view
+     * @param segments a list of {@code Segment}s
+     */
+    void drawSegments(final Graphics2D graphics, final MapView mapView, final List<Segment> segments) {
+        graphics.setColor(SEGMENT_COLOR);
+        graphics.setStroke(SEGMENT_STROKE);
+        final SortedMap<Integer, Float> transparencyMap = PaintUtil.generateSegmentTransparencyMap(segments);
+        final AlphaComposite originalComposite = (AlphaComposite) graphics.getComposite();
+        for (final Segment segment : segments) {
+            final Float val =
+                    PaintUtil.segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
+            graphics.setComposite(originalComposite.derive(val));
+            PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
+        }
+    }
+
+    /**
+     * Draws a list of photo locations to the map. The photo locations are rotated based on heading if available.
+     *
+     * @param graphics a {@code Graphics2D} used to draw elements to the map
+     * @param mapView a {@code MapView} represents the current map view
+     * @param photos a list of {@code Photo}s
+     * @param selectedPhoto
+     * @param isTransparent
+     */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
             final Photo selectedPhoto, final boolean isTransparent) {
         final Composite composite = isTransparent ? TRANSPARENT_COMPOSITE : graphics.getComposite();
@@ -94,25 +123,7 @@ class PaintHandler {
         }
     }
 
-    /**
-     * Draws a list of segments to the map.
-     *
-     * @param graphics a {@code Graphics2D} used to draw elements to the map
-     * @param mapView a {@code MapView} represents the current map view
-     * @param segments a list of {@code Segment}s
-     */
-    void drawSegments(final Graphics2D graphics, final MapView mapView, final List<Segment> segments) {
-        graphics.setColor(SEGMENT_COLOR);
-        graphics.setStroke(SEGMENT_STROKE);
-        final SortedMap<Integer, Float> transparencyMap = PaintUtil.generateSegmentTransparencyMap(segments);
-        final AlphaComposite originalComposite = (AlphaComposite) graphics.getComposite();
-        for (final Segment segment : segments) {
-            final Float val =
-                    PaintUtil.segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
-            graphics.setComposite(originalComposite.derive(val));
-            PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
-        }
-    }
+
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
             final Detection selectedDetection, final boolean isTransparent) {
@@ -177,29 +188,29 @@ class PaintHandler {
     private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
         final Double length =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-        graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
+                graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
 
-        Photo prevPhoto = sequence.getPhotos().get(0);
-        for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-            final Photo currentPhoto = sequence.getPhotos().get(i);
+                Photo prevPhoto = sequence.getPhotos().get(0);
+                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
+                    final Photo currentPhoto = sequence.getPhotos().get(i);
 
-            // at least one of the photos is in current view draw line
-            if (Util.containsLatLon(mapView, prevPhoto.getPoint())
-                    || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
-                final Pair<Point, Point> lineGeometry =
-                        new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
-                if (length == null) {
-                    PaintManager.drawLine(graphics, lineGeometry);
-                } else {
-                    final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                            getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
-                    PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                    // at least one of the photos is in current view draw line
+                    if (Util.containsLatLon(mapView, prevPhoto.getPoint())
+                            || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
+                        final Pair<Point, Point> lineGeometry =
+                                new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
+                        if (length == null) {
+                            PaintManager.drawLine(graphics, lineGeometry);
+                        } else {
+                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                                    getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
+                            PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+                        }
+                    }
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                    prevPhoto = currentPhoto;
                 }
-            }
-            drawPhoto(graphics, mapView, prevPhoto, false);
-            prevPhoto = currentPhoto;
-        }
-        drawPhoto(graphics, mapView, prevPhoto, false);
+                drawPhoto(graphics, mapView, prevPhoto, false);
     }
 
     private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
@@ -214,7 +225,6 @@ class PaintHandler {
                 new LatLon(arrowEndCoordinates.getSecond().getLat(), arrowEndCoordinates.getSecond().getLon())));
         return new Pair<>(arrowLine1, arrowLine2);
     }
-
 
     private void drawDetection(final Graphics2D graphics, final MapView mapView, final Detection detection,
             final boolean isSelected) {
@@ -242,9 +252,9 @@ class PaintHandler {
         for (final Photo photo : cluster.getPhotos()) {
             final List<Detection> photoDetections =
                     cluster.getDetections().stream()
-                            .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
-                                    && d.getSequenceIndex().equals(photo.getSequenceIndex()))
-                            .collect(Collectors.toList());
+                    .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
+                            && d.getSequenceIndex().equals(photo.getSequenceIndex()))
+                    .collect(Collectors.toList());
             metadata.put(photo, photoDetections);
         }
         graphics.setColor(PaintUtil.lineColor(mapView, Constants.CLUSTER_DATA_LINE_COLOR));
