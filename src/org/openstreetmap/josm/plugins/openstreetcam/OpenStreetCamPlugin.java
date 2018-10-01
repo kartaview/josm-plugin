@@ -40,7 +40,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
@@ -61,7 +60,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObserver, LayerChangeListener,
-LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectionObserver {
+        LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -127,7 +126,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
 
     private void initializePhotoDetailsDialog(final MapFrame mapFrame) {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
-        detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler, this);
+        detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
+                selectionHandler);
         mapFrame.addToggleDialog(detailsDialog, true);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();
@@ -262,19 +262,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             OpenStreetCamLayer.getInstance().invalidate();
             MainApplication.getMap().repaint();
         }
-    }
-
-
-    /* implementation of DetectionSelectionObserver */
-
-    @Override
-    public void selectDetection(final Detection selectedDetection) {
-        SwingUtilities.invokeLater(() -> {
-            DataSet.getInstance().setSelectedDetection(selectedDetection);
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-            PhotoDetailsDialog.getInstance().repaint();
-            OpenStreetCamLayer.getInstance().invalidate();
-        });
     }
 
 
