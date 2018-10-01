@@ -119,7 +119,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
 
     private void selectDetection(final Detection detection) {
         if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
-                && !DataSet.getInstance().selectedPhotoBelongsToCluster())) {
+                && !DataSet.getInstance().selectedPhotoBelongsToSelectedCluster())) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         }
         DataSet.getInstance().setSelectedDetection(detection);

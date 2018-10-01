@@ -143,7 +143,7 @@ public final class DataSet {
         if (updateSelection && selectedCluster != null) {
             selectedCluster = clusters != null
                     ? clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null)
-                            : null;
+                    : null;
         }
     }
 
@@ -166,7 +166,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -324,7 +324,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getDetections().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-                    detection = selectedCluster.getDetections().get(index);
+            detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -415,13 +415,13 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                Optional<Photo> result = Optional.empty();
-                if (photos != null) {
-                    result = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                }
-                return result;
+        Optional<Photo> result = Optional.empty();
+        if (photos != null) {
+            result = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+        }
+        return result;
     }
 
     /**
@@ -442,7 +442,7 @@ public final class DataSet {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex());
+                        .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -698,17 +698,19 @@ public final class DataSet {
     }
 
     /**
+     * Checks if the currently selected photo belongs or not to the selected cluster.
      *
-     * @return
+     * @return boolean
      */
-    public boolean selectedPhotoBelongsToCluster() {
+    public boolean selectedPhotoBelongsToSelectedCluster() {
         return photoBelongsToSelectedCluster(selectedPhoto);
     }
 
     /**
+     * Checks if the given detection belongs to the selected cluster.
      *
-     * @param detection
-     * @return
+     * @param detection a {@code Detection} object
+     * @return boolean
      */
     public boolean detectionBelongsToSelectedCluster(final Detection detection) {
         return selectedCluster != null && detection != null && selectedCluster.getDetections().contains(detection);
@@ -717,8 +719,8 @@ public final class DataSet {
     /**
      * Checks if the given photo belongs to the selected cluster or not.
      *
-     * @param photo
-     * @return
+     * @param photo a {@code Photo} object
+     * @return boolean
      */
     public boolean photoBelongsToSelectedCluster(final Photo photo) {
         return selectedCluster != null && selectedCluster.getPhotos() != null
