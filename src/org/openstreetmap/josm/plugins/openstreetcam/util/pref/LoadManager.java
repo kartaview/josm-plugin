@@ -167,10 +167,12 @@ final class LoadManager {
                 FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
         List<OsmComparison> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
+            list = new ArrayList<>();
             for (final OsmComparisonEntry entry : entries) {
                 list.add(OsmComparison.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
         }
         return list;
     }
@@ -195,10 +197,12 @@ final class LoadManager {
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
         List<EditStatus> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
+            list = new ArrayList<>();
             for (final EditStatusEntry entry : entries) {
                 list.add(EditStatus.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
         }
         return list;
     }
@@ -208,10 +212,13 @@ final class LoadManager {
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, SignTypeEntry.class);
         List<SignType> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = SearchFilter.DEFAULT.getDetectionFilter().getSignTypes();
+            list = new ArrayList<>();
             for (final SignTypeEntry entry : entries) {
+                System.out.println("entry:" + entry);
                 list.add(SignType.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getSignTypes();
         }
         return list;
     }
