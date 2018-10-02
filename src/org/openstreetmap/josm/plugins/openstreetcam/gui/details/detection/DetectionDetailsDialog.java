@@ -159,7 +159,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     @Override
     public void expand() {
         showDialog();
-        if (!getButton().isSelected()) {
+        if (getButton() != null && !getButton().isSelected()) {
             getButton().setSelected(true);
         }
         DetectionDetailsDialog.getInstance().getButton().setSelected(true);
