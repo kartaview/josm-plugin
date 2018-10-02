@@ -38,6 +38,7 @@ public final class Util {
 
     private static final double POZ_DIST_DATA_LAYER = 5.0;
     private static final double POZ_DIST = 10.0;
+    private static final double CLUSTER_POZ_DIST = 14.0;
 
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 22;
@@ -100,13 +101,11 @@ public final class Util {
     }
 
     public static Cluster nearbyCluster(final List<Cluster> clusters, final Point point) {
-        final double maxDist =
-                MainApplication.getLayerManager().getEditLayer() != null ? POZ_DIST_DATA_LAYER : POZ_DIST;
         Cluster result = null;
         for (final Cluster cluster : clusters) {
             final double dist = new Point2D.Double(point.getX(), point.getY())
                     .distance(MainApplication.getMap().mapView.getPoint(cluster.getPoint()));
-            if (dist <= maxDist) {
+            if (dist <= CLUSTER_POZ_DIST) {
                 result = cluster;
                 break;
             }
@@ -200,7 +199,7 @@ public final class Util {
      * @param <T> - The type of the elements contained in the lists
      * @return true if the lists contain the same values or false otherwise
      */
-    public static <T> boolean equalUnorderedPreferenceLists(List<T> one, List<T> two){
+    public static <T> boolean equalUnorderedPreferenceLists(final List<T> one, final List<T> two){
         if ((one == null && two == null) || (one == null && two.isEmpty()) || (two == null && one.isEmpty())) {
             return true;
         }
