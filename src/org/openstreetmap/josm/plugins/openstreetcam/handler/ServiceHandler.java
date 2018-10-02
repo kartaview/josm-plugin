@@ -49,7 +49,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 public final class ServiceHandler extends SearchServiceHandler {
 
     private static final int CLUSTER_THREAD_POOL_SIZE = 3;
-    
+
     private static final ServiceHandler INSTANCE = new ServiceHandler();
 
     public static ServiceHandler getInstance() {
@@ -58,8 +58,8 @@ public final class ServiceHandler extends SearchServiceHandler {
 
     @Override
     public HighZoomResultSet searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
-        return filter != null && filter.getDataTypes() != null ? super.searchHighZoomData(area, filter)
-                : new HighZoomResultSet();
+        return filter != null && filter.getDataTypes() != null && !filter.getDataTypes().isEmpty()
+                ? super.searchHighZoomData(area, filter) : new HighZoomResultSet();
     }
 
     /**

@@ -124,7 +124,7 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
             final boolean updateSelection) {
         this.detections = detections;
-        if (updateSelection && selectedDetection != null) {
+        if (updateSelection && selectedDetection != null && !selectedDetectionBelongsToSelectedCluster()) {
             selectedDetection = detections != null ? detections.stream()
                     .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null) : null;
         }
@@ -140,10 +140,8 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelClusterData(final List<Cluster> clusters,
             final boolean updateSelection) {
         this.clusters = clusters;
-        if (updateSelection && selectedCluster != null) {
-            selectedCluster = clusters != null
-                    ? clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null)
-                    : null;
+        if (updateSelection && selectedCluster != null && clusters != null && !clusters.contains(selectedCluster)) {
+            selectedCluster = null;
         }
     }
 
@@ -157,7 +155,8 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
             final boolean updateSelection) {
         this.photoDataSet = photoDataSet;
-        if (updateSelection && hasSelectedPhoto()) {
+        if (updateSelection && hasSelectedPhoto()
+                && !selectedPhotoBelongsToSelectedCluster()) {
             selectedPhoto = photoDataSet != null ? photoDataSet.getPhotos().stream()
                     .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
         }
@@ -166,7 +165,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -324,7 +323,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getDetections().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-            detection = selectedCluster.getDetections().get(index);
+                    detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -415,13 +414,13 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-        Optional<Photo> result = Optional.empty();
-        if (photos != null) {
-            result = photos.stream()
-                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
-        }
-        return result;
+                Optional<Photo> result = Optional.empty();
+                if (photos != null) {
+                    result = photos.stream()
+                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                            .findFirst();
+                }
+                return result;
     }
 
     /**
@@ -442,7 +441,7 @@ public final class DataSet {
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                        .equals(selectedPhoto.getSequenceIndex());
+                .equals(selectedPhoto.getSequenceIndex());
     }
 
     /**
@@ -697,6 +696,10 @@ public final class DataSet {
         return selectedDetection != null;
     }
 
+    public boolean hasSelectedCluster() {
+        return selectedCluster != null;
+    }
+
     /**
      * Checks if the currently selected photo belongs or not to the selected cluster.
      *
@@ -704,6 +707,10 @@ public final class DataSet {
      */
     public boolean selectedPhotoBelongsToSelectedCluster() {
         return photoBelongsToSelectedCluster(selectedPhoto);
+    }
+
+    private boolean selectedDetectionBelongsToSelectedCluster() {
+        return detectionBelongsToSelectedCluster(selectedDetection);
     }
 
     /**

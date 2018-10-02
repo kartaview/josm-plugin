@@ -124,7 +124,6 @@ class PaintHandler {
     }
 
 
-
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
             final Detection selectedDetection, final boolean isTransparent) {
         final Composite composite = isTransparent ? TRANSPARENT_COMPOSITE : graphics.getComposite();
@@ -238,7 +237,11 @@ class PaintHandler {
         if (isSelected) {
             final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
             if (clusterSettings != null && clusterSettings.isDisplayDetectionLocations()) {
-                drawClusterData(graphics, mapView, cluster, selectedPhoto);
+                if (cluster.getDetections() != null && cluster.getPhotos() != null) {
+                    drawClusterData(graphics, mapView, cluster, selectedPhoto);
+                } else if (cluster.getPhotos() != null) {
+                    drawPhotos(graphics, mapView, cluster.getPhotos(), selectedPhoto, false);
+                }
             } else {
                 drawPhotos(graphics, mapView, cluster.getPhotos(), selectedPhoto, false);
             }
