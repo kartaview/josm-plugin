@@ -272,11 +272,11 @@ class FilterPanel extends JPanel {
             final List<DataType> dataTypes = selectedDataTypes();
             List<EditStatus> editStatuses = new ArrayList<>();
             List<DetectionMode> detectionModes = new ArrayList<>();
-            if (dataTypes.contains(DataType.DETECTION)) {
-                editStatuses = selectedEditStatuses();
-                detectionModes = selectedModes();
-            }
-            searchFilter = new SearchFilter(date, cbbUser.isSelected(), selectedDataTypes(), new DetectionFilter(
+            // if (dataTypes.contains(DataType.DETECTION)) {
+            editStatuses = selectedEditStatuses();
+            detectionModes = selectedModes();
+            // }
+            searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
                     selectedOsmComparisons(), editStatuses, listSignType.getSelectedValuesList(), detectionModes));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());

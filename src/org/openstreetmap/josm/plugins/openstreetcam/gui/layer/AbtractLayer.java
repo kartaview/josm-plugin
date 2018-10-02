@@ -16,10 +16,10 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
 import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-
 
 
 /**
@@ -54,8 +54,8 @@ abstract class AbtractLayer extends Layer {
 
     @Override
     public Icon getIcon() {
-        return PreferenceManager.getInstance().isSearchFilterDefault() ? IconConfig.getInstance().getLayerIcon() :
-                IconConfig.getInstance().getLayerIconFiltered();
+        return SearchFilter.DEFAULT.equals(PreferenceManager.getInstance().loadSearchFilter())
+                ? IconConfig.getInstance().getLayerIcon() : IconConfig.getInstance().getLayerIconFiltered();
     }
 
     @Override

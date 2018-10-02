@@ -138,11 +138,8 @@ final class LoadManager {
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
         List<EditStatus> editStatuses = null;
         final List<SignType> signTypes = loadSignTypeFilter();
-        List<DetectionMode> modes = null;
-        if (dataType.contains(DataType.DETECTION)) {
-            editStatuses = loadEditStatusFilter();
-            modes = loadModes();
-        }
+        final List<DetectionMode> modes = loadModes();
+        editStatuses = loadEditStatusFilter();
         return new SearchFilter(date, onlyUserFlag, dataType,
                 new DetectionFilter(osmComparisons, editStatuses, signTypes, modes));
     }
@@ -185,7 +182,7 @@ final class LoadManager {
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(DetectionMode.values());
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
-            list = new ArrayList<>();
+            list = null;
         } else {
             list = entries.stream().map(entry -> DetectionMode.valueOf(entry.getName())).collect(Collectors.toList());
         }
@@ -245,7 +242,8 @@ final class LoadManager {
 
     SequenceSettings loadTrackSettings() {
         final String displayTrackFlagVal = Preferences.main().get(DISPLAY_TRACK_FLAG);
-        final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
+        final boolean displayTrackFlag =
+                displayTrackFlagVal.isEmpty() ? Boolean.TRUE : Boolean.valueOf(displayTrackFlagVal);
         return new SequenceSettings(displayTrackFlag, loadAutoplaySettings());
     }
 
@@ -270,17 +268,17 @@ final class LoadManager {
 
     boolean loadLayerOpenedFlag() {
         final String layerOpened = Preferences.main().get(LAYER_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
     boolean loadPhotoPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(PHOTO_PANEL_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
     boolean loadDetectionPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(DETECTION_PANEL_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
     MapViewType loadMapViewType() {

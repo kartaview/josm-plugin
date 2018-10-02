@@ -246,7 +246,7 @@ class PaintHandler {
                 drawPhotos(graphics, mapView, cluster.getPhotos(), selectedPhoto, false);
             }
         }
-        drawClusterIcon(graphics, mapView, cluster, selectedPhoto, isSelected);
+        drawClusterIcon(graphics, mapView, cluster, isSelected);
     }
 
     private void drawClusterData(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
@@ -285,7 +285,7 @@ class PaintHandler {
     }
 
     private void drawClusterIcon(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
-            final Photo selectedPhoto, final boolean isSelected) {
+            final boolean isSelected) {
         final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
                 : IconConfig.getInstance().getClusterBackgroundIcon();
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
