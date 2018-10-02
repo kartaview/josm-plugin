@@ -153,7 +153,7 @@ final class LoadManager {
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
         List<DataType> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
-            list = Arrays.asList(DataType.values());
+            list = SearchFilter.DEFAULT.getDataTypes();
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
             list = new ArrayList<>();
         } else {
@@ -167,7 +167,7 @@ final class LoadManager {
                 FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
         List<OsmComparison> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = new ArrayList<>();
+            list = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
             for (final OsmComparisonEntry entry : entries) {
                 list.add(OsmComparison.valueOf(entry.getName()));
             }
@@ -195,7 +195,7 @@ final class LoadManager {
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
         List<EditStatus> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = new ArrayList<>();
+            list = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
             for (final EditStatusEntry entry : entries) {
                 list.add(EditStatus.valueOf(entry.getName()));
             }
@@ -208,7 +208,7 @@ final class LoadManager {
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, SignTypeEntry.class);
         List<SignType> list = null;
         if (entries != null && !entries.isEmpty()) {
-            list = new ArrayList<>();
+            list = SearchFilter.DEFAULT.getDetectionFilter().getSignTypes();
             for (final SignTypeEntry entry : entries) {
                 list.add(SignType.valueOf(entry.getName()));
             }
