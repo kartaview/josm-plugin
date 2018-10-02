@@ -19,7 +19,7 @@ public class PreferenceSettings {
 
     private final MapViewSettings mapViewSettings;
     private final PhotoSettings photoSettings;
-    private final AggregatedDetectionSettings aggregatedSettings;
+    private final ClusterSettings clusterSettings;
     private final SequenceSettings trackSettings;
     private final CacheSettings cacheSettings;
 
@@ -29,16 +29,16 @@ public class PreferenceSettings {
      *
      * @param mapViewSettings specifies the map view user configurable settings
      * @param photoSettings specifies the photo loading user configurable settings
-     * @param aggregatedSettings specifies the selected cluster user configurable settings
+     * @param clusterSettings specifies the selected cluster user configurable settings
      * @param trackSettings specifies the track display user configurable settings
      * @param cacheSettings specifies the cache user configurable settings
      */
     public PreferenceSettings(final MapViewSettings mapViewSettings, final PhotoSettings photoSettings,
-            final AggregatedDetectionSettings aggregatedSettings, final SequenceSettings trackSettings,
+            final ClusterSettings clusterSettings, final SequenceSettings trackSettings,
             final CacheSettings cacheSettings) {
         this.mapViewSettings = mapViewSettings;
         this.photoSettings = photoSettings;
-        this.aggregatedSettings = aggregatedSettings;
+        this.clusterSettings = clusterSettings;
         this.trackSettings = trackSettings;
         this.cacheSettings = cacheSettings;
     }
@@ -52,8 +52,8 @@ public class PreferenceSettings {
         return photoSettings;
     }
 
-    public AggregatedDetectionSettings getAggregatedSettings(){
-        return aggregatedSettings;
+    public ClusterSettings getClusterSettings() {
+        return clusterSettings;
     }
 
     public SequenceSettings getTrackSettings() {

@@ -30,6 +30,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.Detect
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
@@ -44,8 +45,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler
-implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver {
+public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
+SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -118,7 +119,7 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
 
     private void selectDetection(final Detection detection) {
         if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
-                && !DataSet.getInstance().selectedPhotoBelongsToCluster())) {
+                && !DataSet.getInstance().selectedPhotoBelongsToSelectedCluster())) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         }
         DataSet.getInstance().setSelectedDetection(detection);
@@ -407,5 +408,15 @@ implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, Clus
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         selectPhoto(photo, photoType, true);
         DataSet.getInstance().selectNearbyPhotos(photo);
+    }
+
+
+    @Override
+    public void selectPhotoDetection(final Detection selectedDetection) {
+        SwingUtilities.invokeLater(() -> {
+            final Detection detection = selectedDetection != null
+                    ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
+                    selectDetection(detection);
+        });
     }
 }

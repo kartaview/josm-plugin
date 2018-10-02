@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -37,6 +38,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.entity.Coordinate;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.PaintManager;
@@ -51,6 +53,35 @@ import com.telenav.josm.common.util.GeometryUtil;
  */
 class PaintHandler {
 
+    /**
+     * Draws a list of segments to the map.
+     *
+     * @param graphics a {@code Graphics2D} used to draw elements to the map
+     * @param mapView a {@code MapView} represents the current map view
+     * @param segments a list of {@code Segment}s
+     */
+    void drawSegments(final Graphics2D graphics, final MapView mapView, final List<Segment> segments) {
+        graphics.setColor(SEGMENT_COLOR);
+        graphics.setStroke(SEGMENT_STROKE);
+        final SortedMap<Integer, Float> transparencyMap = PaintUtil.generateSegmentTransparencyMap(segments);
+        final AlphaComposite originalComposite = (AlphaComposite) graphics.getComposite();
+        for (final Segment segment : segments) {
+            final Float val =
+                    PaintUtil.segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
+            graphics.setComposite(originalComposite.derive(val));
+            PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
+        }
+    }
+
+    /**
+     * Draws a list of photo locations to the map. The photo locations are rotated based on heading if available.
+     *
+     * @param graphics a {@code Graphics2D} used to draw elements to the map
+     * @param mapView a {@code MapView} represents the current map view
+     * @param photos a list of {@code Photo}s
+     * @param selectedPhoto
+     * @param isTransparent
+     */
     void drawPhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
             final Photo selectedPhoto, final boolean isTransparent) {
         final Composite composite = isTransparent ? TRANSPARENT_COMPOSITE : graphics.getComposite();
@@ -92,25 +123,7 @@ class PaintHandler {
         }
     }
 
-    /**
-     * Draws a list of segments to the map.
-     *
-     * @param graphics a {@code Graphics2D} used to draw elements to the map
-     * @param mapView a {@code MapView} represents the current map view
-     * @param segments a list of {@code Segment}s
-     */
-    void drawSegments(final Graphics2D graphics, final MapView mapView, final List<Segment> segments) {
-        graphics.setColor(SEGMENT_COLOR);
-        graphics.setStroke(SEGMENT_STROKE);
-        final SortedMap<Integer, Float> transparencyMap = PaintUtil.generateSegmentTransparencyMap(segments);
-        final AlphaComposite originalComposite = (AlphaComposite) graphics.getComposite();
-        for (final Segment segment : segments) {
-            final Float val =
-                    PaintUtil.segmentTransparency(transparencyMap, segment.getCoverage(), originalComposite.getAlpha());
-            graphics.setComposite(originalComposite.derive(val));
-            PaintManager.drawSegment(graphics, toPoints(mapView, segment.getGeometry()));
-        }
-    }
+
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
             final Detection selectedDetection, final boolean isTransparent) {
@@ -213,7 +226,6 @@ class PaintHandler {
         return new Pair<>(arrowLine1, arrowLine2);
     }
 
-
     private void drawDetection(final Graphics2D graphics, final MapView mapView, final Detection detection,
             final boolean isSelected) {
         final Point point = mapView.getPoint(detection.getPoint());
@@ -223,58 +235,69 @@ class PaintHandler {
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
             final Photo selectedPhoto, final boolean isSelected) {
-        Point point = mapView.getPoint(cluster.getPoint());
-
         if (isSelected) {
-            final Map<Photo, List<Detection>> metadata = new HashMap<>();
-            for (final Photo photo : cluster.getPhotos()) {
-                final List<Detection> photoDetections =
-                        cluster.getDetections().stream()
-                        .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
-                                && d.getSequenceIndex().equals(photo.getSequenceIndex()))
-                        .collect(Collectors.toList());
-                metadata.put(photo, photoDetections);
-            }
-            graphics.setColor(PaintUtil.lineColor(mapView, Constants.CLUSTER_DATA_LINE_COLOR));
-            graphics.setStroke(Constants.CLUSTER_DATA_LINE);
-            for (final Entry<Photo, List<Detection>> entry : metadata.entrySet()) {
-                // draw line
-                final Point photoPoint = mapView.getPoint(entry.getKey().getPoint());
-                final Composite origComposite = graphics.getComposite();
-                final boolean isPhotoSelected = selectedPhoto != null && selectedPhoto.equals(entry.getKey());
-                final Composite composite =
-                        isPhotoSelected ? Constants.OPAQUE_COMPOSITE : Constants.TRANSPARENT_COMPOSITE;
-                graphics.setComposite(composite);
-                for (final Detection d : entry.getValue()) {
-                    final Point detectionPoint = mapView.getPoint(d.getPoint());
-                    if (!photoPoint.equals(detectionPoint)) {
-                        final Pair<Point, Point> lineGeometry = new Pair<>(photoPoint, detectionPoint);
-                        PaintManager.drawLine(graphics, lineGeometry);
-                    }
-                }
-                graphics.setComposite(origComposite);
-                drawPhoto(graphics, mapView, entry.getKey(), false);
-                for (final Detection detection : entry.getValue()) {
-                    drawDetection(graphics, mapView, detection, isPhotoSelected);
-                }
+            final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
+            if (clusterSettings != null && clusterSettings.isDisplayDetectionLocations()) {
+                drawClusterData(graphics, mapView, cluster, selectedPhoto);
+            } else {
+                drawPhotos(graphics, mapView, cluster.getPhotos(), selectedPhoto, false);
             }
         }
+        drawClusterIcon(graphics, mapView, cluster, selectedPhoto, isSelected);
+    }
+
+    private void drawClusterData(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
+            final Photo selectedPhoto) {
+        final Map<Photo, List<Detection>> metadata = new HashMap<>();
+        for (final Photo photo : cluster.getPhotos()) {
+            final List<Detection> photoDetections =
+                    cluster.getDetections().stream()
+                    .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
+                            && d.getSequenceIndex().equals(photo.getSequenceIndex()))
+                    .collect(Collectors.toList());
+            metadata.put(photo, photoDetections);
+        }
+        graphics.setColor(PaintUtil.lineColor(mapView, Constants.CLUSTER_DATA_LINE_COLOR));
+        graphics.setStroke(Constants.CLUSTER_DATA_LINE);
+        for (final Entry<Photo, List<Detection>> entry : metadata.entrySet()) {
+            // draw line
+            final Point photoPoint = mapView.getPoint(entry.getKey().getPoint());
+            final Composite origComposite = graphics.getComposite();
+            final boolean isPhotoSelected = selectedPhoto != null && selectedPhoto.equals(entry.getKey());
+            final Composite composite = isPhotoSelected ? Constants.OPAQUE_COMPOSITE : Constants.TRANSPARENT_COMPOSITE;
+            graphics.setComposite(composite);
+            for (final Detection d : entry.getValue()) {
+                final Point detectionPoint = mapView.getPoint(d.getPoint());
+                if (!photoPoint.equals(detectionPoint)) {
+                    final Pair<Point, Point> lineGeometry = new Pair<>(photoPoint, detectionPoint);
+                    PaintManager.drawLine(graphics, lineGeometry);
+                }
+            }
+            graphics.setComposite(origComposite);
+            drawPhoto(graphics, mapView, entry.getKey(), false);
+            for (final Detection detection : entry.getValue()) {
+                drawDetection(graphics, mapView, detection, isPhotoSelected);
+            }
+        }
+    }
+
+    private void drawClusterIcon(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
+            final Photo selectedPhoto, final boolean isSelected) {
         final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
                 : IconConfig.getInstance().getClusterBackgroundIcon();
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
         double bearing = 0;
+        final Point point = mapView.getPoint(cluster.getPoint());
         if (cluster.getFacing() != null) {
             bearing = cluster.getFacing();
             PaintManager.drawIcon(graphics, backgroundIcon, point, cluster.getFacing());
         } else {
             PaintManager.drawIcon(graphics, backgroundIcon, point);
         }
-        mapView.getDist100Pixel();
         final Coordinate coord =
                 GeometryUtil.extrapolate(new Coordinate(cluster.getPoint().lat(), cluster.getPoint().lon()), bearing,
                         mapView.getDist100Pixel() * Constants.CLUSTER_EXTRAPOLATE_DISTANCE);
-        point = mapView.getPoint(new LatLon(coord.getLat(), coord.getLon()));
-        PaintManager.drawIcon(graphics, icon, point);
+        PaintManager.drawIcon(graphics, icon, mapView.getPoint(new LatLon(coord.getLat(), coord.getLon())));
     }
 
     private List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {

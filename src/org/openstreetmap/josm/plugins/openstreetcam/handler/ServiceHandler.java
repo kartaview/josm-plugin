@@ -9,7 +9,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,8 +33,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.ApolloService;
-import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamService;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -51,15 +48,9 @@ import com.telenav.josm.common.argument.BoundingBox;
  */
 public final class ServiceHandler extends SearchServiceHandler {
 
+    private static final int CLUSTER_THREAD_POOL_SIZE = 3;
+    
     private static final ServiceHandler INSTANCE = new ServiceHandler();
-    private final OpenStreetCamService openStreetCamService;
-    private final ApolloService apolloService;
-
-
-    private ServiceHandler() {
-        openStreetCamService = new OpenStreetCamService();
-        apolloService = new ApolloService();
-    }
 
     public static ServiceHandler getInstance() {
         return INSTANCE;
@@ -71,9 +62,8 @@ public final class ServiceHandler extends SearchServiceHandler {
                 : new HighZoomResultSet();
     }
 
-
     /**
-     * Retrieves the sequence identified by the given id.
+     * Retrieves the sequence identified by the given identifier.
      *
      * @param sequenceId the identifier of the sequence
      * @return a {@code Sequence} object
@@ -83,35 +73,41 @@ public final class ServiceHandler extends SearchServiceHandler {
         final ExecutorService executorService = Executors.newFixedThreadPool(dataTypes.size());
         final Future<Sequence> sequenceFuture = dataTypes.contains(DataType.PHOTO)
                 ? executorService.submit(() -> retrieveSequencePhotos(sequenceId)) : null;
-                final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
-                        ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
-                        List<Photo> photos = null;
-                        try {
-                            if (sequenceFuture != null) {
-                                final Sequence sequence = sequenceFuture.get();
-                                photos = sequence != null ? sequence.getPhotos() : null;
-                            }
-                        } catch (final Exception ex) {
-                            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-                            }
-                        }
-                        List<Detection> detections = null;
-                        try {
-                            detections = detectionsFuture != null ? detectionsFuture.get() : null;
-                        } catch (final Exception ex) {
-                            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
-                                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
-                            }
-                        }
-                        executorService.shutdown();
-                        return new Sequence(sequenceId, photos, detections);
+        final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
+                ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
+        List<Photo> photos = null;
+        try {
+            if (sequenceFuture != null) {
+                final Sequence sequence = sequenceFuture.get();
+                photos = sequence != null ? sequence.getPhotos() : null;
+            }
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        List<Detection> detections = null;
+        try {
+            detections = detectionsFuture != null ? detectionsFuture.get() : null;
+        } catch (final Exception ex) {
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        executorService.shutdown();
+        return new Sequence(sequenceId, photos, detections);
     }
 
+    /**
+     * Retrieves the details of the cluster identified by the given identifier.
+     *
+     * @param id the identifier of the cluster
+     * @return a {@code Cluster} object.
+     */
     public Cluster retrieveClusterDetails(final Long id) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        final ExecutorService executorService = Executors.newFixedThreadPool(CLUSTER_THREAD_POOL_SIZE);
         final Future<Cluster> clusterFuture = executorService.submit(() -> apolloService.retrieveCluster(id));
         final Future<List<Photo>> photosFuture = executorService.submit(() -> apolloService.retrieveClusterPhotos(id));
         final Future<List<Detection>> detectionsFuture =
@@ -126,7 +122,6 @@ public final class ServiceHandler extends SearchServiceHandler {
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
-
         try {
             clusterBuilder.photos(photosFuture.get());
         } catch (final Exception ex) {
@@ -135,19 +130,10 @@ public final class ServiceHandler extends SearchServiceHandler {
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
-
         try {
             final List<Detection> detections = detectionsFuture.get();
             if (detections != null) {
-                Collections.sort(detections, new Comparator<Detection>() {
-
-                    @Override
-                    public int compare(final Detection d1, final Detection d2) {
-                        final Double sizeD2 = d2.getLocationOnPhoto().surface();
-                        final Double sizeD1 = d1.getLocationOnPhoto().surface();
-                        return sizeD2.compareTo(sizeD1);
-                    }
-                });
+                Collections.sort(detections);
             }
             clusterBuilder.detections(detections);
         } catch (final Exception ex) {
@@ -159,7 +145,6 @@ public final class ServiceHandler extends SearchServiceHandler {
         executorService.shutdown();
         return clusterBuilder.build();
     }
-
 
     private Sequence retrieveSequencePhotos(final Long id) {
         Sequence sequence = null;
@@ -228,7 +213,7 @@ public final class ServiceHandler extends SearchServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                            futures.add(executor.submit(callable));
+                    futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
@@ -302,7 +287,6 @@ public final class ServiceHandler extends SearchServiceHandler {
             }
         }
     }
-
 
     /**
      * Retrieves the detection corresponding to the given identifier.

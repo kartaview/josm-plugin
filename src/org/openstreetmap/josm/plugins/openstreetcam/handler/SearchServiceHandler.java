@@ -33,6 +33,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
+ * Executes the service search operations 
  *
  * @author beataj
  * @version $Revision$
@@ -48,6 +49,14 @@ class SearchServiceHandler {
         apolloService = new ApolloService();
     }
 
+    /**
+     * Searches for data high zoom levels. For high zoom levels depending on the selected filter the following
+     * data types are displayed: photo locations, detections and clusters (aggregated detections).
+     * 
+     * @param area a {@code BoundingBox} represents the search area.
+     * @param filter a {@code SearchFilter} represents the currently selected search filters.
+     * @return a {@code HighZoomResultSet} containing the result
+     */
     HighZoomResultSet searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
         final ExecutorService executorService = Executors.newFixedThreadPool(filter.getDataTypes().size());
         final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO)

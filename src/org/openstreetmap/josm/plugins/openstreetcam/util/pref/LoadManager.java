@@ -17,7 +17,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_IMAGE_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
@@ -53,9 +52,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.AggregatedDetectionSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
@@ -232,10 +231,9 @@ final class LoadManager {
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
-    AggregatedDetectionSettings loadAggregatedSettings() {
-        final boolean displayImageLocations = Preferences.main().getBoolean(DISPLAY_IMAGE_LOCATIONS);
+    ClusterSettings loadClusterSettings() {
         final boolean displayDetectionLocations = Preferences.main().getBoolean(DISPLAY_DETECTION_LOCATIONS);
-        return new AggregatedDetectionSettings(displayImageLocations, displayDetectionLocations);
+        return new ClusterSettings(displayDetectionLocations);
     }
 
     SequenceSettings loadTrackSettings() {
