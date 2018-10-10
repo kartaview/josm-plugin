@@ -32,6 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -302,6 +303,24 @@ public final class ServiceHandler extends SearchServiceHandler {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoLoadingText());
                 PreferenceManager.getInstance().savePhotoDetectionsErrorFlag(flag);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves the full list of possible Sign Objects
+     *
+     * @return a List of Sign objects
+     */
+    public List<Sign> listSigns(){
+        List<Sign> result = null;
+        try {
+            result = apolloService.listSigns();
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadListSignsErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorListSignsText());
+                PreferenceManager.getInstance().saveListSignsErrorSuppressFlag(flag);
             }
         }
         return result;
