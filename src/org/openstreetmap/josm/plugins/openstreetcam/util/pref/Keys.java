@@ -41,7 +41,7 @@ final class Keys {
     static final String FILTER_SEARCH_MODE = "openstreetcam.filter.search.mode";
     static final String FILTER_SEARCH_EDIT_STATUS = "openstreetcam.filter.search.editStatus";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
-    static final String FILTER_SEARCH_SIGN_NAME = "openstreetcam.filter.search.signName";
+    static final String FILTER_SEARCH_SPECIFIC_SIGN = "openstreetcam.filter.search.specificSign";
     static final String FILTER_SEARCH_EMPTY = "EMPTY";
 
     static final String LAYER_OPENED = "openstreetcam.layerOpened";

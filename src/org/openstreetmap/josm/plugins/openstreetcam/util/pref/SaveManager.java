@@ -27,6 +27,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
@@ -46,6 +47,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,13 +64,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignEntry;
 
 
 /**
@@ -118,6 +121,10 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_DETECTION_UPDATE_ERROR, flag);
     }
 
+    void saveListSignErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_LIST_SIGNS_ERROR, flag);
+    }
+
     void saveFiltersChangedFlag(final boolean changed) {
         Preferences.main().put(FILTER_CHANGED, "");
         Preferences.main().put(FILTER_CHANGED, Boolean.toString(changed));
@@ -151,17 +158,20 @@ final class SaveManager {
     private void saveDetectionFilter(final DetectionFilter filter) {
         List<OsmComparison> osmComparions = null;
         List<EditStatus> editStatuses = null;
-        List<SignType> signTypes = null;
+        List<Sign> specificSigns = null;
+        List<String> signTypes = null;
         List<DetectionMode> detectionModes = null;
         if (filter != null) {
             osmComparions = filter.getOsmComparisons();
             editStatuses = filter.getEditStatuses();
+            specificSigns = filter.getSpecificSigns();
             signTypes = filter.getSignTypes();
             detectionModes = filter.getModes();
         }
         saveOsmComparisonFilter(osmComparions);
         saveEditStatusFilter(editStatuses);
-        saveSignTypeFilter(signTypes);
+        saveSignTypeFilter(signTypes, FILTER_SEARCH_SIGN_TYPE);
+        saveSpecificSignsFilter(specificSigns, FILTER_SEARCH_SPECIFIC_SIGN);
         saveModesFilter(detectionModes);
     }
 
@@ -186,14 +196,24 @@ final class SaveManager {
         StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
     }
 
-    private void saveSignTypeFilter(final List<SignType> signTypes) {
+    private void saveSignTypeFilter(final List<String> signs, final String signKey) {
         final List<SignTypeEntry> entries = new ArrayList<>();
-        if (signTypes != null) {
-            for (final SignType signType : signTypes) {
-                entries.add(new SignTypeEntry(signType));
+        if (signs != null) {
+            for (final String sign : signs) {
+                entries.add(new SignTypeEntry(sign));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), signKey, entries, SignTypeEntry.class);
+    }
+
+    private void saveSpecificSignsFilter(final List<Sign> specificSigns, final String signKey) {
+        final List<SignEntry> entries = new ArrayList<>();
+        if (specificSigns != null) {
+            for (final Sign sign : specificSigns) {
+                entries.add(new SignEntry(sign));
+            }
+        }
+        StructUtils.putListOfStructs(Preferences.main(), signKey, entries, SignEntry.class);
     }
 
     private void saveModesFilter(final List<DetectionMode> modes) {

@@ -15,7 +15,6 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -53,9 +52,11 @@ class HttpQueryBuilder {
         query.append(QUESTIONM);
         appendCommonSearchFilters(area, date, osmUserId);
         if (filter != null) {
+            //TODO detection filter might also contain signInternalName. If the whole category was selected, the type is sent as usual
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendEditStatusFilter(filter.getEditStatuses());
-            appendSignTypeFilter(filter.getSignTypes());
+            //TODO apply correct sign filter
+            //appendSignTypeFilter(filter.getSignTypes());
             appendDetectionModeFilter(filter.getModes());
         }
         appendExcludedSignTypeFitler();
@@ -68,7 +69,8 @@ class HttpQueryBuilder {
         appendCommonSearchFilters(area, date, null);
         if (filter != null) {
             appendOsmComparisonFilter(filter.getOsmComparisons());
-            appendSignTypeFilter(filter.getSignTypes());
+            //TODO apply correct sign filter
+            //appendSignTypeFilter(filter.getSigns());
         }
         return build();
     }
@@ -120,6 +122,11 @@ class HttpQueryBuilder {
         return build();
     }
 
+    String buildListSignsQuery(){
+        query.append(RequestConstants.LIST_SIGNS);
+        return build();
+    }
+
     private void appendUserFilter(final Long osmUserId) {
         if (osmUserId != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
@@ -151,7 +158,7 @@ class HttpQueryBuilder {
 
     }
 
-    private void appendSignTypeFilter(final List<SignType> signTypes) {
+    private void appendSignTypeFilter(final List<String> signTypes) {
         if (signTypes != null && !signTypes.isEmpty()) {
             query.append(AND).append(RequestConstants.INCLUDED_SIGN_TYPES).append(EQ)
             .append(HttpUtil.utf8Encode(new HashSet<>(signTypes)));
