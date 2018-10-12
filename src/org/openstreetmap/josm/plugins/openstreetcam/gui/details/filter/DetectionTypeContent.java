@@ -31,4 +31,8 @@ public class DetectionTypeContent {
         return new ArrayList<>(allSigns.keySet());
     }
 
+    Map<String, List<Sign>> getContent() {
+        return allSigns;
+    }
+
 }

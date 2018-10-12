@@ -8,25 +8,12 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -44,6 +31,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
@@ -87,7 +75,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
 
-    private JTable tableSigns;
+    private List<DetectionTypeListItem> detectionTypeComponent;
     private JButton btnSelectSignTypes;
     private JButton btnClearSignTypes;
     private final boolean isHighZoomLevel;
@@ -205,9 +193,17 @@ class FilterPanel extends JPanel {
     private void addDetectionTypeFilter(final DetectionTypeContent detectionTypeContent) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        tableSigns = TableBuilder.build(new DefaultTableModel(), new DefaultTableCellRenderer(), new DefaultTableCellRenderer());
         //TODO create the display component
-        btnSelectSignTypes = ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
+        detectionTypeComponent = new ArrayList<>();
+        Map<String, List<Sign>> allSigns = detectionTypeContent.getContent();
+        allSigns.keySet().stream()
+                .forEach(key -> detectionTypeComponent.add(new DetectionTypeListItem(key, allSigns.get(key))));
+        JPanel base = new JPanel();
+        base.setLayout(new BoxLayout(base, BoxLayout.PAGE_AXIS));
+        detectionTypeComponent.stream().forEach(sign->base.add(sign));
+        add(ContainerBuilder.buildScrollPane(base, getBackground()), Constraints.CBB_SIGN_TYPE);
+        btnSelectSignTypes =
+                ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
         btnClearSignTypes = ButtonBuilder.build(new SignTypesClearAction(), GuiConfig.getInstance().getBtnClearLbl());
         final JPanel pnlButton =
                 ContainerBuilder.buildFlowLayoutPanel(FlowLayout.RIGHT, btnSelectSignTypes, btnClearSignTypes);
@@ -229,7 +225,8 @@ class FilterPanel extends JPanel {
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
-        tableSigns.setEnabled(enableCommonFilters);
+        //TODO enable detection type only when common filter is set
+        //tableSigns.setEnabled(enableCommonFilters);
 
         // detection only filters
         cbbAutomaticMode.setEnabled(enableDetectionFilters);
@@ -432,7 +429,7 @@ class FilterPanel extends JPanel {
         }
 
     }
-//TODO change to new detection type display component
+//TODO change to new detection type display component. These are the select all and clear actions
     private final class SignTypesSelectAction extends AbstractAction {
 
         private static final long serialVersionUID = -7171771571524168530L;
