@@ -8,23 +8,60 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.util.List;
 
 
 class DetectionTypeListItem extends JPanel {
 
-    private JCheckBox selectType;
+    private JCheckBox signType;
     private JList signList;
 
     DetectionTypeListItem(String labelName, List<Sign> signs) {
-        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        selectType = CheckBoxBuilder.build(labelName, Font.PLAIN, null, false);
-        add(selectType);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setAlignmentX(Component.LEFT_ALIGNMENT);
+        signType = CheckBoxBuilder.build(labelName, Font.PLAIN, null, false);
+        signType.setAlignmentX(Component.LEFT_ALIGNMENT);
+        signType.addItemListener((final ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selectAll();
+            } else {
+                clearSelection();
+            }
+        });
+        add(signType);
         signList = ListBuilder.build(signs, null, new DetectionTypeListRenderer(), Font.PLAIN);
         signList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        signList.setVisibleRowCount(2);
+        signList.setAlignmentX(Component.LEFT_ALIGNMENT);
+        int size = signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1;
+        signList.setVisibleRowCount(size);
         add(signList);
-        setAlignmentX(Component.LEFT_ALIGNMENT);
+    }
+
+    private void selectAll() {
+        final int end = signList.getModel().getSize() - 1;
+        signList.setSelectionInterval(0, end);
+    }
+
+    public void clearSelection() {
+        signList.clearSelection();
+    }
+
+    public void setEnabled(final boolean enabled){
+        signType.setEnabled(enabled);
+        signList.setEnabled(enabled);
+    }
+
+    public void setSelected(final boolean selected){
+        signType.setSelected(selected);
+    }
+
+    public boolean isTypeSelected(){
+        return signType.isSelected();
+    }
+
+    public List getSignList(){
+        return signList.getSelectedValuesList();
     }
 
 }

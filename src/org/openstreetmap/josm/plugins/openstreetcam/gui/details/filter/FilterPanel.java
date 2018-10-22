@@ -193,15 +193,14 @@ class FilterPanel extends JPanel {
     private void addDetectionTypeFilter(final DetectionTypeContent detectionTypeContent) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        //TODO create the display component
         detectionTypeComponent = new ArrayList<>();
         Map<String, List<Sign>> allSigns = detectionTypeContent.getContent();
-        allSigns.keySet().stream()
-                .forEach(key -> detectionTypeComponent.add(new DetectionTypeListItem(key, allSigns.get(key))));
-        JPanel base = new JPanel();
-        base.setLayout(new BoxLayout(base, BoxLayout.PAGE_AXIS));
-        detectionTypeComponent.stream().forEach(sign->base.add(sign));
-        add(ContainerBuilder.buildScrollPane(base, getBackground()), Constraints.CBB_SIGN_TYPE);
+        allSigns.keySet().forEach(key -> detectionTypeComponent.add(new DetectionTypeListItem(key, allSigns.get(key))));
+        final JPanel detectionTypes = new JPanel();
+        detectionTypes.setLayout(new BoxLayout(detectionTypes, BoxLayout.Y_AXIS));
+        detectionTypes.setAlignmentX(Component.LEFT_ALIGNMENT);
+        detectionTypeComponent.forEach(detectionTypes::add);
+        add(ContainerBuilder.buildScrollPane(detectionTypes, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
         btnClearSignTypes = ButtonBuilder.build(new SignTypesClearAction(), GuiConfig.getInstance().getBtnClearLbl());
@@ -225,8 +224,9 @@ class FilterPanel extends JPanel {
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
-        //TODO enable detection type only when common filter is set
-        //tableSigns.setEnabled(enableCommonFilters);
+        for (DetectionTypeListItem detectionItem : detectionTypeComponent) {
+            detectionItem.setEnabled(enableCommonFilters);
+        }
 
         // detection only filters
         cbbAutomaticMode.setEnabled(enableDetectionFilters);
@@ -384,8 +384,9 @@ class FilterPanel extends JPanel {
             cbbMappedEditStatus.setSelected(mappedEditStatusSelected);
             cbbBadSignEditStatus.setSelected(badEditStatusSelected);
             cbbOtherEditStatus.setSelected(otherEditStatusSelected);
-            //TODO clear detection type component selection
-            //listSignType.clearSelection();
+            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
+                detectionType.clearSelection();
+            }
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
             enableDetectionFilters(SearchFilter.DEFAULT.getDataTypes());
@@ -429,15 +430,16 @@ class FilterPanel extends JPanel {
         }
 
     }
-//TODO change to new detection type display component. These are the select all and clear actions
+
     private final class SignTypesSelectAction extends AbstractAction {
 
         private static final long serialVersionUID = -7171771571524168530L;
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            /*final int end = listSignType.getModel().getSize() - 1;
-            listSignType.setSelectionInterval(0, end);*/
+            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
+                detectionType.setSelected(true);
+            }
         }
     }
 
@@ -447,7 +449,9 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            //listSignType.clearSelection();
+            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
+                detectionType.setSelected(false);
+            }
         }
     }
 }
