@@ -14,15 +14,12 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
 import com.telenav.josm.common.gui.builder.DatePickerBuilder;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
-import com.telenav.josm.common.gui.builder.TableBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -75,7 +72,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
 
-    private List<DetectionTypeListItem> detectionTypeComponent;
+    private DetectionTypeList detectionTypeList;
     private JButton btnSelectSignTypes;
     private JButton btnClearSignTypes;
     private final boolean isHighZoomLevel;
@@ -85,7 +82,6 @@ class FilterPanel extends JPanel {
         super(new GridBagLayout());
         this.isHighZoomLevel = isHighZoomLevel;
         final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
-        final DetectionTypeContent detectionTypeContent = DetectionTypeContent.getInstance();
         if (isHighZoomLevel) {
             addDataTypeFilter(filter.getDataTypes());
             addUserFilter(filter.isOlnyUserData());
@@ -96,8 +92,7 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            //TODO change detection type filter based on selected type - detections get signs
-            addDetectionTypeFilter(detectionTypeContent);
+            addDetectionTypeFilter();
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
@@ -189,18 +184,12 @@ class FilterPanel extends JPanel {
                 osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
-//TODO make a service call to listSigns and keep them in a hash map. Make sure to only call once. Use the map to populate the JList or JTable accordingly. Ignore BLURRING Type
-    private void addDetectionTypeFilter(final DetectionTypeContent detectionTypeContent) {
+
+    private void addDetectionTypeFilter() {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        detectionTypeComponent = new ArrayList<>();
-        Map<String, List<Sign>> allSigns = detectionTypeContent.getContent();
-        allSigns.keySet().forEach(key -> detectionTypeComponent.add(new DetectionTypeListItem(key, allSigns.get(key))));
-        final JPanel detectionTypes = new JPanel();
-        detectionTypes.setLayout(new BoxLayout(detectionTypes, BoxLayout.Y_AXIS));
-        detectionTypes.setAlignmentX(Component.LEFT_ALIGNMENT);
-        detectionTypeComponent.forEach(detectionTypes::add);
-        add(ContainerBuilder.buildScrollPane(detectionTypes, getBackground()), Constraints.CBB_SIGN_TYPE);
+        detectionTypeList = new DetectionTypeList();
+        add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
         btnClearSignTypes = ButtonBuilder.build(new SignTypesClearAction(), GuiConfig.getInstance().getBtnClearLbl());
@@ -224,9 +213,7 @@ class FilterPanel extends JPanel {
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
-        for (DetectionTypeListItem detectionItem : detectionTypeComponent) {
-            detectionItem.setEnabled(enableCommonFilters);
-        }
+        detectionTypeList.setEnabled(enableCommonFilters);
 
         // detection only filters
         cbbAutomaticMode.setEnabled(enableDetectionFilters);
@@ -266,11 +253,10 @@ class FilterPanel extends JPanel {
             final List<DataType> dataTypes = selectedDataTypes();
             List<EditStatus> editStatuses = selectedEditStatuses();
             List<DetectionMode> detectionModes = selectedModes();
-            List<String> signInternalNames = null;
-            List<String> signTypes = new ArrayList<>();//listSignType != null ? listSignType.getSelectedValuesList() : null;
-            //TODO listSignType might be in a different form for the new case. Take it into account how this will be handled
+            List<String> signTypes = detectionTypeList.getSelectedTypes();
+            List<Sign> signValues = detectionTypeList.getSelectedValues();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
-                    selectedOsmComparisons(), editStatuses, signTypes, null, detectionModes));
+                    selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -384,9 +370,7 @@ class FilterPanel extends JPanel {
             cbbMappedEditStatus.setSelected(mappedEditStatusSelected);
             cbbBadSignEditStatus.setSelected(badEditStatusSelected);
             cbbOtherEditStatus.setSelected(otherEditStatusSelected);
-            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
-                detectionType.clearSelection();
-            }
+            detectionTypeList.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
             enableDetectionFilters(SearchFilter.DEFAULT.getDataTypes());
@@ -437,9 +421,7 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
-                detectionType.setSelected(true);
-            }
+            detectionTypeList.selectAll();
         }
     }
 
@@ -449,9 +431,7 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            for (DetectionTypeListItem detectionType : detectionTypeComponent) {
-                detectionType.setSelected(false);
-            }
+            detectionTypeList.clearSelection();
         }
     }
 }

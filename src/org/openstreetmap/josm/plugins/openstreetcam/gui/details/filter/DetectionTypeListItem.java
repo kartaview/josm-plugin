@@ -43,7 +43,7 @@ class DetectionTypeListItem extends JPanel {
         signList.setSelectionInterval(0, end);
     }
 
-    public void clearSelection() {
+    void clearSelection() {
         signList.clearSelection();
     }
 
@@ -56,11 +56,15 @@ class DetectionTypeListItem extends JPanel {
         signType.setSelected(selected);
     }
 
-    public boolean isTypeSelected(){
+    boolean isTypeSelected(){
         return signType.isSelected();
     }
 
-    public List getSignList(){
+    String getTypeName(){
+        return signType.getName();
+    }
+
+    List getSignList(){
         return signList.getSelectedValuesList();
     }
 

@@ -61,7 +61,7 @@ public class DetectionFilter {
         return specificSigns;
     }
 
-    public List<String> getSelectedSignInternalNames(){
+    List<String> getSignInternalNames(){
         return specificSigns.stream().map(Sign::getInternalName).distinct().collect(Collectors.toList());
     }
 

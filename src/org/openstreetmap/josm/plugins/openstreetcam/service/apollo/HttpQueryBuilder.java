@@ -52,11 +52,10 @@ class HttpQueryBuilder {
         query.append(QUESTIONM);
         appendCommonSearchFilters(area, date, osmUserId);
         if (filter != null) {
-            //TODO detection filter might also contain signInternalName. If the whole category was selected, the type is sent as usual
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendEditStatusFilter(filter.getEditStatuses());
-            //TODO apply correct sign filter
-            //appendSignTypeFilter(filter.getSignTypes());
+            appendSignTypeFilter(filter.getSignTypes());
+            appendSignInternalNameFilter(filter.getSignInternalNames());
             appendDetectionModeFilter(filter.getModes());
         }
         appendExcludedSignTypeFitler();
@@ -69,8 +68,8 @@ class HttpQueryBuilder {
         appendCommonSearchFilters(area, date, null);
         if (filter != null) {
             appendOsmComparisonFilter(filter.getOsmComparisons());
-            //TODO apply correct sign filter
-            //appendSignTypeFilter(filter.getSigns());
+            appendSignTypeFilter(filter.getSignTypes());
+            appendSignInternalNameFilter(filter.getSignInternalNames());
         }
         return build();
     }
@@ -162,6 +161,13 @@ class HttpQueryBuilder {
         if (signTypes != null && !signTypes.isEmpty()) {
             query.append(AND).append(RequestConstants.INCLUDED_SIGN_TYPES).append(EQ)
             .append(HttpUtil.utf8Encode(new HashSet<>(signTypes)));
+        }
+    }
+
+    private void appendSignInternalNameFilter(final List<String> signInternalNames) {
+        if (signInternalNames != null && !signInternalNames.isEmpty()) {
+            query.append(AND).append(RequestConstants.SIGN_INTERNAL_NAMES).append(EQ)
+                    .append(HttpUtil.utf8Encode(new HashSet<>(signInternalNames)));
         }
     }
 

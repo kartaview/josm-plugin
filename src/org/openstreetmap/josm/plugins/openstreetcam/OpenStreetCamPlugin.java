@@ -244,7 +244,6 @@ public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObse
         });
     }
 
-    //TODO handle internal name filter
     private void updateDetection(final Detection detection) {
         final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
         if (!DataSet.getInstance().hasSelectedSequence()
