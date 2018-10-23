@@ -7,20 +7,28 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.util.List;
 
 
+/**
+ * This class maps an element from the detection type component.
+ *
+ * @author laurad
+ */
 class DetectionTypeListItem extends JPanel {
 
     private JCheckBox signType;
     private JList signList;
 
-    DetectionTypeListItem(String labelName, List<Sign> signs) {
+    DetectionTypeListItem(String labelName, final boolean typeSelected, List<Sign> signs, List<Sign> selectedSigns) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setAlignmentX(Component.LEFT_ALIGNMENT);
-        signType = CheckBoxBuilder.build(labelName, Font.PLAIN, null, false);
+
+        signType = CheckBoxBuilder.build(labelName, Font.PLAIN, null, typeSelected);
         signType.setAlignmentX(Component.LEFT_ALIGNMENT);
         signType.addItemListener((final ItemEvent e) -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -30,9 +38,13 @@ class DetectionTypeListItem extends JPanel {
             }
         });
         add(signType);
-        signList = ListBuilder.build(signs, null, new DetectionTypeListRenderer(), Font.PLAIN);
+
+        signList = ListBuilder.build(signs, selectedSigns, new DetectionTypeListRenderer(), Font.PLAIN);
         signList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         signList.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if(typeSelected){
+            selectAll();
+        }
         int size = signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1;
         signList.setVisibleRowCount(size);
         add(signList);
@@ -61,7 +73,7 @@ class DetectionTypeListItem extends JPanel {
     }
 
     String getTypeName(){
-        return signType.getName();
+        return signType.getText();
     }
 
     List getSignList(){
@@ -69,7 +81,6 @@ class DetectionTypeListItem extends JPanel {
     }
 
 }
-
 
 class DetectionTypeListRenderer extends DefaultListCellRenderer {
 

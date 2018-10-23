@@ -3,12 +3,17 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 
+/**
+ * This class retrieves all the signs from the server and stores them in a map using their type as key.
+ * The BLURRING type is ignored.
+ *
+ * @author laurad
+ */
 public class DetectionTypeContent {
 
     private Map<String, List<Sign>> allSigns;
@@ -27,12 +32,7 @@ public class DetectionTypeContent {
         return INSTANCE;
     }
 
-    public List<String> getTypes() {
-        return new ArrayList<>(allSigns.keySet());
-    }
-
     Map<String, List<Sign>> getContent() {
         return allSigns;
     }
-
 }

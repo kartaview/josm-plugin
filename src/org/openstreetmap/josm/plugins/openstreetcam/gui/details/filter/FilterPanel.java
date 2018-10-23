@@ -92,7 +92,7 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            addDetectionTypeFilter();
+            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(), filter.getDetectionFilter().getSpecificSigns());
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
@@ -185,10 +185,10 @@ class FilterPanel extends JPanel {
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
 
-    private void addDetectionTypeFilter() {
+    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        detectionTypeList = new DetectionTypeList();
+        detectionTypeList = new DetectionTypeList(signTypes,specificSigns);
         add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());

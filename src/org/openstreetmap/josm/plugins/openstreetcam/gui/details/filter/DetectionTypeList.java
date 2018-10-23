@@ -10,15 +10,31 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * This class creates the component containing the detection type lists.
+ *
+ * @author laurad
+ */
 public class DetectionTypeList extends JPanel {
 
     private List<DetectionTypeListItem> listItems;
 
-    DetectionTypeList() {
+    DetectionTypeList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns) {
         if (listItems == null) {
             listItems = new ArrayList<>();
             Map<String, List<Sign>> allSigns = DetectionTypeContent.getInstance().getContent();
-            allSigns.keySet().forEach(key -> listItems.add(new DetectionTypeListItem(key, allSigns.get(key))));
+            for (String key : allSigns.keySet()) {
+                boolean typeSelected = false;
+                if(selectedSignTypes != null && !selectedSignTypes.isEmpty()){
+                    typeSelected = selectedSignTypes.contains(key);
+                }
+                List<Sign> selectedSigns = null;
+                if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
+                    selectedSigns = new ArrayList<>(allSigns.get(key));
+                    selectedSigns.retainAll(selectedSpecificSigns);
+                }
+                listItems.add(new DetectionTypeListItem(key, typeSelected, allSigns.get(key), selectedSigns));
+            }
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setAlignmentX(Component.LEFT_ALIGNMENT);
             listItems.forEach(this::add);
