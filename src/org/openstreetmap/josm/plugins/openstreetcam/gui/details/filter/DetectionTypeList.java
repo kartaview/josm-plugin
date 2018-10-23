@@ -4,6 +4,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class DetectionTypeList extends JPanel {
             }
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setAlignmentX(Component.LEFT_ALIGNMENT);
+            setBackground(Color.WHITE);
             listItems.forEach(this::add);
         }
     }

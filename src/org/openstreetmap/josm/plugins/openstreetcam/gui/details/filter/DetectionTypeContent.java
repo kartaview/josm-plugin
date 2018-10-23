@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public class DetectionTypeContent {
             List<Sign> signs = ServiceHandler.getInstance().listSigns();
             allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
             allSigns.remove(BLURRING_TYPE);
+            //add all icons to hash so they do not cause delay on request while the plugin is running
+            signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign,false));
         }
     }
 

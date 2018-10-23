@@ -7,6 +7,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,20 +23,27 @@ import java.util.List;
  */
 class DetectionTypeListItem extends JPanel {
 
-    private JCheckBox signType;
-    private JList signList;
+    private final JCheckBox signType;
+    private final JList signList;
+    private boolean ignoreCheckboxSelection = false;
 
     DetectionTypeListItem(String labelName, final boolean typeSelected, List<Sign> signs, List<Sign> selectedSigns) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        signType = CheckBoxBuilder.build(labelName, Font.PLAIN, null, typeSelected);
+        String prettyName = labelName.replace("_", " ");
+        signType = CheckBoxBuilder.build(prettyName, Font.PLAIN, Color.WHITE, typeSelected);
         signType.setAlignmentX(Component.LEFT_ALIGNMENT);
+        signType.setName(labelName);
         signType.addItemListener((final ItemEvent e) -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 selectAll();
             } else {
-                clearSelection();
+                if (ignoreCheckboxSelection) {
+                    ignoreCheckboxSelection = false;
+                } else {
+                    clearSelection();
+                }
             }
         });
         add(signType);
@@ -42,12 +51,21 @@ class DetectionTypeListItem extends JPanel {
         signList = ListBuilder.build(signs, selectedSigns, new DetectionTypeListRenderer(), Font.PLAIN);
         signList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         signList.setAlignmentX(Component.LEFT_ALIGNMENT);
-        if(typeSelected){
+        if (typeSelected) {
             selectAll();
         }
-        int size = signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1;
+        int size = signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1; //TODO calculate size based on width
         signList.setVisibleRowCount(size);
+        ListSelectionModel listSelectionModel = signList.getSelectionModel();
+        listSelectionModel.addListSelectionListener((final ListSelectionEvent e) -> {
+            if (getSignList().size() != signs.size()) {
+                ignoreCheckboxSelection = true;
+                signType.setSelected(false);
+            }
+
+        });
         add(signList);
+        setBackground(Color.WHITE);
     }
 
     private void selectAll() {
@@ -59,28 +77,29 @@ class DetectionTypeListItem extends JPanel {
         signList.clearSelection();
     }
 
-    public void setEnabled(final boolean enabled){
+    public void setEnabled(final boolean enabled) {
         signType.setEnabled(enabled);
         signList.setEnabled(enabled);
     }
 
-    public void setSelected(final boolean selected){
+    public void setSelected(final boolean selected) {
         signType.setSelected(selected);
     }
 
-    boolean isTypeSelected(){
+    boolean isTypeSelected() {
         return signType.isSelected();
     }
 
-    String getTypeName(){
-        return signType.getText();
+    String getTypeName() {
+        return signType.getName();
     }
 
-    List getSignList(){
+    List getSignList() {
         return signList.getSelectedValuesList();
     }
 
 }
+
 
 class DetectionTypeListRenderer extends DefaultListCellRenderer {
 
