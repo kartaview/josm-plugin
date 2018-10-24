@@ -170,8 +170,8 @@ final class SaveManager {
         }
         saveOsmComparisonFilter(osmComparions);
         saveEditStatusFilter(editStatuses);
-        saveSignTypeFilter(signTypes, FILTER_SEARCH_SIGN_TYPE);
-        saveSpecificSignsFilter(specificSigns, FILTER_SEARCH_SPECIFIC_SIGN);
+        saveSignTypeFilter(signTypes);
+        saveSpecificSignsFilter(specificSigns);
         saveModesFilter(detectionModes);
     }
 
@@ -196,24 +196,24 @@ final class SaveManager {
         StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
     }
 
-    private void saveSignTypeFilter(final List<String> signs, final String signKey) {
+    private void saveSignTypeFilter(final List<String> signTypes) {
         final List<SignTypeEntry> entries = new ArrayList<>();
-        if (signs != null) {
-            for (final String sign : signs) {
+        if (signTypes != null) {
+            for (final String sign : signTypes) {
                 entries.add(new SignTypeEntry(sign));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), signKey, entries, SignTypeEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
     }
 
-    private void saveSpecificSignsFilter(final List<Sign> specificSigns, final String signKey) {
+    private void saveSpecificSignsFilter(final List<Sign> specificSigns) {
         final List<SignEntry> entries = new ArrayList<>();
         if (specificSigns != null) {
             for (final Sign sign : specificSigns) {
                 entries.add(new SignEntry(sign));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), signKey, entries, SignEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SPECIFIC_SIGN, entries, SignEntry.class);
     }
 
     private void saveModesFilter(final List<DetectionMode> modes) {

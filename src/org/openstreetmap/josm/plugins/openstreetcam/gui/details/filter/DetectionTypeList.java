@@ -51,14 +51,13 @@ public class DetectionTypeList extends JPanel {
 
     void clearSelection() {
         for (DetectionTypeListItem detectionItem : listItems) {
-            detectionItem.setSelected(false);
             detectionItem.clearSelection();
         }
     }
 
     void selectAll() {
         for (DetectionTypeListItem detectionItem : listItems) {
-            detectionItem.setSelected(true);
+            detectionItem.selectAll();
         }
     }
 

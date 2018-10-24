@@ -21,7 +21,6 @@ public class SignEntry {
     public SignEntry() {
     }
 
-
     public SignEntry(final Sign sign) {
         this.name = sign.getName();
         this.internalName = sign.getInternalName();

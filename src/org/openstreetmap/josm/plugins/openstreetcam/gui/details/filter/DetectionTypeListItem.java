@@ -6,13 +6,19 @@ import com.telenav.josm.common.gui.builder.ListBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ItemEvent;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 
@@ -25,25 +31,21 @@ class DetectionTypeListItem extends JPanel {
 
     private final JCheckBox signType;
     private final JList signList;
-    private boolean ignoreCheckboxSelection = false;
 
     DetectionTypeListItem(String labelName, final boolean typeSelected, List<Sign> signs, List<Sign> selectedSigns) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setAlignmentX(Component.LEFT_ALIGNMENT);
+        setBackground(Color.WHITE);
 
         String prettyName = labelName.replace("_", " ");
         signType = CheckBoxBuilder.build(prettyName, Font.PLAIN, Color.WHITE, typeSelected);
         signType.setAlignmentX(Component.LEFT_ALIGNMENT);
         signType.setName(labelName);
-        signType.addItemListener((final ItemEvent e) -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
+        signType.addActionListener((final ActionEvent e) -> {
+            if (signType.isSelected()) {
                 selectAll();
             } else {
-                if (ignoreCheckboxSelection) {
-                    ignoreCheckboxSelection = false;
-                } else {
-                    clearSelection();
-                }
+                clearSelection();
             }
         });
         add(signType);
@@ -59,31 +61,28 @@ class DetectionTypeListItem extends JPanel {
         ListSelectionModel listSelectionModel = signList.getSelectionModel();
         listSelectionModel.addListSelectionListener((final ListSelectionEvent e) -> {
             if (getSignList().size() != signs.size()) {
-                ignoreCheckboxSelection = true;
                 signType.setSelected(false);
+            }else{
+                signType.setSelected(true);
             }
 
         });
         add(signList);
-        setBackground(Color.WHITE);
     }
 
-    private void selectAll() {
+    void selectAll() {
         final int end = signList.getModel().getSize() - 1;
         signList.setSelectionInterval(0, end);
     }
 
     void clearSelection() {
+        signType.setSelected(false);
         signList.clearSelection();
     }
 
     public void setEnabled(final boolean enabled) {
         signType.setEnabled(enabled);
         signList.setEnabled(enabled);
-    }
-
-    public void setSelected(final boolean selected) {
-        signType.setSelected(selected);
     }
 
     boolean isTypeSelected() {

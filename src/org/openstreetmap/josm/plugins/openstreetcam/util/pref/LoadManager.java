@@ -143,11 +143,10 @@ final class LoadManager {
         final List<DataType> dataType = loadDataTypeFilter();
 
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
-        List<EditStatus> editStatuses;
+        List<EditStatus> editStatuses = loadEditStatusFilter();
         final List<Sign> signInternalNames = loadSpecificSignFilter();
         final List<String> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();
-        editStatuses = loadEditStatusFilter();
         return new SearchFilter(date, onlyUserFlag, dataType,
                 new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes));
     }

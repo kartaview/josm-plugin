@@ -8,12 +8,24 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
@@ -211,9 +223,9 @@ class FilterPanel extends JPanel {
         cbbChangedOsmComparison.setEnabled(enableCommonFilters);
         cbbUnknownOsmComparison.setEnabled(enableCommonFilters);
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
+        detectionTypeList.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
-        detectionTypeList.setEnabled(enableCommonFilters);
 
         // detection only filters
         cbbAutomaticMode.setEnabled(enableDetectionFilters);
@@ -222,7 +234,6 @@ class FilterPanel extends JPanel {
         cbbMappedEditStatus.setEnabled(enableDetectionFilters);
         cbbBadSignEditStatus.setEnabled(enableDetectionFilters);
         cbbOtherEditStatus.setEnabled(enableDetectionFilters);
-
     }
 
 
