@@ -1,14 +1,13 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
-
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 
 
 /**
@@ -16,15 +15,16 @@ import java.util.Map;
  *
  * @author laurad
  */
-public class DetectionTypeList extends JPanel {
+class DetectionTypeList extends JPanel {
 
+    private static final long serialVersionUID = 212486274590615046L;
     private List<DetectionTypeListItem> listItems;
 
     DetectionTypeList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns) {
         if (listItems == null) {
             listItems = new ArrayList<>();
-            Map<String, List<Sign>> allSigns = DetectionTypeContent.getInstance().getContent();
-            for (String key : allSigns.keySet()) {
+            final Map<String, List<Sign>> allSigns = DetectionTypeContent.getInstance().getContent();
+            for (final String key : allSigns.keySet()) {
                 boolean typeSelected = false;
                 if(selectedSignTypes != null && !selectedSignTypes.isEmpty()){
                     typeSelected = selectedSignTypes.contains(key);
@@ -43,27 +43,28 @@ public class DetectionTypeList extends JPanel {
         }
     }
 
+    @Override
     public void setEnabled(final boolean enabled) {
-        for (DetectionTypeListItem detectionItem : listItems) {
+        for (final DetectionTypeListItem detectionItem : listItems) {
             detectionItem.setEnabled(enabled);
         }
     }
 
     void clearSelection() {
-        for (DetectionTypeListItem detectionItem : listItems) {
+        for (final DetectionTypeListItem detectionItem : listItems) {
             detectionItem.clearSelection();
         }
     }
 
     void selectAll() {
-        for (DetectionTypeListItem detectionItem : listItems) {
+        for (final DetectionTypeListItem detectionItem : listItems) {
             detectionItem.selectAll();
         }
     }
 
     List<String> getSelectedTypes() {
-        List<String> selectedTypes = new ArrayList<>();
-        for (DetectionTypeListItem detectionItem : listItems) {
+        final List<String> selectedTypes = new ArrayList<>();
+        for (final DetectionTypeListItem detectionItem : listItems) {
             if (detectionItem.isTypeSelected()) {
                 selectedTypes.add(detectionItem.getTypeName());
             }
@@ -72,8 +73,8 @@ public class DetectionTypeList extends JPanel {
     }
 
     List<Sign> getSelectedValues() {
-        List<Sign> selectedValues = new ArrayList<>();
-        for (DetectionTypeListItem detectionItem : listItems) {
+        final List<Sign> selectedValues = new ArrayList<>();
+        for (final DetectionTypeListItem detectionItem : listItems) {
             if (!detectionItem.isTypeSelected()) {
                 selectedValues.addAll(detectionItem.getSignList());
             }
