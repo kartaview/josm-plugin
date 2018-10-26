@@ -8,7 +8,9 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity;
 
 import java.util.List;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import com.telenav.josm.common.entity.Status;
 
@@ -22,7 +24,11 @@ public class Response extends BaseResponse {
 
     // setters and constructors are not required,since GSON sets the fields directly using reflection.
     private Detection detection;
+    private Cluster cluster;
     private List<Detection> detections;
+    private List<Cluster> clusters;
+    private List<Photo> photos;
+
 
     public Response(final Status status) {
         super(status);
@@ -32,7 +38,19 @@ public class Response extends BaseResponse {
         return detections;
     }
 
+    public Cluster getCluster() {
+        return cluster;
+    }
+
     public Detection getDetection() {
         return detection;
+    }
+
+    public List<Cluster> getClusters() {
+        return clusters;
+    }
+
+    public List<Photo> getPhotos() {
+        return photos;
     }
 }

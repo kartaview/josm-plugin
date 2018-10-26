@@ -29,6 +29,8 @@ public interface DetectionSelectionObservable {
 
     /**
      * Notifies the observers entity when a detection is selected.
+     *
+     * @param detection the {@code Detection} to be selected
      */
     void notifyDetectionSelectionObserver(final Detection detection);
 }

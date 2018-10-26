@@ -8,7 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.observer;
 
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 
 
 /**
@@ -22,12 +22,12 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
  * @author beataj
  * @version $Revision$
  */
-public interface DataTypeChangeObserver {
+public interface MapViewTypeChangeObserver {
 
     /**
      * Updates the map view with the given data type.
      *
-     * @param dataType the new {@code DataType} that will be displayed
+     * @param mapViewType the new {@code MapViewType} that will be displayed
      */
-    void update(DataType dataType);
+    void update(MapViewType mapViewType);
 }

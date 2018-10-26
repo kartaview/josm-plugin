@@ -24,6 +24,9 @@ public final class IconConfig extends BaseConfig {
 
     private static final IconConfig INSTANCE = new IconConfig();
     private static final String CONFIG_FILE = "openstreetcam_icon.properties";
+    private static final int CLUSTER_BACKGROUND_SIZE = 42;
+    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 55;
+
 
     private final String pluginIconName;
     private final String dialogShortcutName;
@@ -33,6 +36,7 @@ public final class IconConfig extends BaseConfig {
     private final String downloadIconName;
     private final String saveIconName;
     private final Icon layerIcon;
+    private final Icon layerIconFiltered;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
     private final ImageIcon photoNoHeadingIcon;
@@ -52,6 +56,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
+    private final ImageIcon clusterBackgroundIcon;
+    private final ImageIcon clusterBackgroundSelectedIcon;
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
@@ -68,6 +74,7 @@ public final class IconConfig extends BaseConfig {
         downloadIconName = readProperty("download.icon");
         saveIconName = readProperty("save.icon");
         layerIcon = ImageProvider.get(layerIconName);
+        layerIconFiltered = ImageProvider.get(readProperty("layer.icon.filtered"));
         photoIcon = ImageProvider.get(readProperty("photo.icon"));
         photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
         photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
@@ -87,6 +94,11 @@ public final class IconConfig extends BaseConfig {
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
+        final ImageProvider imageProvider = new ImageProvider(readProperty("cluster.background.icon"));
+        imageProvider.setSize(CLUSTER_BACKGROUND_SIZE, CLUSTER_BACKGROUND_SIZE);
+        clusterBackgroundIcon = imageProvider.get();
+        imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
+        clusterBackgroundSelectedIcon = imageProvider.get();
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
@@ -129,6 +141,10 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getLayerIcon() {
         return layerIcon;
+    }
+
+    public Icon getLayerIconFiltered(){
+        return layerIconFiltered;
     }
 
     public ImageIcon getPhotoIcon() {
@@ -205,6 +221,14 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getDownloadIcon() {
         return downloadIcon;
+    }
+
+    public ImageIcon getClusterBackgroundIcon() {
+        return clusterBackgroundIcon;
+    }
+
+    public ImageIcon getClusterBackgroundSelectedIcon() {
+        return clusterBackgroundSelectedIcon;
     }
 
     public String getPreferenceIconName() {

@@ -27,6 +27,7 @@ public enum DetectionIconFactory {
 
     INSTANCE;
 
+    private static final String DELIMITER = "/";
     private static final String UNKNOWN_ICON_NAME = "unknown.png";
     private static final String SIGN_POST_TYPE = "SIGN_POST";
     private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1.svg";
@@ -45,12 +46,12 @@ public enum DetectionIconFactory {
     }
 
     private ImageIcon loadIcon(final String name, final ImageSizes size) {
-        final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + "/" + name;
+        final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + DELIMITER + name;
         ImageIcon icon = null;
         try {
             icon = ImageProvider.get(iconPath, size);
         } catch (final JosmRuntimeException ex) {
-            final String defaultIcon = IconConfig.getInstance().getDetectionIconsPath() + "/" + UNKNOWN_ICON_NAME;
+            final String defaultIcon = IconConfig.getInstance().getDetectionIconsPath() + DELIMITER + UNKNOWN_ICON_NAME;
             icon = ImageProvider.get(defaultIcon, size);
         }
         return icon;

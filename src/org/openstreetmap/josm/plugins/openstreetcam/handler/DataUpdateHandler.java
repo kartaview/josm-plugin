@@ -14,11 +14,11 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
@@ -28,7 +28,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.entity.Pair;
 
 
 /**
@@ -43,16 +42,21 @@ public class DataUpdateHandler {
      * Updates the current map view with new data. The data type displayed depends on the current zoom level. Segments
      * that have OpenStreetCam coverage are displayed in the following cases:
      * <ul>
-     * <li>current zoom level>=minimum map data zoom (~10) and current zoom level < default photo location zoom</li>
-     * <li>current zoom level>=minimum map data zoom (~10) and user enabled manual data switch and zoom level <=minimum
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and current zoom level less than the
+     * default photo
+     * location zoom</li>
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
+     * and zoom level less or equals than the minimum
      * photo location zoom</li>
-     * <li>current zoom level>=minimum map data zoom (~10) and user enabled manual data switch and had switched to
+     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
+     * and had switched to
      * segment view</li>
      * </ul>
      * Photo locations and/or detections are displayed in the following cases:
      * <ul>
-     * <li>current zoom level >= default photo zoom level</li>
-     * <li>current zoom level >= default photo zoom level and user had enabled manual data switch and had switched to
+     * <li>current zoom level grater or equals to the default photo zoom level</li>
+     * <li>current zoom level grater or equals to the default photo zoom level and user had enabled manual data switch
+     * and had switched to
      * photo location view</li>
      * <li>a track is displayed (we displayed photo and detection locations near the a track)</li>
      * </ul>
@@ -84,7 +88,7 @@ public class DataUpdateHandler {
 
     private void manualSwitchFlow(final MapViewSettings mapViewSettings, final int zoom, final boolean checkSelection,
             final boolean boundingBoxChanged) {
-        final DataType dataType = PreferenceManager.getInstance().loadDataType();
+        final MapViewType dataType = PreferenceManager.getInstance().loadMapViewType();
 
         // enable switch button based on zoom level
         SwingUtilities.invokeLater(() -> {
@@ -93,13 +97,13 @@ public class DataUpdateHandler {
         });
 
         if (zoom < Config.getInstance().getMapPhotoZoom()) {
-            if (dataType == DataType.PHOTO) {
+            if (dataType == MapViewType.ELEMENT) {
                 // user zoomed out to segment view
-                PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
+                PreferenceManager.getInstance().saveMapViewType(MapViewType.COVERAGE);
             }
             updateLowZoomLevelData(mapViewSettings, zoom);
         } else {
-            if (dataType == DataType.PHOTO) {
+            if (dataType == MapViewType.ELEMENT) {
                 updateHighZoomLevelData(mapViewSettings, checkSelection, boundingBoxChanged);
             } else {
                 updateLowZoomLevelData(mapViewSettings, zoom);
@@ -109,17 +113,17 @@ public class DataUpdateHandler {
 
     private void normalFlow(final MapViewSettings mapViewSettings, final int zoom, final boolean checkSelection,
             final boolean boundingBoxChanged) {
-        final DataType dataType = PreferenceManager.getInstance().loadDataType();
+        final MapViewType dataType = PreferenceManager.getInstance().loadMapViewType();
         if (zoom < mapViewSettings.getPhotoZoom()) {
-            if (dataType == null || dataType == DataType.PHOTO) {
+            if (dataType == null || dataType == MapViewType.ELEMENT) {
                 // user zoomed out to segment view
-                PreferenceManager.getInstance().saveDataType(DataType.SEGMENT);
+                PreferenceManager.getInstance().saveMapViewType(MapViewType.COVERAGE);
             }
             updateLowZoomLevelData(mapViewSettings, zoom);
         } else if (zoom >= mapViewSettings.getPhotoZoom()) {
-            if (dataType == null || dataType == DataType.SEGMENT) {
+            if (dataType == null || dataType == MapViewType.COVERAGE) {
                 // user zoomed in to photo view
-                PreferenceManager.getInstance().saveDataType(DataType.PHOTO);
+                PreferenceManager.getInstance().saveMapViewType(MapViewType.ELEMENT);
             }
             updateHighZoomLevelData(mapViewSettings, checkSelection, boundingBoxChanged);
         }
@@ -133,7 +137,7 @@ public class DataUpdateHandler {
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(DataType.SEGMENT, null, null);
+                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.COVERAGE, null, null);
                 }
                 OpenStreetCamLayer.getInstance().enablePhotoDataSetDownloadActions();
                 OpenStreetCamLayer.getInstance().invalidate();
@@ -145,7 +149,7 @@ public class DataUpdateHandler {
         if (!areas.isEmpty()) {
             final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, searchFilter, zoom);
-            if (DataType.SEGMENT.equals(PreferenceManager.getInstance().loadDataType())
+            if (MapViewType.COVERAGE.equals(PreferenceManager.getInstance().loadMapViewType())
                     && (MainApplication.getMap() != null && MainApplication.getMap().mapView != null)) {
                 SwingUtilities.invokeLater(() -> {
                     DataSet.getInstance().updateLowZoomLevelData(segments);
@@ -163,7 +167,7 @@ public class DataUpdateHandler {
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().clear();
                 if (mapViewSettings.isManualSwitchFlag()) {
-                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(DataType.PHOTO, null, null);
+                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.ELEMENT, null, null);
                 }
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
@@ -173,22 +177,21 @@ public class DataUpdateHandler {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
         if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-            searchFilter.getDataTypes().remove(ImageDataType.PHOTOS);
+            searchFilter.getDataTypes().remove(DataType.PHOTO);
         }
-        final Pair<PhotoDataSet, List<Detection>> dataSet =
-                ServiceHandler.getInstance().searchHighZoomData(bbox, searchFilter);
-        if (DataType.PHOTO.equals(PreferenceManager.getInstance().loadDataType())) {
-            updateUI(dataSet.getFirst(), dataSet.getSecond(), checkSelection);
+        final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(bbox, searchFilter);
+        if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
+            updateUI(resultSet, checkSelection);
         }
     }
 
-    private void updateUI(final PhotoDataSet photoDataSet, final List<Detection> detections,
-            final boolean checkSelection) {
+    private void updateUI(final HighZoomResultSet resultSet, final boolean checkSelection) {
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
-                DataSet.getInstance().updateHighZoomLevelDetectionData(detections, checkSelection);
+                DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
+                DataSet.getInstance().updateHighZoomLevelClusterData(resultSet.getClusters(), checkSelection);
                 if (!PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-                    DataSet.getInstance().updateHighZoomLevelPhotoData(photoDataSet, checkSelection);
+                    DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
                 }
                 updateSelection(checkSelection);
                 if (DataSet.getInstance().hasNearbyPhotos()

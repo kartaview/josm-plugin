@@ -41,7 +41,7 @@ import com.telenav.josm.common.gui.builder.TextComponentBuilder;
  * @author ioanao
  * @version $Revision$
  */
-class EditDialog extends ModalDialog implements DetectionChangeObservable {
+class CommentDialog extends ModalDialog implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6452018453545899786L;
     private static final Dimension DIM = new Dimension(300, 200);
@@ -52,7 +52,7 @@ class EditDialog extends ModalDialog implements DetectionChangeObservable {
     private DetectionChangeObserver observer;
 
 
-    EditDialog(final String title) {
+    CommentDialog(final String title) {
         super(title, null, GuiSizesHelper.getDimensionDpiAdjusted(DIM));
         setLocationRelativeTo(MainApplication.getMap().mapView);
         createComponents();

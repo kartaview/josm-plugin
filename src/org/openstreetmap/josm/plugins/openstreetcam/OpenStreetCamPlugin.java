@@ -27,7 +27,7 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -39,10 +39,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEd
 import org.openstreetmap.josm.plugins.openstreetcam.handler.DataUpdateHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -60,8 +59,8 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamPlugin extends Plugin implements DataTypeChangeObserver, LayerChangeListener,
-LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectionObserver {
+public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObserver, LayerChangeListener,
+        LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -107,13 +106,13 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
                 addLayer();
             }
-
             Preferences.main().addPreferenceChangeListener(preferenceChangedHandler);
         }
 
         if (oldMapFrame != null && newMapFrame == null) {
             // clean-up
             layerActivatorMenuItem.setEnabled(false);
+            Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
             OpenStreetCamLayer.destroyInstance();
@@ -128,7 +127,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
 
     private void initializePhotoDetailsDialog(final MapFrame mapFrame) {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
-        detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler, this);
+        detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
+                selectionHandler);
         mapFrame.addToggleDialog(detailsDialog, true);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();
@@ -140,7 +140,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
         mapFrame.addToggleDialog(detectionDetailsDialog, true);
-        detectionDetailsDialog.registerCommentObserver(this);
+        detectionDetailsDialog.registerObservers(this, selectionHandler);
         if (PreferenceManager.getInstance().loadDetectionPanelOpenedFlag()) {
             detectionDetailsDialog.showDialog();
         } else {
@@ -163,8 +163,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     /* implementation of DataTypeChangeObserver */
 
     @Override
-    public void update(final DataType dataType) {
-        PreferenceManager.getInstance().saveDataType(dataType);
+    public void update(final MapViewType mapViewType) {
+        PreferenceManager.getInstance().saveMapViewType(mapViewType);
         ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true, false));
     }
 
@@ -205,9 +205,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
     public void zoomToSelectedPhoto() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
         if (selectedPhoto != null
-                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getLocation())) {
+                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getPoint())) {
             SwingUtilities.invokeLater(() -> {
-                MainApplication.getMap().mapView.zoomTo(selectedPhoto.getLocation());
+                MainApplication.getMap().mapView.zoomTo(selectedPhoto.getPoint());
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
@@ -263,19 +263,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
             OpenStreetCamLayer.getInstance().invalidate();
             MainApplication.getMap().repaint();
         }
-    }
-
-
-    /* implementation of DetectionSelectionObserver */
-
-    @Override
-    public void selectDetection(final Detection selectedDetection) {
-        SwingUtilities.invokeLater(() -> {
-            DataSet.getInstance().setSelectedDetection(selectedDetection);
-            DetectionDetailsDialog.getInstance().updateDetectionDetails(selectedDetection);
-            PhotoDetailsDialog.getInstance().repaint();
-            OpenStreetCamLayer.getInstance().invalidate();
-        });
     }
 
 
@@ -337,6 +324,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, DetectionSelectio
                     handleMouseHover();
                 } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
                     selectionHandler.changeAutoplayTimerDelay();
+                } else if (prefManager.isDisplayDetectionLocationFlag(event.getKey())) {
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
                 }
             }
         }

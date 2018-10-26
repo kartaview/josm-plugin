@@ -12,10 +12,11 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.R
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.util.List;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -65,30 +66,40 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else {
                 // draw photos
-                final boolean isTransparent = dataSet.getSelectedSequence() != null;
-                if (dataSet.hasPhotos() && (PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
-                        .contains(ImageDataType.PHOTOS))) {
+                final boolean isTransparent =
+                        dataSet.getSelectedSequence() != null || dataSet.getSelectedCluster() != null;
+                final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
+                if (dataSet.hasPhotos() && (dataTypes.contains(DataType.PHOTO))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotos(),
                             dataSet.getSelectedPhoto(), isTransparent);
                 }
 
+
                 // draw detections
-                if (dataSet.getDetections() != null && (PreferenceManager.getInstance().loadSearchFilter()
-                        .getDataTypes().contains(ImageDataType.DETECTIONS))) {
+                if (dataSet.getDetections() != null && dataTypes.contains(DataType.DETECTION)) {
                     paintHandler.drawDetections(graphics, mapView, dataSet.getDetections(),
                             dataSet.getSelectedDetection(), isTransparent);
                 }
 
-                // draw sequence if any
-                if (dataSet.getSelectedSequence() != null && dataSet.getSelectedSequence().hasData()) {
-                    paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(),
+                // draw clusters
+                if (dataSet.getClusters() != null && dataTypes.contains(DataType.CLUSTER)) {
+                    paintHandler.drawClusters(graphics, mapView, dataSet.getClusters(), dataSet.getSelectedCluster(),
                             dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
+
                 }
             }
+
+            // draw sequence if any
+            if (dataSet.getSelectedSequence() != null && dataSet.getSelectedSequence().hasData()) {
+                paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(), dataSet.getSelectedPhoto(),
+                        dataSet.getSelectedDetection());
+            }
+
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStorke);
         }
     }
+
 
     public void enablePhotoDataSetDownloadActions() {
         final DataSet dataSet = DataSet.getInstance();

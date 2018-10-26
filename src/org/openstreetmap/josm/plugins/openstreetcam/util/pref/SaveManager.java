@@ -15,8 +15,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -31,14 +31,17 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
@@ -49,9 +52,10 @@ import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
@@ -76,6 +80,18 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
  */
 final class SaveManager {
 
+    void savePhotosSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_PHOTOS_SEARCH_ERROR, flag);
+    }
+
+    void saveDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR, flag);
+    }
+
+    void saveClustersSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR, flag);
+    }
+
     void savePhotosErrorSuppressFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_PHOTOS_ERROR, flag);
     }
@@ -88,9 +104,7 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
-    void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        Preferences.main().putBoolean(SUPPRESS_DETECTION_SEARCH_ERROR, flag);
-    }
+
 
     void saveSequenceDetectionsErrorFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
@@ -123,7 +137,7 @@ final class SaveManager {
         }
     }
 
-    private void saveDataTypeFilter(final List<ImageDataType> types) {
+    private void saveDataTypeFilter(final List<DataType> types) {
         if (types == null || types.isEmpty()) {
             Preferences.main().put(FILTER_SEARCH_PHOTO_TYPE, FILTER_SEARCH_EMPTY);
         } else {
@@ -203,6 +217,10 @@ final class SaveManager {
         Preferences.main().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
     }
 
+    void saveClusterSettings(final ClusterSettings aggregatedSettings) {
+        Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());
+    }
+
     void saveTrackSettings(final SequenceSettings trackSettings) {
         Preferences.main().putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
@@ -236,9 +254,9 @@ final class SaveManager {
         Preferences.main().putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
     }
 
-    void saveDataType(final DataType dataType) {
+    void saveMapViewType(final MapViewType dataType) {
         final String value = dataType != null ? dataType.name() : "";
-        Preferences.main().put(DATA_TYPE, value);
+        Preferences.main().put(MAP_VIEW_TYPE, value);
     }
 
     void savePluginLocalVersion(final String localVersion) {

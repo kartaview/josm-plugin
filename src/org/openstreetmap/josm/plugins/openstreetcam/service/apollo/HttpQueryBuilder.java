@@ -10,8 +10,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -29,7 +33,6 @@ class HttpQueryBuilder {
     private static final char AND = '&';
     private static final String DATE_FORMAT = "YYYY-MM-dd";
 
-
     private final StringBuilder query;
 
 
@@ -44,26 +47,37 @@ class HttpQueryBuilder {
         return build();
     }
 
-    String buildSearchQuery(final BoundingBox area, final Date date, final Long osmUserId,
+    String buildSearchDetectionsQuery(final BoundingBox area, final Date date, final Long osmUserId,
             final DetectionFilter filter) {
         query.append(RequestConstants.SEARCH_DETECTIONS);
         query.append(QUESTIONM);
-
-        appendFormatFilter(query);
-        appendBoundingBoxFilter(query, area);
-        if (date != null) {
-            query.append(AND).append(RequestConstants.DATE).append(EQ)
-            .append(new SimpleDateFormat(DATE_FORMAT).format(date));
-        }
-        if (osmUserId != null) {
-            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
-            query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
-        }
+        appendCommonSearchFilters(area, date, osmUserId);
         if (filter != null) {
-            appendDetectionFilter(filter);
+            appendOsmComparisonFilter(filter.getOsmComparisons());
+            appendEditStatusFilter(filter.getEditStatuses());
+            appendSignTypeFilter(filter.getSignTypes());
+            appendDetectionModeFilter(filter.getModes());
         }
         appendExcludedSignTypeFitler();
         return build();
+    }
+
+    String buildSearchClustersQuery(final BoundingBox area, final Date date, final DetectionFilter filter) {
+        query.append(RequestConstants.SEARCH_CLUSTERS);
+        query.append(QUESTIONM);
+        appendCommonSearchFilters(area, date, null);
+        if (filter != null) {
+            appendOsmComparisonFilter(filter.getOsmComparisons());
+            appendSignTypeFilter(filter.getSignTypes());
+        }
+        return build();
+    }
+
+    private void appendCommonSearchFilters(final BoundingBox area, final Date date, final Long osmUserId) {
+        appendFormatFilter(query);
+        appendBoundingBoxFilter(query, area);
+        appendDateFilter(date);
+        appendUserFilter(osmUserId);
     }
 
     String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {
@@ -84,41 +98,77 @@ class HttpQueryBuilder {
     }
 
     String buildRetrieveDetectionQuery(final Long id) {
-        query.append(RequestConstants.RETRIVE_DETECTION);
+        return buildRetrieveByIdQuery(RequestConstants.RETRIVE_DETECTION, id);
+    }
+
+    String buildRetrieveClusterQuery(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER, id);
+    }
+
+    String buildRetrieveClusterDetectionsQuery(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER_DETECTIONS, id);
+    }
+
+    String buildRetrieveClusterPhotosQuery(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER_PHOTOS, id);
+    }
+
+    private String buildRetrieveByIdQuery(final String method, final Long id) {
+        query.append(method);
         query.append(QUESTIONM);
         query.append(RequestConstants.ID).append(EQ).append(id);
         return build();
     }
 
-    private void appendDetectionFilter(final DetectionFilter filter) {
-        if (filter.getOsmComparisons() != null && !filter.getOsmComparisons().isEmpty()) {
-            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getOsmComparisons())));
+    private void appendUserFilter(final Long osmUserId) {
+        if (osmUserId != null) {
+            query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
+            query.append(AND).append(RequestConstants.AUTHOR_TYPE).append(EQ).append(RequestConstants.AUTHOR_TYPE_VAL);
         }
+    }
 
-        if (filter.getEditStatuses() != null && !filter.getEditStatuses().isEmpty()) {
-            final Set<String> editStatuses = new HashSet<>();
-            for (final EditStatus editStatus : filter.getEditStatuses()) {
+    private void appendOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
+        if (osmComparisons != null && !osmComparisons.isEmpty()) {
+            query.append(AND).append(RequestConstants.OSM_COMPARISONS).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(osmComparisons)));
+        }
+    }
+
+    private void appendEditStatusFilter(final List<EditStatus> editStatuses) {
+        if (editStatuses != null && !editStatuses.isEmpty()) {
+            final Set<String> editStatusValues = new HashSet<>();
+            for (final EditStatus editStatus : editStatuses) {
                 if (editStatus.equals(EditStatus.MAPPED)) {
-                    editStatuses.add(RequestConstants.EDIT_STATUS_FIXED);
-                    editStatuses.add(RequestConstants.EDIT_STATUS_ALREADY_FIXED);
+                    editStatusValues.add(RequestConstants.EDIT_STATUS_FIXED);
+                    editStatusValues.add(RequestConstants.EDIT_STATUS_ALREADY_FIXED);
                 } else {
-                    editStatuses.add(editStatus.name());
+                    editStatusValues.add(editStatus.name());
                 }
             }
-
             query.append(AND).append(RequestConstants.EDIT_STATUSES).append(EQ)
-            .append(HttpUtil.utf8Encode(editStatuses));
+            .append(HttpUtil.utf8Encode(editStatusValues));
         }
 
-        if (filter.getSignTypes() != null && !filter.getSignTypes().isEmpty()) {
+    }
+
+    private void appendSignTypeFilter(final List<SignType> signTypes) {
+        if (signTypes != null && !signTypes.isEmpty()) {
             query.append(AND).append(RequestConstants.INCLUDED_SIGN_TYPES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getSignTypes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(signTypes)));
         }
+    }
 
-        if (filter.getModes() != null && !filter.getModes().isEmpty()) {
+    private void appendDetectionModeFilter(final List<DetectionMode> modes) {
+        if (modes != null && !modes.isEmpty()) {
             query.append(AND).append(RequestConstants.MODES).append(EQ)
-            .append(HttpUtil.utf8Encode(new HashSet<>(filter.getModes())));
+            .append(HttpUtil.utf8Encode(new HashSet<>(modes)));
+        }
+    }
+
+    private void appendDateFilter(final Date date) {
+        if (date != null) {
+            query.append(AND).append(RequestConstants.DATE).append(EQ)
+            .append(new SimpleDateFormat(DATE_FORMAT).format(date));
         }
     }
 

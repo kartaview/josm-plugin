@@ -15,8 +15,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_MEMORY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DATA_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
@@ -30,14 +30,17 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_Q
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
@@ -51,9 +54,10 @@ import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
@@ -80,6 +84,18 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEnt
  */
 final class LoadManager {
 
+    boolean loadPhotosSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_PHOTOS_SEARCH_ERROR);
+    }
+
+    boolean loadDetectionsSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR);
+    }
+
+    boolean loadClustersSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR);
+    }
+
     boolean loadPhotosErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_PHOTOS_ERROR);
     }
@@ -90,10 +106,6 @@ final class LoadManager {
 
     boolean loadSequenceErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_SEQUENCE_ERROR);
-    }
-
-    boolean loadDetectionSearchErrorSuppressFlag() {
-        return Preferences.main().getBoolean(SUPPRESS_DETECTION_SEARCH_ERROR);
     }
 
     boolean loadSequenceDetectionsErrorFlag() {
@@ -121,32 +133,30 @@ final class LoadManager {
         final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
         final String onlyUserFlagStr = Preferences.main().get(FILTER_ONLY_USER_FLAG);
         final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
-        final List<ImageDataType> dataType = loadDataTypeFilter();
-        final DetectionFilter detectionFilter = loadDetectionFilter();
-        return new SearchFilter(date, onlyUserFlag, dataType, detectionFilter);
+        final List<DataType> dataType = loadDataTypeFilter();
+
+        final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
+        List<EditStatus> editStatuses = null;
+        final List<SignType> signTypes = loadSignTypeFilter();
+        final List<DetectionMode> modes = loadModes();
+        editStatuses = loadEditStatusFilter();
+        return new SearchFilter(date, onlyUserFlag, dataType,
+                new DetectionFilter(osmComparisons, editStatuses, signTypes, modes));
     }
 
-    private List<ImageDataType> loadDataTypeFilter() {
+    private List<DataType> loadDataTypeFilter() {
         final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_PHOTO_TYPE);
         final List<ImageDataTypeEntry> entries =
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
-        List<ImageDataType> list;
+        List<DataType> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
-            list = Arrays.asList(ImageDataType.values());
+            list = SearchFilter.DEFAULT.getDataTypes();
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
             list = new ArrayList<>();
         } else {
-            list = entries.stream().map(entry -> ImageDataType.valueOf(entry.getName())).collect(Collectors.toList());
+            list = entries.stream().map(entry -> DataType.getDataType(entry.getName())).collect(Collectors.toList());
         }
         return list;
-    }
-
-    private DetectionFilter loadDetectionFilter() {
-        final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
-        final List<EditStatus> editStatuses = loadEditStatusFilter();
-        final List<SignType> signTypes = loadSignTypeFilter();
-        final List<DetectionMode> modes = loadModes();
-        return new DetectionFilter(osmComparisons, editStatuses, signTypes, modes);
     }
 
     private List<OsmComparison> loadOsmComparisonFilter() {
@@ -158,6 +168,8 @@ final class LoadManager {
             for (final OsmComparisonEntry entry : entries) {
                 list.add(OsmComparison.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons();
         }
         return list;
     }
@@ -170,7 +182,7 @@ final class LoadManager {
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(DetectionMode.values());
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
-            list = new ArrayList<>();
+            list = null;
         } else {
             list = entries.stream().map(entry -> DetectionMode.valueOf(entry.getName())).collect(Collectors.toList());
         }
@@ -186,6 +198,8 @@ final class LoadManager {
             for (final EditStatusEntry entry : entries) {
                 list.add(EditStatus.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getEditStatuses();
         }
         return list;
     }
@@ -197,8 +211,11 @@ final class LoadManager {
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
             for (final SignTypeEntry entry : entries) {
+                System.out.println("entry:" + entry);
                 list.add(SignType.valueOf(entry.getName()));
             }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getSignTypes();
         }
         return list;
     }
@@ -218,9 +235,15 @@ final class LoadManager {
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
     }
 
+    ClusterSettings loadClusterSettings() {
+        final boolean displayDetectionLocations = Preferences.main().getBoolean(DISPLAY_DETECTION_LOCATIONS);
+        return new ClusterSettings(displayDetectionLocations);
+    }
+
     SequenceSettings loadTrackSettings() {
         final String displayTrackFlagVal = Preferences.main().get(DISPLAY_TRACK_FLAG);
-        final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? true : Boolean.valueOf(displayTrackFlagVal);
+        final boolean displayTrackFlag =
+                displayTrackFlagVal.isEmpty() ? Boolean.TRUE : Boolean.valueOf(displayTrackFlagVal);
         return new SequenceSettings(displayTrackFlag, loadAutoplaySettings());
     }
 
@@ -245,24 +268,24 @@ final class LoadManager {
 
     boolean loadLayerOpenedFlag() {
         final String layerOpened = Preferences.main().get(LAYER_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
     boolean loadPhotoPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(PHOTO_PANEL_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
     boolean loadDetectionPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(DETECTION_PANEL_OPENED);
-        return layerOpened.isEmpty() ? false : Boolean.valueOf(layerOpened);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
-    DataType loadDataType() {
-        final String value = Preferences.main().get(DATA_TYPE);
-        DataType dataType;
+    MapViewType loadMapViewType() {
+        final String value = Preferences.main().get(MAP_VIEW_TYPE);
+        MapViewType dataType;
         try {
-            dataType = DataType.valueOf(value);
+            dataType = MapViewType.valueOf(value);
         } catch (final RuntimeException e) {
             dataType = null;
         }

@@ -23,7 +23,7 @@ public class PhotoBuilder {
     private Long id;
     private Long sequenceId;
     private Integer sequenceIndex;
-    private LatLon location;
+    private LatLon point;
     private String name;
     private String largeThumbnailName;
     private String thumbnailName;
@@ -50,8 +50,12 @@ public class PhotoBuilder {
         this.sequenceIndex = sequenceIndex;
     }
 
-    public void location(final Double latitude, final Double longitude) {
-        this.location = new LatLon(latitude, longitude);
+    public void point(final LatLon point) {
+        this.point = point;
+    }
+
+    public void point(final Double latitude, final Double longitude) {
+        this.point = new LatLon(latitude, longitude);
     }
 
     public void name(final String name) {
@@ -106,8 +110,8 @@ public class PhotoBuilder {
         return sequenceIndex;
     }
 
-    LatLon getLocation() {
-        return location;
+    LatLon getPoint() {
+        return point;
     }
 
     String getName() {
