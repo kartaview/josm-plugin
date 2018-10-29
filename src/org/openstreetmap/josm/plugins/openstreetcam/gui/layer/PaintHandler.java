@@ -107,22 +107,23 @@ class PaintHandler {
         graphics.setComposite(OPAQUE_COMPOSITE);
         graphics.setStroke(SEQUENCE_LINE);
 
+        final boolean drawPhotos =
+                PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.PHOTO);
+        final boolean drawDetections =
+                PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION);
         if (sequence != null) {
             if (sequence.hasPhotos()) {
-                final boolean drawPhotos =
-                        PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.PHOTO);
                 drawSequencePhotos(graphics, mapView, sequence.getPhotos(), drawPhotos);
             }
 
-            if (sequence.hasDetections()
-                    && PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+            if (sequence.hasDetections() && drawDetections) {
                 drawDetections(graphics, mapView, sequence.getDetections(), selectedDetection, false);
             }
         }
-        if (selectedPhoto != null) {
+        if (selectedPhoto != null && drawPhotos) {
             drawPhoto(graphics, mapView, selectedPhoto, true);
         }
-        if (selectedDetection != null) {
+        if (selectedDetection != null && drawDetections) {
             drawDetection(graphics, mapView, selectedDetection, true);
         }
     }
@@ -131,22 +132,22 @@ class PaintHandler {
             final boolean drawPhotos) {
         final Double arrowLength =
                 Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-                graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
+        graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
 
-                Photo prevPhoto = photos.get(0);
-                for (int i = 1; i <= photos.size() - 1; i++) {
-                    final Photo currentPhoto = photos.get(i);
-                    // at least one of the photos is in current view draw line
-                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
+        Photo prevPhoto = photos.get(0);
+        for (int i = 1; i <= photos.size() - 1; i++) {
+            final Photo currentPhoto = photos.get(i);
+            // at least one of the photos is in current view draw line
+            drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
 
-                    if (drawPhotos) {
-                        drawPhoto(graphics, mapView, prevPhoto, false);
-                    }
-                    prevPhoto = currentPhoto;
-                }
-                if (drawPhotos) {
-                    drawPhoto(graphics, mapView, prevPhoto, false);
-                }
+            if (drawPhotos) {
+                drawPhoto(graphics, mapView, prevPhoto, false);
+            }
+            prevPhoto = currentPhoto;
+        }
+        if (drawPhotos) {
+            drawPhoto(graphics, mapView, prevPhoto, false);
+        }
     }
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
@@ -267,9 +268,9 @@ class PaintHandler {
         for (final Photo photo : cluster.getPhotos()) {
             final List<Detection> photoDetections =
                     cluster.getDetections().stream()
-                    .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
-                            && d.getSequenceIndex().equals(photo.getSequenceIndex()))
-                    .collect(Collectors.toList());
+                            .filter(d -> d.getSequenceId().equals(photo.getSequenceId())
+                                    && d.getSequenceIndex().equals(photo.getSequenceIndex()))
+                            .collect(Collectors.toList());
             metadata.put(photo, photoDetections);
         }
         graphics.setColor(PaintUtil.lineColor(mapView, Constants.CLUSTER_DATA_LINE_COLOR));
