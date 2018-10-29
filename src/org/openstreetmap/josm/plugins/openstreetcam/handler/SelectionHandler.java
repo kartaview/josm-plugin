@@ -399,15 +399,17 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
     @Override
     public void selectPhoto(final boolean isNext) {
         final Detection clusterDetection = DataSet.getInstance().clusterDetection(isNext);
-        final Optional<Photo> clusterPhoto = DataSet.getInstance()
-                .selectedClusterPhoto(clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
-        Photo photo = clusterPhoto.isPresent() ? clusterPhoto.get() : null;
-        photo = enhanceClusterPhoto(photo, clusterDetection);
-        DataSet.getInstance().setSelectedDetection(clusterDetection);
-        final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-        selectPhoto(photo, photoType, true);
-        DataSet.getInstance().selectNearbyPhotos(photo);
+        if (clusterDetection != null) {
+            final Optional<Photo> clusterPhoto = DataSet.getInstance()
+                    .selectedClusterPhoto(clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
+            Photo photo = clusterPhoto.isPresent() ? clusterPhoto.get() : null;
+            photo = enhanceClusterPhoto(photo, clusterDetection);
+            DataSet.getInstance().setSelectedDetection(clusterDetection);
+            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+            selectPhoto(photo, photoType, true);
+            DataSet.getInstance().selectNearbyPhotos(photo);
+        }
     }
 
 
