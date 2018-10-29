@@ -97,7 +97,7 @@ class DetectionTypeListItem extends JPanel {
         return signList.getSelectedValuesList();
     }
 
-    private class DetectionTypeListRenderer extends DefaultListCellRenderer {
+    private static class DetectionTypeListRenderer extends DefaultListCellRenderer {
 
         private static final long serialVersionUID = 7022769009126337948L;
         private final Dimension SIZE = new Dimension(40, 40);
