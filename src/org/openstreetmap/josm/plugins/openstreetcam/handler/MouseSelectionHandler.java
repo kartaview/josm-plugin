@@ -83,6 +83,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                     }
                 }
             }
+            DataSet.getInstance().selectNearbyPhotos(photo);
             if (photo != null || detection != null) {
                 handleDataSelection(photo, detection, null, true);
             }
@@ -120,6 +121,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
             }
         }
+        DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
         handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
     }
 
