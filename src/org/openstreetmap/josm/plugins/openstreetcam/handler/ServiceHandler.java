@@ -20,7 +20,6 @@ import java.util.concurrent.Future;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
@@ -49,6 +48,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 public final class ServiceHandler extends SearchServiceHandler {
 
     private static final int CLUSTER_THREAD_POOL_SIZE = 3;
+    private static final int SEQUENCE_THREAD_POOL_SIZE = 2;
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
 
@@ -69,12 +69,12 @@ public final class ServiceHandler extends SearchServiceHandler {
      * @return a {@code Sequence} object
      */
     public Sequence retrieveSequence(final Long sequenceId) {
-        final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
-        final ExecutorService executorService = Executors.newFixedThreadPool(dataTypes.size());
-        final Future<Sequence> sequenceFuture = dataTypes.contains(DataType.PHOTO)
-                ? executorService.submit(() -> retrieveSequencePhotos(sequenceId)) : null;
-        final Future<List<Detection>> detectionsFuture = dataTypes.contains(DataType.DETECTION)
-                ? executorService.submit(() -> retrieveSequenceDetections(sequenceId)) : null;
+        final ExecutorService executorService = Executors.newFixedThreadPool(SEQUENCE_THREAD_POOL_SIZE);
+
+        final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
+        final Future<List<Detection>> detectionsFuture =
+                executorService.submit(() -> retrieveSequenceDetections(sequenceId));
+
         List<Photo> photos = null;
         try {
             if (sequenceFuture != null) {
@@ -213,7 +213,7 @@ public final class ServiceHandler extends SearchServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                    futures.add(executor.submit(callable));
+                            futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();

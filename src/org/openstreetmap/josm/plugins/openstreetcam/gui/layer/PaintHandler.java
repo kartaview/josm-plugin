@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -108,11 +109,14 @@ class PaintHandler {
 
         if (sequence != null) {
             if (sequence.hasPhotos()) {
-                drawSequence(graphics, mapView, sequence);
+                final boolean drawPhotos =
+                        PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.PHOTO);
+                drawSequencePhotos(graphics, mapView, sequence.getPhotos(), drawPhotos);
             }
 
-            if (sequence.hasDetections()) {
-                drawDetections(graphics, mapView, sequence.getDetections(), null, false);
+            if (sequence.hasDetections()
+                    && PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                drawDetections(graphics, mapView, sequence.getDetections(), selectedDetection, false);
             }
         }
         if (selectedPhoto != null) {
@@ -123,6 +127,27 @@ class PaintHandler {
         }
     }
 
+    private void drawSequencePhotos(final Graphics2D graphics, final MapView mapView, final List<Photo> photos,
+            final boolean drawPhotos) {
+        final Double arrowLength =
+                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
+                graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
+
+                Photo prevPhoto = photos.get(0);
+                for (int i = 1; i <= photos.size() - 1; i++) {
+                    final Photo currentPhoto = photos.get(i);
+                    // at least one of the photos is in current view draw line
+                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
+
+                    if (drawPhotos) {
+                        drawPhoto(graphics, mapView, prevPhoto, false);
+                    }
+                    prevPhoto = currentPhoto;
+                }
+                if (drawPhotos) {
+                    drawPhoto(graphics, mapView, prevPhoto, false);
+                }
+    }
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
             final Detection selectedDetection, final boolean isTransparent) {
@@ -184,32 +209,19 @@ class PaintHandler {
         }
     }
 
-    private void drawSequence(final Graphics2D graphics, final MapView mapView, final Sequence sequence) {
-        final Double length =
-                Util.zoom(mapView.getRealBounds()) > MIN_ARROW_ZOOM ? ARROW_LENGTH * mapView.getScale() : null;
-                graphics.setColor(PaintUtil.lineColor(mapView, Constants.SEQUENCE_LINE_COLOR));
 
-                Photo prevPhoto = sequence.getPhotos().get(0);
-                for (int i = 1; i <= sequence.getPhotos().size() - 1; i++) {
-                    final Photo currentPhoto = sequence.getPhotos().get(i);
-
-                    // at least one of the photos is in current view draw line
-                    if (Util.containsLatLon(mapView, prevPhoto.getPoint())
-                            || Util.containsLatLon(mapView, currentPhoto.getPoint())) {
-                        final Pair<Point, Point> lineGeometry =
-                                new Pair<>(mapView.getPoint(prevPhoto.getPoint()), mapView.getPoint(currentPhoto.getPoint()));
-                        if (length == null) {
-                            PaintManager.drawLine(graphics, lineGeometry);
-                        } else {
-                            final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
-                                    getArrowGeometry(mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), length);
-                            PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
-                        }
-                    }
-                    drawPhoto(graphics, mapView, prevPhoto, false);
-                    prevPhoto = currentPhoto;
-                }
-                drawPhoto(graphics, mapView, prevPhoto, false);
+    private void drawLine(final Graphics2D graphics, final MapView mapView, final LatLon start, final LatLon end,
+            final Double arrowLength) {
+        if (Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
+            final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(start), mapView.getPoint(end));
+            if (arrowLength == null) {
+                PaintManager.drawLine(graphics, lineGeometry);
+            } else {
+                final Pair<Pair<Point, Point>, Pair<Point, Point>> arrowGeometry =
+                        getArrowGeometry(mapView, start, end, arrowLength);
+                PaintManager.drawDirectedLine(graphics, lineGeometry, arrowGeometry);
+            }
+        }
     }
 
     private Pair<Pair<Point, Point>, Pair<Point, Point>> getArrowGeometry(final MapView mapView, final LatLon start,
