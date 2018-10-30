@@ -93,6 +93,9 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
             selectPhoto(photo);
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
                 DetectionDetailsDialog.getInstance().updateClusterDetails(null);
+                if (!DataSet.getInstance().hasSelectedSequence()) {
+                    DataSet.getInstance().setSelectedCluster(null);
+                }
             }
             selectDetection(detection);
         }
@@ -114,7 +117,6 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         } else {
             selectPhoto(null, null, false);
         }
-        DataSet.getInstance().selectNearbyPhotos(photo);
     }
 
     private void selectDetection(final Detection detection) {
