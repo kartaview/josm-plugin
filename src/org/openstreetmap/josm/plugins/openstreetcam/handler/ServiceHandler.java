@@ -309,11 +309,31 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     /**
+     * Retrieves the photo corresponding to the given sequence identifier and sequence index.
+     *
+     * @param sequenceId the identifier of a sequence
+     * @param sequenceIndex the index of the photo in the sequence
+     * @return a {@code Photo} entity
+     */
+    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) {
+        Photo result = null;
+        try {
+            result = apolloService.retrievePhoto(sequenceId, sequenceIndex);
+        } catch (final ServiceException e) {
+            if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoLoadingText());
+                PreferenceManager.getInstance().savePhotoDetectionsErrorFlag(flag);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Retrieves the full list of possible Sign Objects
      *
      * @return a List of Sign objects
      */
-    public List<Sign> listSigns(){
+    public List<Sign> listSigns() {
         List<Sign> result = null;
         try {
             result = apolloService.listSigns();

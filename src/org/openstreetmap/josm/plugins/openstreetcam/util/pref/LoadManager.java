@@ -40,13 +40,13 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -74,8 +74,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionMo
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 
 
 /**
@@ -123,7 +123,7 @@ final class LoadManager {
         return Preferences.main().getBoolean(SUPPRESS_DETECTION_UPDATE_ERROR);
     }
 
-    boolean loadListSignErrorFlag(){
+    boolean loadListSignErrorFlag() {
         return Preferences.main().getBoolean(SUPPRESS_LIST_SIGNS_ERROR);
     }
 
@@ -143,7 +143,7 @@ final class LoadManager {
         final List<DataType> dataType = loadDataTypeFilter();
 
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
-        List<EditStatus> editStatuses = loadEditStatusFilter();
+        final List<EditStatus> editStatuses = loadEditStatusFilter();
         final List<Sign> signInternalNames = loadSpecificSignFilter();
         final List<String> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();

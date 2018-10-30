@@ -34,9 +34,9 @@ public class Photo {
     private Double heading;
     private Double gpsAccuracy;
     private String username;
-    private Long wayId;
     private String shotDate;
     private List<Detection> detections;
+    private Matching matching;
 
 
     Photo(final PhotoBuilder builder) {
@@ -51,9 +51,7 @@ public class Photo {
         this.timestamp = builder.getTimestamp();
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
-        this.wayId = builder.getWayId();
         this.shotDate = builder.getShotDate();
-        this.detections = builder.getDetections();
     }
 
     public Long getId() {
@@ -101,11 +99,7 @@ public class Photo {
     }
 
     public Long getWayId() {
-        return wayId;
-    }
-
-    public void setWayId(final Long wayId) {
-        this.wayId = wayId;
+        return matching != null ? matching.getWayId() : null;
     }
 
     public String getShotDate() {
@@ -119,7 +113,6 @@ public class Photo {
     public void setDetections(final List<Detection> detections) {
         this.detections = detections;
     }
-
 
     public List<Detection> getDetections() {
         return detections;
@@ -135,6 +128,14 @@ public class Photo {
 
     public void setHeading(final Double heading) {
         this.heading = heading;
+    }
+
+    public Matching getMatching() {
+        return matching;
+    }
+
+    public void setMatching(final Matching matching) {
+        this.matching = matching;
     }
 
     @Override

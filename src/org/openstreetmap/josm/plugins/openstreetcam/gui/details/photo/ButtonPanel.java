@@ -178,15 +178,11 @@ SequenceObservable, SequenceAutoplayObservable {
             btnWebPage.setEnabled(true);
             final boolean autoplayStartedFlag = PreferenceManager.getInstance().loadAutoplayStartedFlag();
             btnLocation.setEnabled(!autoplayStartedFlag);
-            if (photo.getWayId() != null) {
-                btnMatchedWay.setEnabled(!autoplayStartedFlag);
-            }
             if (!autoplayStartedFlag) {
                 updateAutoplayButton(AutoplayAction.START);
             }
-            if (photo.getWayId() != null) {
-                btnMatchedWay.setEnabled(true);
-            }
+            final boolean matchedWayEnabled = photo.getWayId() != null;
+            btnMatchedWay.setEnabled(matchedWayEnabled);
         } else {
             enableSequenceActions(false, false, null);
             btnWebPage.setEnabled(false);
@@ -534,8 +530,8 @@ SequenceObservable, SequenceAutoplayObservable {
 
         @Override
         protected PrimitiveId getPrimitiveId() {
-            return photo != null && photo.getWayId() != null
-                    ? new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY) : null;
+            final Long wayId = photo != null ? photo.getWayId() : null;
+            return wayId != null ? new SimplePrimitiveId(wayId, OsmPrimitiveType.WAY) : null;
         }
     }
 }

@@ -24,6 +24,7 @@ final class RequestConstants {
     static final String RETRIEVE_CLUSTER = "retrieveCluster";
     static final String RETRIEVE_CLUSTER_DETECTIONS = "retrieveClusterDetections";
     static final String RETRIEVE_CLUSTER_PHOTOS = "retrieveClusterPhotos";
+    static final String RETRIEVE_PHOTO = "retrievePhoto";
     static final String LIST_SIGNS = "listSigns";
 
     static final String NORTH = "north";

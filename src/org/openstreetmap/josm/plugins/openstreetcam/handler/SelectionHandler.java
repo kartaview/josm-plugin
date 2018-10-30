@@ -262,7 +262,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
             if (shouldLoadSequence(photo)) {
                 loadSequence(photo);
             }
-            enhancePhotoWithDetections(photo);
+            enhancePhoto(photo);
             final Detection detection = photoSelectedDetection(photo);
             handleDataSelection(photo, detection, null, true);
         }
@@ -280,7 +280,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
             Cluster cluster = null;
             if (dataTypes != null) {
                 if (dataTypes.contains(DataType.DETECTION)) {
-                    enhancePhotoWithDetections(photo);
+                    enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
                 } else if (DataSet.getInstance().getSelectedCluster() != null) {
                     // special case we need to display information of the already selected cluster
@@ -337,7 +337,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
                 }
             }
             if (nextPhoto != null) {
-                enhancePhotoWithDetections(nextPhoto);
+                enhancePhoto(nextPhoto);
                 final Detection detection = photoSelectedDetection(nextPhoto);
                 handleNextPhotoSelection(nextPhoto, detection);
             } else {
