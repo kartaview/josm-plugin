@@ -14,6 +14,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
+import com.telenav.josm.common.formatter.DecimalPattern;
+import com.telenav.josm.common.formatter.EntityFormatter;
 
 
 /**
@@ -48,6 +50,10 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         if (detection.getLatestChangeTimestamp() != null) {
             addInformation(GuiConfig.getInstance().getDetectionUpdatedDate(),
                     DateFormatter.formatTimestamp(detection.getLatestChangeTimestamp()), widthLbl);
+        }
+        if (detection.getFacing() != null) {
+            addInformation(GuiConfig.getInstance().getDetectionFacingText(),
+                    EntityFormatter.formatDouble(detection.getFacing(), true, DecimalPattern.SHORT), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
