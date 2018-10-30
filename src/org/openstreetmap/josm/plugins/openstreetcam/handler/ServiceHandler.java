@@ -309,7 +309,6 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     /**
-     * <<<<<<< HEAD
      * Retrieves the photo corresponding to the given sequence identifier and sequence index.
      *
      * @param sequenceId the identifier of a sequence
