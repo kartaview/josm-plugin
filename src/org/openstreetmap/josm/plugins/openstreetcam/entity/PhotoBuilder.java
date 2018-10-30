@@ -8,7 +8,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 
 
@@ -33,7 +32,6 @@ public class PhotoBuilder {
     private String username;
     private Long wayId;
     private String shotDate;
-    private List<Detection> detections;
 
 
     public PhotoBuilder() {}
@@ -90,10 +88,6 @@ public class PhotoBuilder {
         this.shotDate = shotDate;
     }
 
-    public void detections(final List<Detection> detections) {
-        this.detections = detections;
-    }
-
     public void oriName(final String oriName) {
         this.oriName = oriName;
     }
@@ -144,10 +138,6 @@ public class PhotoBuilder {
 
     String getShotDate() {
         return shotDate;
-    }
-
-    List<Detection> getDetections() {
-        return detections;
     }
 
     String getOriName() {

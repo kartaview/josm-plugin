@@ -25,6 +25,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
+ * Executes the operations of the ApolloService components.
  *
  * @author beataj
  * @version $Revision$
@@ -105,5 +106,12 @@ public class ApolloService extends BaseService {
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getPhotos();
+    }
+
+    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrievePhotoQuery(sequenceId, sequenceIndex);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getPhoto();
     }
 }

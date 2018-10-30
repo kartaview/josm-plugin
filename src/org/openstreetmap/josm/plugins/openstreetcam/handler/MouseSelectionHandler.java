@@ -78,7 +78,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                         detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                         photo = enhanceClusterPhoto(photo, detection);
                     } else {
-                        enhancePhotoWithDetections(photo);
+                        enhancePhoto(photo);
                         detection = photoSelectedDetection(photo);
                     }
                 }
@@ -95,7 +95,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
                 clusterPhoto.getSequenceIndex());
         photo.setHeading(clusterPhoto.getHeading());
-        enhancePhotoWithDetections(photo);
+        enhancePhoto(photo);
         if (detection != null) {
             if (photo.getDetections() == null) {
                 photo.setDetections(Collections.singletonList(detection));
@@ -147,11 +147,17 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
 
-    void enhancePhotoWithDetections(final Photo photo) {
-        if (photo != null
-                && PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
-            final List<Detection> detections = loadPhotoDetections(photo);
-            photo.setDetections(detections);
+    void enhancePhoto(final Photo photo) {
+        if (photo != null) {
+            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                final List<Detection> detections = loadPhotoDetections(photo);
+                photo.setDetections(detections);
+            }
+            final Photo photoWithMatching =
+                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+            if (photoWithMatching != null) {
+                photo.setMatching(photoWithMatching.getMatching());
+            }
         }
     }
 

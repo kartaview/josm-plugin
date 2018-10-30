@@ -91,8 +91,7 @@ class HttpQueryBuilder {
     String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Integer sequenceIndex) {
         query.append(RequestConstants.RETRIEVE_PHOTO_DETECTIONS);
         query.append(QUESTIONM);
-        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
-        query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
+        appendPhotoIdFilter(sequenceId, sequenceIndex);
         appendExcludedSignTypeFitler();
         return build();
     }
@@ -113,11 +112,23 @@ class HttpQueryBuilder {
         return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_CLUSTER_PHOTOS, id);
     }
 
+    String buildRetrievePhotoQuery(final Long sequenceId, final Integer sequenceIndex) {
+        query.append(RequestConstants.RETRIEVE_PHOTO);
+        query.append(QUESTIONM);
+        appendPhotoIdFilter(sequenceId, sequenceIndex);
+        return build();
+    }
+
     private String buildRetrieveByIdQuery(final String method, final Long id) {
         query.append(method);
         query.append(QUESTIONM);
         query.append(RequestConstants.ID).append(EQ).append(id);
         return build();
+    }
+
+    private void appendPhotoIdFilter(final Long sequenceId, final Integer sequenceIndex) {
+        query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
+        query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
     }
 
     private void appendUserFilter(final Long osmUserId) {

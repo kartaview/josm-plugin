@@ -211,7 +211,6 @@ final class LoadManager {
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
             for (final SignTypeEntry entry : entries) {
-                System.out.println("entry:" + entry);
                 list.add(SignType.valueOf(entry.getName()));
             }
         } else {
