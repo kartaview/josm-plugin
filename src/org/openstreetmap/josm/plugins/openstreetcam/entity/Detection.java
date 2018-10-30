@@ -29,6 +29,7 @@ public class Detection implements Comparable<Detection> {
     private OsmElement osmElement;
     private DetectionMode mode;
     private Author author;
+    private Double facing;
 
 
     public Detection(final Long id, final EditStatus editStatus) {
@@ -94,6 +95,10 @@ public class Detection implements Comparable<Detection> {
 
     public Author getAuthor() {
         return author;
+    }
+
+    public Double getFacing() {
+        return facing;
     }
 
     @Override

@@ -164,6 +164,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionChangedOnOsmText;
     private final String detectionSameOnOsmText;
     private final String detectionUnknownOnOsmText;
+    private final String detectionFacingText;
     private final String dialogAddCommentText;
     private final String authenticationNeededErrorMessage;
     private final String detectionCreatedDate;
@@ -315,6 +316,7 @@ public final class GuiConfig extends BaseConfig {
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+        detectionFacingText = readProperty("detection.facing.text");
         dialogAddCommentText = readProperty("detection.dialog.comment.text");
         authenticationNeededErrorMessage = readProperty("error.detection.authentication");
         detectionCreatedDate = readProperty("detection.date.created");
@@ -861,5 +863,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getClusterDialogTitleName() {
         return clusterDialogTitleName;
+    }
+
+    public String getDetectionFacingText() {
+        return detectionFacingText;
     }
 }
