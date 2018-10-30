@@ -150,6 +150,14 @@ public final class PreferenceManager {
         saveManager.saveSegmentsErrorSuppressFlag(flag);
     }
 
+    public boolean loadListSignsErrorSuppressFlag() {
+        return loadManager.loadListSignErrorFlag();
+    }
+
+    public void saveListSignsErrorSuppressFlag(final boolean flag) {
+        saveManager.saveListSignErrorSuppressFlag(flag);
+    }
+
     /**
      * Saves the 'filtersChanged' flag to the preference file.
      *

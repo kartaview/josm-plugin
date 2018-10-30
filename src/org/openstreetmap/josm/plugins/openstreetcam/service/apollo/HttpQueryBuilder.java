@@ -15,7 +15,6 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.telenav.josm.common.argument.BoundingBox;
 import com.telenav.josm.common.http.HttpUtil;
@@ -56,6 +55,7 @@ class HttpQueryBuilder {
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendEditStatusFilter(filter.getEditStatuses());
             appendSignTypeFilter(filter.getSignTypes());
+            appendSignInternalNameFilter(filter.getSignInternalNames());
             appendDetectionModeFilter(filter.getModes());
         }
         appendExcludedSignTypeFitler();
@@ -69,6 +69,7 @@ class HttpQueryBuilder {
         if (filter != null) {
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendSignTypeFilter(filter.getSignTypes());
+            appendSignInternalNameFilter(filter.getSignInternalNames());
         }
         return build();
     }
@@ -126,9 +127,15 @@ class HttpQueryBuilder {
         return build();
     }
 
+
     private void appendPhotoIdFilter(final Long sequenceId, final Integer sequenceIndex) {
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
         query.append(AND).append(RequestConstants.SEQUENCE_INDEX).append(EQ).append(sequenceIndex);
+    }
+
+    String buildListSignsQuery() {
+        query.append(RequestConstants.LIST_SIGNS);
+        return build();
     }
 
     private void appendUserFilter(final Long osmUserId) {
@@ -162,10 +169,17 @@ class HttpQueryBuilder {
 
     }
 
-    private void appendSignTypeFilter(final List<SignType> signTypes) {
+    private void appendSignTypeFilter(final List<String> signTypes) {
         if (signTypes != null && !signTypes.isEmpty()) {
             query.append(AND).append(RequestConstants.INCLUDED_SIGN_TYPES).append(EQ)
             .append(HttpUtil.utf8Encode(new HashSet<>(signTypes)));
+        }
+    }
+
+    private void appendSignInternalNameFilter(final List<String> signInternalNames) {
+        if (signInternalNames != null && !signInternalNames.isEmpty()) {
+            query.append(AND).append(RequestConstants.SIGN_INTERNAL_NAMES).append(EQ)
+            .append(HttpUtil.utf8Encode(new HashSet<>(signInternalNames)));
         }
     }
 

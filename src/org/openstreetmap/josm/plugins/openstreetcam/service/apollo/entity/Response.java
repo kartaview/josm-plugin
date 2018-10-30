@@ -11,6 +11,7 @@ import java.util.List;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import com.telenav.josm.common.entity.Status;
 
@@ -29,6 +30,7 @@ public class Response extends BaseResponse {
     private List<Detection> detections;
     private List<Cluster> clusters;
     private List<Photo> photos;
+    private List<Sign> signs;
 
 
     public Response(final Status status) {
@@ -57,5 +59,9 @@ public class Response extends BaseResponse {
 
     public List<Photo> getPhotos() {
         return photos;
+    }
+
+    public List<Sign> getSigns() {
+        return signs;
     }
 }

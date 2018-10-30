@@ -15,6 +15,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
@@ -113,5 +114,12 @@ public class ApolloService extends BaseService {
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getPhoto();
+    }
+
+    public List<Sign> listSigns() throws ServiceException {
+        final String url = new HttpQueryBuilder().buildListSignsQuery();
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getSigns();
     }
 }

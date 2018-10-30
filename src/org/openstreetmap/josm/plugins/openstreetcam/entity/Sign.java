@@ -1,6 +1,9 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 
+import java.util.Objects;
+
+
 /**
  * Defines the detection entity.
  *
@@ -13,26 +16,20 @@ public class Sign {
     private final String internalName;
     private final String iconName;
     private final String region;
-    private final SignCategory category;
     private final String type;
 
 
     public Sign(final String name, final String internalName, final String iconName, final String region,
-            final SignCategory category, final String type) {
+            final String type) {
         this.name = name;
         this.internalName = internalName;
         this.iconName = iconName;
         this.region = region;
-        this.category = category;
         this.type = type;
     }
 
     public String getRegion() {
         return region;
-    }
-
-    public SignCategory getCategory() {
-        return category;
     }
 
     public String getType() {
@@ -49,5 +46,22 @@ public class Sign {
 
     public String getIconName() {
         return iconName;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        final Sign sign = (Sign) o;
+        return Objects.equals(name, sign.name) && Objects.equals(internalName, sign.internalName) && Objects
+                .equals(iconName, sign.iconName) && Objects.equals(region, sign.region) && Objects
+                .equals(type, sign.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, internalName, iconName, region, type);
     }
 }
