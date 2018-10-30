@@ -99,7 +99,7 @@ public class Photo {
     }
 
     public Long getWayId() {
-        return matching != null && matching.getWayId() != null ? matching.getWayId() : null;
+        return matching != null ? matching.getWayId() : null;
     }
 
     public String getShotDate() {
