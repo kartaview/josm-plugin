@@ -108,6 +108,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorDetectionRetrieveText;
     private final String errorDetectionUpdateText;
     private final String errorClusterRetrieveText;
+    private final String errorListSignsText;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -255,6 +256,7 @@ public final class GuiConfig extends BaseConfig {
         errorDetectionRetrieveText = readProperty("error.detection.retrieve");
         errorDetectionUpdateText = readProperty("error.detection.update");
         errorClusterRetrieveText = readProperty("error.cluster.retrieve");
+        errorListSignsText = readProperty("error.sign.list");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
         warningTitle = readProperty("warning.title");
@@ -555,6 +557,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorClusterRetrieveText() {
         return errorClusterRetrieveText;
+    }
+
+    public String getErrorListSignsText() {
+        return errorListSignsText;
     }
 
     public String getIncorrectDateFilterText() {

@@ -16,19 +16,22 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.telenav.josm.common.gui.builder.DatePickerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -37,19 +40,13 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
-import com.telenav.josm.common.gui.builder.DatePickerBuilder;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
-import com.telenav.josm.common.gui.builder.ListBuilder;
 import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
@@ -87,7 +84,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
 
-    private JList<SignType> listSignType;
+    private DetectionTypeList detectionTypeList;
     private JButton btnSelectSignTypes;
     private JButton btnClearSignTypes;
     private final boolean isHighZoomLevel;
@@ -107,7 +104,7 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes());
+            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(), filter.getDetectionFilter().getSpecificSigns());
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
@@ -200,15 +197,11 @@ class FilterPanel extends JPanel {
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
 
-    private void addDetectionTypeFilter(final List<SignType> signTypes) {
+    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        listSignType = ListBuilder.build(Arrays.asList(SignType.values()), signTypes, new DefaultListCellRenderer(),
-                Font.PLAIN);
-        listSignType.setLayoutOrientation(JList.VERTICAL);
-        add(ContainerBuilder.buildScrollPane(listSignType, getBackground()), Constraints.CBB_SIGN_TYPE);
-
-
+        detectionTypeList = new DetectionTypeList(signTypes,specificSigns);
+        add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
         btnClearSignTypes = ButtonBuilder.build(new SignTypesClearAction(), GuiConfig.getInstance().getBtnClearLbl());
@@ -223,7 +216,6 @@ class FilterPanel extends JPanel {
         if (dataTypes != null) {
             enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
             enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
-
         }
 
         // common filters
@@ -231,7 +223,7 @@ class FilterPanel extends JPanel {
         cbbChangedOsmComparison.setEnabled(enableCommonFilters);
         cbbUnknownOsmComparison.setEnabled(enableCommonFilters);
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
-        listSignType.setEnabled(enableCommonFilters);
+        detectionTypeList.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
 
@@ -270,14 +262,12 @@ class FilterPanel extends JPanel {
         SearchFilter searchFilter;
         if (isHighZoomLevel) {
             final List<DataType> dataTypes = selectedDataTypes();
-            List<EditStatus> editStatuses = new ArrayList<>();
-            List<DetectionMode> detectionModes = new ArrayList<>();
-            // if (dataTypes.contains(DataType.DETECTION)) {
-            editStatuses = selectedEditStatuses();
-            detectionModes = selectedModes();
-            // }
+            List<EditStatus> editStatuses = selectedEditStatuses();
+            List<DetectionMode> detectionModes = selectedModes();
+            List<String> signTypes = detectionTypeList.getSelectedTypes();
+            List<Sign> signValues = detectionTypeList.getSelectedValues();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
-                    selectedOsmComparisons(), editStatuses, listSignType.getSelectedValuesList(), detectionModes));
+                    selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -391,7 +381,7 @@ class FilterPanel extends JPanel {
             cbbMappedEditStatus.setSelected(mappedEditStatusSelected);
             cbbBadSignEditStatus.setSelected(badEditStatusSelected);
             cbbOtherEditStatus.setSelected(otherEditStatusSelected);
-            listSignType.clearSelection();
+            detectionTypeList.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
             enableDetectionFilters(SearchFilter.DEFAULT.getDataTypes());
@@ -442,8 +432,7 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final int end = listSignType.getModel().getSize() - 1;
-            listSignType.setSelectionInterval(0, end);
+            detectionTypeList.selectAll();
         }
     }
 
@@ -453,7 +442,7 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            listSignType.clearSelection();
+            detectionTypeList.clearSelection();
         }
     }
 }

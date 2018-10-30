@@ -33,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter.DetectionTypeContent;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
@@ -77,6 +78,9 @@ public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObse
      */
     public OpenStreetCamPlugin(final PluginInformation pluginInfo) {
         super(pluginInfo);
+        // initialize detection signs
+        DetectionTypeContent.getInstance();
+
         this.selectionHandler = new SelectionHandler();
         this.preferenceChangedHandler = new PreferenceChangedHandler();
         if (layerActivatorMenuItem == null) {
