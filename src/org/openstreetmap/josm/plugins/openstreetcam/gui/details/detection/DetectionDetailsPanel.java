@@ -53,7 +53,7 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         }
         if (detection.getFacing() != null) {
             addInformation(GuiConfig.getInstance().getDetectionFacingText(),
-                    EntityFormatter.formatDouble(detection.getFacing(), true, DecimalPattern.LONG), widthLbl);
+                    EntityFormatter.formatDouble(detection.getFacing(), true, DecimalPattern.SHORT), widthLbl);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
