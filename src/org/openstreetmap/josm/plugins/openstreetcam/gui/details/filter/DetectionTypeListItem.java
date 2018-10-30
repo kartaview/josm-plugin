@@ -111,7 +111,6 @@ class DetectionTypeListItem extends JPanel {
     private static class DetectionTypeListRenderer extends DefaultListCellRenderer {
 
         private static final long serialVersionUID = 7022769009126337948L;
-        private final Dimension SIZE = new Dimension(40, 40);
 
         @Override
         public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
@@ -119,9 +118,8 @@ class DetectionTypeListItem extends JPanel {
             final JLabel label =
                     (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             final Sign type = (Sign) value;
-            label.setIcon(DetectionIconFactory.INSTANCE.getIcon(type, false));
+            label.setIcon(DetectionIconFactory.INSTANCE.getIcon(type, true));
             label.setText("");
-            label.setPreferredSize(SIZE);
             label.setToolTipText(type.getName());
             return label;
         }
