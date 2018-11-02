@@ -24,8 +24,8 @@ public final class IconConfig extends BaseConfig {
 
     private static final IconConfig INSTANCE = new IconConfig();
     private static final String CONFIG_FILE = "openstreetcam_icon.properties";
-    private static final int CLUSTER_BACKGROUND_SIZE = 42;
-    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 55;
+    private static final int CLUSTER_BACKGROUND_SIZE = 49;
+    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
 
 
     private final String pluginIconName;
