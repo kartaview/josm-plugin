@@ -64,4 +64,10 @@ public class PhotoDataSet {
     public boolean hasItems() {
         return photos != null && !photos.isEmpty();
     }
+
+    public void addPhotos(final List<Photo> photos) {
+        if (photos != null && !photos.isEmpty()) {
+            this.photos.addAll(photos);
+        }
+    }
 }

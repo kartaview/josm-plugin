@@ -175,13 +175,15 @@ public class DataUpdateHandler {
         }
 
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
-        if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-            searchFilter.getDataTypes().remove(DataType.PHOTO);
-        }
-        final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(bbox, searchFilter);
-        if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
-            updateUI(resultSet, checkSelection);
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        if (!areas.isEmpty()) {
+            if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
+                searchFilter.getDataTypes().remove(DataType.PHOTO);
+            }
+            final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(areas, searchFilter);
+            if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
+                updateUI(resultSet, checkSelection);
+            }
         }
     }
 
