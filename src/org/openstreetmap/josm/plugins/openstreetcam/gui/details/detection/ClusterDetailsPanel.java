@@ -7,6 +7,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -27,7 +28,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     protected void createComponents(final Cluster cluster) {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
-                GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl());
+                GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
+                GuiConfig.getInstance().getDetectionIdLbl());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
         if (cluster.getLatestChangeTimestamp() != null) {
@@ -36,5 +38,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         }
         final int detections = cluster.getDetectionIds() != null ? cluster.getDetectionIds().size() : 0;
         addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), detections, widthLbl);
+        addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
+        final int pnlHeight = getPnlY() + SPACE_Y;
+        setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
     }
 }
