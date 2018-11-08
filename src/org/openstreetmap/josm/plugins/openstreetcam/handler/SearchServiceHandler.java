@@ -33,7 +33,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
- * Executes the service search operations 
+ * Executes the service search operations
  *
  * @author beataj
  * @version $Revision$
@@ -52,7 +52,7 @@ class SearchServiceHandler {
     /**
      * Searches for data high zoom levels. For high zoom levels depending on the selected filter the following
      * data types are displayed: photo locations, detections and clusters (aggregated detections).
-     * 
+     *
      * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
      * might be several bounding boxes.
      * @param filter a {@code SearchFilter} represents the currently selected search filters.
@@ -64,7 +64,7 @@ class SearchServiceHandler {
         final List<Future<List<Detection>>> futureDetections = new ArrayList<>();
         final List<Future<List<Cluster>>> futureClusters = new ArrayList<>();
 
-        for (BoundingBox area : areas) {
+        for (final BoundingBox area : areas) {
             final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO) ?
                     executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
             if (futurePhotoDataSet != null) {
@@ -83,10 +83,11 @@ class SearchServiceHandler {
         }
         PhotoDataSet photoDataSet = null;
         try {
-            //TODO check not empty
-            photoDataSet = futurePhotoDataSets.get(0).get();
-            for (int i = 1; i < futurePhotoDataSets.size(); i++) {
-                photoDataSet.addPhotos(futurePhotoDataSets.get(i).get().getPhotos());
+            if (!futurePhotoDataSets.isEmpty()) {
+                photoDataSet = futurePhotoDataSets.get(0).get();
+                for (int i = 1; i < futurePhotoDataSets.size(); i++) {
+                    photoDataSet.addPhotos(futurePhotoDataSets.get(i).get().getPhotos());
+                }
             }
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadPhotosSearchErrorSuppressFlag()) {
@@ -98,7 +99,7 @@ class SearchServiceHandler {
 
         List<Detection> detections = new ArrayList<>();
         try {
-            for (Future<List<Detection>> futureDetect : futureDetections) {
+            for (final Future<List<Detection>> futureDetect : futureDetections) {
                 detections.addAll(futureDetect.get());
             }
         } catch (final Exception ex) {
@@ -111,7 +112,7 @@ class SearchServiceHandler {
 
         List<Cluster> clusters = new ArrayList<>();
         try {
-            for (Future<List<Cluster>> futureCluster : futureClusters) {
+            for (final Future<List<Cluster>> futureCluster : futureClusters) {
                 clusters.addAll(futureCluster.get());
             }
         } catch (final Exception ex) {
