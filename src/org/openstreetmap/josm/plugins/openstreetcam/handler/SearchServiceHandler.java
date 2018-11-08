@@ -33,7 +33,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
- * Executes the service search operations 
+ * Executes the service search operations
  *
  * @author beataj
  * @version $Revision$
@@ -52,49 +52,77 @@ class SearchServiceHandler {
     /**
      * Searches for data high zoom levels. For high zoom levels depending on the selected filter the following
      * data types are displayed: photo locations, detections and clusters (aggregated detections).
-     * 
-     * @param area a {@code BoundingBox} represents the search area.
+     *
+     * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
+     * might be several bounding boxes.
      * @param filter a {@code SearchFilter} represents the currently selected search filters.
      * @return a {@code HighZoomResultSet} containing the result
      */
-    HighZoomResultSet searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
+    HighZoomResultSet searchHighZoomData(final List<BoundingBox> areas, final SearchFilter filter) {
         final ExecutorService executorService = Executors.newFixedThreadPool(filter.getDataTypes().size());
-        final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO)
-                ? executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
-        final Future<List<Detection>> futureDetections = filter.getDataTypes().contains(DataType.DETECTION)
-                ? executorService.submit(() -> searchDetections(area, filter)) : null;
-        final Future<List<Cluster>> futureClusters = filter.getDataTypes().contains(DataType.CLUSTER)
-                ? executorService.submit(() -> searchClusters(area, filter)) : null;
+        final List<Future<PhotoDataSet>> futurePhotoDataSets = new ArrayList<>();
+        final List<Future<List<Detection>>> futureDetections = new ArrayList<>();
+        final List<Future<List<Cluster>>> futureClusters = new ArrayList<>();
 
+        for (final BoundingBox area : areas) {
+            final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO) ?
+                    executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
+            if (futurePhotoDataSet != null) {
+                futurePhotoDataSets.add(futurePhotoDataSet);
+            }
+            final Future<List<Detection>> futureDetectionList = filter.getDataTypes().contains(DataType.DETECTION) ?
+                    executorService.submit(() -> searchDetections(area, filter)) : null;
+            if (futureDetectionList != null) {
+                futureDetections.add(futureDetectionList);
+            }
+            final Future<List<Cluster>> futureClusterList = filter.getDataTypes().contains(DataType.CLUSTER) ?
+                    executorService.submit(() -> searchClusters(area, filter)) : null;
+            if (futureClusterList != null) {
+                futureClusters.add(futureClusterList);
+            }
+        }
         PhotoDataSet photoDataSet = null;
         try {
-            photoDataSet = futurePhotoDataSet != null ? futurePhotoDataSet.get() : null;
+            if (!futurePhotoDataSets.isEmpty()) {
+                photoDataSet = futurePhotoDataSets.get(0).get();
+                for (int i = 1; i < futurePhotoDataSets.size(); i++) {
+                    photoDataSet.addPhotos(futurePhotoDataSets.get(i).get().getPhotos());
+                }
+            }
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadPhotosSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
                 PreferenceManager.getInstance().savePhotosSearchErrorSuppressFlag(flag);
             }
         }
+        photoDataSet = photoDataSet != null && photoDataSet.hasItems() ? photoDataSet : null;
 
-        List<Detection> detections = null;
+        List<Detection> detections = new ArrayList<>();
         try {
-            detections = futureDetections != null ? futureDetections.get() : null;
+            for (final Future<List<Detection>> futureDetect : futureDetections) {
+                detections.addAll(futureDetect.get());
+            }
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadDetectionsSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
                 PreferenceManager.getInstance().saveDetectionsSearchErrorSuppressFlag(flag);
             }
         }
+        detections = detections.isEmpty() ? null : detections;
 
-        List<Cluster> clusters = null;
+        List<Cluster> clusters = new ArrayList<>();
         try {
-            clusters = futureClusters != null ? futureClusters.get() : null;
+            for (final Future<List<Cluster>> futureCluster : futureClusters) {
+                clusters.addAll(futureCluster.get());
+            }
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadClustersSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveClustersSearchErrorSuppressFlag(flag);
             }
         }
+        clusters = clusters.isEmpty() ? null : clusters;
+
         if (detections != null && clusters != null) {
             // remove detections that belongs to a cluster
             detections = filterClusterDetections(clusters, detections);

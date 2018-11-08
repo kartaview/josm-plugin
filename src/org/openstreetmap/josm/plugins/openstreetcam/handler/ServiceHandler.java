@@ -58,9 +58,9 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     @Override
-    public HighZoomResultSet searchHighZoomData(final BoundingBox area, final SearchFilter filter) {
+    public HighZoomResultSet searchHighZoomData(final List<BoundingBox> areas, final SearchFilter filter) {
         return filter != null && filter.getDataTypes() != null && !filter.getDataTypes().isEmpty()
-                ? super.searchHighZoomData(area, filter) : new HighZoomResultSet();
+                ? super.searchHighZoomData(areas, filter) : new HighZoomResultSet();
     }
 
     /**

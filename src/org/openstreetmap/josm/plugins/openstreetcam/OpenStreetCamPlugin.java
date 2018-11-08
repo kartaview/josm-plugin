@@ -123,7 +123,7 @@ public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObse
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
-                Logging.error("Could not shutdown thead pool.", e);
+                Logging.error("Could not shutdown thread pool.", e);
             }
         }
     }
