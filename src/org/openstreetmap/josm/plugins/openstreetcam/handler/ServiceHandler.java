@@ -33,7 +33,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -74,9 +73,8 @@ public final class ServiceHandler extends SearchServiceHandler {
         final ExecutorService executorService = Executors.newFixedThreadPool(SEQUENCE_THREAD_POOL_SIZE);
 
         final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
-        final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
         final Future<List<Detection>> detectionsFuture =
-                executorService.submit(() -> retrieveSequenceDetections(sequenceId, filter));
+                executorService.submit(() -> retrieveSequenceDetections(sequenceId));
 
         List<Photo> photos = null;
         try {
@@ -162,10 +160,10 @@ public final class ServiceHandler extends SearchServiceHandler {
         return sequence;
     }
 
-    private List<Detection> retrieveSequenceDetections(final Long id, final DetectionFilter filter) {
+    private List<Detection> retrieveSequenceDetections(final Long id) {
         List<Detection> result = null;
         try {
-            result = apolloService.retrieveSequenceDetections(id, filter);
+            result = apolloService.retrieveSequenceDetections(id);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());

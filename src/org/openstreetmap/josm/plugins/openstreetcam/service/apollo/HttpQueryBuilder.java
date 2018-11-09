@@ -81,15 +81,10 @@ class HttpQueryBuilder {
         appendUserFilter(osmUserId);
     }
 
-    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId, final DetectionFilter filter) {
+    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {
         query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
-        if (filter != null) {
-            appendOsmComparisonFilter(filter.getOsmComparisons());
-            appendSignTypeFilter(filter.getSignTypes());
-            appendSignInternalNameFilter(filter.getSignInternalNames());
-        }
         appendExcludedSignTypeFitler();
         return build();
     }
