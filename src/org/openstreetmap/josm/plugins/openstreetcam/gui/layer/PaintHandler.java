@@ -37,6 +37,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -117,7 +118,7 @@ class PaintHandler {
             }
 
             if (sequence.hasDetections() && drawDetections) {
-                drawDetections(graphics, mapView, sequence.getDetections(), selectedDetection, false);
+                drawSequenceDetections(graphics, mapView, sequence.getDetections(), selectedDetection);
             }
         }
         if (selectedPhoto != null && drawPhotos) {
@@ -149,6 +150,25 @@ class PaintHandler {
                     drawPhoto(graphics, mapView, prevPhoto, false);
                 }
     }
+
+    void drawSequenceDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
+            final Detection selectedDetection){
+        // filter detections
+        DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
+        List<Detection> filteredDetections = Util.filterDetections(detections,filter);
+        // draw map detections
+        for (final Detection detection : filteredDetections) {
+            if (selectedDetection == null || (!detection.equals(selectedDetection))) {
+                drawDetection(graphics, mapView, detection, false);
+            }
+        }
+
+        if (selectedDetection != null) {
+            drawDetection(graphics, mapView, selectedDetection, true);
+        }
+    }
+
+
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
             final Detection selectedDetection, final boolean isTransparent) {
