@@ -128,15 +128,26 @@ public final class Util {
                 selectedPhoto.getPoint().getX() + RADIUS, selectedPhoto.getPoint().getY() + RADIUS);
         final Map<Double, Photo> candidateMap = new TreeMap<>();
         for (final Photo photo : photos) {
-            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getPoint())) {
+            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getPoint()) && isPointInActiveArea(
+                    photo.getPoint())) {
                 final double dist = selectedPhoto.getPoint().distance(photo.getPoint());
                 if (dist <= MAX_DISTANCE) {
                     candidateMap.put(dist, photo);
                 }
             }
         }
-        return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size)
-                : candidateMap.values();
+        return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size) :
+                candidateMap.values();
+    }
+
+    /**
+     * Checks if the given point is inside the active areas of the data layer.
+     * @param point - {@code LatLon} point to be checked
+     * @return true if the point is in the active area or false otherwise
+     */
+    public static boolean isPointInActiveArea(LatLon point) {
+        List<Bounds> activeAreas = BoundingBoxUtil.currentBounds();
+        return activeAreas.stream().anyMatch(area -> area.contains(point));
     }
 
     /**

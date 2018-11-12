@@ -72,6 +72,23 @@ public final class BoundingBoxUtil {
         return result;
     }
 
+    /**
+     * Returns a list of Bounds objects, representing the current search area. The method takes into consideration also
+     * the edit layer bounds. Use this method for segments.
+     *
+     * @return a list of {@code Bounds}
+     */
+    public static List<Bounds> currentBounds() {
+        List<Bounds> result = new ArrayList<>();
+        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+        if (osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
+            result.add(MainApplication.getMap().mapView.getRealBounds());
+        } else {
+            result = osmDataLayerBounds;
+        }
+        return result;
+    }
+
 
     private static List<Bounds> editLayerDataBounds() {
         List<Bounds> osmDataLayerBounds = null;

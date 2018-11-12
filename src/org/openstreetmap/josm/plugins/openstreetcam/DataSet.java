@@ -424,24 +424,35 @@ public final class DataSet {
     }
 
     /**
-     * Checks if the selected photo is the first photo of the sequence.
+     * Checks if the sequence has a previous photo in the active area.
      *
      * @return true/false
      */
     public boolean enablePreviousPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
-                && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex());
+                && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex()) &&
+                hasPreviousNextPhotoInActiveArea(-1);
     }
 
     /**
-     * Checks if the selected photo is the last photo of the sequence.
+     * Checks if the photo with the index formed by adding the incrementPosition to the selectedPhoto's index is in the
+     * currently active area.
+     * @param incrementPosition - +1 to check the next photo or -1 to check the previous photo.
+     * @return true if the photo is in the active area or false otherwise
+     */
+    private boolean hasPreviousNextPhotoInActiveArea(int incrementPosition) {
+        return Util.isPointInActiveArea(selectedSequence.getPhotos().get(selectedPhoto.getSequenceIndex() + incrementPosition).getPoint());
+    }
+
+    /**
+     * Checks if the sequence has a next photo in the active area.
      *
      * @return true/false
      */
     public boolean enableNextPhotoAction() {
         return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
                 && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex());
+                .equals(selectedPhoto.getSequenceIndex()) && hasPreviousNextPhotoInActiveArea(1);
     }
 
     /**

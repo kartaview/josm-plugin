@@ -330,6 +330,9 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         final Photo photo = DataSet.getInstance().getSelectedPhoto();
         if (photo != null) {
             Photo nextPhoto = DataSet.getInstance().sequencePhoto(photo.getSequenceIndex() + 1);
+            if (nextPhoto != null && !Util.isPointInActiveArea(nextPhoto.getPoint())) {
+                nextPhoto = null;
+            }
             if (nextPhoto != null && autoplaySettings.getLength() != null) {
                 autoplayDistance += photo.getPoint().greatCircleDistance(nextPhoto.getPoint());
                 if (autoplayDistance > autoplaySettings.getLength()) {
