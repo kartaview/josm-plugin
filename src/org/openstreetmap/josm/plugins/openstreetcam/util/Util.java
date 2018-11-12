@@ -211,7 +211,7 @@ public final class Util {
             boolean specificSigns =
                     filter.getSpecificSigns() == null || filter.getSpecificSigns().contains(detection.getSign());
             boolean modes = filter.getModes() == null || filter.getModes().contains(detection.getMode());
-            if (osmComparisons && editStatus && signType && specificSigns && modes) {
+            if (osmComparisons && editStatus && (signType || specificSigns) && modes) {
                 filteredDetections.add(detection);
             }
         }
