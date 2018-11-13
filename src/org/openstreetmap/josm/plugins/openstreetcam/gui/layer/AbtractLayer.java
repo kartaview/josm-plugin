@@ -74,10 +74,9 @@ abstract class AbtractLayer extends Layer {
         if (addSequenceMenuItem()) {
             actions.add(saveSequenceAction);
             actions.add(SeparatorLayerAction.INSTANCE);
-        } else {
-            actions.add(displayFilterAction);
-            actions.add(SeparatorLayerAction.INSTANCE);
         }
+        actions.add(displayFilterAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
         if (addPhotoDataSetMenuItems()) {
             actions.add(downloadPreviousPhotosAction);
             actions.add(downloadNextPhotosAction);
