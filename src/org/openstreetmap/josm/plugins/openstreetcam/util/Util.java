@@ -207,11 +207,12 @@ public final class Util {
             boolean editStatus =
                     filter.getEditStatuses() == null || filter.getEditStatuses().contains(detection.getEditStatus());
             boolean signType =
-                    filter.getSignTypes() == null || filter.getSignTypes().contains(detection.getSign().getType());
+                    filter.getSignTypes() != null && filter.getSignTypes().contains(detection.getSign().getType());
             boolean specificSigns =
-                    filter.getSpecificSigns() == null || filter.getSpecificSigns().contains(detection.getSign());
+                    filter.getSpecificSigns() != null && filter.getSpecificSigns().contains(detection.getSign());
+            boolean allDetections = filter.getSignTypes() == null && filter.getSpecificSigns() == null;
             boolean modes = filter.getModes() == null || filter.getModes().contains(detection.getMode());
-            if (osmComparisons && editStatus && (signType || specificSigns) && modes) {
+            if (osmComparisons && editStatus && (allDetections || signType || specificSigns) && modes) {
                 filteredDetections.add(detection);
             }
         }
