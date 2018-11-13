@@ -74,7 +74,7 @@ public final class BoundingBoxUtil {
 
     /**
      * Returns a list of Bounds objects, representing the current search area. The method takes into consideration also
-     * the edit layer bounds. Use this method for segments.
+     * the edit layer bounds.
      *
      * @return a list of {@code Bounds}
      */

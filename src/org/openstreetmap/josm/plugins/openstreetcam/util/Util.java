@@ -137,16 +137,17 @@ public final class Util {
             }
         }
         return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size) :
-                candidateMap.values();
+            candidateMap.values();
     }
 
     /**
      * Checks if the given point is inside the active areas of the data layer.
+     *
      * @param point - {@code LatLon} point to be checked
      * @return true if the point is in the active area or false otherwise
      */
-    public static boolean isPointInActiveArea(LatLon point) {
-        List<Bounds> activeAreas = BoundingBoxUtil.currentBounds();
+    public static boolean isPointInActiveArea(final LatLon point) {
+        final List<Bounds> activeAreas = BoundingBoxUtil.currentBounds();
         return activeAreas.stream().anyMatch(area -> area.contains(point));
     }
 
