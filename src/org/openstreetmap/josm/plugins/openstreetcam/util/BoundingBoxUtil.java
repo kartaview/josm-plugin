@@ -73,8 +73,8 @@ public final class BoundingBoxUtil {
     }
 
     /**
-     * Returns a list of Bounds objects, representing the current search area. The method takes into consideration also
-     * the edit layer bounds.
+     * Returns a list of Bounds objects, representing the current active area. If no area is active, The whole map is
+     * returned.
      *
      * @return a list of {@code Bounds}
      */
@@ -82,7 +82,7 @@ public final class BoundingBoxUtil {
         List<Bounds> result = new ArrayList<>();
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
-            result.add(MainApplication.getMap().mapView.getRealBounds());
+            result.add(new Bounds(-90, -180, 90, 180));
         } else {
             result = osmDataLayerBounds;
         }
