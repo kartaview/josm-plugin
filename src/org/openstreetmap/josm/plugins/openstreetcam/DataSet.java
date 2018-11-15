@@ -429,21 +429,10 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enablePreviousPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
-                && !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex())
-                && hasPreviousNextPhotoInActiveArea(-1);
-    }
-
-    /**
-     * Checks if the photo with the index formed by adding the incrementPosition to the selectedPhoto's index is in the
-     * currently active area.
-     *
-     * @param incrementPosition - +1 to check the next photo or -1 to check the previous photo.
-     * @return true if the photo is in the active area or false otherwise
-     */
-    private boolean hasPreviousNextPhotoInActiveArea(final int incrementPosition) {
-        return Util.isPointInActiveArea(
-                selectedSequence.getPhotos().get(selectedPhoto.getSequenceIndex() + incrementPosition).getPoint());
+        int selectedIndex = selectedSequence.getPhotos().indexOf(selectedPhoto);
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos() && !selectedSequence
+                .getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex()) && selectedIndex != -1
+                && Util.isPointInActiveArea(selectedSequence.getPhotos().get(selectedIndex - 1).getPoint());
     }
 
     /**
@@ -452,10 +441,11 @@ public final class DataSet {
      * @return true/false
      */
     public boolean enableNextPhotoAction() {
-        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()
-                && !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                .equals(selectedPhoto.getSequenceIndex())
-                && hasPreviousNextPhotoInActiveArea(1);
+        int selectedIndex = selectedSequence.getPhotos().indexOf(selectedPhoto);
+        return selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos() && !selectedSequence
+                .getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
+                .equals(selectedPhoto.getSequenceIndex()) && selectedIndex != -1 && Util
+                .isPointInActiveArea(selectedSequence.getPhotos().get(selectedIndex + 1).getPoint());
     }
 
     /**
