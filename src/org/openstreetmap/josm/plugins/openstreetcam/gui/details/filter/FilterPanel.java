@@ -35,6 +35,7 @@ import com.telenav.josm.common.gui.builder.LabelBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
@@ -109,6 +110,10 @@ class FilterPanel extends JPanel {
         } else {
             addUserFilter(filter.isOlnyUserData());
             addDateFilter(filter.getDate());
+        }
+        if(DataSet.getInstance().getSelectedSequence() != null){
+            pickerDate.setEnabled(false);
+            cbbUser.setEnabled(false);
         }
     }
 

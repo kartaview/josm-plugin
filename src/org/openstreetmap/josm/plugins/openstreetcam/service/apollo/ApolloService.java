@@ -66,7 +66,8 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(root);
     }
 
-    public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
+    public List<Detection> retrieveSequenceDetections(final Long sequenceId)
+            throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);

@@ -26,6 +26,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 
 
 /**
@@ -202,6 +203,32 @@ public final class Util {
         return UserIdentityManager.getInstance().isFullyIdentified()
                 && UserIdentityManager.getInstance().asUser().getId() > 0
                 ? UserIdentityManager.getInstance().asUser().getId() : null;
+    }
+
+    /**
+     * Filters the given detection list and return a new list containing the filtered detections.
+     * @param detections - list of detections to be filtered
+     * @param filter - the DetectionFilter to apply
+     * @return a new list of detections remained after filtering
+     */
+    public static List<Detection> filterDetections(final List<Detection> detections, final DetectionFilter filter) {
+        List<Detection> filteredDetections = new ArrayList<>();
+        for (Detection detection : detections) {
+            boolean osmComparisons = filter.getOsmComparisons() == null || filter.getOsmComparisons()
+                    .contains(detection.getOsmComparison());
+            boolean editStatus =
+                    filter.getEditStatuses() == null || filter.getEditStatuses().contains(detection.getEditStatus());
+            boolean signType =
+                    filter.getSignTypes() != null && filter.getSignTypes().contains(detection.getSign().getType());
+            boolean specificSigns =
+                    filter.getSpecificSigns() != null && filter.getSpecificSigns().contains(detection.getSign());
+            boolean allDetections = filter.getSignTypes() == null && filter.getSpecificSigns() == null;
+            boolean modes = filter.getModes() == null || filter.getModes().contains(detection.getMode());
+            if (osmComparisons && editStatus && (allDetections || signType || specificSigns) && modes) {
+                filteredDetections.add(detection);
+            }
+        }
+        return filteredDetections;
     }
 
     /**
