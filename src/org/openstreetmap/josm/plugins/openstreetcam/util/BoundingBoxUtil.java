@@ -72,6 +72,23 @@ public final class BoundingBoxUtil {
         return result;
     }
 
+    /**
+     * Returns a list of Bounds objects, representing the current active area. If no area is active, The whole map is
+     * returned.
+     *
+     * @return a list of {@code Bounds}
+     */
+    public static List<Bounds> currentBounds() {
+        List<Bounds> result = new ArrayList<>();
+        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+        if (osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
+            result.add(new Bounds(-90, -180, 90, 180));
+        } else {
+            result = osmDataLayerBounds;
+        }
+        return result;
+    }
+
 
     private static List<Bounds> editLayerDataBounds() {
         List<Bounds> osmDataLayerBounds = null;
