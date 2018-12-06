@@ -49,7 +49,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     public void mouseClicked(final MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
             SwingUtilities.invokeLater(() -> {
-                if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
+                if (event.getClickCount() == UNSELECT_CLICK_COUNT && DataSet.getInstance().hasSelectedSequence()) {
                     handleDataUnselection();
                 } else {
                     handleDataSelection(event);
