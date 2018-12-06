@@ -39,6 +39,14 @@ final class Formatter {
             sb.append(" by ").append("<a href='' target='_blank'>");
             sb.append(photo.getUsername()).append("</a>");
         }
+        if (photo.getDetections() != null && !photo.getDetections().isEmpty()) {
+            final int detectionsNr = photo.getDetections().size();
+            if(detectionsNr == 1) {
+                sb.append(" (1 detection).");
+            } else {
+                sb.append(" (").append(detectionsNr).append(" detections).");
+            }
+        }
         sb.append("</html>");
         return sb.toString();
     }
