@@ -20,6 +20,12 @@ final class RequestConstants {
     static final String RETRIEVE_SEQUENCE_DETECTIONS = "retrieveSequenceDetections";
     static final String RETRIEVE_PHOTO_DETECTIONS = "retrievePhotoDetections";
     static final String RETRIVE_DETECTION = "retrieveDetection";
+    static final String SEARCH_CLUSTERS = "searchClusters";
+    static final String RETRIEVE_CLUSTER = "retrieveCluster";
+    static final String RETRIEVE_CLUSTER_DETECTIONS = "retrieveClusterDetections";
+    static final String RETRIEVE_CLUSTER_PHOTOS = "retrieveClusterPhotos";
+    static final String RETRIEVE_PHOTO = "retrievePhoto";
+    static final String LIST_SIGNS = "listSigns";
 
     static final String NORTH = "north";
     static final String SOUTH = "south";
@@ -43,6 +49,7 @@ final class RequestConstants {
     static final String EDIT_STATUS_FIXED = "FIXED";
     static final String EDIT_STATUS_ALREADY_FIXED = "ALREADY_FIXED";
     static final String ID = "id";
+    static final String SIGN_INTERNAL_NAMES = "signInternalNames";
 
     static final String BLURRING_TYPE = "BLURRING";
 

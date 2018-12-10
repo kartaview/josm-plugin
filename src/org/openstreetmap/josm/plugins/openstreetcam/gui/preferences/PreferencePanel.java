@@ -21,6 +21,7 @@ import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
@@ -48,6 +49,7 @@ class PreferencePanel extends JPanel {
     private JSpinner spPhotoZoom;
     private JCheckBox cbManualSwitch;
     private JCheckBox cbHighQualityPhoto;
+    private JCheckBox agDisplayDetection;
     private JCheckBox cbDisplayTrack;
     private JCheckBox cbMouseHover;
     private JSpinner spMouseHoverDelay;
@@ -64,6 +66,7 @@ class PreferencePanel extends JPanel {
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         createMapViewSettings(preferenceSettings.getMapViewSettings());
         createPhotoSettingsComponents(preferenceSettings);
+        createClusterSettingsComponents(preferenceSettings.getClusterSettings());
         createTrackVisualizationSettings(preferenceSettings);
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
     }
@@ -116,6 +119,15 @@ class PreferencePanel extends JPanel {
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
+    private void createClusterSettingsComponents(final ClusterSettings settings) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAggregatedLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_AGGREGATED);
+        agDisplayDetection = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefAggregatedDisplayDetectionLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayDetectionLocations(), true);
+        add(agDisplayDetection, Constraints.CB_DISPLAY_DETECTION);
+    }
+
     private void createTrackVisualizationSettings(final PreferenceSettings settings) {
         final boolean enabled = !settings.getPhotoSettings().isMouseHoverFlag();
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefTrackLbl(), Font.PLAIN,
@@ -136,12 +148,12 @@ class PreferencePanel extends JPanel {
                 Constraints.LBL_AUTOPLAY_DELAY);
         final int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
                 .getTrackSettings().getAutoplaySettings().getDelay() > Config.getInstance().getAutoplayMinDelay()
-                        ? settings.getTrackSettings().getAutoplaySettings().getDelay()
+                ? settings.getTrackSettings().getAutoplaySettings().getDelay()
                         : Config.getInstance().getAutoplayMinDelay();
-        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
-                Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
-        add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
+                spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
+                        Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
+                        ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
+                add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
@@ -184,7 +196,7 @@ class PreferencePanel extends JPanel {
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
-
+        final ClusterSettings aggregatedSettings = new ClusterSettings(agDisplayDetection.isSelected());
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
@@ -192,7 +204,7 @@ class PreferencePanel extends JPanel {
                 new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
-        return new PreferenceSettings(mapViewSettings, photoSettings, trackSettings, cacheSettings);
+        return new PreferenceSettings(mapViewSettings, photoSettings, aggregatedSettings, trackSettings, cacheSettings);
     }
 
 

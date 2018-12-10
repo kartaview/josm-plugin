@@ -8,7 +8,6 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 
 
@@ -23,7 +22,7 @@ public class PhotoBuilder {
     private Long id;
     private Long sequenceId;
     private Integer sequenceIndex;
-    private LatLon location;
+    private LatLon point;
     private String name;
     private String largeThumbnailName;
     private String thumbnailName;
@@ -33,7 +32,6 @@ public class PhotoBuilder {
     private String username;
     private Long wayId;
     private String shotDate;
-    private List<Detection> detections;
 
 
     public PhotoBuilder() {}
@@ -50,8 +48,12 @@ public class PhotoBuilder {
         this.sequenceIndex = sequenceIndex;
     }
 
-    public void location(final Double latitude, final Double longitude) {
-        this.location = new LatLon(latitude, longitude);
+    public void point(final LatLon point) {
+        this.point = point;
+    }
+
+    public void point(final Double latitude, final Double longitude) {
+        this.point = new LatLon(latitude, longitude);
     }
 
     public void name(final String name) {
@@ -86,10 +88,6 @@ public class PhotoBuilder {
         this.shotDate = shotDate;
     }
 
-    public void detections(final List<Detection> detections) {
-        this.detections = detections;
-    }
-
     public void oriName(final String oriName) {
         this.oriName = oriName;
     }
@@ -106,8 +104,8 @@ public class PhotoBuilder {
         return sequenceIndex;
     }
 
-    LatLon getLocation() {
-        return location;
+    LatLon getPoint() {
+        return point;
     }
 
     String getName() {
@@ -140,10 +138,6 @@ public class PhotoBuilder {
 
     String getShotDate() {
         return shotDate;
-    }
-
-    List<Detection> getDetections() {
-        return detections;
     }
 
     String getOriName() {

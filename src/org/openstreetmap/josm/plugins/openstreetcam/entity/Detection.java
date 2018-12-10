@@ -10,7 +10,7 @@ import com.telenav.josm.common.entity.EntityUtil;
  * @author ioanao
  * @version $Revision$
  */
-public class Detection {
+public class Detection implements Comparable<Detection> {
 
     // setters are not required,since GSON sets the fields directly using reflection.
 
@@ -29,6 +29,7 @@ public class Detection {
     private OsmElement osmElement;
     private DetectionMode mode;
     private Author author;
+    private Double facing;
 
 
     public Detection(final Long id, final EditStatus editStatus) {
@@ -96,6 +97,10 @@ public class Detection {
         return author;
     }
 
+    public Double getFacing() {
+        return facing;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -114,5 +119,10 @@ public class Detection {
             result = EntityUtil.bothNullOrEqual(id, other.getId());
         }
         return result;
+    }
+
+    @Override
+    public int compareTo(final Detection detection) {
+        return detection.getLocationOnPhoto().surface().compareTo(locationOnPhoto.surface());
     }
 }

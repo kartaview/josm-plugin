@@ -28,11 +28,20 @@ final class Constants {
 
     /* constants used for drawing a sequence */
     static final Composite OPAQUE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
-    static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.20f);
+    static final Composite TRANSPARENT_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.10f);
+
     static final BasicStroke SEQUENCE_LINE = new BasicStroke(2.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    static final BasicStroke CLUSTER_DATA_LINE = new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
     static final Color SEQUENCE_LINE_COLOR = new Color(0, 143, 222);
+    static final Color CLUSTER_DATA_LINE_COLOR = new Color(255, 69, 0);
     static final int MIN_ARROW_ZOOM = 16;
     static final double ARROW_LENGTH = 3.5D;
+
+    static final double ZOOM_16 = 3.825;
+
+
+    static final double CLUSTER_EXTRAPOLATE_DISTANCE = 0.02;
 
     static final String BING_LAYER_NAME = "Bing aerial imagery";
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";

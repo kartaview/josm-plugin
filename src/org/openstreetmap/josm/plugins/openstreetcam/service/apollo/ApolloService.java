@@ -10,9 +10,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
@@ -23,6 +26,7 @@ import com.telenav.josm.common.argument.BoundingBox;
 
 
 /**
+ * Executes the operations of the ApolloService components.
  *
  * @author beataj
  * @version $Revision$
@@ -40,10 +44,18 @@ public class ApolloService extends BaseService {
 
     public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
             final DetectionFilter detectionFilter) throws ServiceException {
-        final String url = new HttpQueryBuilder().buildSearchQuery(area, date, osmUserId, detectionFilter);
+        final String url = new HttpQueryBuilder().buildSearchDetectionsQuery(area, date, osmUserId, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetections();
+    }
+
+    public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
+            throws ServiceException {
+        final String url = new HttpQueryBuilder().buildSearchClustersQuery(area, date, detectionFilter);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getClusters();
     }
 
     public void updateDetection(final Detection detection, final Contribution contribution) throws ServiceException {
@@ -54,7 +66,8 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(root);
     }
 
-    public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
+    public List<Detection> retrieveSequenceDetections(final Long sequenceId)
+            throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
@@ -74,5 +87,40 @@ public class ApolloService extends BaseService {
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getDetection();
+    }
+
+    public Cluster retrieveCluster(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getCluster();
+    }
+
+    public List<Detection> retrieveClusterDetections(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterDetectionsQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getDetections();
+    }
+
+    public List<Photo> retrieveClusterPhotos(final Long id) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrieveClusterPhotosQuery(id);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getPhotos();
+    }
+
+    public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
+        final String url = new HttpQueryBuilder().buildRetrievePhotoQuery(sequenceId, sequenceIndex);
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getPhoto();
+    }
+
+    public List<Sign> listSigns() throws ServiceException {
+        final String url = new HttpQueryBuilder().buildListSignsQuery();
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getSigns();
     }
 }

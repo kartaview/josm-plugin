@@ -1,8 +1,5 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
-
 /**
  * Defines the detection mode entity.
  *
@@ -11,19 +8,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  */
 public enum DetectionMode {
 
-    AUTOMATIC {
+    AUTOMATIC, MANUAL;
 
-        @Override
-        public String toString() {
-            return GuiConfig.getInstance().getDetectionAutomaticModeText();
-        }
-    },
-
-    MANUAL {
-
-        @Override
-        public String toString() {
-            return GuiConfig.getInstance().getDetectionManualModeText();
-        }
+    @Override
+    public String toString() {
+        return name().substring(0, 1) + name().substring(1).toLowerCase();
     }
 }

@@ -25,5 +25,5 @@ public interface DetectionSelectionObserver {
      *
      * @param detection the selected detection
      */
-    void selectDetection(final Detection detection);
+    void selectPhotoDetection(final Detection detection);
 }

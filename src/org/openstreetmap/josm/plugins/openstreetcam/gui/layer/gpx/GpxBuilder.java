@@ -72,7 +72,7 @@ final class GpxBuilder {
 
 
     private static WayPoint createWayPoint(final Photo photo) {
-        final WayPoint wayPoint = new WayPoint(photo.getLocation());
+        final WayPoint wayPoint = new WayPoint(photo.getPoint());
         if (photo.getShotDate() != null && !photo.getShotDate().isEmpty() && !photo.getShotDate().equals(EMPTY_DATE)) {
             final LocalDateTime dateTime =
                     LocalDateTime.parse(photo.getShotDate(), DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT));

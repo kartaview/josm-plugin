@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_ICON_VISIBILITY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -24,8 +25,9 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
@@ -54,6 +56,30 @@ public final class PreferenceManager {
         return INSTANCE;
     }
 
+    public void savePhotosSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.savePhotosSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadPhotosSearchErrorSuppressFlag() {
+        return loadManager.loadPhotosSearchErrorSuppressFlag();
+    }
+
+    public void saveDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveDetectionsSearchErrorSuppressFlag(flag);
+    }
+
+    public boolean loadDetectionsSearchErrorSuppressFlag() {
+        return loadManager.loadDetectionsSearchErrorSuppressFlag();
+    }
+
+    public boolean loadClustersSearchErrorSuppressFlag() {
+        return loadManager.loadClustersSearchErrorSuppressFlag();
+    }
+
+    public void saveClustersSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveClustersSearchErrorSuppressFlag(flag);
+    }
+
     /**
      * Loads the photo search error suppress flag. If this value is true, then all the future photo search service
      * errors will be suppressed.
@@ -73,10 +99,6 @@ public final class PreferenceManager {
         saveManager.savePhotosErrorSuppressFlag(flag);
     }
 
-    public void saveDetectionSearchErrorSuppressFlag(final boolean flag) {
-        saveManager.saveDetectionSearchErrorSuppressFlag(flag);
-    }
-
     public void saveSequenceDetectionsErrorFlag(final boolean flag) {
         saveManager.saveSequenceDetectionsErrorFlag(flag);
     }
@@ -87,10 +109,6 @@ public final class PreferenceManager {
 
     public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
         saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
-    }
-
-    public boolean loadDetectionSearchErrorSuppressFlag() {
-        return loadManager.loadDetectionSearchErrorSuppressFlag();
     }
 
     public boolean loadSequenceDetectionsErrorFlag() {
@@ -132,6 +150,14 @@ public final class PreferenceManager {
         saveManager.saveSegmentsErrorSuppressFlag(flag);
     }
 
+    public boolean loadListSignsErrorSuppressFlag() {
+        return loadManager.loadListSignErrorFlag();
+    }
+
+    public void saveListSignsErrorSuppressFlag(final boolean flag) {
+        saveManager.saveListSignErrorSuppressFlag(flag);
+    }
+
     /**
      * Saves the 'filtersChanged' flag to the preference file.
      *
@@ -165,8 +191,8 @@ public final class PreferenceManager {
      * @return a {@code PreferenceSettings} object
      */
     public PreferenceSettings loadPreferenceSettings() {
-        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadTrackSettings(),
-                loadCacheSettings());
+        return new PreferenceSettings(loadMapViewSettings(), loadPhotoSettings(), loadClusterSettings(),
+                loadTrackSettings(), loadCacheSettings());
     }
 
     /**
@@ -193,6 +219,10 @@ public final class PreferenceManager {
      */
     public PhotoSettings loadPhotoSettings() {
         return loadManager.loadPhotoSettings();
+    }
+
+    public ClusterSettings loadClusterSettings() {
+        return loadManager.loadClusterSettings();
     }
 
     public SequenceSettings loadTrackSettings() {
@@ -229,6 +259,7 @@ public final class PreferenceManager {
         if (preferenceSettings != null) {
             saveManager.saveMapViewSettings(preferenceSettings.getMapViewSettings());
             saveManager.savePhotoSettings(preferenceSettings.getPhotoSettings());
+            saveManager.saveClusterSettings(preferenceSettings.getClusterSettings());
             saveManager.saveTrackSettings(preferenceSettings.getTrackSettings());
             saveManager.saveCacheSettings(preferenceSettings.getCacheSettings());
         }
@@ -309,6 +340,10 @@ public final class PreferenceManager {
         return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
     }
 
+    public boolean isDisplayDetectionLocationFlag(final String key) {
+        return DISPLAY_DETECTION_LOCATIONS.equals(key);
+    }
+
     /**
      * Verifies if the high quality photo user preference settings flag has been selected or not.
      *
@@ -355,21 +390,21 @@ public final class PreferenceManager {
     }
 
     /**
-     * Saves the selected data type to the preference file.
+     * Saves the selected map view type to the preference file.
      *
-     * @param dataType the currently selected {@code DataType}
+     * @param mapViewType the currently selected {@code MapViewType}
      */
-    public void saveDataType(final DataType dataType) {
-        saveManager.saveDataType(dataType);
+    public void saveMapViewType(final MapViewType mapViewType) {
+        saveManager.saveMapViewType(mapViewType);
     }
 
     /**
-     * Loads the data type.
+     * Loads the map view type.
      *
-     * @return a {@code DataType} object
+     * @return a {@code MapViewType} object
      */
-    public DataType loadDataType() {
-        return loadManager.loadDataType();
+    public MapViewType loadMapViewType() {
+        return loadManager.loadMapViewType();
     }
 
     /**

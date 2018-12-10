@@ -8,7 +8,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity;
 
 import org.openstreetmap.josm.data.StructUtils.StructEntry;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.SignType;
 
 
 /**
@@ -25,8 +24,8 @@ public class SignTypeEntry {
     public SignTypeEntry() {}
 
 
-    public SignTypeEntry(final SignType signType) {
-        this.name = signType.name();
+    public SignTypeEntry(final String signType) {
+        this.name = signType;
     }
 
     public String getName() {

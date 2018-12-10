@@ -46,6 +46,7 @@ public abstract class BaseService {
     /**
      * Executes a HTTP POST method and reads the service response. The response is transformed to the specified type.
      *
+     * @param <T> represents the type the objects that will be returned by the POST method
      * @param url represents the service URL
      * @param arguments represents the request's body
      * @param responseType represents the response type
@@ -112,6 +113,7 @@ public abstract class BaseService {
     /**
      * Read the results from the given list of {@code Future}s.
      *
+     * @param <T> represents the type the objects that will be read
      * @param futures a list of {@code Future}s containing the result of parallel executed threads
      * @return a set of objects of the {@code T}
      * @throws ServiceException if the thread execution failed or if the process was interrupted.

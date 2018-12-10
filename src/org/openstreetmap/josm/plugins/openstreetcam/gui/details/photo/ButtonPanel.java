@@ -20,23 +20,21 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.util.GuiHelper;
-import org.openstreetmap.josm.plugins.openstreetcam.DownloadWayTask;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.DataTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -53,7 +51,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements NearbyPhotoObservable, DataTypeChangeObservable, LocationObservable,
+class ButtonPanel extends JPanel implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable,
 SequenceObservable, SequenceAutoplayObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
@@ -75,7 +73,7 @@ SequenceObservable, SequenceAutoplayObservable {
 
     /* notifies the plugin main class */
     private NearbyPhotoObserver nearbyPhotoObserver;
-    private DataTypeChangeObserver dataUpdateObserver;
+    private MapViewTypeChangeObserver dataUpdateObserver;
     private LocationObserver locationObserver;
     private SequenceObserver sequenceObserver;
     private SequenceAutoplayObserver sequenceAutoplayObserver;
@@ -103,7 +101,7 @@ SequenceObservable, SequenceAutoplayObservable {
                 GuiConfig.getInstance().getBtnDataSwitchImageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
         btnDataSwitch =
                 ButtonBuilder.build(action, IconConfig.getInstance().getManualSwitchImageIcon(), tooltip, false);
-        btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+        btnDataSwitch.setActionCommand(MapViewType.ELEMENT.toString());
         if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
             add(btnDataSwitch);
         }
@@ -180,12 +178,11 @@ SequenceObservable, SequenceAutoplayObservable {
             btnWebPage.setEnabled(true);
             final boolean autoplayStartedFlag = PreferenceManager.getInstance().loadAutoplayStartedFlag();
             btnLocation.setEnabled(!autoplayStartedFlag);
-            if (photo.getWayId() != null) {
-                btnMatchedWay.setEnabled(!autoplayStartedFlag);
-            }
             if (!autoplayStartedFlag) {
                 updateAutoplayButton(AutoplayAction.START);
             }
+            final boolean matchedWayEnabled = photo.getWayId() != null;
+            btnMatchedWay.setEnabled(matchedWayEnabled);
         } else {
             enableSequenceActions(false, false, null);
             btnWebPage.setEnabled(false);
@@ -225,19 +222,19 @@ SequenceObservable, SequenceAutoplayObservable {
      *
      * @param dataType a {@code DataType} specifies the currently displayed data type
      */
-    void updateDataSwitchButton(final DataType dataType) {
-        if (dataType.equals(DataType.PHOTO)) {
+    void updateDataSwitchButton(final MapViewType dataType) {
+        if (dataType.equals(MapViewType.ELEMENT)) {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
             final String tooltip = GuiConfig.getInstance().getBtnDataSwitchSegmentTlt().replaceAll(SHORTCUT,
                     ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
             btnDataSwitch.setToolTipText(tooltip);
-            btnDataSwitch.setActionCommand(DataType.SEGMENT.toString());
+            btnDataSwitch.setActionCommand(MapViewType.COVERAGE.toString());
         } else {
             btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
             final String tooltip = GuiConfig.getInstance().getBtnDataSwitchImageTlt().replaceAll(SHORTCUT,
                     ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
             btnDataSwitch.setToolTipText(tooltip);
-            btnDataSwitch.setActionCommand(DataType.PHOTO.toString());
+            btnDataSwitch.setActionCommand(MapViewType.ELEMENT.toString());
         }
         revalidate();
         repaint();
@@ -320,12 +317,12 @@ SequenceObservable, SequenceAutoplayObservable {
     }
 
     @Override
-    public void registerObserver(final DataTypeChangeObserver dataUpdateObserver) {
+    public void registerObserver(final MapViewTypeChangeObserver dataUpdateObserver) {
         this.dataUpdateObserver = dataUpdateObserver;
     }
 
     @Override
-    public void notifyDataUpdateObserver(final DataType dataType) {
+    public void notifyDataUpdateObserver(final MapViewType dataType) {
         dataUpdateObserver.update(dataType);
     }
 
@@ -364,8 +361,8 @@ SequenceObservable, SequenceAutoplayObservable {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            DataType dataType = DataType.getDataType(event.getActionCommand());
-            dataType = dataType == null ? DataType.getDataType(btnDataSwitch.getActionCommand()) : dataType;
+            MapViewType dataType = MapViewType.getDataType(event.getActionCommand());
+            dataType = dataType == null ? MapViewType.getDataType(btnDataSwitch.getActionCommand()) : dataType;
             notifyDataUpdateObserver(dataType);
             updateDataSwitchButton(dataType);
         }
@@ -515,36 +512,26 @@ SequenceObservable, SequenceAutoplayObservable {
                     OpenBrowser.displayUrl(new URI(link.toString()));
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
-                            GuiConfig.getInstance().getErrorPhotoPageText(),
-                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                            GuiConfig.getInstance().getErrorPhotoPageText(), GuiConfig.getInstance().getErrorTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
 
 
-    private final class DownloadMatchedWayId extends JosmAction {
+    private final class DownloadMatchedWayId extends DownloadMatchedOsmElement {
 
         private static final long serialVersionUID = 7626759776502632881L;
 
         private DownloadMatchedWayId() {
-            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), null, GuiConfig.getInstance().getBtnMatchedWayTlt(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnMatchedWayShortcutTlt()),
-                    true);
+            super(GuiConfig.getInstance().getBtnMatchedWayTlt(), GuiConfig.getInstance().getBtnMatchedWayTlt());
         }
 
         @Override
-        public void actionPerformed(final ActionEvent event) {
-            if (photo != null && photo.getWayId() != null) {
-                final PrimitiveId wayId = new SimplePrimitiveId(photo.getWayId(), OsmPrimitiveType.WAY);
-                final boolean downloaded = Util.editLayerContainsWay(wayId);
-                if (downloaded) {
-                    GuiHelper.runInEDT(() -> MainApplication.getLayerManager().getEditDataSet().setSelected(wayId));
-                } else {
-                    final DownloadWayTask task = new DownloadWayTask(wayId);
-                    MainApplication.worker.submit(task);
-                }
-            }
+        protected PrimitiveId getPrimitiveId() {
+            final Long wayId = photo != null ? photo.getWayId() : null;
+            return wayId != null ? new SimplePrimitiveId(wayId, OsmPrimitiveType.WAY) : null;
         }
     }
 }

@@ -37,6 +37,8 @@ public final class GuiConfig extends BaseConfig {
     private final String prefImageHighQualityLbl;
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
+    private final String prefAggregatedLbl;
+    private final String prefAggregatedDisplayDetectionLbl;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -76,20 +78,21 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
-    private final String dlgFilterPhotoTypeLbl;
+    private final String dlgFilterDataTypeLbl;
     private final String dlgFilterDetectionLbl;
     private final String dlgFilterOsmComparisonLbl;
     private final String dlgFilterModeLbl;
-    private final String dlgFilterModeAutomaticTxt;
-    private final String dlgFilterModeManualTxt;
     private final String dlgFilterEditStatusLbl;
     private final String dlgFilterDetectionTypeLbl;
     private final String dlgFilterDataTypeImageTxt;
     private final String dlgFilterDataTypeDetectionsTxt;
+    private final String dlgFilterDataTypeAggregatedDetectionsTxt;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
     private final String btnCancelLbl;
+    private final String btnSelectLbl;
+    private final String btnResetLbl;
 
     private final String errorTitle;
     private final String errorPhotoListText;
@@ -104,6 +107,8 @@ public final class GuiConfig extends BaseConfig {
     private final String errorSegmentListText;
     private final String errorDetectionRetrieveText;
     private final String errorDetectionUpdateText;
+    private final String errorClusterRetrieveText;
+    private final String errorListSignsText;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -126,6 +131,7 @@ public final class GuiConfig extends BaseConfig {
     private final String gpxTrackDescription;
 
     private final String detectionDialogTitleName;
+    private final String clusterDialogTitleName;
     private final String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
     private final String btnAlreadyFixedDetectionShortcutText;
@@ -137,6 +143,10 @@ public final class GuiConfig extends BaseConfig {
     private final String btnOtherActionOnDetection;
     private final String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
+    private final String btnClusterNextShortcutText;
+    private final String btnClusterPreviousShortcutText;
+    private final String btnClusterMatchedDataTlt;
+    private final String btnClusterMatchedDataShortcutText;
 
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
@@ -154,10 +164,13 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionChangedOnOsmText;
     private final String detectionSameOnOsmText;
     private final String detectionUnknownOnOsmText;
+    private final String detectionFacingText;
     private final String dialogAddCommentText;
     private final String authenticationNeededErrorMessage;
     private final String detectionCreatedDate;
     private final String detectionUpdatedDate;
+    private final String clusterDetectionsLbl;
+    private final String detectionIdLbl;
 
 
     private GuiConfig() {
@@ -178,6 +191,8 @@ public final class GuiConfig extends BaseConfig {
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
+        prefAggregatedLbl = readProperty("preference.aggregated.lbl");
+        prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -217,18 +232,19 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterLoginWarningLbl = readProperty("filter.login.warning.lbl");
         dlgFilterDetectionLbl = readProperty("filter.detection.lbl");
         dlgFilterModeLbl = readProperty("filter.mode.lbl");
-        dlgFilterModeAutomaticTxt = readProperty("filter.mode.automatic");
-        dlgFilterModeManualTxt = readProperty("filter.mode.manual");
-        dlgFilterPhotoTypeLbl = readProperty("filter.photoType.lbl");
+        dlgFilterDataTypeLbl = readProperty("filter.dataType.lbl");
         dlgFilterOsmComparisonLbl = readProperty("filter.osmComparison.lbl");
         dlgFilterEditStatusLbl = readProperty("filter.editStatus.lbl");
         dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
         dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
+        dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
         btnCancelLbl = readProperty("btn.cancel.lbl");
+        btnSelectLbl = readProperty("btn.select.lbl");
+        btnResetLbl = readProperty("btn.reset.lbl");
 
         errorTitle = readProperty("error.title");
         errorPhotoListText = readProperty("error.photo.list");
@@ -241,6 +257,8 @@ public final class GuiConfig extends BaseConfig {
         errorSequenceSaveText = readProperty("error.track.save");
         errorDetectionRetrieveText = readProperty("error.detection.retrieve");
         errorDetectionUpdateText = readProperty("error.detection.update");
+        errorClusterRetrieveText = readProperty("error.cluster.retrieve");
+        errorListSignsText = readProperty("error.sign.list");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
         warningTitle = readProperty("warning.title");
@@ -275,8 +293,13 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
+        btnClusterNextShortcutText = readProperty("btn.cluster.next.shortcut.text");
+        btnClusterPreviousShortcutText = readProperty("btn.cluster.previous.shortcut.text");
+        btnClusterMatchedDataTlt = readProperty("btn.cluster.matchedData.tlt");
+        btnClusterMatchedDataShortcutText = readProperty("btn.cluster.matchedData.shortcut.text");
 
         detectionDialogTitleName = readProperty("detection.dialog.title");
+        clusterDialogTitleName = readProperty("cluster.dialog.title");
         detectedDetectionText = readProperty("detection.detected.text");
         detectionOnOsmText = readProperty("detection.osm.text");
         detectionModeText = readProperty("detection.mode.text");
@@ -294,10 +317,13 @@ public final class GuiConfig extends BaseConfig {
         detectionChangedOnOsmText = readProperty("detection.osm.changed.value");
         detectionSameOnOsmText = readProperty("detection.osm.same.value");
         detectionUnknownOnOsmText = readProperty("detection.osm.unknown.value");
+        detectionFacingText = readProperty("detection.facing.text");
         dialogAddCommentText = readProperty("detection.dialog.comment.text");
         authenticationNeededErrorMessage = readProperty("error.detection.authentication");
         detectionCreatedDate = readProperty("detection.date.created");
         detectionUpdatedDate = readProperty("detection.date.updated");
+        clusterDetectionsLbl = readProperty("cluster.detections.lbl");
+        detectionIdLbl = readProperty("detection.id");
     }
 
     public static GuiConfig getInstance() {
@@ -355,6 +381,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefMouseHoverDelayLbl() {
         return prefMouseHoverDelayLbl;
+    }
+
+    public String getPrefAggregatedLbl() {
+        return prefAggregatedLbl;
+    }
+
+    public String getPrefAggregatedDisplayDetectionLbl() {
+        return prefAggregatedDisplayDetectionLbl;
     }
 
     public String getPrefTrackLbl() {
@@ -445,8 +479,8 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDetectionLbl;
     }
 
-    public String getDlgFilterPhotoTypeLbl() {
-        return dlgFilterPhotoTypeLbl;
+    public String getDlgFilterDataTypeLbl() {
+        return dlgFilterDataTypeLbl;
     }
 
     public String getDlgFilterOsmComparisonLbl() {
@@ -455,14 +489,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterModeLbl() {
         return dlgFilterModeLbl;
-    }
-
-    public String getDlgFilterModeAutomaticTxt() {
-        return dlgFilterModeAutomaticTxt;
-    }
-
-    public String getDlgFilterModeManualTxt() {
-        return dlgFilterModeManualTxt;
     }
 
     public String getDlgFilterEditStatusLbl() {
@@ -483,6 +509,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnCancelLbl() {
         return btnCancelLbl;
+    }
+
+    public String getBtnSelectLbl() {
+        return btnSelectLbl;
+    }
+
+    public String getBtnResetLbl() {
+        return btnResetLbl;
     }
 
     public String getErrorTitle() {
@@ -523,6 +557,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorDetectionUpdateText() {
         return errorDetectionUpdateText;
+    }
+
+    public String getErrorClusterRetrieveText() {
+        return errorClusterRetrieveText;
+    }
+
+    public String getErrorListSignsText() {
+        return errorListSignsText;
     }
 
     public String getIncorrectDateFilterText() {
@@ -677,6 +719,22 @@ public final class GuiConfig extends BaseConfig {
         return btnOtherActionOnDetectionTlt;
     }
 
+    public String getBtnClusterNextShortcutText() {
+        return btnClusterNextShortcutText;
+    }
+
+    public String getBtnClusterPreviousShortcutText() {
+        return btnClusterPreviousShortcutText;
+    }
+
+    public String getBtnClusterMatchedDataTlt() {
+        return btnClusterMatchedDataTlt;
+    }
+
+    public String getBtnClusterMatchedDataShortcutText() {
+        return btnClusterMatchedDataShortcutText;
+    }
+
     public String getDetectedDetectionText() {
         return detectedDetectionText;
     }
@@ -793,7 +851,27 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDataTypeDetectionsTxt;
     }
 
+    public String getDlgFilterDataTypeAggregatedDetectionsTxt() {
+        return dlgFilterDataTypeAggregatedDetectionsTxt;
+    }
+
     public String getDialogAddCommentText() {
         return dialogAddCommentText;
+    }
+
+    public String getClusterDetectionsLbl() {
+        return clusterDetectionsLbl;
+    }
+
+    public String getClusterDialogTitleName() {
+        return clusterDialogTitleName;
+    }
+
+    public String getDetectionFacingText() {
+        return detectionFacingText;
+    }
+
+    public String getDetectionIdLbl() {
+        return detectionIdLbl;
     }
 }

@@ -12,7 +12,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.B
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.MAPBOX_LAYER_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.OPAQUE_ALPHA;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEGMENT_TRANSPARENCY;
-import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEQUENCE_LINE_COLOR;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map.Entry;
@@ -80,7 +79,7 @@ final class PaintUtil {
         return transparency;
     }
 
-    static Color sequenceColor(final MapView mapView) {
+    static Color lineColor(final MapView mapView, final Color color) {
         String mapLayerName = "";
         if (mapView.getLayerManager().getActiveLayer() instanceof ImageryLayer) {
             mapLayerName = ((ImageryLayer) mapView.getLayerManager().getActiveLayer()).getInfo().getName();
@@ -92,7 +91,7 @@ final class PaintUtil {
                 }
             }
         }
-        return mapLayerName.equals(BING_LAYER_NAME) || mapLayerName.equals(MAPBOX_LAYER_NAME)
-                ? SEQUENCE_LINE_COLOR.brighter() : SEQUENCE_LINE_COLOR.darker();
+        return mapLayerName.equals(BING_LAYER_NAME) || mapLayerName.equals(MAPBOX_LAYER_NAME) ? color.brighter()
+                : color.darker();
     }
 }

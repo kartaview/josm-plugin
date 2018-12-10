@@ -10,14 +10,18 @@ package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.ImageDataType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
@@ -45,7 +49,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     public void mouseClicked(final MouseEvent event) {
         if (SwingUtilities.isLeftMouseButton(event) && selectionAllowed()) {
             SwingUtilities.invokeLater(() -> {
-                if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
+                if (event.getClickCount() == UNSELECT_CLICK_COUNT && DataSet.getInstance().hasSelectedSequence()) {
                     handleDataUnselection();
                 } else {
                     handleDataSelection(event);
@@ -55,21 +59,85 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private void handleDataSelection(final MouseEvent event) {
-        Detection detection = DataSet.getInstance().nearbyDetection(event.getPoint());
-        Photo photo;
-        if (detection != null) {
-            photo = loadDetectionPhoto(detection);
-            detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+        final Cluster cluster = DataSet.getInstance().nearbyCluster(event.getPoint());
+        if (cluster != null) {
+            handleClusterSelection(cluster);
         } else {
-            photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
-            if (photo != null) {
-                enhancePhotoWithDetections(photo);
-                detection = photoSelectedDetection(photo);
+            Detection detection;
+            Photo photo;
+            detection = DataSet.getInstance().nearbyDetection(event.getPoint());
+            if (detection != null) {
+                photo = loadDetectionPhoto(detection);
+                detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+            } else {
+                photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
+                if (photo != null) {
+                    if (DataSet.getInstance().photoBelongsToSelectedCluster(photo)) {
+                        final Optional<Detection> clusterDetection = DataSet.getInstance()
+                                .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
+                        detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
+                        photo = enhanceClusterPhoto(photo, detection);
+                    } else {
+                        enhancePhoto(photo);
+                        detection = photoSelectedDetection(photo);
+                    }
+                }
+            }
+            DataSet.getInstance().selectNearbyPhotos(photo);
+            if (photo != null || detection != null) {
+                handleDataSelection(photo, detection, null, true);
             }
         }
-        if (photo != null || detection != null) {
-            handleDataSelection(photo, detection, true);
+    }
+
+
+    Photo enhanceClusterPhoto(final Photo clusterPhoto, final Detection detection) {
+        // special case we need the complete Photo object and part of it needs to be loaded from OSC
+        final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
+                clusterPhoto.getSequenceIndex());
+        photo.setHeading(clusterPhoto.getHeading());
+        enhancePhoto(photo);
+        if (detection != null) {
+            if (photo.getDetections() == null) {
+                photo.setDetections(Collections.singletonList(detection));
+            } else if (!photo.getDetections().contains(detection)) {
+                photo.getDetections().add(detection);
+            }
         }
+        return photo;
+    }
+
+
+    private void handleClusterSelection(final Cluster selectedCluster) {
+        final Cluster cluster = enhanceCluster(selectedCluster);
+
+        // select photo belonging to the first detection
+        final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
+        Photo clusterPhoto = null;
+        if (clusterDetection != null) {
+            final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster, clusterDetection.getSequenceId(),
+                    clusterDetection.getSequenceIndex());
+            if (photo.isPresent()) {
+                clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
+            }
+        }
+        DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
+        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
+    }
+
+    private Cluster enhanceCluster(final Cluster selectedCluster) {
+        final Cluster cluster = ServiceHandler.getInstance().retrieveClusterDetails(selectedCluster.getId());
+        final ClusterBuilder builder = new ClusterBuilder(selectedCluster);
+        if (cluster.getOsmElement() != null) {
+            builder.osmElement(cluster.getOsmElement());
+        }
+        if (cluster.getPhotos() != null) {
+            builder.photos(cluster.getPhotos());
+        }
+        if (cluster.getDetections() != null) {
+            builder.detections(cluster.getDetections());
+        }
+        return builder.build();
     }
 
     Detection photoSelectedDetection(final Photo photo) {
@@ -80,25 +148,35 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         return detection;
     }
 
-    void enhancePhotoWithDetections(final Photo photo) {
-        if (photo != null && PreferenceManager.getInstance().loadSearchFilter().getDataTypes()
-                .contains(ImageDataType.DETECTIONS)) {
-            final List<Detection> detections = loadPhotoDetections(photo);
-            photo.setDetections(detections);
+
+    void enhancePhoto(final Photo photo) {
+        if (photo != null) {
+            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                final List<Detection> detections = loadPhotoDetections(photo);
+                photo.setDetections(detections);
+            }
+            final Photo photoWithMatching =
+                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+            if (photoWithMatching != null) {
+                photo.setMatching(photoWithMatching.getMatching());
+            }
         }
     }
 
     private Photo loadDetectionPhoto(final Detection detection) {
-        Photo photo = DataSet.getInstance().getPhoto(detection.getSequenceId(), detection.getSequenceIndex());
-        if (photo == null) {
+        final Optional<Photo> dataSetPhoto =
+                DataSet.getInstance().detectionPhoto(detection.getSequenceId(), detection.getSequenceIndex());
+        Photo photo;
+        if (dataSetPhoto.isPresent()) {
+            photo = dataSetPhoto.get();
+        } else {
             photo = ServiceHandler.getInstance().retrievePhotoDetails(detection.getSequenceId(),
                     detection.getSequenceIndex());
         }
-        if (photo != null) {
-            final List<Detection> detections = loadPhotoDetections(photo);
-            photo.setDetections(detections);
-        }
-        return photo;
+        final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
+                ? Collections.singletonList(detection) : loadPhotoDetections(photo);
+                photo.setDetections(detections);
+                return photo;
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {
@@ -161,16 +239,28 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 || (DataSet.getInstance().hasDetections() || DataSet.getInstance().hasPhotos());
     }
 
-
+    /**
+     * Handles the situation when the previously selected data is unselected.
+     */
     abstract void handleDataUnselection();
 
-    abstract void handleDataSelection(final Photo photo, final Detection detection,
+    /**
+     * Handles the situation when a new data element is selected from the map.
+     *
+     * @param photo represents the currently selected photo
+     * @param detection represents the currently selected detection
+     * @param cluster represents the currently selected cluster
+     * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
+     */
+    abstract void handleDataSelection(final Photo photo, final Detection detection, Cluster cluster,
             final boolean displayLoadingMessage);
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.
      *
-     * @param photo a {@code Photo} represents the selected photo
+     * @param photo represents the photo to be selected
+     * @param photoSize represents the photo size to be displayed
+     * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
      */
-    public abstract void selectPhoto(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage);
+    public abstract void selectPhoto(final Photo photo, final PhotoSize photoSize, final boolean displayLoadingMessage);
 }
