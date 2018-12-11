@@ -50,7 +50,7 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
         if (value != null) {
             add(LabelBuilder.build(label, Font.BOLD, ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT,
                     SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, LINE_HEIGHT)));
-            final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(value.toString());
+            final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(value.toString()) * 2;
             add(TextComponentBuilder.buildTextArea(value.toString(), Font.PLAIN, Color.white, false,
                     new Rectangle(widthLbl, getPnlY(), widthVal, LINE_HEIGHT)));
             setPnlWidth(widthLbl + widthVal);
