@@ -23,6 +23,7 @@
 	<target name="init">
 		<delete dir="${plugin.build.dir}" />
 		<delete dir="${plugin.apidoc.dir}" />
+		<delete dir="${plugin.dist.dir}" />
 		<mkdir dir="${plugin.build.dir}" />
 	</target>
 
