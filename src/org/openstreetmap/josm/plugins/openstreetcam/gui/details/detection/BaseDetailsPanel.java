@@ -30,6 +30,8 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
 
     private static final long serialVersionUID = -5651455515267347282L;
     private static final int SIGN_VALUE_EXTRA_WIDTH = 10;
+    private static final int LINE_HEIGHT = 25;
+    private static final int EXTRA_Y = 4;
 
     void addSignType(final String label, final Sign sign, final int widthLbl) {
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign, true);
@@ -52,7 +54,7 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
                     SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, LINE_HEIGHT)));
             final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(value.toString()) * 2;
             add(TextComponentBuilder.buildTextArea(value.toString(), Font.PLAIN, Color.white, false,
-                    new Rectangle(widthLbl, getPnlY(), widthVal, LINE_HEIGHT)));
+                    new Rectangle(widthLbl, getPnlY() + EXTRA_Y, widthVal, LINE_HEIGHT)));
             setPnlWidth(widthLbl + widthVal);
             incrementPnlY();
         }
