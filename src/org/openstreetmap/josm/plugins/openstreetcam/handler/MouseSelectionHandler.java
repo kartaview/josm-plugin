@@ -95,13 +95,15 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         // special case we need the complete Photo object and part of it needs to be loaded from OSC
         final Photo photo = ServiceHandler.getInstance().retrievePhotoDetails(clusterPhoto.getSequenceId(),
                 clusterPhoto.getSequenceIndex());
-        photo.setHeading(clusterPhoto.getHeading());
-        enhancePhoto(photo);
-        if (detection != null) {
-            if (photo.getDetections() == null) {
-                photo.setDetections(Collections.singletonList(detection));
-            } else if (!photo.getDetections().contains(detection)) {
-                photo.getDetections().add(detection);
+        if (photo != null) {
+            photo.setHeading(clusterPhoto.getHeading());
+            enhancePhoto(photo);
+            if (detection != null) {
+                if (photo.getDetections() == null) {
+                    photo.setDetections(Collections.singletonList(detection));
+                } else if (!photo.getDetections().contains(detection)) {
+                    photo.getDetections().add(detection);
+                }
             }
         }
         return photo;
@@ -175,8 +177,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
         final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
                 ? Collections.singletonList(detection) : loadPhotoDetections(photo);
-                photo.setDetections(detections);
-                return photo;
+        photo.setDetections(detections);
+        return photo;
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {
