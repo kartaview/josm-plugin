@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
+import org.openstreetmap.josm.tools.Platform;
 import com.telenav.josm.common.gui.BasicInfoPanel;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.gui.builder.TextComponentBuilder;
@@ -30,6 +31,8 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
 
     private static final long serialVersionUID = -5651455515267347282L;
     private static final int SIGN_VALUE_EXTRA_WIDTH = 10;
+    private static final int LINE_HEIGHT = 25;
+    private static final int EXTRA_Y = 4;
 
     void addSignType(final String label, final Sign sign, final int widthLbl) {
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign, true);
@@ -50,9 +53,12 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
         if (value != null) {
             add(LabelBuilder.build(label, Font.BOLD, ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT,
                     SwingConstants.TOP, new Rectangle(RECT_X, getPnlY(), widthLbl, LINE_HEIGHT)));
-            final int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(value.toString()) * 2;
+            final Platform platform = Platform.determinePlatform();
+            int widthVal = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(value.toString());
+            widthVal = platform.equals(Platform.WINDOWS) ? widthVal * 2 : widthVal;
+            final int yVal = platform.equals(Platform.OSX) ? getPnlY() + EXTRA_Y : getPnlY();
             add(TextComponentBuilder.buildTextArea(value.toString(), Font.PLAIN, Color.white, false,
-                    new Rectangle(widthLbl, getPnlY(), widthVal, LINE_HEIGHT)));
+                    new Rectangle(widthLbl, yVal, widthVal, LINE_HEIGHT)));
             setPnlWidth(widthLbl + widthVal);
             incrementPnlY();
         }
