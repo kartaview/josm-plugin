@@ -26,7 +26,7 @@ class DetectionTypeList extends JPanel {
             final Map<String, List<Sign>> allSigns = DetectionTypeContent.getInstance().getContent();
             for (final String key : allSigns.keySet()) {
                 boolean typeSelected = false;
-                if(selectedSignTypes != null && !selectedSignTypes.isEmpty()){
+                if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
                     typeSelected = selectedSignTypes.contains(key);
                 }
                 List<Sign> selectedSigns = null;
@@ -60,6 +60,10 @@ class DetectionTypeList extends JPanel {
         for (final DetectionTypeListItem detectionItem : listItems) {
             detectionItem.selectAll();
         }
+    }
+
+    public void setRegionItems(final String region){
+        //TODO handle when a region is selected. Only the signs from that region should be displayed.
     }
 
     List<String> getSelectedTypes() {

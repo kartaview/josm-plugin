@@ -346,6 +346,24 @@ public final class ServiceHandler extends SearchServiceHandler {
         return result;
     }
 
+    /**
+     * Retrieves the list of Sign regions.
+     *
+     * @return a list of {@code String}s representing the supported regions
+     */
+    public List<String> listRegions() {
+        List<String> result = null;
+        try{
+            result = apolloService.listRegions();
+        }catch (final ServiceException e){
+            if (!PreferenceManager.getInstance().loadListSignRegionsSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorListRegionsText());
+                PreferenceManager.getInstance().saveListSignRegionErrorSuppressFlag(flag);
+            }
+        }
+        return result;
+    }
+
     private <T> Set<T> readResult(final List<Future<List<T>>> futures) throws ServiceException {
         final Set<T> result = new HashSet<>();
         for (final Future<List<T>> future : futures) {

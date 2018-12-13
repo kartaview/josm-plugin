@@ -26,22 +26,25 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
  */
 public class DetectionFilter {
 
-    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null);
+    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
     private final List<String> signTypes;
     private final List<Sign> specificSigns;
     private final List<DetectionMode> modes;
+    private final String region;
 
 
     public DetectionFilter(final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
-            final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes) {
+            final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes,
+            final String region) {
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
         this.specificSigns = specificSigns;
         this.modes = modes;
+        this.region = region;
     }
 
 
@@ -68,6 +71,10 @@ public class DetectionFilter {
 
     public List<DetectionMode> getModes() {
         return modes;
+    }
+
+    public String getRegion() {
+        return region;
     }
 
     public boolean containsEditStatus(final EditStatus editStatus) {

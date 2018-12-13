@@ -138,6 +138,11 @@ class HttpQueryBuilder {
         return build();
     }
 
+    String buildListRegionsQuery() {
+        query.append(RequestConstants.LIST_REGIONS);
+        return build();
+    }
+
     private void appendUserFilter(final Long osmUserId) {
         if (osmUserId != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);

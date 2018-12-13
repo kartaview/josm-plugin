@@ -26,6 +26,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_REGION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -41,6 +42,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGN_REGIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
@@ -107,8 +109,6 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
-
-
     void saveSequenceDetectionsErrorFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
     }
@@ -123,6 +123,10 @@ final class SaveManager {
 
     void saveListSignErrorSuppressFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_LIST_SIGNS_ERROR, flag);
+    }
+
+    void saveListSignRegionErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_LIST_SIGN_REGIONS_ERROR, flag);
     }
 
     void saveFiltersChangedFlag(final boolean changed) {
@@ -161,18 +165,23 @@ final class SaveManager {
         List<Sign> specificSigns = null;
         List<String> signTypes = null;
         List<DetectionMode> detectionModes = null;
+        String region = null;
         if (filter != null) {
             osmComparions = filter.getOsmComparisons();
             editStatuses = filter.getEditStatuses();
             specificSigns = filter.getSpecificSigns();
             signTypes = filter.getSignTypes();
             detectionModes = filter.getModes();
+            region = filter.getRegion();
         }
         saveOsmComparisonFilter(osmComparions);
         saveEditStatusFilter(editStatuses);
         saveSignTypeFilter(signTypes);
         saveSpecificSignsFilter(specificSigns);
         saveModesFilter(detectionModes);
+        if (region != null) {
+            Preferences.main().put(FILTER_SEARCH_REGION, region);
+        }
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {

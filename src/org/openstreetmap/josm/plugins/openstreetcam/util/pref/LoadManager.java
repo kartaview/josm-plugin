@@ -25,6 +25,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_REGION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -41,6 +42,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRE
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGN_REGIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
@@ -127,6 +129,10 @@ final class LoadManager {
         return Preferences.main().getBoolean(SUPPRESS_LIST_SIGNS_ERROR);
     }
 
+    boolean loadListSignRegionErrorFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_LIST_SIGN_REGIONS_ERROR);
+    }
+
     boolean loadOnlyDetectionFilterChangedFlag() {
         return Preferences.main().getBoolean(ONLY_DETECTION_FILTER_CHANGED);
     }
@@ -147,8 +153,9 @@ final class LoadManager {
         final List<Sign> signInternalNames = loadSpecificSignFilter();
         final List<String> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();
+        final String region = Preferences.main().get(FILTER_SEARCH_REGION);
         return new SearchFilter(date, onlyUserFlag, dataType,
-                new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes));
+                new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes, region));
     }
 
     private List<DataType> loadDataTypeFilter() {

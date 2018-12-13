@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -42,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
@@ -86,6 +88,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbSameOsmComparison;
 
     private DetectionTypeList detectionTypeList;
+    private JComboBox<String> detectionRegion;
     private JButton btnSelectSignTypes;
     private JButton btnClearSignTypes;
     private final boolean isHighZoomLevel;
@@ -105,7 +108,9 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(), filter.getDetectionFilter().getSpecificSigns());
+            addRegionFilter(filter.getDetectionFilter().getRegion());
+            addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(),
+                    filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion());
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
@@ -202,7 +207,19 @@ class FilterPanel extends JPanel {
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
 
-    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns) {
+    private void addRegionFilter(final String region) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataRegionLbl(), Font.BOLD),
+                Constraints.LBL_SIGN_REGION);
+        List<String> regions = ServiceHandler.getInstance().listRegions();
+        regions.add(0, "");
+        detectionRegion = new JComboBox(regions.toArray());
+        if (region != null) {
+            detectionRegion.setSelectedItem(region);
+        }
+        add(detectionRegion, Constraints.CB_SIGN_REGION);
+    }
+
+    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns, final String region) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
         detectionTypeList = new DetectionTypeList(signTypes,specificSigns);
@@ -271,8 +288,9 @@ class FilterPanel extends JPanel {
             List<DetectionMode> detectionModes = selectedModes();
             List<String> signTypes = detectionTypeList.getSelectedTypes();
             List<Sign> signValues = detectionTypeList.getSelectedValues();
+            String region = selectedRegion();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
-                    selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes));
+                    selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes, region));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -338,6 +356,14 @@ class FilterPanel extends JPanel {
         return selectedModes;
     }
 
+    private String selectedRegion() {
+        String region = null;
+        if(detectionRegion.getSelectedItem() != null){
+            region = detectionRegion.getSelectedItem().toString();
+        }
+        return region;
+    }
+
     /**
      * Clears the filters.
      */
@@ -386,6 +412,7 @@ class FilterPanel extends JPanel {
             cbbMappedEditStatus.setSelected(mappedEditStatusSelected);
             cbbBadSignEditStatus.setSelected(badEditStatusSelected);
             cbbOtherEditStatus.setSelected(otherEditStatusSelected);
+            detectionRegion.setSelectedIndex(0);
             detectionTypeList.clearSelection();
             cbbAutomaticMode.setSelected(false);
             cbbManualMode.setSelected(false);
