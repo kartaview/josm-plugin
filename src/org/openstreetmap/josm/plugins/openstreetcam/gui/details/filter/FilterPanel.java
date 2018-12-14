@@ -27,12 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
-import com.telenav.josm.common.gui.builder.DatePickerBuilder;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -50,6 +44,11 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.formatter.DateFormatter;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
+import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.telenav.josm.common.gui.builder.DatePickerBuilder;
+import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
@@ -210,9 +209,9 @@ class FilterPanel extends JPanel {
     private void addRegionFilter(final String region) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataRegionLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_REGION);
-        List<String> regions = ServiceHandler.getInstance().listRegions();
+        final List<String> regions = ServiceHandler.getInstance().listRegions();
         regions.add(0, "");
-        detectionRegion = new JComboBox<>((String[])regions.toArray());
+        detectionRegion = new JComboBox<>((String[]) regions.toArray());
         if (region != null) {
             detectionRegion.setSelectedItem(region);
         }
@@ -286,11 +285,11 @@ class FilterPanel extends JPanel {
         SearchFilter searchFilter;
         if (isHighZoomLevel) {
             final List<DataType> dataTypes = selectedDataTypes();
-            List<EditStatus> editStatuses = selectedEditStatuses();
-            List<DetectionMode> detectionModes = selectedModes();
-            List<String> signTypes = detectionTypeList.getSelectedTypes();
-            List<Sign> signValues = detectionTypeList.getSelectedValues();
-            String region = selectedRegion();
+            final List<EditStatus> editStatuses = selectedEditStatuses();
+            final List<DetectionMode> detectionModes = selectedModes();
+            final List<String> signTypes = detectionTypeList.getSelectedTypes();
+            final List<Sign> signValues = detectionTypeList.getSelectedValues();
+            final String region = selectedRegion();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
                     selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes, region));
         } else {
@@ -360,7 +359,7 @@ class FilterPanel extends JPanel {
 
     private String selectedRegion() {
         String region = null;
-        if(detectionRegion.getSelectedItem() != null){
+        if (detectionRegion.getSelectedItem() != null) {
             region = detectionRegion.getSelectedItem().toString();
         }
         return region;

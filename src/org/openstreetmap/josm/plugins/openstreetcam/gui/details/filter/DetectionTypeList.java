@@ -19,8 +19,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 class DetectionTypeList extends JPanel {
 
     private static final long serialVersionUID = 212486274590615046L;
-    private List<DetectionTypeListItem> listItems;
-    private Map<String, List<Sign>> allSigns;
+    private final List<DetectionTypeListItem> listItems;
+    private final Map<String, List<Sign>> allSigns;
 
     DetectionTypeList() {
         listItems = new ArrayList<>();
@@ -44,10 +44,10 @@ class DetectionTypeList extends JPanel {
                 selectedSigns = new ArrayList<>(allSigns.get(key));
                 selectedSigns.retainAll(selectedSpecificSigns);
             }
-            List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
+            final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
                     filterRegionSigns(allSigns.get(key), region);
             if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
-                DetectionTypeListItem listItem =
+                final DetectionTypeListItem listItem =
                         new DetectionTypeListItem(key, typeSelected, allSigns.get(key), selectedSigns);
                 listItems.add(listItem);
 
@@ -78,10 +78,6 @@ class DetectionTypeList extends JPanel {
         for (final DetectionTypeListItem detectionItem : listItems) {
             detectionItem.selectAll();
         }
-    }
-
-    public void setRegionItems(final String region){
-        //TODO handle when a region is selected. Only the signs from that region should be displayed.
     }
 
     List<String> getSelectedTypes() {
