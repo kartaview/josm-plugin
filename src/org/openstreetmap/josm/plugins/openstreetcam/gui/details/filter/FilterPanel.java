@@ -212,17 +212,19 @@ class FilterPanel extends JPanel {
                 Constraints.LBL_SIGN_REGION);
         List<String> regions = ServiceHandler.getInstance().listRegions();
         regions.add(0, "");
-        detectionRegion = new JComboBox(regions.toArray());
+        detectionRegion = new JComboBox<>((String[])regions.toArray());
         if (region != null) {
             detectionRegion.setSelectedItem(region);
         }
+        detectionRegion.addActionListener(new RegionSelectionListener());
         add(detectionRegion, Constraints.CB_SIGN_REGION);
     }
 
     private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns, final String region) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
-        detectionTypeList = new DetectionTypeList(signTypes,specificSigns);
+        detectionTypeList = new DetectionTypeList();
+        detectionTypeList.populateDetectionList(signTypes, specificSigns, region);
         add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
@@ -476,5 +478,16 @@ class FilterPanel extends JPanel {
         public void actionPerformed(final ActionEvent event) {
             detectionTypeList.clearSelection();
         }
+    }
+
+    private final class RegionSelectionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent event) {
+            final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
+            detectionTypeList.populateDetectionList(filter.getDetectionFilter().getSignTypes(),
+                    filter.getDetectionFilter().getSpecificSigns(), detectionRegion.getSelectedItem().toString());
+        }
+
     }
 }
