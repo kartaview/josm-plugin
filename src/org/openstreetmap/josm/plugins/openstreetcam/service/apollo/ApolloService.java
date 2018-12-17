@@ -33,6 +33,8 @@ import com.telenav.josm.common.argument.BoundingBox;
  */
 public class ApolloService extends BaseService {
 
+    private static double AREA_EXTEND = 0.004;
+
     @Override
     public Gson createGson() {
         final GsonBuilder builder = new GsonBuilder();
@@ -52,7 +54,9 @@ public class ApolloService extends BaseService {
 
     public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
             throws ServiceException {
-        final String url = new HttpQueryBuilder().buildSearchClustersQuery(area, date, detectionFilter);
+        final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
+                area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
+        final String url = new HttpQueryBuilder().buildSearchClustersQuery(extendedArea, date, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
         return response.getClusters();
@@ -66,8 +70,7 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(root);
     }
 
-    public List<Detection> retrieveSequenceDetections(final Long sequenceId)
-            throws ServiceException {
+    public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
         final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
