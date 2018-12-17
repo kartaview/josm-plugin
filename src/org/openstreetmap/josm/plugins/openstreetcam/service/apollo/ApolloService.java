@@ -128,6 +128,6 @@ public class ApolloService extends BaseService {
         final String url = new HttpQueryBuilder().buildListRegionsQuery();
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
-        return  response.getRegions();
+        return response.getRegions();
     }
 }

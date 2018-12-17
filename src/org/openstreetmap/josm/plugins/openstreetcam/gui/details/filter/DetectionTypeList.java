@@ -35,26 +35,27 @@ class DetectionTypeList extends JPanel {
         listItems.clear();
 
         for (final String key : allSigns.keySet()) {
-            boolean typeSelected = false;
-            if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
-                typeSelected = selectedSignTypes.contains(key);
-            }
-            List<Sign> selectedSigns = null;
-            if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
-                selectedSigns = new ArrayList<>(allSigns.get(key));
-                selectedSigns.retainAll(selectedSpecificSigns);
-            }
             final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
                     filterRegionSigns(allSigns.get(key), region);
             if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
+                boolean typeSelected = false;
+                if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
+                    typeSelected = selectedSignTypes.contains(key);
+                }
+                List<Sign> selectedSigns = null;
+                if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
+                    selectedSigns = new ArrayList<>(signsToDisplay);
+                    selectedSigns.retainAll(selectedSpecificSigns);
+                }
                 final DetectionTypeListItem listItem =
-                        new DetectionTypeListItem(key, typeSelected, allSigns.get(key), selectedSigns);
+                        new DetectionTypeListItem(key, typeSelected, signsToDisplay, selectedSigns);
                 listItems.add(listItem);
 
             }
         }
         removeAll();
         listItems.forEach(this::add);
+        revalidate();
     }
 
     private List<Sign> filterRegionSigns(final List<Sign> signs, final String region) {

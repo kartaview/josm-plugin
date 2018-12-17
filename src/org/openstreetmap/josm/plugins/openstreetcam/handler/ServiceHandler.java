@@ -353,9 +353,9 @@ public final class ServiceHandler extends SearchServiceHandler {
      */
     public List<String> listRegions() {
         List<String> result = null;
-        try{
+        try {
             result = apolloService.listRegions();
-        }catch (final ServiceException e){
+        } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadListSignRegionsSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorListRegionsText());
                 PreferenceManager.getInstance().saveListSignRegionErrorSuppressFlag(flag);

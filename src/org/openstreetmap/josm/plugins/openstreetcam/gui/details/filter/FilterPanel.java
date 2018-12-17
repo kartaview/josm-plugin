@@ -211,7 +211,7 @@ class FilterPanel extends JPanel {
                 Constraints.LBL_SIGN_REGION);
         final List<String> regions = ServiceHandler.getInstance().listRegions();
         regions.add(0, "");
-        detectionRegion = new JComboBox<>((String[]) regions.toArray());
+        detectionRegion = new JComboBox<>(regions.toArray(new String[0]));
         if (region != null) {
             detectionRegion.setSelectedItem(region);
         }
@@ -479,13 +479,12 @@ class FilterPanel extends JPanel {
         }
     }
 
+
     private final class RegionSelectionListener implements ActionListener {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
-            detectionTypeList.populateDetectionList(filter.getDetectionFilter().getSignTypes(),
-                    filter.getDetectionFilter().getSpecificSigns(), detectionRegion.getSelectedItem().toString());
+            detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString());
         }
 
     }
