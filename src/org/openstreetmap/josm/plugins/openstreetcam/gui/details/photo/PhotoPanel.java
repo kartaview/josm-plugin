@@ -8,6 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -48,7 +50,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private static final long serialVersionUID = -1550900781158007580L;
     private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
-    private static final Color TRANSPARENT_RED = new Color(255, 0, 0, 50);
+    private static final float BORDER_SIZE = 3;
+    private static final Color TRANSPARENT_BLUE = new Color(0, 0, 255, 50);
+    private static final Color SELECTED_SIGN_COLOR = new Color(0, 191, 255);
+    private static final Color UNSELECTED_SIGN_COLOR = new Color(255, 0, 0);
 
     private transient BufferedImage image;
 
@@ -279,7 +284,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     }
 
     private void drawDetections(final Graphics2D graphics) {
-        graphics.setColor(Color.red);
         if (detections != null && !detections.isEmpty()) {
             final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
             for (final Detection detection : detections) {
@@ -294,11 +298,16 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                         / currentView.getHeight();
 
                 if (detection.equals(selectedDetection)) {
-                    graphics.draw(new Rectangle2D.Double(x, y, width, height));
-                    graphics.setColor(TRANSPARENT_RED);
-                    graphics.fill(new Rectangle2D.Double(x, y, width, height));
-                    graphics.setColor(Color.red);
+                    graphics.setColor(SELECTED_SIGN_COLOR);
+                    final Stroke oldStroke = graphics.getStroke();
+                    graphics.setStroke(new BasicStroke(BORDER_SIZE));
+                    graphics.draw(
+                            new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE, height + 2 * BORDER_SIZE));
+                    graphics.setStroke(oldStroke);
+                    graphics.setColor(TRANSPARENT_BLUE);
+                    graphics.fill(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE, height + 2 * BORDER_SIZE));
                 } else {
+                    graphics.setColor(UNSELECTED_SIGN_COLOR);
                     graphics.draw(new Rectangle2D.Double(x, y, width, height));
                 }
             }
@@ -392,6 +401,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                         .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
                         .orElse(null);
                 notifyDetectionSelectionObserver(selectedDetection);
+                repaint();
             }
         }
     }
