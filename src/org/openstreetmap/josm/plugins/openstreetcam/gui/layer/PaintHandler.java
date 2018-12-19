@@ -152,10 +152,10 @@ class PaintHandler {
     }
 
     void drawSequenceDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
-            final Detection selectedDetection){
+            final Detection selectedDetection) {
         // filter detections
-        DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
-        List<Detection> filteredDetections = Util.filterDetections(detections,filter);
+        final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
+        final List<Detection> filteredDetections = Util.filterDetections(detections, filter);
         // draw map detections
         for (final Detection detection : filteredDetections) {
             if (selectedDetection == null || (!detection.equals(selectedDetection))) {
@@ -167,7 +167,6 @@ class PaintHandler {
             drawDetection(graphics, mapView, selectedDetection, true);
         }
     }
-
 
 
     void drawDetections(final Graphics2D graphics, final MapView mapView, final List<Detection> detections,
@@ -279,7 +278,9 @@ class PaintHandler {
                 drawPhotos(graphics, mapView, cluster.getPhotos(), selectedPhoto, false);
             }
         }
-        drawClusterIcon(graphics, mapView, cluster, isSelected);
+        if (Util.containsLatLon(mapView, cluster.getPoint())) {
+            drawClusterIcon(graphics, mapView, cluster, isSelected);
+        }
     }
 
     private void drawClusterData(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
