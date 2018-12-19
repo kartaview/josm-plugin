@@ -45,6 +45,7 @@ final class RequestConstants {
     static final String VALIDATION_STATUSES = "validationStatuses";
     static final String INCLUDED_SIGN_TYPES = "includedSignTypes";
     static final String EXCLUDED_SIGN_TYPES = "excludedSignTypes";
+    static final String REGION = "signRegion";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
     static final String EDIT_STATUS_FIXED = "FIXED";
