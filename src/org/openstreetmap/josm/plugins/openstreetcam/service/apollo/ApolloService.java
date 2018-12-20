@@ -7,6 +7,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -49,7 +50,7 @@ public class ApolloService extends BaseService {
         final String url = new HttpQueryBuilder().buildSearchDetectionsQuery(area, date, osmUserId, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
-        return response.getDetections();
+        return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
     }
 
     public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
@@ -59,7 +60,7 @@ public class ApolloService extends BaseService {
         final String url = new HttpQueryBuilder().buildSearchClustersQuery(extendedArea, date, detectionFilter);
         final Response response = executeGet(url, Response.class);
         verifyResponseStatus(response);
-        return response.getClusters();
+        return response.getClusters() != null ? response.getClusters() : new ArrayList<>();
     }
 
     public void updateDetection(final Detection detection, final Contribution contribution) throws ServiceException {
