@@ -89,6 +89,7 @@ public class DetectionFilter {
         result = prime * result + EntityUtil.hashCode(editStatuses);
         result = prime * result + EntityUtil.hashCode(signTypes);
         result = prime * result + EntityUtil.hashCode(specificSigns);
+        result = prime * result + EntityUtil.hashCode(region);
         result = prime * result + EntityUtil.hashCode(modes);
         return result;
     }
@@ -104,6 +105,7 @@ public class DetectionFilter {
             result = result && EntityUtil.bothNullOrEqual(editStatuses, other.getEditStatuses());
             result = result && EntityUtil.bothNullOrEqual(signTypes, other.getSignTypes());
             result = result && EntityUtil.bothNullOrEqual(specificSigns, other.getSpecificSigns());
+            result = result && EntityUtil.bothNullOrEqual(region, other.getRegion());
             result = result && EntityUtil.bothNullOrEqual(modes, other.getModes());
         }
         return result;
