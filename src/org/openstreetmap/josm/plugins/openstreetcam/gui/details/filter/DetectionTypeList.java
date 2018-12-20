@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
@@ -18,29 +19,47 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 class DetectionTypeList extends JPanel {
 
     private static final long serialVersionUID = 212486274590615046L;
-    private List<DetectionTypeListItem> listItems;
+    private final List<DetectionTypeListItem> listItems;
+    private final Map<String, List<Sign>> allSigns;
 
-    DetectionTypeList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns) {
-        if (listItems == null) {
-            listItems = new ArrayList<>();
-            final Map<String, List<Sign>> allSigns = DetectionTypeContent.getInstance().getContent();
-            for (final String key : allSigns.keySet()) {
+    DetectionTypeList() {
+        listItems = new ArrayList<>();
+        allSigns = DetectionTypeContent.getInstance().getContent();
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setAlignmentX(Component.LEFT_ALIGNMENT);
+        setBackground(Color.WHITE);
+    }
+
+    void populateDetectionList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns,
+            final String region) {
+        listItems.clear();
+
+        for (final String key : allSigns.keySet()) {
+            final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
+                    filterRegionSigns(allSigns.get(key), region);
+            if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
                 boolean typeSelected = false;
-                if(selectedSignTypes != null && !selectedSignTypes.isEmpty()){
+                if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
                     typeSelected = selectedSignTypes.contains(key);
                 }
                 List<Sign> selectedSigns = null;
                 if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
-                    selectedSigns = new ArrayList<>(allSigns.get(key));
+                    selectedSigns = new ArrayList<>(signsToDisplay);
                     selectedSigns.retainAll(selectedSpecificSigns);
                 }
-                listItems.add(new DetectionTypeListItem(key, typeSelected, allSigns.get(key), selectedSigns));
+                final DetectionTypeListItem listItem =
+                        new DetectionTypeListItem(key, typeSelected, signsToDisplay, selectedSigns);
+                listItems.add(listItem);
+
             }
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setAlignmentX(Component.LEFT_ALIGNMENT);
-            setBackground(Color.WHITE);
-            listItems.forEach(this::add);
         }
+        removeAll();
+        listItems.forEach(this::add);
+        revalidate();
+    }
+
+    private List<Sign> filterRegionSigns(final List<Sign> signs, final String region) {
+        return signs.parallelStream().filter(sign -> sign.getRegion().equals(region)).collect(Collectors.toList());
     }
 
     @Override

@@ -126,4 +126,11 @@ public class ApolloService extends BaseService {
         verifyResponseStatus(response);
         return response.getSigns();
     }
+
+    public List<String> listRegions() throws ServiceException {
+        final String url = new HttpQueryBuilder().buildListRegionsQuery();
+        final Response response = executeGet(url, Response.class);
+        verifyResponseStatus(response);
+        return response.getRegions();
+    }
 }

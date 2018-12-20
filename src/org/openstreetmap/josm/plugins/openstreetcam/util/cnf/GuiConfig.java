@@ -87,6 +87,7 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDataTypeImageTxt;
     private final String dlgFilterDataTypeDetectionsTxt;
     private final String dlgFilterDataTypeAggregatedDetectionsTxt;
+    private final String dlgFilterDataRegionLbl;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -109,6 +110,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorDetectionUpdateText;
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
+    private final String errorListRegionsText;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -239,6 +241,7 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
         dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
+        dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -259,6 +262,7 @@ public final class GuiConfig extends BaseConfig {
         errorDetectionUpdateText = readProperty("error.detection.update");
         errorClusterRetrieveText = readProperty("error.cluster.retrieve");
         errorListSignsText = readProperty("error.sign.list");
+        errorListRegionsText = readProperty("error.sign.region.list");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
         warningTitle = readProperty("warning.title");
@@ -499,6 +503,10 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDetectionTypeLbl;
     }
 
+    public String getDlgFilterDataRegionLbl() {
+        return dlgFilterDataRegionLbl;
+    }
+
     public String getBtnOkLbl() {
         return btnOkLbl;
     }
@@ -565,6 +573,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorListSignsText() {
         return errorListSignsText;
+    }
+
+    public String getErrorListRegionsText() {
+        return errorListRegionsText;
     }
 
     public String getIncorrectDateFilterText() {

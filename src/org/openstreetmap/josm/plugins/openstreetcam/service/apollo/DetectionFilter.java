@@ -26,22 +26,25 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
  */
 public class DetectionFilter {
 
-    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null);
+    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
     private final List<String> signTypes;
     private final List<Sign> specificSigns;
     private final List<DetectionMode> modes;
+    private final String region;
 
 
     public DetectionFilter(final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
-            final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes) {
+            final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes,
+            final String region) {
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
         this.specificSigns = specificSigns;
         this.modes = modes;
+        this.region = region;
     }
 
 
@@ -70,6 +73,10 @@ public class DetectionFilter {
         return modes;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
     public boolean containsEditStatus(final EditStatus editStatus) {
         return editStatuses != null && editStatuses.contains(editStatus);
     }
@@ -82,6 +89,7 @@ public class DetectionFilter {
         result = prime * result + EntityUtil.hashCode(editStatuses);
         result = prime * result + EntityUtil.hashCode(signTypes);
         result = prime * result + EntityUtil.hashCode(specificSigns);
+        result = prime * result + EntityUtil.hashCode(region);
         result = prime * result + EntityUtil.hashCode(modes);
         return result;
     }
@@ -97,6 +105,7 @@ public class DetectionFilter {
             result = result && EntityUtil.bothNullOrEqual(editStatuses, other.getEditStatuses());
             result = result && EntityUtil.bothNullOrEqual(signTypes, other.getSignTypes());
             result = result && EntityUtil.bothNullOrEqual(specificSigns, other.getSpecificSigns());
+            result = result && EntityUtil.bothNullOrEqual(region, other.getRegion());
             result = result && EntityUtil.bothNullOrEqual(modes, other.getModes());
         }
         return result;

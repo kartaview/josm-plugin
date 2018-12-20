@@ -32,6 +32,7 @@ final class Keys {
     static final String SUPPRESS_DETECTION_UPDATE_ERROR = "openstreetcam.error.detection.update.suppress";
 
     static final String SUPPRESS_LIST_SIGNS_ERROR = "openstreetcam.error.sign.list.suppress";
+    static final String SUPPRESS_LIST_SIGN_REGIONS_ERROR = "openstreetcam.error.sign.region.list.suppress";
 
     static final String FILTER_CHANGED = "openstreetcam.filter.changed";
     static final String ONLY_DETECTION_FILTER_CHANGED = "openstreetcam.filter.onlyDetection.changed";
@@ -40,6 +41,7 @@ final class Keys {
     static final String FILTER_SEARCH_PHOTO_TYPE = "openstreetcam.filter.search.photoType";
     static final String FILTER_SEARCH_MODE = "openstreetcam.filter.search.mode";
     static final String FILTER_SEARCH_EDIT_STATUS = "openstreetcam.filter.search.editStatus";
+    static final String FILTER_SEARCH_REGION = "openstreetcam.filter.search.region";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
     static final String FILTER_SEARCH_SPECIFIC_SIGN = "openstreetcam.filter.search.specificSign";
     static final String FILTER_SEARCH_EMPTY = "EMPTY";
