@@ -92,7 +92,6 @@ public class FilterDialog extends ModalDialog {
                 if (!result.equals(oldFilter)) {
                     prefManager.saveListFilter(result);
                     prefManager.saveFiltersChangedFlag(true);
-                    prefManager.saveOnlyDetectionFilterChangedFlag(result.onlyDetectionFilterChanged(oldFilter));
 
                 } else {
                     prefManager.saveFiltersChangedFlag(false);
