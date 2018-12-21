@@ -89,7 +89,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-        PreferenceManager.getInstance().saveOnlyDetectionFilterChangedFlag(false);
     }
 
     @Override

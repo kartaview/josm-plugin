@@ -204,14 +204,6 @@ public final class PreferenceManager {
         return loadManager.loadMapViewSettings();
     }
 
-    public boolean loadOnlyDetectionFilterChangedFlag() {
-        return loadManager.loadOnlyDetectionFilterChangedFlag();
-    }
-
-    public void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
-        saveManager.saveOnlyDetectionFilterChangedFlag(flag);
-    }
-
     /**
      * Loads the photo settings from the preference file.
      *
