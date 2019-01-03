@@ -33,24 +33,24 @@ class DetectionTypeList extends JPanel {
     void populateDetectionList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns,
             final String region) {
         listItems.clear();
-
-        for (final String key : allSigns.keySet()) {
-            final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
-                    filterRegionSigns(allSigns.get(key), region);
-            if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
-                boolean typeSelected = false;
-                if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
-                    typeSelected = selectedSignTypes.contains(key);
+        if (allSigns != null) {
+            for (final String key : allSigns.keySet()) {
+                final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
+                        filterRegionSigns(allSigns.get(key), region);
+                if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
+                    boolean typeSelected = false;
+                    if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
+                        typeSelected = selectedSignTypes.contains(key);
+                    }
+                    List<Sign> selectedSigns = null;
+                    if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
+                        selectedSigns = new ArrayList<>(signsToDisplay);
+                        selectedSigns.retainAll(selectedSpecificSigns);
+                    }
+                    final DetectionTypeListItem listItem =
+                            new DetectionTypeListItem(key, typeSelected, signsToDisplay, selectedSigns);
+                    listItems.add(listItem);
                 }
-                List<Sign> selectedSigns = null;
-                if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
-                    selectedSigns = new ArrayList<>(signsToDisplay);
-                    selectedSigns.retainAll(selectedSpecificSigns);
-                }
-                final DetectionTypeListItem listItem =
-                        new DetectionTypeListItem(key, typeSelected, signsToDisplay, selectedSigns);
-                listItems.add(listItem);
-
             }
         }
         removeAll();
