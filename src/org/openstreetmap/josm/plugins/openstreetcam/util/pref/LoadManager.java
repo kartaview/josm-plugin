@@ -30,6 +30,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
@@ -248,7 +249,8 @@ final class LoadManager {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
         final boolean manualSwitchFlag = Preferences.main().getBoolean(MAP_VIEW_MANUAL_SWITCH);
-        return new MapViewSettings(photoZoom, manualSwitchFlag);
+        final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD);
+        return new MapViewSettings(photoZoom, manualSwitchFlag, dataLoadFlag);
     }
 
     PhotoSettings loadPhotoSettings() {

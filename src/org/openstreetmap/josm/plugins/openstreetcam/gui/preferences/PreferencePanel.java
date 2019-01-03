@@ -48,6 +48,7 @@ class PreferencePanel extends JPanel {
     /* photo preference settings */
     private JSpinner spPhotoZoom;
     private JCheckBox cbManualSwitch;
+    private JCheckBox cbDataLoad;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox agDisplayDetection;
     private JCheckBox cbDisplayTrack;
@@ -90,7 +91,9 @@ class PreferencePanel extends JPanel {
         cbManualSwitch = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener, Font.PLAIN,
                 getBackground(), mapViewSettings.isManualSwitchFlag());
         add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
-
+        cbDataLoad = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDataLoadLbl(), null, Font.PLAIN,
+                getBackground(), mapViewSettings.isDataLoadFlag());
+        add(cbDataLoad,Constraints.CB_DATA_LOAD);
     }
 
     private void createPhotoSettingsComponents(final PreferenceSettings settings) {
@@ -193,7 +196,7 @@ class PreferencePanel extends JPanel {
 
     PreferenceSettings getSelectedSettings() {
         final MapViewSettings mapViewSettings =
-                new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected());
+                new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected(), cbDataLoad.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
         final ClusterSettings aggregatedSettings = new ClusterSettings(agDisplayDetection.isSelected());

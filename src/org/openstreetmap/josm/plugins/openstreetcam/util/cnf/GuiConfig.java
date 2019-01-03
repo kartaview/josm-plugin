@@ -33,6 +33,7 @@ public final class GuiConfig extends BaseConfig {
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
     private final String prefManualSwitchLbl;
+    private final String prefDataLoadLbl;
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
     private final String prefMouseHoverLbl;
@@ -189,6 +190,7 @@ public final class GuiConfig extends BaseConfig {
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
         prefManualSwitchLbl = readProperty("preferences.mapView.switch.lbl");
+        prefDataLoadLbl = readProperty("preferences.mapView.load.lbl");
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
@@ -365,6 +367,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefManualSwitchLbl() {
         return prefManualSwitchLbl;
+    }
+
+    public String getPrefDataLoadLbl() {
+        return prefDataLoadLbl;
     }
 
     public String getPrefImageLbl() {
