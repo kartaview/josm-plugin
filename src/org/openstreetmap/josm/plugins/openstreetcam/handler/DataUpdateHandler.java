@@ -145,7 +145,7 @@ public class DataUpdateHandler {
             });
         }
 
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentActiveAreas(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
             final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, searchFilter, zoom);
@@ -175,7 +175,7 @@ public class DataUpdateHandler {
         }
 
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentActiveAreas(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
             if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
                 searchFilter.getDataTypes().remove(DataType.PHOTO);

@@ -177,7 +177,7 @@ final class LoadManager {
     private List<OsmComparison> loadOsmComparisonFilter() {
         final List<OsmComparisonEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
                 FILTER_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
-        List<OsmComparison> list = null;
+        List<OsmComparison> list;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
             for (final OsmComparisonEntry entry : entries) {
@@ -207,7 +207,7 @@ final class LoadManager {
     private List<EditStatus> loadEditStatusFilter() {
         final List<EditStatusEntry> entries =
                 StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
-        List<EditStatus> list = null;
+        List<EditStatus> list;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
             for (final EditStatusEntry entry : entries) {
@@ -249,7 +249,7 @@ final class LoadManager {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
         final boolean manualSwitchFlag = Preferences.main().getBoolean(MAP_VIEW_MANUAL_SWITCH);
-        final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD);
+        final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD, true);
         return new MapViewSettings(photoZoom, manualSwitchFlag, dataLoadFlag);
     }
 

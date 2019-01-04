@@ -31,6 +31,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
@@ -238,6 +239,7 @@ final class SaveManager {
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
         Preferences.main().putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
         Preferences.main().putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
+        Preferences.main().putBoolean(MAP_VIEW_DATA_LOAD, mapViewSettings.isDataLoadFlag());
     }
 
     void savePhotoSettings(final PhotoSettings photoSettings) {
