@@ -140,8 +140,10 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelClusterData(final List<Cluster> clusters,
             final boolean updateSelection) {
         this.clusters = clusters;
-        if (updateSelection && selectedCluster != null && clusters != null && !clusters.contains(selectedCluster)) {
-            selectedCluster = null;
+        if (updateSelection && selectedCluster != null) {
+            selectedCluster = clusters != null ?
+                    clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null) :
+                    null;
         }
     }
 
