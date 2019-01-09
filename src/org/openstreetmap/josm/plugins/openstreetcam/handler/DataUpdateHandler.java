@@ -220,6 +220,7 @@ public class DataUpdateHandler {
                             .filter(DataSet.getInstance().getDetections()::contains).collect(Collectors.toList());
                 }
                 PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
             }
         }
     }
