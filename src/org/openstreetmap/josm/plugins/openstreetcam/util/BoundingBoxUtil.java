@@ -25,6 +25,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
  */
 public final class BoundingBoxUtil {
 
+    private static final Bounds WORLD_BOUNDS = new Bounds(-90, -180, 90, 180);
+
     private BoundingBoxUtil() {}
 
     /**
@@ -56,34 +58,22 @@ public final class BoundingBoxUtil {
      *
      * @return a list of {@code BoundingBox}
      */
-    private static List<BoundingBox> currentBoundingBoxes() {
-        final List<BoundingBox> result = new ArrayList<>();
-        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
-        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-            for (final Bounds osmBounds : osmDataLayerBounds) {
-                if (MainApplication.getMap().mapView.getRealBounds().intersects(osmBounds)) {
-                    result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
-                            osmBounds.getMax().lon(), osmBounds.getMin().lon()));
-                }
-            }
-        } else {
-            result.add(mapViewBounds());
-        }
-        return result;
-    }
-
-    /**
-     * Based on the load data preference that tells if the users wishes for data to be loaded outside the active area
-     * or not, the appropriate list of active areas is returned.
-     * @param mapViewDataLoad - if true, only the active areas are retured. If false, the whole mapView is returned.
-     * @return List of {@code BoundingBox} containing all active areas
-     */
-    public static List<BoundingBox> currentActiveAreas(final boolean mapViewDataLoad) {
+    public static List<BoundingBox> currentBoundingBoxes(final boolean mapViewDataLoad) {
         final List<BoundingBox> result = new ArrayList<>();
         if (!mapViewDataLoad) {
             result.add(mapViewBounds());
         } else {
-            result.addAll(currentBoundingBoxes());
+            final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds osmBounds : osmDataLayerBounds) {
+                    if (MainApplication.getMap().mapView.getRealBounds().intersects(osmBounds)) {
+                        result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
+                                osmBounds.getMax().lon(), osmBounds.getMin().lon()));
+                    }
+                }
+            } else {
+                result.add(mapViewBounds());
+            }
         }
         return result;
     }
@@ -99,7 +89,7 @@ public final class BoundingBoxUtil {
         List<Bounds> result = new ArrayList<>();
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (!mapViewSettings.isDataLoadFlag() || osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
-            result.add(new Bounds(-90, -180, 90, 180));
+            result.add(WORLD_BOUNDS);
         } else {
             result = osmDataLayerBounds;
         }
