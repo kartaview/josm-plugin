@@ -13,6 +13,8 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import com.telenav.josm.common.argument.BoundingBox;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
 /**
@@ -22,6 +24,8 @@ import com.telenav.josm.common.argument.BoundingBox;
  * @version $Revision$
  */
 public final class BoundingBoxUtil {
+
+    private static final Bounds WORLD_BOUNDS = new Bounds(-90, -180, 90, 180);
 
     private BoundingBoxUtil() {}
 
@@ -54,20 +58,22 @@ public final class BoundingBoxUtil {
      *
      * @return a list of {@code BoundingBox}
      */
-    public static List<BoundingBox> currentBoundingBoxes() {
+    public static List<BoundingBox> currentBoundingBoxes(final boolean mapViewDataLoad) {
         final List<BoundingBox> result = new ArrayList<>();
-        final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
-        if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
-            for (final Bounds osmBounds : osmDataLayerBounds) {
-                if (MainApplication.getMap().mapView.getRealBounds().intersects(osmBounds)) {
-                    result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
-                            osmBounds.getMax().lon(), osmBounds.getMin().lon()));
-                }
-            }
+        if (!mapViewDataLoad) {
+            result.add(mapViewBounds());
         } else {
-            final Bounds bounds = MainApplication.getMap().mapView.getRealBounds();
-            result.add(new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
-                    bounds.getMin().lon()));
+            final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
+            if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
+                for (final Bounds osmBounds : osmDataLayerBounds) {
+                    if (MainApplication.getMap().mapView.getRealBounds().intersects(osmBounds)) {
+                        result.add(new BoundingBox(osmBounds.getMax().lat(), osmBounds.getMin().lat(),
+                                osmBounds.getMax().lon(), osmBounds.getMin().lon()));
+                    }
+                }
+            } else {
+                result.add(mapViewBounds());
+            }
         }
         return result;
     }
@@ -79,16 +85,22 @@ public final class BoundingBoxUtil {
      * @return a list of {@code Bounds}
      */
     public static List<Bounds> currentBounds() {
+        final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         List<Bounds> result = new ArrayList<>();
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
-        if (osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
-            result.add(new Bounds(-90, -180, 90, 180));
+        if (!mapViewSettings.isDataLoadFlag() || osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
+            result.add(WORLD_BOUNDS);
         } else {
             result = osmDataLayerBounds;
         }
         return result;
     }
 
+    private static BoundingBox mapViewBounds() {
+        final Bounds bounds = MainApplication.getMap().mapView.getRealBounds();
+        return new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                bounds.getMin().lon());
+    }
 
     private static List<Bounds> editLayerDataBounds() {
         List<Bounds> osmDataLayerBounds = null;
