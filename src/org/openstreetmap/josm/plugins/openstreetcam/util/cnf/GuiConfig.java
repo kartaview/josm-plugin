@@ -172,6 +172,7 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterDetectionsLbl;
     private final String detectionIdLbl;
 
+    private final String clusterTableHeader;
 
     private GuiConfig() {
         super(CONFIG_FILE);
@@ -324,6 +325,8 @@ public final class GuiConfig extends BaseConfig {
         detectionUpdatedDate = readProperty("detection.date.updated");
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
         detectionIdLbl = readProperty("detection.id");
+        
+        clusterTableHeader = readProperty("cluster.table.header");
     }
 
     public static GuiConfig getInstance() {
@@ -874,4 +877,8 @@ public final class GuiConfig extends BaseConfig {
     public String getDetectionIdLbl() {
         return detectionIdLbl;
     }
+
+    public String getClusterTableHeader() {
+        return clusterTableHeader;
+    }  
 }

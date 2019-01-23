@@ -9,7 +9,10 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Rectangle;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
 
@@ -23,7 +26,17 @@ import com.telenav.josm.common.formatter.DateFormatter;
 class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
     private static final long serialVersionUID = -5861164183509625676L;
-
+    
+    private static final int ROW_HEIGHT = 15;
+    private static final int INFO_TO_TABLE_EXTRA_HEIGHT = 15;
+    private static final int HEADER_TO_CONTENT_EXTRA_HEIGHT = 16;
+    private static final int TABLE_END_EXTRA_HEIGHT = 50;
+    private static final int LINE_HEIGHT = 25;
+    
+ 
+    private DetectionTable table;
+    RowSelectionObserver rowSelectionObserver;
+    
     @Override
     protected void createComponents(final Cluster cluster) {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
@@ -39,7 +52,43 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int detections = cluster.getDetectionIds() != null ? cluster.getDetectionIds().size() : 0;
         addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), detections, widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
+        
+      table = new DetectionTable(cluster);
+      table.registerObserver(rowSelectionObserver);
+      final int detectionsNr = cluster.getDetections().size();
+      int tableWidth = table.getTableWidth();   
+
+      table.getTableHeader()
+              .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+
+      add(table.getTableHeader());
+      final int heightTableContent = detectionsNr * ROW_HEIGHT;
+      table.setBounds(new Rectangle(0, getPnlY() + HEADER_TO_CONTENT_EXTRA_HEIGHT + LINE_HEIGHT, tableWidth,
+              heightTableContent));     
+
+      add(table);
+      setPnlY(getPnlY() + heightTableContent + TABLE_END_EXTRA_HEIGHT);
+      setPnlWidth(tableWidth);
+        
         final int pnlHeight = getPnlY() + SPACE_Y;
-        setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
+        setPreferredSize(new Dimension(getPnlWidth(), pnlHeight));
+     }
+    
+    void addSelectedDetectionToTable(final Detection detection) {
+        if (detection != null) {
+            final int rowsNr = table.getRowCount();
+            int detectionRow = 0;
+            for (int rowIndex = 0; rowIndex < rowsNr; ++rowIndex) {
+                final int currentRowId = Integer.valueOf((String) table.getValueAt(rowIndex, 0));
+                if (currentRowId == detection.getId()) {
+                    detectionRow = rowIndex;
+                }
+            }
+            table.setRowSelectionInterval(detectionRow, detectionRow);
+        }
+    }
+
+    public void registerObserver(final RowSelectionObserver rowSelectionObserver) {
+        this.rowSelectionObserver = rowSelectionObserver;
     }
 }
