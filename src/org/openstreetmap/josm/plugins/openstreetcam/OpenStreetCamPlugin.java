@@ -388,7 +388,5 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, RowSelectionObser
 
     @Override
     public void selectDetectionFromTable(Detection detection) {
-        // TODO Auto-generated method stub
-        
     }
 }

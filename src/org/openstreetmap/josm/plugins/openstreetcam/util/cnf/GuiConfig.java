@@ -333,7 +333,6 @@ public final class GuiConfig extends BaseConfig {
         return INSTANCE;
     }
 
-
     public String getPluginShortName() {
         return pluginShortName;
     }

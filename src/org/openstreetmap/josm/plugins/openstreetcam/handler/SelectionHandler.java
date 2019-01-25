@@ -162,7 +162,6 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         }
     }
 
-
     /**
      * Verifies if the sequence associated with the given photo should be loaded or not. A sequence should be loaded if:
      * <ul>
