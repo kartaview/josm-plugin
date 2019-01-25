@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -47,7 +46,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         final int detectionsNr = detections.size();
         final String headerComponents = GuiConfig.getInstance().getClusterTableHeader();
         final List<String> header = Arrays.asList(headerComponents.split("/"));
-        final int columnsNr = header.size();
 
         List<String[]> model = new ArrayList<String[]>();
 
@@ -90,8 +88,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         };
 
         this.setModel(tableModel);
-        final TableColumnModel columnModel = this.getColumnModel();
-        for (int columnIndex = 0; columnIndex < columnsNr; ++columnIndex) {
+        for (int columnIndex = 0; columnIndex < header.size(); ++columnIndex) {
             String currentHeader = header.get(columnIndex);
             int maxColumnWidth = getFontMetrics(getFont().deriveFont(Font.PLAIN)).stringWidth(currentHeader.toString());
             for (int detectionIndex = 0; detectionIndex < detectionsNr; ++detectionIndex) {
@@ -120,9 +117,8 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         Detection selectedDetection = null;
         final Long selectedDetectionId = Long.valueOf(this.getValueAt(this.getSelectedRow(), ID_COLUMN).toString());
         final List<Detection> detectionsList = cluster.getDetections();
-        final int detectionsNr = detectionsList.size();
         int index = 0;
-        while (index < detectionsNr) {
+        while (index < detectionsList.size()) {
             long currentDetectionId = detectionsList.get(index).getId();
             if (currentDetectionId == selectedDetectionId) {
                 selectedDetection = detectionsList.get(index);
