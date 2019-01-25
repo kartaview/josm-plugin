@@ -416,6 +416,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                     ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
+            DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(), clusterDetection);
             DataSet.getInstance().selectNearbyPhotos(photo);
         }
     }
