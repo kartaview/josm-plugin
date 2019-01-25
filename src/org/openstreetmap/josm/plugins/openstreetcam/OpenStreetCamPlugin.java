@@ -195,8 +195,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
             MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
             MainApplication.getLayerManager().removeLayerChangeListener(this);
-            PhotoDetailsDialog.destroyInstance();
-            DetectionDetailsDialog.destroyInstance();
+            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+            DetectionDetailsDialog.getInstance().clearDetailsDialog();
             OpenStreetCamLayer.destroyInstance();
             DataSet.getInstance().clear();
         }
