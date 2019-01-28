@@ -36,7 +36,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VI
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
@@ -132,10 +131,6 @@ final class LoadManager {
 
     boolean loadListSignRegionErrorFlag() {
         return Preferences.main().getBoolean(SUPPRESS_LIST_SIGN_REGIONS_ERROR);
-    }
-
-    boolean loadOnlyDetectionFilterChangedFlag() {
-        return Preferences.main().getBoolean(ONLY_DETECTION_FILTER_CHANGED);
     }
 
     boolean loadAutoplayStartedFlag() {

@@ -35,7 +35,6 @@ final class Keys {
     static final String SUPPRESS_LIST_SIGN_REGIONS_ERROR = "openstreetcam.error.sign.region.list.suppress";
 
     static final String FILTER_CHANGED = "openstreetcam.filter.changed";
-    static final String ONLY_DETECTION_FILTER_CHANGED = "openstreetcam.filter.onlyDetection.changed";
     static final String FILTER_DATE = "openstreetcam.filter.date";
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String FILTER_SEARCH_PHOTO_TYPE = "openstreetcam.filter.search.photoType";
