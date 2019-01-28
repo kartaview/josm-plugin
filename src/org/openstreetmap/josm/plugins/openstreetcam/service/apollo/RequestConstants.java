@@ -26,6 +26,7 @@ final class RequestConstants {
     static final String RETRIEVE_CLUSTER_PHOTOS = "retrieveClusterPhotos";
     static final String RETRIEVE_PHOTO = "retrievePhoto";
     static final String LIST_SIGNS = "listSigns";
+    static final String LIST_REGIONS = "listSignRegions";
 
     static final String NORTH = "north";
     static final String SOUTH = "south";
@@ -44,6 +45,7 @@ final class RequestConstants {
     static final String VALIDATION_STATUSES = "validationStatuses";
     static final String INCLUDED_SIGN_TYPES = "includedSignTypes";
     static final String EXCLUDED_SIGN_TYPES = "excludedSignTypes";
+    static final String REGION = "signRegion";
     static final String SEQUENCE_ID = "sequenceId";
     static final String SEQUENCE_INDEX = "sequenceIndex";
     static final String EDIT_STATUS_FIXED = "FIXED";

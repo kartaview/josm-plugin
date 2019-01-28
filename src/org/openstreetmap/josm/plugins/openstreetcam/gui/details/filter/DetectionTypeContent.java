@@ -24,10 +24,12 @@ public class DetectionTypeContent {
     private DetectionTypeContent() {
         if (allSigns == null) {
             List<Sign> signs = ServiceHandler.getInstance().listSigns();
-            allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
-            allSigns.remove(BLURRING_TYPE);
-            //add all icons to hash so they do not cause delay on request while the plugin is running
-            signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign,false));
+            if (signs != null) {
+                allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
+                allSigns.remove(BLURRING_TYPE);
+                //add all icons to hash so they do not cause delay on request while the plugin is running
+                signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
+            }
         }
     }
 

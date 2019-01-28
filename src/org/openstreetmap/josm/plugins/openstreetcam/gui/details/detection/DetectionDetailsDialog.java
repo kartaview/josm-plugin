@@ -149,6 +149,11 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    public void clearDetailsDialog(){
+        updateDetectionDetails(null);
+        updateClusterDetails(null);
+    }
+
     /**
      * Destroys the instance of the dialog.
      */

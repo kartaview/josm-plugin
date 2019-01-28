@@ -56,6 +56,7 @@ class HttpQueryBuilder {
             appendEditStatusFilter(filter.getEditStatuses());
             appendSignTypeFilter(filter.getSignTypes());
             appendSignInternalNameFilter(filter.getSignInternalNames());
+            appendSignRegionFilter(filter.getRegion());
             appendDetectionModeFilter(filter.getModes());
         }
         appendExcludedSignTypeFitler();
@@ -70,6 +71,7 @@ class HttpQueryBuilder {
             appendOsmComparisonFilter(filter.getOsmComparisons());
             appendSignTypeFilter(filter.getSignTypes());
             appendSignInternalNameFilter(filter.getSignInternalNames());
+            appendSignRegionFilter(filter.getRegion());
         }
         return build();
     }
@@ -138,6 +140,11 @@ class HttpQueryBuilder {
         return build();
     }
 
+    String buildListRegionsQuery() {
+        query.append(RequestConstants.LIST_REGIONS);
+        return build();
+    }
+
     private void appendUserFilter(final Long osmUserId) {
         if (osmUserId != null) {
             query.append(AND).append(RequestConstants.EXTERNAL_ID).append(EQ).append(osmUserId);
@@ -180,6 +187,12 @@ class HttpQueryBuilder {
         if (signInternalNames != null && !signInternalNames.isEmpty()) {
             query.append(AND).append(RequestConstants.SIGN_INTERNAL_NAMES).append(EQ)
             .append(HttpUtil.utf8Encode(new HashSet<>(signInternalNames)));
+        }
+    }
+
+    private void appendSignRegionFilter(final String region) {
+        if (region != null && !region.isEmpty()) {
+            query.append(AND).append(RequestConstants.REGION).append(EQ).append(region);
         }
     }
 

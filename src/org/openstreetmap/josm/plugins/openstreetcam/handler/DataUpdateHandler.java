@@ -144,7 +144,7 @@ public class DataUpdateHandler {
             });
         }
 
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
             final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, searchFilter, zoom);
@@ -174,7 +174,7 @@ public class DataUpdateHandler {
         }
 
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
             final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(areas, searchFilter);
             if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
@@ -214,6 +214,8 @@ public class DataUpdateHandler {
                             .filter(DataSet.getInstance().getDetections()::contains).collect(Collectors.toList());
                 }
                 PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster());
             }
         }
     }
