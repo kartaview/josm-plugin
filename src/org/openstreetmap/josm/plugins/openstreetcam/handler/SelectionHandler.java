@@ -100,7 +100,6 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
             selectDetection(detection);
         }
         OpenStreetCamLayer.getInstance().invalidate();
-        MainApplication.getMap().repaint();
     }
 
     private void selectPhoto(final Photo photo) {
