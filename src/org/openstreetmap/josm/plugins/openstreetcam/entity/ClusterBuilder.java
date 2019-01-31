@@ -30,6 +30,7 @@ public class ClusterBuilder {
     private OsmElement osmElement;
     private List<Detection> detections;
     private List<Photo> photos;
+    private String componentValue;
 
     public ClusterBuilder() {}
 
@@ -89,6 +90,10 @@ public class ClusterBuilder {
         this.photos = photos;
     }
 
+    public void componentValue(final String componentValue) {
+        this.componentValue = componentValue;
+    }
+
     Long getId() {
         return id;
     }
@@ -135,5 +140,9 @@ public class ClusterBuilder {
 
     public Cluster build() {
         return new Cluster(this);
+    }
+
+    public String getComponentValue() {
+        return componentValue;
     }
 }

@@ -30,6 +30,7 @@ public class Cluster {
     private final OsmElement osmElement;
     private final List<Detection> detections;
     private final List<Photo> photos;
+    private final String componentValue;
 
 
     Cluster(final ClusterBuilder builder) {
@@ -44,6 +45,7 @@ public class Cluster {
         this.osmElement = builder.getOsmElement();
         this.detections = builder.getDetections();
         this.photos = builder.getPhotos();
+        this.componentValue = builder.getComponentValue();
     }
 
 
@@ -89,6 +91,10 @@ public class Cluster {
 
     public List<Photo> getPhotos() {
         return photos;
+    }
+
+    public String getComponentValue() {
+        return componentValue;
     }
 
     public boolean hasPhotos() {
