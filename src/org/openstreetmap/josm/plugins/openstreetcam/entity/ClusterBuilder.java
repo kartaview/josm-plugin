@@ -44,6 +44,7 @@ public class ClusterBuilder {
         detectionIds(cluster.getDetectionIds());
         osmComparison(cluster.getOsmComparison());
         osmElement(cluster.getOsmElement());
+        componentValue(cluster.getComponentValue());
     }
 
     public void id(final Long id) {
@@ -138,11 +139,11 @@ public class ClusterBuilder {
         return photos;
     }
 
-    public Cluster build() {
-        return new Cluster(this);
+    String getComponentValue() {
+        return componentValue;
     }
 
-    public String getComponentValue() {
-        return componentValue;
+    public Cluster build() {
+        return new Cluster(this);
     }
 }

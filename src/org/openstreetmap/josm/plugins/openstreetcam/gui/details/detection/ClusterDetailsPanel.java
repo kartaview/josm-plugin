@@ -29,7 +29,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
-                GuiConfig.getInstance().getDetectionIdLbl());
+                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterComponentValueLbl());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
         if (cluster.getLatestChangeTimestamp() != null) {
