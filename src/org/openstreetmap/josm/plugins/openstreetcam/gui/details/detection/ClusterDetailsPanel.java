@@ -76,9 +76,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     
     void addSelectedDetectionToTable(final Detection detection) {
         if (detection != null) {
-            final int rowsNr = table.getRowCount();
             int detectionRow = 0;
-            for (int rowIndex = 0; rowIndex < rowsNr; ++rowIndex) {
+            for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
                 final int currentRowId = Integer.valueOf( table.getValueAt(rowIndex, 0).toString());
                 if (currentRowId == detection.getId()) {
                     detectionRow = rowIndex;
