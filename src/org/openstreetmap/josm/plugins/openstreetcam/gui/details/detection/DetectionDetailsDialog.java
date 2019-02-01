@@ -96,6 +96,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * status/comment changes
      * @param clusterObserver a {@code ClusterObserver} listens for the cluster next/previous photo
      * actions
+     * @param rowSelectionObserver a {@code RowSelectionObserver} listens for the selection of a row from the clusters's table
      */
     public void registerObservers(final DetectionChangeObserver detectionChangeObserver,
             final ClusterObserver clusterObserver, final RowSelectionObserver rowSelectionObserver) {
@@ -135,6 +136,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * Updates the dialog with a cluster information.
      *
      * @param cluster a {@code Cluster} object
+     * @param cluster a {@code Detection} object
      */
     public void updateClusterDetails(final Cluster cluster, final Detection detection) {
         setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
