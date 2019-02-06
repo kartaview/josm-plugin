@@ -158,6 +158,14 @@ public final class PreferenceManager {
         saveManager.saveListSignErrorSuppressFlag(flag);
     }
 
+    public boolean loadListSignRegionsSuppressFlag() {
+        return loadManager.loadListSignRegionErrorFlag();
+    }
+
+    public void saveListSignRegionErrorSuppressFlag(final boolean flag) {
+        saveManager.saveListSignRegionErrorSuppressFlag(flag);
+    }
+
     /**
      * Saves the 'filtersChanged' flag to the preference file.
      *
@@ -202,14 +210,6 @@ public final class PreferenceManager {
      */
     public MapViewSettings loadMapViewSettings() {
         return loadManager.loadMapViewSettings();
-    }
-
-    public boolean loadOnlyDetectionFilterChangedFlag() {
-        return loadManager.loadOnlyDetectionFilterChangedFlag();
-    }
-
-    public void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
-        saveManager.saveOnlyDetectionFilterChangedFlag(flag);
     }
 
     /**

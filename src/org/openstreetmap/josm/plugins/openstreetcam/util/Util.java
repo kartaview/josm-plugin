@@ -23,10 +23,12 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
 /**
@@ -153,8 +155,9 @@ public final class Util {
     }
 
     /**
-     * Verifies if the given mapView contains or not the given coordinate. If the {@code OsmDataLayer} is active and has
-     * data, then the coordinate is search in the available bounds.
+     * Verifies if the given mapView contains or not the given coordinate. If the preference for loading data only
+     * inside the active area is selected and {@code OsmDataLayer} is active and has data, then the coordinate is search
+     * in the available bounds.
      *
      * @param mapView the current {@code MapView}
      * @param latLon the coordinate to be checked
@@ -162,8 +165,9 @@ public final class Util {
      */
     public static boolean containsLatLon(final MapView mapView, final LatLon latLon) {
         boolean contains = false;
+        final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         final OsmDataLayer osmDataLayer = MainApplication.getLayerManager().getEditLayer();
-        if ((MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer) && osmDataLayer != null
+        if (mapViewSettings.isDataLoadFlag() && (MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer) && osmDataLayer != null
                 && !osmDataLayer.data.getDataSourceBounds().isEmpty() && osmDataLayer.isVisible()) {
             for (final Bounds bounds : MainApplication.getLayerManager().getEditLayer().data.getDataSourceBounds()) {
                 if (bounds.contains(latLon)) {
@@ -212,18 +216,18 @@ public final class Util {
      * @return a new list of detections remained after filtering
      */
     public static List<Detection> filterDetections(final List<Detection> detections, final DetectionFilter filter) {
-        List<Detection> filteredDetections = new ArrayList<>();
-        for (Detection detection : detections) {
-            boolean osmComparisons = filter.getOsmComparisons() == null || filter.getOsmComparisons()
+        final List<Detection> filteredDetections = new ArrayList<>();
+        for (final Detection detection : detections) {
+            final boolean osmComparisons = filter.getOsmComparisons() == null || filter.getOsmComparisons()
                     .contains(detection.getOsmComparison());
-            boolean editStatus =
+            final boolean editStatus =
                     filter.getEditStatuses() == null || filter.getEditStatuses().contains(detection.getEditStatus());
-            boolean signType =
+            final boolean signType =
                     filter.getSignTypes() != null && filter.getSignTypes().contains(detection.getSign().getType());
-            boolean specificSigns =
+            final boolean specificSigns =
                     filter.getSpecificSigns() != null && filter.getSpecificSigns().contains(detection.getSign());
-            boolean allDetections = filter.getSignTypes() == null && filter.getSpecificSigns() == null;
-            boolean modes = filter.getModes() == null || filter.getModes().contains(detection.getMode());
+            final boolean allDetections = filter.getSignTypes() == null && filter.getSpecificSigns() == null;
+            final boolean modes = filter.getModes() == null || filter.getModes().contains(detection.getMode());
             if (osmComparisons && editStatus && (allDetections || signType || specificSigns) && modes) {
                 filteredDetections.add(detection);
             }

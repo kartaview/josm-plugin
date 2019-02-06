@@ -51,7 +51,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
     private static final float BORDER_SIZE = 3;
-    private static final Color TRANSPARENT_BLUE = new Color(0, 0, 255, 50);
     private static final Color SELECTED_SIGN_COLOR = new Color(0, 191, 255);
     private static final Color UNSELECTED_SIGN_COLOR = new Color(255, 0, 0);
 
@@ -301,11 +300,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                     graphics.setColor(SELECTED_SIGN_COLOR);
                     final Stroke oldStroke = graphics.getStroke();
                     graphics.setStroke(new BasicStroke(BORDER_SIZE));
-                    graphics.draw(
-                            new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE, height + 2 * BORDER_SIZE));
+                    graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
+                            height + 2 * BORDER_SIZE));
                     graphics.setStroke(oldStroke);
-                    graphics.setColor(TRANSPARENT_BLUE);
-                    graphics.fill(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE, height + 2 * BORDER_SIZE));
                 } else {
                     graphics.setColor(UNSELECTED_SIGN_COLOR);
                     graphics.draw(new Rectangle2D.Double(x, y, width, height));

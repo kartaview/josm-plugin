@@ -31,6 +31,7 @@ public class Response extends BaseResponse {
     private List<Cluster> clusters;
     private List<Photo> photos;
     private List<Sign> signs;
+    private List<String> regions;
 
 
     public Response(final Status status) {
@@ -63,5 +64,9 @@ public class Response extends BaseResponse {
 
     public List<Sign> getSigns() {
         return signs;
+    }
+
+    public List<String> getRegions() {
+        return regions;
     }
 }

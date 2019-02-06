@@ -104,7 +104,6 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             selectDetection(detection);
         }
         OpenStreetCamLayer.getInstance().invalidate();
-        MainApplication.getMap().repaint();
     }
 
     private void selectPhoto(final Photo photo) {

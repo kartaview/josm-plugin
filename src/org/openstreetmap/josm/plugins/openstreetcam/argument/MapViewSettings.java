@@ -19,6 +19,7 @@ public class MapViewSettings {
 
     private final Integer photoZoom;
     private final boolean manualSwitchFlag;
+    private final boolean dataLoadFlag;
 
 
     /**
@@ -26,10 +27,12 @@ public class MapViewSettings {
      *
      * @param photoZoom the zoom level from which photo locations are displayed
      * @param manualSwitchFlag specifies if the map view data is changed manually or automatically based on current zoom
+     * @param dataLoadFlag specifies if the OSC data layer should be loaded only inside the active OSM Data layer
      */
-    public MapViewSettings(final Integer photoZoom, final boolean manualSwitchFlag) {
+    public MapViewSettings(final Integer photoZoom, final boolean manualSwitchFlag, final boolean dataLoadFlag) {
         this.photoZoom = photoZoom;
         this.manualSwitchFlag = manualSwitchFlag;
+        this.dataLoadFlag = dataLoadFlag;
     }
 
     public Integer getPhotoZoom() {
@@ -38,5 +41,9 @@ public class MapViewSettings {
 
     public boolean isManualSwitchFlag() {
         return manualSwitchFlag;
+    }
+
+    public boolean isDataLoadFlag() {
+        return dataLoadFlag;
     }
 }

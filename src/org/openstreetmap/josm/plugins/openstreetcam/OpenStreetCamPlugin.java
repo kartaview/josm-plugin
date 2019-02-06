@@ -90,7 +90,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, RowSelectionObser
         }
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
-        PreferenceManager.getInstance().saveOnlyDetectionFilterChangedFlag(false);
     }
 
     @Override
@@ -196,8 +195,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, RowSelectionObser
             MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
             MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
             MainApplication.getLayerManager().removeLayerChangeListener(this);
-            PhotoDetailsDialog.destroyInstance();
-            DetectionDetailsDialog.destroyInstance();
+            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+            DetectionDetailsDialog.getInstance().clearDetailsDialog();
             OpenStreetCamLayer.destroyInstance();
             DataSet.getInstance().clear();
         }

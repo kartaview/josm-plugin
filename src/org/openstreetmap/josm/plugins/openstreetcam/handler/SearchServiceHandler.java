@@ -212,7 +212,7 @@ class SearchServiceHandler {
     }
 
     boolean handleException(final String message) {
-        final int val = JOptionPane.showOptionDialog(MainApplication.getMap().mapView, message,
+        final int val = JOptionPane.showOptionDialog(MainApplication.getMainPanel(), message,
                 GuiConfig.getInstance().getErrorTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null,
                 null, null);
         return val == JOptionPane.YES_OPTION;

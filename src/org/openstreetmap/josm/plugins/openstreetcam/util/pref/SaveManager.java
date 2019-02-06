@@ -26,28 +26,30 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_REGION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_FLAG;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.ONLY_DETECTION_FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PHOTO_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.PLUGIN_LOCAL_VERSION;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGN_REGIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTOS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_PHOTO_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
-import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,8 +72,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionMo
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.OsmComparisonEntry;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignEntry;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.SignTypeEntry;
 
 
 /**
@@ -107,8 +109,6 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_SEGMENTS_ERROR, flag);
     }
 
-
-
     void saveSequenceDetectionsErrorFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_SEQUENCE_DETECTIONS_ERROR, flag);
     }
@@ -125,13 +125,13 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_LIST_SIGNS_ERROR, flag);
     }
 
+    void saveListSignRegionErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_LIST_SIGN_REGIONS_ERROR, flag);
+    }
+
     void saveFiltersChangedFlag(final boolean changed) {
         Preferences.main().put(FILTER_CHANGED, "");
         Preferences.main().put(FILTER_CHANGED, Boolean.toString(changed));
-    }
-
-    void saveOnlyDetectionFilterChangedFlag(final boolean flag) {
-        Preferences.main().putBoolean(ONLY_DETECTION_FILTER_CHANGED, flag);
     }
 
     void saveSearchFilter(final SearchFilter filter) {
@@ -161,18 +161,23 @@ final class SaveManager {
         List<Sign> specificSigns = null;
         List<String> signTypes = null;
         List<DetectionMode> detectionModes = null;
+        String region = null;
         if (filter != null) {
             osmComparions = filter.getOsmComparisons();
             editStatuses = filter.getEditStatuses();
             specificSigns = filter.getSpecificSigns();
             signTypes = filter.getSignTypes();
             detectionModes = filter.getModes();
+            region = filter.getRegion();
         }
         saveOsmComparisonFilter(osmComparions);
         saveEditStatusFilter(editStatuses);
         saveSignTypeFilter(signTypes);
         saveSpecificSignsFilter(specificSigns);
         saveModesFilter(detectionModes);
+        if (region != null) {
+            Preferences.main().put(FILTER_SEARCH_REGION, region);
+        }
     }
 
     private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
@@ -229,6 +234,7 @@ final class SaveManager {
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
         Preferences.main().putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
         Preferences.main().putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
+        Preferences.main().putBoolean(MAP_VIEW_DATA_LOAD, mapViewSettings.isDataLoadFlag());
     }
 
     void savePhotoSettings(final PhotoSettings photoSettings) {

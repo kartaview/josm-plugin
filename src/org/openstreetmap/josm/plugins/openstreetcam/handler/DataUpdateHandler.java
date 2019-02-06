@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
@@ -145,7 +144,7 @@ public class DataUpdateHandler {
             });
         }
 
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
             final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, searchFilter, zoom);
@@ -175,11 +174,8 @@ public class DataUpdateHandler {
         }
 
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes();
+        final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes(mapViewSettings.isDataLoadFlag());
         if (!areas.isEmpty()) {
-            if (!boundingBoxChanged && PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-                searchFilter.getDataTypes().remove(DataType.PHOTO);
-            }
             final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(areas, searchFilter);
             if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
                 updateUI(resultSet, checkSelection);
@@ -192,9 +188,7 @@ public class DataUpdateHandler {
             GuiHelper.runInEDT(() -> {
                 DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelClusterData(resultSet.getClusters(), checkSelection);
-                if (!PreferenceManager.getInstance().loadOnlyDetectionFilterChangedFlag()) {
-                    DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
-                }
+                DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
                 updateSelection(checkSelection);
                 if (DataSet.getInstance().hasNearbyPhotos()
                         && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
@@ -220,6 +214,8 @@ public class DataUpdateHandler {
                             .filter(DataSet.getInstance().getDetections()::contains).collect(Collectors.toList());
                 }
                 PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
+                DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster());
             }
         }
     }

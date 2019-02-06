@@ -32,14 +32,15 @@ final class Keys {
     static final String SUPPRESS_DETECTION_UPDATE_ERROR = "openstreetcam.error.detection.update.suppress";
 
     static final String SUPPRESS_LIST_SIGNS_ERROR = "openstreetcam.error.sign.list.suppress";
+    static final String SUPPRESS_LIST_SIGN_REGIONS_ERROR = "openstreetcam.error.sign.region.list.suppress";
 
     static final String FILTER_CHANGED = "openstreetcam.filter.changed";
-    static final String ONLY_DETECTION_FILTER_CHANGED = "openstreetcam.filter.onlyDetection.changed";
     static final String FILTER_DATE = "openstreetcam.filter.date";
     static final String FILTER_ONLY_USER_FLAG = "openstreetcam.filter.onlyUserFlag";
     static final String FILTER_SEARCH_PHOTO_TYPE = "openstreetcam.filter.search.photoType";
     static final String FILTER_SEARCH_MODE = "openstreetcam.filter.search.mode";
     static final String FILTER_SEARCH_EDIT_STATUS = "openstreetcam.filter.search.editStatus";
+    static final String FILTER_SEARCH_REGION = "openstreetcam.filter.search.region";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
     static final String FILTER_SEARCH_SPECIFIC_SIGN = "openstreetcam.filter.search.specificSign";
     static final String FILTER_SEARCH_EMPTY = "EMPTY";
@@ -79,6 +80,7 @@ final class Keys {
     /* map view related user preference settings */
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
     static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
+    static final String MAP_VIEW_DATA_LOAD = "openstreetcam.preferences.mapView.dataLoad";
     static final String MAP_VIEW_TYPE = "openstreetcam.dataType";
 
 

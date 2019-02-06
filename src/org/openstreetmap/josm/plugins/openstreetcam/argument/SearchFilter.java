@@ -101,19 +101,6 @@ public class SearchFilter {
         return result;
     }
 
-
-    /**
-     * Verifies if only the detection filters have been changed or not.
-     *
-     * @param other a {@code SearchFilter} a new search filter
-     * @return true/false
-     */
-    public boolean onlyDetectionFilterChanged(final SearchFilter other) {
-        return EntityUtil.bothNullOrEqual(date, other.getDate()) && (olnyUserData == other.isOlnyUserData())
-                && EntityUtil.bothNullOrEqual(dataTypes, other.getDataTypes())
-                && !EntityUtil.bothNullOrEqual(detectionFilter, other.getDetectionFilter());
-    }
-
     /**
      * Returns the OSM user identifier of the currently logged in user. If the user is not logged in the method return
      * null.
