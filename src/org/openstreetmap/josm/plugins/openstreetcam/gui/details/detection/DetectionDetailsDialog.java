@@ -157,7 +157,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
     public void clearDetailsDialog(){
         updateDetectionDetails(null);
-        updateClusterDetails(null);
+        updateClusterDetails(null, null);
     }
 
     /**

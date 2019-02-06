@@ -215,7 +215,7 @@ public class DataUpdateHandler {
                 }
                 PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
                 DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
-                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster());
+                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),DataSet.getInstance().getSelectedDetection());
             }
         }
     }
