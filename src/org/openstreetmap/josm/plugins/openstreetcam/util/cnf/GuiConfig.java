@@ -176,6 +176,7 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterComponentValueLbl;
     private final String detectionIdLbl;
 
+    private final String[] clusterTableHeader;
 
     private GuiConfig() {
         super(CONFIG_FILE);
@@ -332,12 +333,13 @@ public final class GuiConfig extends BaseConfig {
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
         clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
         detectionIdLbl = readProperty("detection.id");
+     
+        clusterTableHeader = readPropertiesArray("cluster.table.header");
     }
 
     public static GuiConfig getInstance() {
         return INSTANCE;
     }
-
 
     public String getPluginShortName() {
         return pluginShortName;
@@ -898,4 +900,8 @@ public final class GuiConfig extends BaseConfig {
     public String getDetectionIdLbl() {
         return detectionIdLbl;
     }
+
+    public String[] getClusterTableHeader() {
+        return clusterTableHeader;
+    }  
 }

@@ -32,6 +32,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -46,7 +47,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
+        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -67,7 +68,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
 
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom()) {
+                        .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -83,7 +84,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
     void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
             final boolean displayLoadingMessage) {
         if (cluster != null) {
-            selectCluster(cluster);
+            selectCluster(cluster, detection);
             selectPhoto(photo);
             if (detection != null) {
                 // special case
@@ -92,10 +93,13 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         } else {
             selectPhoto(photo);
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
-                DetectionDetailsDialog.getInstance().updateClusterDetails(null);
+                DetectionDetailsDialog.getInstance().updateClusterDetails(null, null);
                 if (!DataSet.getInstance().hasSelectedSequence()) {
                     DataSet.getInstance().setSelectedCluster(null);
                 }
+            } else {
+                Cluster selectedCluster = DataSet.getInstance().getSelectedCluster();
+                DetectionDetailsDialog.getInstance().updateClusterDetails(selectedCluster, detection);
             }
             selectDetection(detection);
         }
@@ -139,8 +143,8 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         }
     }
 
-    private void selectCluster(final Cluster cluster) {
-        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster);
+    private void selectCluster(final Cluster cluster, final Detection detection) {
+        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster, detection);
         DataSet.getInstance().setSelectedCluster(cluster);
         if (cluster != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(cluster.getPoint())) {
@@ -155,7 +159,6 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
                 }
             }
         }
-
     }
 
     /**
@@ -219,21 +222,21 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                        SwingUtilities.invokeLater(() -> {
-                            DataSet.getInstance().setSelectedSequence(sequence);
-                            PhotoDetailsDialog.getInstance().enableSequenceActions(
-                                    DataSet.getInstance().enablePreviousPhotoAction(),
-                                    DataSet.getInstance().enableNextPhotoAction(), null);
-                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
-                            }
-                            OpenStreetCamLayer.getInstance().invalidate();
-                            MainApplication.getMap().repaint();
-                        });
+            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                SwingUtilities.invokeLater(() -> {
+                    DataSet.getInstance().setSelectedSequence(sequence);
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction(), null);
+                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
+                });
+            }
         });
     }
 
@@ -412,6 +415,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
             final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                     ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
+            DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(), clusterDetection);
             DataSet.getInstance().selectNearbyPhotos(photo);
         }
     }
@@ -422,7 +426,18 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver {
         SwingUtilities.invokeLater(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
-                    selectDetection(detection);
+            selectDetection(detection);
         });
+    }
+
+
+    @Override
+    public void selectDetectionFromTable(final Detection detection) {
+        Photo photo = null;
+   
+        if (detection != null) {
+            photo = loadDetectionPhoto(detection);
+            handleDataSelection(photo, detection, null, true);
+        } 
     }
 }

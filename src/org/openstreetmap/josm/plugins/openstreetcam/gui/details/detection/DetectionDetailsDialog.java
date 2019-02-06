@@ -20,6 +20,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
@@ -95,11 +96,14 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * status/comment changes
      * @param clusterObserver a {@code ClusterObserver} listens for the cluster next/previous photo
      * actions
+     * @param rowSelectionObserver a {@code RowSelectionObserver} listens for the selection of a row from the clusters's table
      */
     public void registerObservers(final DetectionChangeObserver detectionChangeObserver,
-            final ClusterObserver clusterObserver) {
+            final ClusterObserver clusterObserver, final RowSelectionObserver rowSelectionObserver) {
         pnlButtons.registerObserver(detectionChangeObserver);
         pnlClusterButtons.registerObserver(clusterObserver);
+        pnlCluster.registerObserver(rowSelectionObserver);
+       
     }
 
     /**
@@ -132,10 +136,12 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * Updates the dialog with a cluster information.
      *
      * @param cluster a {@code Cluster} object
+     * @param cluster a {@code Detection} object
      */
-    public void updateClusterDetails(final Cluster cluster) {
+    public void updateClusterDetails(final Cluster cluster, final Detection detection) {
         setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
         pnlCluster.updateData(cluster);
+        pnlCluster.addSelectedDetectionToTable(detection);;
         cmpInfo.setViewportView(pnlCluster);
         pnlClusterButtons.updateUI(cluster);
         cmpBtn.removeAll();
@@ -151,7 +157,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
 
     public void clearDetailsDialog(){
         updateDetectionDetails(null);
-        updateClusterDetails(null);
+        updateClusterDetails(null, null);
     }
 
     /**

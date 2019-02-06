@@ -43,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -61,7 +62,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObserver, LayerChangeListener,
-LocationObserver, ZoomChangeListener, DetectionChangeObserver {
+LocationObserver, ZoomChangeListener, DetectionChangeObserver, RowSelectionObserver {
 
     private static final int SEARCH_DELAY = 500;
 
@@ -143,7 +144,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
     private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
         mapFrame.addToggleDialog(detectionDetailsDialog, true);
-        detectionDetailsDialog.registerObservers(this, selectionHandler);
+        detectionDetailsDialog.registerObservers(this, selectionHandler, selectionHandler);
         if (PreferenceManager.getInstance().loadDetectionPanelOpenedFlag()) {
             detectionDetailsDialog.showDialog();
         } else {
@@ -382,5 +383,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 MainApplication.getMap().repaint();
             }
         }
+    }
+
+    @Override
+    public void selectDetectionFromTable(Detection detection) {
     }
 }

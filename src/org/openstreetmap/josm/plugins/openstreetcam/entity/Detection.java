@@ -30,7 +30,10 @@ public class Detection implements Comparable<Detection> {
     private DetectionMode mode;
     private Author author;
     private Double facing;
-
+    private Float distance;
+    private Float angleFromCenter;
+    private Float orientation;
+    
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -100,7 +103,24 @@ public class Detection implements Comparable<Detection> {
     public Double getFacing() {
         return facing;
     }
+    
+    public Float getDistance() {
+        return distance;
+    }
 
+    public void setDistance(Float distance) {
+        this.distance = distance;
+    }
+ 
+    public Float getAngleFromCenter() {
+        return angleFromCenter;
+    }
+    
+    public Float getOrientation() {
+        return orientation;
+    }
+
+    
     @Override
     public int hashCode() {
         final int prime = 31;
