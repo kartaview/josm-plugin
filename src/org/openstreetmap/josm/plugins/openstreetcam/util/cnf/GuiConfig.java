@@ -173,6 +173,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionCreatedDate;
     private final String detectionUpdatedDate;
     private final String clusterDetectionsLbl;
+    private final String clusterComponentValueLbl;
     private final String detectionIdLbl;
 
 
@@ -329,6 +330,7 @@ public final class GuiConfig extends BaseConfig {
         detectionCreatedDate = readProperty("detection.date.created");
         detectionUpdatedDate = readProperty("detection.date.updated");
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
+        clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
         detectionIdLbl = readProperty("detection.id");
     }
 
@@ -887,6 +889,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionFacingText() {
         return detectionFacingText;
+    }
+
+    public String getClusterComponentValueLbl() {
+        return clusterComponentValueLbl;
     }
 
     public String getDetectionIdLbl() {

@@ -29,7 +29,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
-                GuiConfig.getInstance().getDetectionIdLbl());
+                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterComponentValueLbl());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
         if (cluster.getLatestChangeTimestamp() != null) {
@@ -39,6 +39,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int detections = cluster.getDetectionIds() != null ? cluster.getDetectionIds().size() : 0;
         addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), detections, widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
+        addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
     }
