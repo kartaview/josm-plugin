@@ -28,7 +28,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
     private static final long  MIN_DATE_VALUE= 1000000000;
 
-    public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+   public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
             final boolean hasFocus, final int row, final int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         setFont(MainApplication.getMap().getFont().deriveFont(Font.PLAIN));
@@ -59,6 +59,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
                 txt = value.toString();
                 setBackground(HEADER_GRAY);
                 setBorder(new MatteBorder(0, 0, 1, 1, Color.gray));
+                setFont(MainApplication.getMap().getFont().deriveFont(Font.BOLD));
             }
             setText(txt);
         }

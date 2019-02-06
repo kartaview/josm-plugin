@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
+import javax.swing.ListSelectionModel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
@@ -32,10 +33,11 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     private static final int HEADER_TO_CONTENT_EXTRA_HEIGHT = 16;
     private static final int TABLE_END_EXTRA_HEIGHT = 50;
     private static final int LINE_HEIGHT = 25;
+    private static final String EMPTY_STRING = "";
     
  
     private DetectionTable table;
-    RowSelectionObserver rowSelectionObserver;
+    private RowSelectionObserver rowSelectionObserver;
     
     @Override
     protected void createComponents(final Cluster cluster) {
@@ -49,31 +51,33 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             addInformation(GuiConfig.getInstance().getDetectionCreatedDate(),
                     DateFormatter.formatTimestamp(cluster.getLatestChangeTimestamp()), widthLbl);
         }
-        final int detections = cluster.getDetectionIds() != null ? cluster.getDetectionIds().size() : 0;
-        addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), detections, widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
-        
-      table = new DetectionTable(cluster);
-      table.registerObserver(rowSelectionObserver);
-      final int detectionsNr = cluster.getDetections().size();
-      int tableWidth = table.getTableWidth();   
-
-      table.getTableHeader()
-              .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
-
-      add(table.getTableHeader());
-      final int heightTableContent = detectionsNr * ROW_HEIGHT;
-      table.setBounds(new Rectangle(0, getPnlY() + HEADER_TO_CONTENT_EXTRA_HEIGHT + LINE_HEIGHT, tableWidth,
-              heightTableContent));     
-
-      add(table);
-      setPnlY(getPnlY() + heightTableContent + TABLE_END_EXTRA_HEIGHT);
-      setPnlWidth(tableWidth);
+        addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
+        addClusterTable(cluster);
         
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth(), pnlHeight));
      }
     
+     void addClusterTable(final Cluster cluster) {
+        table = new DetectionTable(cluster);
+        table.registerObserver(rowSelectionObserver);
+        final int detectionsNr = cluster.getDetections().size();
+        int tableWidth = table.getTableWidth();   
+
+        table.getTableHeader()
+                .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+
+        add(table.getTableHeader());
+        final int heightTableContent = detectionsNr * ROW_HEIGHT;
+        table.setBounds(new Rectangle(0, getPnlY() + HEADER_TO_CONTENT_EXTRA_HEIGHT + LINE_HEIGHT, tableWidth,
+                heightTableContent));     
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        add(table);
+        setPnlY(getPnlY() + heightTableContent + TABLE_END_EXTRA_HEIGHT);
+        setPnlWidth(tableWidth);
+    }
+     
     void addSelectedDetectionToTable(final Detection detection) {
         if (detection != null) {
             int detectionRow = 0;
@@ -86,8 +90,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             table.setRowSelectionInterval(detectionRow, detectionRow);
         }
     }
-
-    public void registerObserver(final RowSelectionObserver rowSelectionObserver) {
+    
+    void registerObserver(final RowSelectionObserver rowSelectionObserver) {
         this.rowSelectionObserver = rowSelectionObserver;
     }
 }

@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  *
  * @author nicoletav
  */
-public class DetectionsTableModel extends AbstractTableModel {
+class DetectionsTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = 1L;
     
@@ -25,6 +25,7 @@ public class DetectionsTableModel extends AbstractTableModel {
     private static final int IDX_DISTANCE = 7;
     private static final int IDX_ANGLE_FROM_CENTER = 8;
     private static final int IDX_ORIENTATION = 9;
+    private static final int MILIMETER_METER_SCALE = 1000;
     
     private List<Detection> data;
     
@@ -79,7 +80,7 @@ public class DetectionsTableModel extends AbstractTableModel {
                        value = detection.getFacing();
                        break;
                    case IDX_DISTANCE:
-                       value = detection.getDistance();
+                       value = detection.getDistance() / MILIMETER_METER_SCALE;
                        break;
                    case IDX_ANGLE_FROM_CENTER:
                        value = detection.getAngleFromCenter();

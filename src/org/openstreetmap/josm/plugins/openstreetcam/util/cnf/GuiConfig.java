@@ -325,8 +325,7 @@ public final class GuiConfig extends BaseConfig {
         detectionUpdatedDate = readProperty("detection.date.updated");
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
         detectionIdLbl = readProperty("detection.id");
-        
-       // clusterTableHeader = readProperty("cluster.table.header");
+     
         clusterTableHeader = readPropertiesArray("cluster.table.header");
     }
 

@@ -35,7 +35,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
      * @param cluster represents the selected cluster from the map
      */
 
-    public DetectionTable(Cluster cluster) {
+    DetectionTable(Cluster cluster) {
         super(new DetectionsTableModel(cluster.getDetections()));
         this.cluster = cluster;
 
@@ -105,12 +105,12 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         return selectedDetection;
     }
 
-    public Cluster getCluster() {
+    Cluster getCluster() {
         return cluster;
     }
 
 
-    public int getTableWidth() {
+    int getTableWidth() {
         return tableWidth;
     }
 
