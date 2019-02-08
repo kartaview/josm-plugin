@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="14" viewBox="0 0 15 14">
+  <defs>
+    <path id="ic_other-a" d="M7.41068571,0.468103448 C3.01354286,0.468103448 0.166971429,2.9487931 0.105771429,6.06517241 C0.0846857143,7.1487931 0.454457143,8.16827586 1.11222857,9.04086207 C1.40228571,9.41534483 2.4648,10.2377586 2.4648,10.2377586 L0.494571429,13.502069 L4.68754286,11.4051724 C5.47337143,11.655 6.13577143,11.8344828 7.39834286,11.8344828 C11.5738286,11.8344828 14.4337714,9.46655172 14.4944571,6.35017241 C14.5556571,3.2337931 11.8227429,0.468103448 7.41068571,0.468103448 Z"/>
+    <filter id="ic_other-b" width="110.4%" height="111.5%" x="-5.2%" y="-5.8%" filterUnits="objectBoundingBox">
+      <feGaussianBlur in="SourceAlpha" result="shadowBlurInner1" stdDeviation=".5"/>
+      <feOffset dy=".5" in="shadowBlurInner1" result="shadowOffsetInner1"/>
+      <feComposite in="shadowOffsetInner1" in2="SourceAlpha" k2="-1" k3="1" operator="arithmetic" result="shadowInnerInner1"/>
+      <feColorMatrix in="shadowInnerInner1" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.177649457 0"/>
+    </filter>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <mask id="ic_other-c" fill="#fff">
+      <use xlink:href="#ic_other-a"/>
+    </mask>
+    <g fill-rule="nonzero">
+      <use fill="#7290D4" xlink:href="#ic_other-a"/>
+      <use fill="#000" filter="url(#ic_other-b)" xlink:href="#ic_other-a"/>
+    </g>
+    <rect width="21" height="8" x="-4" y="6" fill="#000" fill-rule="nonzero" mask="url(#ic_other-c)" opacity=".1"/>
+  </g>
+</svg>
