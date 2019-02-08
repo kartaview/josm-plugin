@@ -140,10 +140,11 @@ class FilterPanel extends JPanel {
                 Constraints.getLblUser(isHighZoomLevel));
         final JLabel lblLoginWarning =
                 LabelBuilder.build(GuiConfig.getInstance().getDlgFilterLoginWarningLbl(), Font.ITALIC);
-        final boolean enabled = true;
+        boolean enabled = true;
         if (UserIdentityManager.getInstance().asUser().getId() <= 0) {
             lblLoginWarning.setForeground(Color.red);
             add(lblLoginWarning, Constraints.geLblLoginWarning(isHighZoomLevel));
+            enabled = false;
         }
         cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.getCbbUser(isHighZoomLevel));
