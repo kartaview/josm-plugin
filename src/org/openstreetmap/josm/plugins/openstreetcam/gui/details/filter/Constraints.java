@@ -57,7 +57,7 @@ final class Constraints {
     static final GridBagConstraints LBL_MODE = new GridBagConstraints(0, 5, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
     static final GridBagConstraints CBB_AUTOMATIC_MODE = new GridBagConstraints(1, 5, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(2, 3, 3, 0), 0, 0);
+            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
     static final GridBagConstraints CBB_MANUAL_MODE = new GridBagConstraints(2, 5, 3, 1, 0, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 10), 0, 0);
     static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 6, 1, 1, 1, 1,
