@@ -16,8 +16,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
-
 
 /**
  * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user
@@ -29,6 +29,7 @@ import com.telenav.josm.common.gui.builder.ButtonBuilder;
 class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObservable {
 
     private static final long serialVersionUID = -6885598017144429682L;
+    private static final int BUTTON_FONT_SIZE = 13;
 
     private DetectionChangeObserver detectionChangeObserver;
     private JButton btnMapped;
@@ -50,8 +51,8 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     private void addMappedButton() {
         final JosmAction action =
                 new EditAction(GuiConfig.getInstance().getBtnFixDetectionShortcutText(), EditStatus.MAPPED);
-        btnMapped = ButtonBuilder.build(action, GuiConfig.getInstance().getDetectionEditStatusMappedText());
-        btnMapped.setToolTipText(
+        btnMapped = ButtonBuilder.build(action, IconConfig.getInstance().getMappedIcon(),
+                GuiConfig.getInstance().getDetectionEditStatusMappedText(), BUTTON_FONT_SIZE,
                 GuiConfig.getInstance().getBtnFixDetectionTlt().replace(SHORTCUT, action.getShortcut().getKeyText()));
         add(btnMapped);
     }
@@ -59,9 +60,9 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     private void addBadDetectionButton() {
         final EditAction badAction =
                 new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
-        btnBadDetection = ButtonBuilder.build(badAction, GuiConfig.getInstance().getBtnBadDetection());
-        btnBadDetection.setToolTipText(GuiConfig.getInstance().getBtnBadDetectionTlt().replace(SHORTCUT,
-                badAction.getShortcut().getKeyText()));
+        btnBadDetection = ButtonBuilder.build(badAction, IconConfig.getInstance().getBadDetectionIcon(),
+                GuiConfig.getInstance().getBtnBadDetection(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
+                        .getBtnBadDetectionTlt().replace(SHORTCUT, badAction.getShortcut().getKeyText()));
         add(btnBadDetection);
     }
 
@@ -69,9 +70,9 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         final DisplayCommentDialogAction otherAction =
                 new DisplayCommentDialogAction(GuiConfig.getInstance().getDialogAddCommentText(),
                         GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
-        btnComment = ButtonBuilder.build(otherAction, GuiConfig.getInstance().getBtnOtherActionOnDetection());
-        btnComment.setToolTipText(GuiConfig.getInstance().getBtnOtherActionOnDetectionTlt().replace(SHORTCUT,
-                otherAction.getShortcut().getKeyText()));
+        btnComment = ButtonBuilder.build(otherAction, IconConfig.getInstance().getOtherIcon(),
+                GuiConfig.getInstance().getBtnOtherActionOnDetection(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
+                        .getBtnOtherActionOnDetectionTlt().replace(SHORTCUT, otherAction.getShortcut().getKeyText()));
         add(btnComment);
     }
 

@@ -61,7 +61,9 @@ public final class IconConfig extends BaseConfig {
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
-
+    private final Icon mappedIcon;
+    private final Icon badDetectionIcon;
+    private final Icon otherIcon;
 
     private IconConfig() {
         super(CONFIG_FILE);
@@ -102,6 +104,9 @@ public final class IconConfig extends BaseConfig {
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
+        mappedIcon = ImageProvider.get(readProperty("mapped.icon"));
+        badDetectionIcon = ImageProvider.get(readProperty("bad.detection.icon"));
+        otherIcon = ImageProvider.get(readProperty("other.icon"));
     }
 
 
@@ -241,5 +246,17 @@ public final class IconConfig extends BaseConfig {
 
     public String getDetectionIconsPath() {
         return detectionIconsPath;
+    }
+    
+    public Icon getMappedIcon() {
+        return mappedIcon;
+    }
+ 
+    public Icon getBadDetectionIcon() {
+        return badDetectionIcon;
+    }
+   
+    public Icon getOtherIcon() {
+        return otherIcon;
     }
 }
