@@ -79,6 +79,9 @@ public final class ShortcutFactory {
         map.put(guiConfig.getBtnOtherActionOnDetectionShortcutText(),
                 Shortcut.registerShortcut(guiConfig.getBtnOtherActionOnDetectionShortcutText(),
                         guiConfig.getBtnOtherActionOnDetectionShortcutText(), KeyEvent.VK_O, Shortcut.ALT_CTRL));
+        map.put(guiConfig.getBtnMatchedDataShortcutText(),
+                Shortcut.registerShortcut(guiConfig.getBtnMatchedDataShortcutText(),
+                        guiConfig.getBtnMatchedDataShortcutText(), KeyEvent.VK_L, Shortcut.ALT_CTRL));
         map.put(guiConfig.getBtnBadDetectionShortcutText(),
                 Shortcut.registerShortcut(guiConfig.getBtnBadDetectionShortcutText(),
                         guiConfig.getBtnBadDetectionShortcutText(), KeyEvent.VK_B, Shortcut.ALT_CTRL));

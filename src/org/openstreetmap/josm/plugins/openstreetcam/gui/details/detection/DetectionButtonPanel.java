@@ -10,7 +10,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObservable;
@@ -35,6 +40,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     private JButton btnMapped;
     private JButton btnBadDetection;
     private JButton btnComment;
+    private JButton btnMatchedData;
 
 
     DetectionButtonPanel() {
@@ -46,6 +52,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         addMappedButton();
         addBadDetectionButton();
         addCommentButton();
+        addMatchedDataButton();
     }
 
     private void addMappedButton() {
@@ -76,28 +83,42 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         add(btnComment);
     }
 
+    private void addMatchedDataButton() {
+        final boolean enabled = DataSet.getInstance().selectedDetectionHasOsmElements();
+        final MatchedDataAction matchedDataAction =
+                new MatchedDataAction(GuiConfig.getInstance().getBtnMatchedDataShortcutText());
+        btnMatchedData = ButtonBuilder.build(matchedDataAction, IconConfig.getInstance().getMatchedWayIcon(),
+                GuiConfig.getInstance().getBtnMatchedData(), BUTTON_FONT_SIZE,
+                GuiConfig.getInstance().getBtnMatchedDataTlt()
+                        .replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
+        btnMatchedData.setEnabled(enabled);
+        add(btnMatchedData);
+    }
+
     void enablePanelActions(final EditStatus editStatus) {
+        final boolean matchedDataFlag = DataSet.getInstance().selectedDetectionHasOsmElements();
         switch (editStatus) {
             case OPEN:
-                enablePanelActions(true, true, true);
+                enablePanelActions(true, true, true, matchedDataFlag);
                 break;
             case BAD_SIGN:
-                enablePanelActions(true, false, true);
+                enablePanelActions(true, false, true, matchedDataFlag);
                 break;
             case MAPPED:
-                enablePanelActions(false, true, true);
+                enablePanelActions(false, true, true, matchedDataFlag);
                 break;
             default:
                 // OTHER
-                enablePanelActions(true, true, false);
+                enablePanelActions(true, true, false, matchedDataFlag);
                 break;
         }
     }
 
-    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag) {
+    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag, final boolean matchedDataFlag) {
         btnMapped.setEnabled(mappedFlag);
         btnBadDetection.setEnabled(badDetectionFlag);
         btnComment.setEnabled(otherFlag);
+        btnMatchedData.setEnabled(matchedDataFlag);
     }
 
     @Override
@@ -148,6 +169,19 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
 
         private void registerObserver(final DetectionChangeObserver observer) {
             dialog.registerObserver(observer);
+        }
+    }
+
+    private final class MatchedDataAction extends JosmAction {
+
+        private MatchedDataAction(final String shortcutText) {
+            super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            //SwingUtilities.invokeLater(() ->JOptionPane.showMessageDialog(MainApplication.getMainPanel(), "Not found in map",
+                    //GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
         }
     }
 }

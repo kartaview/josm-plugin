@@ -117,8 +117,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         cmpInfo.setViewportView(pnlDetails);
         cmpBtn.removeAll();
         cmpBtn.add(pnlButtons);
-        if (detection != null && detection.getOsmComparison() != null
-                && !detection.getOsmComparison().equals(OsmComparison.SAME)) {
+        if (detection != null) {
             pnlButtons.setVisible(true);
             pnlButtons.enablePanelActions(detection.getEditStatus());
             cmpBtn.setVisible(true);
@@ -141,7 +140,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     public void updateClusterDetails(final Cluster cluster, final Detection detection) {
         setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
         pnlCluster.updateData(cluster);
-        pnlCluster.addSelectedDetectionToTable(detection);;
+        pnlCluster.addSelectedDetectionToTable(detection);
         cmpInfo.setViewportView(pnlCluster);
         pnlClusterButtons.updateUI(cluster);
         cmpBtn.removeAll();

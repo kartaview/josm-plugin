@@ -146,6 +146,9 @@ public final class GuiConfig extends BaseConfig {
     private final String btnOtherActionOnDetection;
     private final String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
+    private final String btnMatchedData;
+    private final String btnMatchedDataShortcutText;
+    private final String btnMatchedDataTlt;
     private final String btnClusterNextShortcutText;
     private final String btnClusterPreviousShortcutText;
     private final String btnClusterMatchedDataTlt;
@@ -301,6 +304,9 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
+        btnMatchedData = readProperty("btn.detection.matchedData.lbl");
+        btnMatchedDataShortcutText = readProperty("btn.detection.matchedData.shortcut.text");
+        btnMatchedDataTlt = readProperty("btn.detection.matchedData.tlt");
         btnClusterNextShortcutText = readProperty("btn.cluster.next.shortcut.text");
         btnClusterPreviousShortcutText = readProperty("btn.cluster.previous.shortcut.text");
         btnClusterMatchedDataTlt = readProperty("btn.cluster.matchedData.tlt");
@@ -903,5 +909,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String[] getClusterTableHeader() {
         return clusterTableHeader;
-    }  
+    }
+
+    public String getBtnMatchedData() {
+        return btnMatchedData;
+    }
+
+    public String getBtnMatchedDataShortcutText() {
+        return btnMatchedDataShortcutText;
+    }
+
+    public String getBtnMatchedDataTlt() {
+        return btnMatchedDataTlt;
+    }
 }

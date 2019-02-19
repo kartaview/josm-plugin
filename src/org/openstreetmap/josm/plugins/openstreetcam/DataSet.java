@@ -742,4 +742,13 @@ public final class DataSet {
         return selectedCluster != null && selectedCluster.getPhotos() != null
                 && selectedCluster.getPhotos().contains(photo);
     }
+
+    /**
+     * Checks if the current selected detection has osm elements.
+     * @return {@code boolean}
+     */
+    public boolean selectedDetectionHasOsmElements() {
+        return selectedDetection != null && selectedDetection.getOsmElements() != null && !selectedDetection
+                .getOsmElements().isEmpty();
+    }
 }
