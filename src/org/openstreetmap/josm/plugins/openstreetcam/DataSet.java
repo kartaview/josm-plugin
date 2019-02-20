@@ -141,7 +141,8 @@ public final class DataSet {
             final boolean updateSelection) {
         this.clusters = clusters;
         if (updateSelection && selectedCluster != null) {
-            selectedCluster = clusters != null && !clusters.contains(selectedCluster) ? null : selectedCluster;
+            selectedCluster = (clusters == null || (clusters != null && !clusters.contains(selectedCluster))) ? null
+                    : selectedCluster;
         }
     }
 
