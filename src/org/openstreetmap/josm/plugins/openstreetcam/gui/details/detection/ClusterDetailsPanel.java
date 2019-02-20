@@ -35,6 +35,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     private static final int TABLE_END_EXTRA_HEIGHT = 50;
     private static final int LINE_HEIGHT = 25;
     private static final String EMPTY_STRING = "";
+    private static final int ID_COLUMN = 0;
 
 
     private DetectionTable table;
@@ -86,8 +87,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         if (detection != null && DataSet.getInstance().getSelectedCluster() != null) {
             int detectionRow = 0;
             for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
-                if(table.getValueAt(rowIndex, 0) != null ) {
-                    final int currentRowId = Integer.valueOf(table.getValueAt(rowIndex, 0).toString());
+                if(table.getValueAt(rowIndex, ID_COLUMN) != null ) {
+                    final int currentRowId = Integer.valueOf(table.getValueAt(rowIndex, ID_COLUMN).toString());
                     if (currentRowId == detection.getId()) {
                         detectionRow = rowIndex;
                     }

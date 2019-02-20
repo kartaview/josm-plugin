@@ -141,9 +141,7 @@ public final class DataSet {
             final boolean updateSelection) {
         this.clusters = clusters;
         if (updateSelection && selectedCluster != null) {
-            selectedCluster = clusters != null ?
-                    clusters.stream().filter(cluster -> cluster.equals(selectedCluster)).findFirst().orElse(null) :
-                    null;
+            selectedCluster = clusters != null && !clusters.contains(selectedCluster) ? null : selectedCluster;
         }
     }
 
