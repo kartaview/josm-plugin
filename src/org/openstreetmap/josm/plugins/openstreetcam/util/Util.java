@@ -17,16 +17,13 @@ import java.util.TreeMap;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.BBox;
-import org.openstreetmap.josm.data.osm.PrimitiveId;
-import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.osm.*;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.io.MultiFetchServerObjectReader;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.*;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
@@ -235,23 +232,50 @@ public final class Util {
         return filteredDetections;
     }
 
-    /**
-     * This method compares two unordered lists and returns if they are equal based on contained values.
-     * A null list is considered equal to an empty list.
-     * The method checks if each list contains all the elements from the other.
-     *
-     * @param one - The first list to compare
-     * @param two - The second list to compare
-     * @param <T> - The type of the elements contained in the lists
-     * @return true if the lists contain the same values or false otherwise
-     */
-    public static <T> boolean equalUnorderedPreferenceLists(final List<T> one, final List<T> two) {
-        if ((one == null && two == null) || (one == null && two.isEmpty()) || (two == null && one.isEmpty())) {
-            return true;
+    public static MultiFetchServerObjectReader retrieveServerObjectReader(final Collection<OsmElement> elements) {
+        MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
+        for (OsmElement element : elements) {
+            if (element.getFromId() != null && element.getToId() != null) {
+                appendOsmPrimitive(reader, element, true);
+            } else if (element.getOsmId() != null && element.getOsmId() > 0) {
+                appendOsmPrimitive(reader, element, false);
+            }
+            if (element.getMembers() != null) {
+                for (OsmElement member : element.getMembers()) {
+                    if (member.getToId() != null && member.getFromId() != null) {
+                        appendOsmPrimitive(reader, member, true);
+                    } else if (member.getOsmId() != null && member.getOsmId() > 0) {
+                        appendOsmPrimitive(reader, member, false);
+                    }
+                }
+            }
         }
-        if (one == null || two == null || one.size() != two.size()) {
-            return false;
+
+        return reader;
+    }
+
+    private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element,
+            final boolean fromToTag) {
+        switch (element.getType().getOsmPrimitiveType()) {
+            case NODE:
+                reader.append(new Node(element.getOsmId()));
+                break;
+            case WAY:
+                if (fromToTag) {
+                    reader.append(new Node(element.getFromId()));
+                    reader.append(new Node(element.getToId()));
+                } else {
+                    reader.append(new Way(element.getOsmId()));
+                }
+                break;
+            case RELATION:
+                if (fromToTag) {
+                    reader.append(new Node(element.getFromId()));
+                    reader.append(new Node(element.getToId()));
+                } else {
+                    reader.append(new Relation(element.getOsmId()));
+                }
+                break;
         }
-        return one.containsAll(two) && two.containsAll(one);
     }
 }
