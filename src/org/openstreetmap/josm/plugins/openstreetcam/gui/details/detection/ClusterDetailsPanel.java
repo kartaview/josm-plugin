@@ -87,14 +87,14 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         if (detection != null && DataSet.getInstance().getSelectedCluster() != null) {
             int detectionRow = 0;
             for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
-                if(table.getValueAt(rowIndex, ID_COLUMN) != null ) {
+                if (table.getValueAt(rowIndex, ID_COLUMN) != null) {
                     final int currentRowId = Integer.valueOf(table.getValueAt(rowIndex, ID_COLUMN).toString());
                     if (currentRowId == detection.getId()) {
                         detectionRow = rowIndex;
                     }
                 }
             }
-            if(table.getRowCount() > 0) {
+            if (table.getRowCount() > 0) {
                 table.setRowSelectionInterval(detectionRow, detectionRow);
             }
         }
