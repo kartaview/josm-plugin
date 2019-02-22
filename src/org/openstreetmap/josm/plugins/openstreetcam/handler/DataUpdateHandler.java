@@ -184,12 +184,13 @@ public class DataUpdateHandler {
     }
 
     private void updateUI(final HighZoomResultSet resultSet, final boolean checkSelection) {
+        final boolean isClusterInfoInPanel = DataSet.getInstance().getSelectedCluster() == null ? false : true;
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelClusterData(resultSet.getClusters(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
-                updateSelection(checkSelection);
+                updateSelection(checkSelection,  isClusterInfoInPanel);
                 if (DataSet.getInstance().hasNearbyPhotos()
                         && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
@@ -201,7 +202,7 @@ public class DataUpdateHandler {
         }
     }
 
-    private void updateSelection(final boolean checkSelection) {
+    private void updateSelection(final boolean checkSelection, final boolean isClusterInfoInPanel) {
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         } else {
@@ -210,12 +211,20 @@ public class DataUpdateHandler {
                         PhotoDetailsDialog.getInstance().getDisplayedPhotoDetections();
                 List<Detection> exposedDetections = null;
                 if (displayedPhotoDetections != null && DataSet.getInstance().hasDetections()) {
-                    exposedDetections = displayedPhotoDetections.stream()
-                            .filter(DataSet.getInstance().getDetections()::contains).collect(Collectors.toList());
+                    exposedDetections =
+                            displayedPhotoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
+                                    .collect(Collectors.toList());
                 }
                 PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
-                DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
-                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),DataSet.getInstance().getSelectedDetection());
+                if(isClusterInfoInPanel){
+                    DetectionDetailsDialog.getInstance()
+                            .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                    DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                            DataSet.getInstance().getSelectedDetection());
+                } else {
+                    DetectionDetailsDialog.getInstance()
+                            .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                }
             }
         }
     }

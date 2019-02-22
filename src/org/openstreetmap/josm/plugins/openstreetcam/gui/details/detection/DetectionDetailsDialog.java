@@ -141,7 +141,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     public void updateClusterDetails(final Cluster cluster, final Detection detection) {
         setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
         pnlCluster.updateData(cluster);
-        pnlCluster.addSelectedDetectionToTable(detection);;
+        pnlCluster.addSelectedDetectionToTable(detection);
         cmpInfo.setViewportView(pnlCluster);
         pnlClusterButtons.updateUI(cluster);
         cmpBtn.removeAll();
