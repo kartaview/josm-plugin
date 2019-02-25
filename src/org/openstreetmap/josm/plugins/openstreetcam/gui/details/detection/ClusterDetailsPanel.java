@@ -10,7 +10,10 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
-import javax.swing.ListSelectionModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.*;
+
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -43,6 +46,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
     @Override
     protected void createComponents(final Cluster cluster) {
+        DataSet.getInstance().setSelectedCluster(cluster);
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
@@ -77,6 +81,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             table.setBounds(new Rectangle(0, getPnlY() + HEADER_TO_CONTENT_EXTRA_HEIGHT + LINE_HEIGHT, tableWidth,
                     heightTableContent));
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
             add(table);
             setPnlY(getPnlY() + heightTableContent + TABLE_END_EXTRA_HEIGHT);
             setPnlWidth(tableWidth);

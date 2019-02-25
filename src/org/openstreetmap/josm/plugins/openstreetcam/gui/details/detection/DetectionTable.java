@@ -1,10 +1,9 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -57,8 +56,30 @@ class DetectionTable extends JTable implements RowSelectionObservable {
                 notifyRowSelectionObserver(selectedDetection);
             }
         });
+
+        this.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(final KeyEvent e) {
+                super.keyPressed(e);
+                Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
+                if( e.getKeyCode() == KeyEvent.VK_UP){
+                    if(getSelectedRow() > 0){
+                        selectedTableDetection = cluster.getDetections().get(getSelectedRow() - 1);
+                    }
+                    notifyRowSelectionObserver(selectedTableDetection);
+                }
+                if( e.getKeyCode() == KeyEvent.VK_DOWN){
+                    if(getSelectedRow() < cluster.getDetectionIds().size() - 1){
+                        selectedTableDetection = cluster.getDetections().get(getSelectedRow() + 1);
+                    }
+                    notifyRowSelectionObserver(selectedTableDetection);
+                }
+            }
+        });
         adjustColumnSizes();
     }
+
 
     private void adjustColumnSizes() {
         final DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
