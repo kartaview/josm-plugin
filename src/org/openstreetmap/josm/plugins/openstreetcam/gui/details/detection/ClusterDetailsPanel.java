@@ -56,9 +56,9 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
 
-        if( cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
-               addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
-               addClusterTable(cluster);
+        if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
+            addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
+            addClusterTable(cluster);
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
@@ -87,7 +87,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     }
 
     void addSelectedDetectionToTable(final Detection detection) {
-        if (detection != null && DataSet.getInstance().getSelectedCluster() != null && DataSet.getInstance().getSelectedCluster().getDetections().size() > 0) {
+        if (detection != null && DataSet.getInstance().getSelectedCluster() != null &&
+                DataSet.getInstance().getSelectedCluster().getDetections().size() > 0) {
             int detectionRow = 0;
             for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
                 if (table.getValueAt(rowIndex, ID_COLUMN) != null) {
