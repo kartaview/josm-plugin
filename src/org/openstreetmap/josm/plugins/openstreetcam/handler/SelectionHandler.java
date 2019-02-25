@@ -124,6 +124,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
     private void selectDetection(final Detection detection) {
         DataSet.getInstance().setSelectedDetection(detection);
+        DataSet.getInstance().setMatchedData(null);
         if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
                 && !DataSet.getInstance().selectedPhotoBelongsToSelectedCluster())) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);

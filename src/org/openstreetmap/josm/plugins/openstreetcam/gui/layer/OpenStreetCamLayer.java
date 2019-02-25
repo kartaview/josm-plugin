@@ -93,6 +93,11 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                         dataSet.getSelectedDetection());
             }
 
+            //draw downloaded matched data
+            if (dataSet.hasMatchedData()) {
+                paintHandler.drawMatchedData(graphics, mapView, dataSet.getMatchedData());
+            }
+
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStorke);
         }

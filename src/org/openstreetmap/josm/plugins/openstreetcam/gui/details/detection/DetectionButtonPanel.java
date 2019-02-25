@@ -8,28 +8,18 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.event.ActionEvent;
-import java.util.*;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import org.openstreetmap.josm.actions.JosmAction;
-import org.openstreetmap.josm.data.osm.*;
-import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
-import org.openstreetmap.josm.io.MultiFetchServerObjectReader;
-import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
+
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 
 /**
  * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user
@@ -176,60 +166,6 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
 
         private void registerObserver(final DetectionChangeObserver observer) {
             dialog.registerObserver(observer);
-        }
-    }
-
-
-    private final class MatchedDataAction extends JosmAction {
-
-        private MatchedDataAction(final String shortcutText) {
-            super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final Collection<OsmElement> osmElements = DataSet.getInstance().getSelectedDetection().getOsmElements();
-
-            MultiFetchServerObjectReader reader = Util.retrieveServerObjectReader(osmElements);
-            org.openstreetmap.josm.data.osm.DataSet result = null;
-            try {
-                result = reader.parseOsm(NullProgressMonitor.INSTANCE);
-            } catch (OsmTransferException e1) {
-                SwingUtilities.invokeLater(() -> JOptionPane
-                        .showMessageDialog(MainApplication.getMainPanel(), "Error retrieving OSM members",
-                                GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
-            }
-
-            Map<OsmElement,List<Node>> downloadedData = new HashMap<>();
-
-            for(OsmElement element: osmElements){
-                if(element.getFromId() != null && element.getToId() != null){
-                    OsmPrimitive fromPrimitive = result.getPrimitiveById(new SimplePrimitiveId(element.getFromId(), OsmPrimitiveType.NODE));
-                    OsmPrimitive toPrimitive = result.getPrimitiveById(new SimplePrimitiveId(element.getToId(), OsmPrimitiveType.NODE));
-                    if(fromPrimitive == null || toPrimitive ==  null){
-                        SwingUtilities.invokeLater(() -> JOptionPane
-                                .showMessageDialog(MainApplication.getMainPanel(), "Missing members.",
-                                        GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
-                    }
-                    if(element.getMembers() != null){
-                        for(OsmElement member: osmElements){
-                            if(member.getFromId() != null || member.getToId() != null){
-                                OsmPrimitive memberFromPrimitive = result.getPrimitiveById(new SimplePrimitiveId(member.getFromId(), OsmPrimitiveType.NODE));
-                                OsmPrimitive memberToPrimitive = result.getPrimitiveById(new SimplePrimitiveId(member.getToId(), OsmPrimitiveType.NODE));
-                                if(memberFromPrimitive == null || memberToPrimitive ==null){
-                                    SwingUtilities.invokeLater(() -> JOptionPane
-                                            .showMessageDialog(MainApplication.getMainPanel(), "Missing members.",
-                                                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
-
-                                }else{
-                                    //draw
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
         }
     }
 }
