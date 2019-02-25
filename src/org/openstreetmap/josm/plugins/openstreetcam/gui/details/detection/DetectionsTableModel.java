@@ -20,11 +20,10 @@ class DetectionsTableModel extends AbstractTableModel {
     private static final int IDX_UPDATE_ON_DATE = 2;
     private static final int IDX_VALIDATION_STATUS = 3;
     private static final int IDX_TASK_STATUS = 4;
-    private static final int IDX_CONF_LEVEL = 5;
-    private static final int IDX_FACING = 6;
-    private static final int IDX_DISTANCE = 7;
-    private static final int IDX_ANGLE_FROM_CENTER = 8;
-    private static final int IDX_ORIENTATION = 9;
+    private static final int IDX_FACING = 5;
+    private static final int IDX_DISTANCE = 6;
+    private static final int IDX_ANGLE_FROM_CENTER = 7;
+    private static final int IDX_ORIENTATION = 8;
     private static final int MILIMETER_METER_SCALE = 1000;
     
     private List<Detection> data;
@@ -72,9 +71,6 @@ class DetectionsTableModel extends AbstractTableModel {
                        break;
                    case IDX_TASK_STATUS:
                        value = detection.getEditStatus();
-                       break;
-                   case IDX_CONF_LEVEL:
-                       value = detection.getConfidenceLevel();
                        break;
                    case IDX_FACING:
                        value = detection.getFacing();
