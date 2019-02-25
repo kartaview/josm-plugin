@@ -80,7 +80,9 @@ class DetectionsTableModel extends AbstractTableModel {
                        value = detection.getFacing();
                        break;
                    case IDX_DISTANCE:
-                       value = detection.getDistance() / MILIMETER_METER_SCALE;
+                       if (detection.getDistance() != null) {
+                           value = detection.getDistance() / MILIMETER_METER_SCALE;
+                       }
                        break;
                    case IDX_ANGLE_FROM_CENTER:
                        value = detection.getAngleFromCenter();
