@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -50,8 +51,8 @@ class SearchServiceHandler {
     }
 
     /**
-     * Searches for data high zoom levels. For high zoom levels depending on the selected filter the following
-     * data types are displayed: photo locations, detections and clusters (aggregated detections).
+     * Searches for data high zoom levels. For high zoom levels depending on the selected filter the following data
+     * types are displayed: photo locations, detections and clusters (aggregated detections).
      *
      * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
      * might be several bounding boxes.
@@ -65,21 +66,21 @@ class SearchServiceHandler {
         final List<Future<List<Cluster>>> futureClusters = new ArrayList<>();
 
         for (final BoundingBox area : areas) {
-            final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO) ?
-                    executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
-            if (futurePhotoDataSet != null) {
-                futurePhotoDataSets.add(futurePhotoDataSet);
-            }
-            final Future<List<Detection>> futureDetectionList = filter.getDataTypes().contains(DataType.DETECTION) ?
-                    executorService.submit(() -> searchDetections(area, filter)) : null;
-            if (futureDetectionList != null) {
-                futureDetections.add(futureDetectionList);
-            }
-            final Future<List<Cluster>> futureClusterList = filter.getDataTypes().contains(DataType.CLUSTER) ?
-                    executorService.submit(() -> searchClusters(area, filter)) : null;
-            if (futureClusterList != null) {
-                futureClusters.add(futureClusterList);
-            }
+            final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO)
+                    ? executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
+                    if (futurePhotoDataSet != null) {
+                        futurePhotoDataSets.add(futurePhotoDataSet);
+                    }
+                    final Future<List<Detection>> futureDetectionList = filter.getDataTypes().contains(DataType.DETECTION)
+                            ? executorService.submit(() -> searchDetections(area, filter)) : null;
+                            if (futureDetectionList != null) {
+                                futureDetections.add(futureDetectionList);
+                            }
+                            final Future<List<Cluster>> futureClusterList = filter.getDataTypes().contains(DataType.CLUSTER)
+                                    ? executorService.submit(() -> searchClusters(area, filter)) : null;
+                                    if (futureClusterList != null) {
+                                        futureClusters.add(futureClusterList);
+                                    }
         }
         PhotoDataSet photoDataSet = null;
         try {
@@ -133,8 +134,10 @@ class SearchServiceHandler {
 
     private List<Detection> filterClusterDetections(final List<Cluster> clusters, final List<Detection> detections) {
         final List<Detection> result = new ArrayList<>();
-        final List<Long> clusterDetectionIds =
-                clusters.stream().flatMap(cluster -> cluster.getDetectionIds().stream()).collect(Collectors.toList());
+
+        final List<Long> clusterDetectionIds = clusters.stream().flatMap(
+                cluster -> cluster.getDetectionIds() != null ? cluster.getDetectionIds().stream() : Stream.empty())
+                .collect(Collectors.toList());
         for (final Detection detection : detections) {
             if (!clusterDetectionIds.contains(detection.getId())) {
                 result.add(detection);
