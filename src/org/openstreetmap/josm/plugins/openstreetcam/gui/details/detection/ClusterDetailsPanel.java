@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import javax.swing.ListSelectionModel;
-import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
@@ -70,10 +69,10 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             table = new DetectionTable(cluster);
             table.registerObserver(rowSelectionObserver);
             final int detectionsNr = cluster.getDetections().size();
-            int tableWidth = table.getTableWidth();
+            final int tableWidth = table.getTableWidth();
 
             table.getTableHeader()
-                    .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+            .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
 
             add(table.getTableHeader());
             final int heightTableContent = detectionsNr * ROW_HEIGHT;
@@ -87,8 +86,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     }
 
     void addSelectedDetectionToTable(final Detection detection) {
-        if (detection != null && DataSet.getInstance().getSelectedCluster() != null &&
-                !DataSet.getInstance().getSelectedCluster().getDetections().isEmpty()) {
+        if (detection != null && table != null && table.getCluster() != null) {
             int detectionRow = 0;
             for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
                 if (table.getValueAt(rowIndex, ID_COLUMN) != null) {
