@@ -151,8 +151,6 @@ public final class GuiConfig extends BaseConfig {
     private final String btnMatchedDataTlt;
     private final String btnClusterNextShortcutText;
     private final String btnClusterPreviousShortcutText;
-    private final String btnClusterMatchedDataTlt;
-    private final String btnClusterMatchedDataShortcutText;
 
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
@@ -304,13 +302,11 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
-        btnMatchedData = readProperty("btn.detection.matchedData.lbl");
-        btnMatchedDataShortcutText = readProperty("btn.detection.matchedData.shortcut.text");
-        btnMatchedDataTlt = readProperty("btn.detection.matchedData.tlt");
+        btnMatchedData = readProperty("btn.matchedData.lbl");
         btnClusterNextShortcutText = readProperty("btn.cluster.next.shortcut.text");
         btnClusterPreviousShortcutText = readProperty("btn.cluster.previous.shortcut.text");
-        btnClusterMatchedDataTlt = readProperty("btn.cluster.matchedData.tlt");
-        btnClusterMatchedDataShortcutText = readProperty("btn.cluster.matchedData.shortcut.text");
+        btnMatchedDataTlt = readProperty("btn.matchedData.tlt");
+        btnMatchedDataShortcutText = readProperty("btn.matchedData.shortcut.text");
 
         detectionDialogTitleName = readProperty("detection.dialog.title");
         clusterDialogTitleName = readProperty("cluster.dialog.title");
@@ -753,14 +749,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnClusterPreviousShortcutText() {
         return btnClusterPreviousShortcutText;
-    }
-
-    public String getBtnClusterMatchedDataTlt() {
-        return btnClusterMatchedDataTlt;
-    }
-
-    public String getBtnClusterMatchedDataShortcutText() {
-        return btnClusterMatchedDataShortcutText;
     }
 
     public String getDetectedDetectionText() {

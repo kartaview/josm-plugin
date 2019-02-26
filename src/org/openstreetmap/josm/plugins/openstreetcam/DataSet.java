@@ -774,4 +774,14 @@ public final class DataSet {
         return selectedDetection != null && selectedDetection.getOsmElements() != null && !selectedDetection
                 .getOsmElements().isEmpty();
     }
+
+    /**
+     * Checks if the current selected cluster has osm elements.
+     *
+     * @return {@code boolean}
+     */
+    public boolean selectedClusterHasOsmElements() {
+        return selectedCluster != null && selectedCluster.getOsmElements() != null && !selectedCluster.getOsmElements()
+                .isEmpty();
+    }
 }

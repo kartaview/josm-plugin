@@ -10,10 +10,9 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import org.openstreetmap.josm.actions.JosmAction;
-import org.openstreetmap.josm.data.osm.PrimitiveId;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -72,10 +71,11 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     }
 
     private void addMatchedDataButton() {
-        final JosmAction action = new DownloadMatchedData();
-        final String tooltip = GuiConfig.getInstance().getBtnClusterMatchedDataTlt().replace(SHORTCUT,
+        final boolean enabled = DataSet.getInstance().selectedClusterHasOsmElements();
+        final JosmAction action = new MatchedDataAction(GuiConfig.getInstance().getBtnMatchedDataShortcutText(), true);
+        final String tooltip = GuiConfig.getInstance().getBtnMatchedDataTlt().replace(SHORTCUT,
                 action.getShortcut().getKeyText());
-        btnMatchedData = ButtonBuilder.build(action, IconConfig.getInstance().getMatchedWayIcon(), tooltip, false);
+        btnMatchedData = ButtonBuilder.build(action, IconConfig.getInstance().getMatchedWayIcon(), tooltip, enabled);
         add(btnMatchedData);
     }
 
@@ -84,7 +84,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         boolean enablePhotoButtons = false;
         boolean enableMatchedDataButton = false;
         if (cluster != null) {
-            enableMatchedDataButton = cluster.getOsmElement() != null && cluster.getOsmElement().getOsmId() != null;
+            enableMatchedDataButton = DataSet.getInstance().selectedClusterHasOsmElements();
             enablePhotoButtons = cluster.getDetectionIds() != null && cluster.getDetectionIds().size() > 1;
         }
         btnNext.setEnabled(enablePhotoButtons);
@@ -123,27 +123,6 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         @Override
         public void actionPerformed(final ActionEvent event) {
             notifyObserver(isNext);
-        }
-    }
-
-    /**
-     * Downloads the OSM data to which the cluster is matched.
-     *
-     * @author beataj
-     * @version $Revision$
-     */
-    private final class DownloadMatchedData extends DownloadMatchedOsmElement {
-
-        private static final long serialVersionUID = 7626759776502632881L;
-
-        private DownloadMatchedData() {
-            super(GuiConfig.getInstance().getBtnClusterMatchedDataTlt(),
-                    GuiConfig.getInstance().getBtnClusterMatchedDataTlt());
-        }
-
-        @Override
-        protected PrimitiveId getPrimitiveId() {
-            return cluster.getOsmElement() != null ? cluster.getOsmElement().getPrimitiveId() : null;
         }
     }
 }

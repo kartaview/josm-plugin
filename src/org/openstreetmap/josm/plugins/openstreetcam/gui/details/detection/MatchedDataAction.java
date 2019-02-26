@@ -15,6 +15,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedNode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedRelation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedWay;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -36,14 +37,17 @@ import java.util.List;
 
 final class MatchedDataAction extends JosmAction {
 
-    MatchedDataAction(final String shortcutText) {
+    private final boolean isCluster;
+
+    MatchedDataAction(final String shortcutText, final boolean isCluster) {
         super(null, null, null, ShortcutFactory.getInstance().getShotrcut(shortcutText), true);
+        this.isCluster = isCluster;
     }
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final Collection<OsmElement> osmElements = DataSet.getInstance().getSelectedDetection().getOsmElements();
-
+        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements() :
+                DataSet.getInstance().getSelectedDetection().getOsmElements();
         MultiFetchServerObjectReader reader = Util.retrieveServerObjectReader(osmElements);
         org.openstreetmap.josm.data.osm.DataSet result = null;
         try {
@@ -65,7 +69,7 @@ final class MatchedDataAction extends JosmAction {
                     handleWay(result, downloadedData, element);
                     break;
                 case WAY_SECTION:
-                    handleWay(result, downloadedData, element);
+                    handleWaySection(result, downloadedData, element);
                     break;
                 case RELATION:
                     handleRelation(result, downloadedData, element);
@@ -81,7 +85,7 @@ final class MatchedDataAction extends JosmAction {
 
     /**
      * Matches an OSM relation to the retrieved information and create an appropriate {@code DownloadedRelation}
-     * containing the structural Node elements.
+     * containing the downloaded data for each of it's members.
      *
      * @param result - josm DataSet containing the service response
      * @param downloadedData - the List of OsmElements where the {@code DownloadedRelation} is added
@@ -93,7 +97,11 @@ final class MatchedDataAction extends JosmAction {
         final List<OsmElement> downloadedWays = new ArrayList<>();
         if (element.getMembers() != null) {
             for (OsmElement member : element.getMembers()) {
-                handleWay(result, downloadedWays, member);
+                if (member.getType() == OsmElementType.WAY_SECTION) {
+                    handleWaySection(result, downloadedWays, member);
+                } else if (member.getType() == OsmElementType.WAY) {
+                    handleWay(result, downloadedWays, member);
+                }
             }
             if (element.getMembers().size() == downloadedWays.size()) {
                 for (OsmElement downloadedWay : downloadedWays) {
@@ -105,7 +113,7 @@ final class MatchedDataAction extends JosmAction {
     }
 
     /**
-     * Matches an OSM way to the retrieved information and create an appropriate {@code DownloadedWay}
+     * Matches an OSM way to the retrieved information and creates an appropriate {@code DownloadedWay}
      * containing the structural Node elements.
      *
      * @param result - josm DataSet containing the service response
@@ -114,19 +122,7 @@ final class MatchedDataAction extends JosmAction {
      */
     private void handleWay(final org.openstreetmap.josm.data.osm.DataSet result, final List<OsmElement> downloadedData,
             final OsmElement element) {
-        if (element.getFromId() != null && element.getToId() != null) {
-            Node fromPrimitive =
-                    (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getFromId(), OsmPrimitiveType.NODE));
-            Node toPrimitive =
-                    (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getToId(), OsmPrimitiveType.NODE));
-            if (fromPrimitive == null || toPrimitive == null) {
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                        "Way " + element.getOsmId() + " was not found in the map.",
-                        GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
-            } else {
-                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
-            }
-        } else if (element.getOsmId() != null) {
+        if (element.getOsmId() != null) {
             Way downloadedWay =
                     (Way) result.getPrimitiveById(new SimplePrimitiveId(element.getOsmId(), OsmPrimitiveType.WAY));
             if (downloadedWay == null) {
@@ -136,6 +132,41 @@ final class MatchedDataAction extends JosmAction {
             } else {
                 downloadedData.add(new DownloadedWay(element, downloadedWay.getNodes()));
             }
+        } else {
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                    "Way " + element.getOsmId() + " was not found in the map.",
+                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
+        }
+    }
+
+    /**
+     * Matches an OSM way_section to the retrieved information and creates an appropriate {@code DownloadedWay}
+     * containing the structural from Node, to Node elements.
+     *
+     * @param result - josm DataSet containing the service response
+     * @param downloadedData - the List of OsmElements where the {@code DownloadedWay} is added
+     * @param element - the OsmElement of type WAY_SECTION to be matched in the service result
+     */
+    private void handleWaySection(final org.openstreetmap.josm.data.osm.DataSet result,
+            final List<OsmElement> downloadedData, final OsmElement element) {
+        if (element.getFromId() != null && element.getToId() != null) {
+            Node fromPrimitive =
+                    (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getFromId(), OsmPrimitiveType.NODE));
+            Node toPrimitive =
+                    (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getToId(), OsmPrimitiveType.NODE));
+            if (fromPrimitive == null || toPrimitive == null) {
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                        "The way section defined by ( " + element.getFromId() + "," + element.getToId()
+                                + ") was not found in the map.", GuiConfig.getInstance().getWarningTitle(),
+                        JOptionPane.WARNING_MESSAGE));
+            } else {
+                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
+            }
+        } else {
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                    "The way section defined by ( " + element.getFromId() + "," + element.getToId()
+                            + ") was not found in the map.", GuiConfig.getInstance().getWarningTitle(),
+                    JOptionPane.WARNING_MESSAGE));
         }
     }
 

@@ -145,8 +145,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     }
 
     private void selectCluster(final Cluster cluster, final Detection detection) {
-        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster, detection);
         DataSet.getInstance().setSelectedCluster(cluster);
+        DataSet.getInstance().setMatchedData(null);
+        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster, detection);
         if (cluster != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(cluster.getPoint())) {
                 MainApplication.getMap().mapView.zoomTo(cluster.getPoint());

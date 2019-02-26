@@ -235,18 +235,10 @@ public final class Util {
     public static MultiFetchServerObjectReader retrieveServerObjectReader(final Collection<OsmElement> elements) {
         MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
         for (OsmElement element : elements) {
-            if (element.getFromId() != null && element.getToId() != null) {
-                appendOsmPrimitive(reader, element, true);
-            } else if (element.getOsmId() != null && element.getOsmId() > 0) {
-                appendOsmPrimitive(reader, element, false);
-            }
+            appendOsmPrimitive(reader, element);
             if (element.getMembers() != null) {
                 for (OsmElement member : element.getMembers()) {
-                    if (member.getToId() != null && member.getFromId() != null) {
-                        appendOsmPrimitive(reader, member, true);
-                    } else if (member.getOsmId() != null && member.getOsmId() > 0) {
-                        appendOsmPrimitive(reader, member, false);
-                    }
+                    appendOsmPrimitive(reader, member);
                 }
             }
         }
@@ -254,25 +246,26 @@ public final class Util {
         return reader;
     }
 
-    private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element,
-            final boolean fromToTag) {
-        switch (element.getType().getOsmPrimitiveType()) {
+    private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element) {
+        switch (element.getType()) {
             case NODE:
-                reader.append(new Node(element.getOsmId()));
+                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                    reader.append(new Node(element.getOsmId()));
+                }
                 break;
             case WAY:
-                if (fromToTag) {
-                    reader.append(new Node(element.getFromId()));
-                    reader.append(new Node(element.getToId()));
-                } else {
+                if (element.getOsmId() != null && element.getOsmId() > 0) {
                     reader.append(new Way(element.getOsmId()));
                 }
                 break;
-            case RELATION:
-                if (fromToTag) {
+            case WAY_SECTION:
+                if (element.getFromId() != null && element.getToId() != null) {
                     reader.append(new Node(element.getFromId()));
                     reader.append(new Node(element.getToId()));
-                } else {
+                }
+                break;
+            case RELATION:
+                if (element.getOsmId() != null && element.getOsmId() > 0) {
                     reader.append(new Relation(element.getOsmId()));
                 }
                 break;

@@ -7,6 +7,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.util.Collection;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import com.telenav.josm.common.entity.EntityUtil;
@@ -27,7 +28,7 @@ public class Cluster {
     private final Double confidenceLevel;
     private final List<Long> detectionIds;
     private final OsmComparison osmComparison;
-    private final OsmElement osmElement;
+    private final Collection<OsmElement> osmElements;
     private final List<Detection> detections;
     private final List<Photo> photos;
     private final String componentValue;
@@ -42,7 +43,7 @@ public class Cluster {
         this.confidenceLevel = builder.getConfidenceLevel();
         this.detectionIds = builder.getDetectionIds();
         this.osmComparison = builder.getOsmComparison();
-        this.osmElement = builder.getOsmElement();
+        this.osmElements = builder.getOsmElements();
         this.detections = builder.getDetections();
         this.photos = builder.getPhotos();
         this.componentValue = builder.getComponentValue();
@@ -81,8 +82,8 @@ public class Cluster {
         return osmComparison;
     }
 
-    public OsmElement getOsmElement() {
-        return osmElement;
+    public Collection<OsmElement> getOsmElements() {
+        return osmElements;
     }
 
     public List<Detection> getDetections() {
