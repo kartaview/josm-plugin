@@ -22,7 +22,6 @@ public class Detection implements Comparable<Detection> {
     private LatLon point;
     private Sign sign;
     private Rectangle locationOnPhoto;
-    private Double confidenceLevel;
     private ValidationStatus validationStatus;
     private final EditStatus editStatus;
     private OsmComparison osmComparison;
@@ -72,10 +71,6 @@ public class Detection implements Comparable<Detection> {
         return locationOnPhoto;
     }
 
-    public Double getConfidenceLevel() {
-        return confidenceLevel;
-    }
-
     public ValidationStatus getValidationStatus() {
         return validationStatus;
     }
@@ -108,7 +103,7 @@ public class Detection implements Comparable<Detection> {
         return distance;
     }
 
-    public void setDistance(Float distance) {
+    public void setDistance(final Float distance) {
         this.distance = distance;
     }
  

@@ -1,9 +1,10 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -57,6 +58,10 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             }
         });
 
+        if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
+            adjustColumnSizes();
+        }
+
         this.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -79,7 +84,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         });
         adjustColumnSizes();
     }
-
 
     private void adjustColumnSizes() {
         final DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
