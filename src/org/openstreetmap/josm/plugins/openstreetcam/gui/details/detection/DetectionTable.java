@@ -57,7 +57,10 @@ class DetectionTable extends JTable implements RowSelectionObservable {
                 notifyRowSelectionObserver(selectedDetection);
             }
         });
-        adjustColumnSizes();
+
+        if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
+            adjustColumnSizes();
+        }
     }
 
     private void adjustColumnSizes() {

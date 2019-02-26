@@ -103,7 +103,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         pnlButtons.registerObserver(detectionChangeObserver);
         pnlClusterButtons.registerObserver(clusterObserver);
         pnlCluster.registerObserver(rowSelectionObserver);
-       
+
     }
 
     /**
@@ -141,6 +141,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
         pnlCluster.updateData(cluster);
         pnlCluster.addSelectedDetectionToTable(detection);
+        pnlCluster.revalidate();
         cmpInfo.setViewportView(pnlCluster);
         pnlClusterButtons.updateUI(cluster);
         cmpBtn.removeAll();

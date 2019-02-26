@@ -47,7 +47,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -61,23 +61,26 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
     @Override
     void handleDataUnselection() {
+        handlePhotoUnselection();
+        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
+                && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
+                .loadMapViewSettings().getPhotoZoom()) {
+            // user zoomed out to segment view
+            DataSet.getInstance().cleaHighZoomLevelData();
+        }
+        DataSet.getInstance().clearSelection();
+        DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+        OpenStreetCamLayer.getInstance().invalidate();
+        MainApplication.getMap().repaint();
+    }
+
+    private void handlePhotoUnselection() {
         stopAutoplay();
         if (DataSet.getInstance().hasSelectedPhoto()) {
             CacheManager.getInstance().removePhotos(DataSet.getInstance().getSelectedPhoto().getSequenceId());
         }
-
-        if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
-                && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                        .loadMapViewSettings().getPhotoZoom()) {
-            // user zoomed out to segment view
-            DataSet.getInstance().cleaHighZoomLevelData();
-        }
-
-        DataSet.getInstance().clearSelection();
-        DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+        DataSet.getInstance().setSelectedPhoto(null);
         PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-        OpenStreetCamLayer.getInstance().invalidate();
-        MainApplication.getMap().repaint();
     }
 
     @Override
@@ -98,7 +101,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     DataSet.getInstance().setSelectedCluster(null);
                 }
             } else {
-                Cluster selectedCluster = DataSet.getInstance().getSelectedCluster();
+                final Cluster selectedCluster = DataSet.getInstance().getSelectedCluster();
                 DetectionDetailsDialog.getInstance().updateClusterDetails(selectedCluster, detection);
             }
             selectDetection(detection);
@@ -182,7 +185,12 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     public synchronized void selectPhoto(final Photo photo, final PhotoSize photoType,
             final boolean displayLoadingMessage) {
         if (photo == null) {
-            SwingUtilities.invokeLater(() -> handleDataUnselection());
+            if (DataSet.getInstance().hasSelectedCluster()) {
+                // special case the cluster has no photo
+                handlePhotoUnselection();
+            } else {
+                SwingUtilities.invokeLater(() -> handleDataUnselection());
+            }
         } else {
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().setSelectedPhoto(photo);
@@ -224,21 +232,21 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                SwingUtilities.invokeLater(() -> {
-                    DataSet.getInstance().setSelectedSequence(sequence);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(
-                            DataSet.getInstance().enablePreviousPhotoAction(),
-                            DataSet.getInstance().enableNextPhotoAction(), null);
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                        SwingUtilities.invokeLater(() -> {
+                            DataSet.getInstance().setSelectedSequence(sequence);
+                            PhotoDetailsDialog.getInstance().enableSequenceActions(
+                                    DataSet.getInstance().enablePreviousPhotoAction(),
+                                    DataSet.getInstance().enableNextPhotoAction(), null);
+                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                            }
+                            OpenStreetCamLayer.getInstance().invalidate();
+                            MainApplication.getMap().repaint();
+                        });
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
-                    MainApplication.getMap().repaint();
-                });
-            }
         });
     }
 
@@ -417,7 +425,8 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                     ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
             selectPhoto(photo, photoType, true);
-            DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(), clusterDetection);
+            DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                    clusterDetection);
             DataSet.getInstance().selectNearbyPhotos(photo);
         }
     }
@@ -428,7 +437,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         SwingUtilities.invokeLater(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
-            selectDetection(detection);
+                    selectDetection(detection);
         });
     }
 
@@ -436,10 +445,10 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     @Override
     public void selectDetectionFromTable(final Detection detection) {
         Photo photo = null;
-   
+
         if (detection != null) {
             photo = loadDetectionPhoto(detection);
             handleDataSelection(photo, detection, null, true);
-        } 
+        }
     }
 }
