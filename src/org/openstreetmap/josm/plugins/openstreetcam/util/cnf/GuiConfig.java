@@ -175,6 +175,7 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterDetectionsLbl;
     private final String clusterComponentValueLbl;
     private final String detectionIdLbl;
+    private final String clusterLaneCountText;
 
     private final String[] clusterTableHeader;
 
@@ -333,7 +334,8 @@ public final class GuiConfig extends BaseConfig {
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
         clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
         detectionIdLbl = readProperty("detection.id");
-     
+        clusterLaneCountText = readProperty("cluster.lane.count.text");
+
         clusterTableHeader = readPropertiesArray("cluster.table.header");
     }
 
@@ -899,6 +901,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionIdLbl() {
         return detectionIdLbl;
+    }
+
+    public String getClusterLaneCountText() {
+        return clusterLaneCountText;
     }
 
     public String[] getClusterTableHeader() {

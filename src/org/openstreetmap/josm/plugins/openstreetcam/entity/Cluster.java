@@ -31,6 +31,7 @@ public class Cluster {
     private final List<Detection> detections;
     private final List<Photo> photos;
     private final String componentValue;
+    private final Short laneCount;
 
 
     Cluster(final ClusterBuilder builder) {
@@ -46,6 +47,8 @@ public class Cluster {
         this.detections = builder.getDetections();
         this.photos = builder.getPhotos();
         this.componentValue = builder.getComponentValue();
+        this.laneCount = builder.getLaneCount();
+
     }
 
 
@@ -95,6 +98,10 @@ public class Cluster {
 
     public String getComponentValue() {
         return componentValue;
+    }
+
+    public Short getLaneCount() {
+        return laneCount;
     }
 
     public boolean hasPhotos() {
