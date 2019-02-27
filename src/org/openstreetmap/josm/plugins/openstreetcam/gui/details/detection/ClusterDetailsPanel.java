@@ -10,10 +10,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.*;
-
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import javax.swing.ListSelectionModel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
@@ -64,6 +60,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
             addClusterTable(cluster);
+            table.requestFocusInWindow();
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;
