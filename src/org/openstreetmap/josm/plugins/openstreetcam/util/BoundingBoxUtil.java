@@ -9,12 +9,19 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.ProjectionBounds;
+import org.openstreetmap.josm.data.coor.EastNorth;
+import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.projection.Projection;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import com.telenav.josm.common.argument.BoundingBox;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.Geometry;
 
 
 /**
@@ -94,6 +101,73 @@ public final class BoundingBoxUtil {
             result = osmDataLayerBounds;
         }
         return result;
+    }
+
+    /**
+     * The method returns the middle point of the visible part of the line represented by the given points inside the mapview area.
+     *
+     * @param fromPoint - the starting point of the segment
+     * @param toPoint - the ending point of the segment
+     * @return Optional containing the LatLon coordinates for the middle point
+     */
+    public static Optional<LatLon> middlePointOfLineInMapViewBounds(final LatLon fromPoint, final LatLon toPoint) {
+        Optional<LatLon> result = Optional.empty();
+        final ProjectionBounds visibleBounds = MainApplication.getMap().mapView.getProjectionBounds();
+        final Projection projection = MainApplication.getMap().mapView.getProjection();
+
+        EastNorth fromEN = projection.latlon2eastNorth(fromPoint);
+        EastNorth toEN = projection.latlon2eastNorth(toPoint);
+        if (!visibleBounds.contains(fromEN)) {
+            fromEN = moveFirstPointInBounds(fromEN, toEN, visibleBounds);
+        }
+        if (!visibleBounds.contains(toEN)) {
+            toEN = moveFirstPointInBounds(toEN, fromEN, visibleBounds);
+        }
+        if (fromEN != null && toEN != null) {
+            LatLon from = projection.eastNorth2latlon(fromEN);
+            LatLon to = projection.eastNorth2latlon(toEN);
+            result = Optional.of(new LatLon((from.lat() + to.lat()) / 2, (from.lon() + to.lon()) / 2));
+        }
+        return result;
+    }
+
+    private static EastNorth moveFirstPointInBounds(EastNorth fromPoint, EastNorth toPoint, final ProjectionBounds bounds) {
+        EastNorth intersectionPoint = null;
+        if (fromPoint != null && toPoint != null) {
+            if (fromPoint.north() < bounds.minNorth) {
+                intersectionPoint =
+                        Geometry.getSegmentSegmentIntersection(fromPoint, toPoint, new EastNorth(bounds.minEast, bounds.minNorth),
+                                new EastNorth(bounds.maxEast, bounds.minNorth));
+                if (intersectionPoint != null) {
+                    return intersectionPoint;
+                }
+            }
+            if (fromPoint.east() > bounds.maxEast) {
+                intersectionPoint =
+                        Geometry.getSegmentSegmentIntersection(fromPoint, toPoint, new EastNorth(bounds.maxEast, bounds.minNorth),
+                                new EastNorth(bounds.maxEast, bounds.maxNorth));
+                if (intersectionPoint != null) {
+                    return intersectionPoint;
+                }
+            }
+            if (fromPoint.north() > bounds.maxNorth) {
+                intersectionPoint =
+                        Geometry.getSegmentSegmentIntersection(fromPoint, toPoint, new EastNorth(bounds.maxEast, bounds.maxNorth),
+                                new EastNorth(bounds.minEast, bounds.maxNorth));
+                if (intersectionPoint != null) {
+                    return intersectionPoint;
+                }
+            }
+            if (fromPoint.east() < bounds.minEast) {
+                intersectionPoint =
+                        Geometry.getSegmentSegmentIntersection(fromPoint, toPoint, new EastNorth(bounds.minEast, bounds.maxNorth),
+                                new EastNorth(bounds.minEast, bounds.minNorth));
+                if (intersectionPoint != null) {
+                    return intersectionPoint;
+                }
+            }
+        }
+        return intersectionPoint;
     }
 
     private static BoundingBox mapViewBounds() {
