@@ -34,7 +34,7 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText(),
-                GuiConfig.getInstance().getDetectionIdLbl());
+                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getDetectionTrackingIdLbl());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), detection.getOsmComparison(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
@@ -57,6 +57,9 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         }
 
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), detection.getId(), widthLbl);
+        if (detection.getTrackingId() != null) {
+            addInformation(GuiConfig.getInstance().getDetectionTrackingIdLbl(), detection.getTrackingId(), widthLbl);
+        }
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
     }

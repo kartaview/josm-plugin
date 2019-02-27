@@ -32,7 +32,7 @@ public class Detection implements Comparable<Detection> {
     private Float distance;
     private Float angleFromCenter;
     private Float orientation;
-    
+    private Long trackingId;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -115,7 +115,8 @@ public class Detection implements Comparable<Detection> {
         return orientation;
     }
 
-    
+    public Long getTrackingId() { return trackingId; }
+
     @Override
     public int hashCode() {
         final int prime = 31;

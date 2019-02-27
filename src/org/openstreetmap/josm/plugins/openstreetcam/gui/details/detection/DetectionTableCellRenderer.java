@@ -23,6 +23,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
 
     private static final long serialVersionUID = 1L;
     private static final String ZERO = "0";
+    private static final int IDX_TRACKING_ID = 9;
     private static final double APROXIMATED_ZERO_DOUBLE = 0.0;
     private static final float APROXIMATED_ZERO_FLOAT = 0.0f;
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
@@ -35,7 +36,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
         if (value != null) {
             String txt = "-";
             if (value instanceof Long) {
-                if ((long) value >= MIN_DATE_VALUE) {
+                if ((long) value >= MIN_DATE_VALUE && column != IDX_TRACKING_ID) {
                     txt = DateFormatter.formatTimestamp((Long) value);
                 } else {
                     txt = value.toString();

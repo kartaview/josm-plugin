@@ -24,6 +24,7 @@ class DetectionsTableModel extends AbstractTableModel {
     private static final int IDX_DISTANCE = 6;
     private static final int IDX_ANGLE_FROM_CENTER = 7;
     private static final int IDX_ORIENTATION = 8;
+    private static final int IDX_TRACKING_ID = 9;
     private static final int MILIMETER_METER_SCALE = 1000;
     
     private List<Detection> data;
@@ -85,6 +86,9 @@ class DetectionsTableModel extends AbstractTableModel {
                        break;
                    case IDX_ORIENTATION:
                        value = detection.getOrientation();
+                       break;
+                   case IDX_TRACKING_ID:
+                       value = detection.getTrackingId();
                        break;
                    default:
                        value = rowIndex;
