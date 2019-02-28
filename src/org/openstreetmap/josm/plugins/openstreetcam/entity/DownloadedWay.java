@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class DownloadedWay extends OsmElement {
     public DownloadedWay(final OsmElement element, final Node matchedFromNode, final Node matchedToNode) {
         super(element.getOsmId(), element.getType(), element.getMembers(), element.getFromId(), element.getOsmId(),
                 element.getTag());
-        this.matchedFromNode = matchedFromNode;
-        this.matchedToNode = matchedToNode;
+        this.matchedFromNode = new Node(matchedFromNode);
+        this.matchedToNode = new Node(matchedToNode);
         downloadedNodes = null;
     }
 
@@ -49,5 +50,13 @@ public class DownloadedWay extends OsmElement {
 
     public boolean hasNodes() {
         return downloadedNodes != null && !downloadedNodes.isEmpty();
+    }
+
+    void setMatchedFromCoordinates(final LatLon newCoordinates){
+        matchedFromNode.setCoor(newCoordinates);
+    }
+
+    void setMatchedToCoordinates(final LatLon newCoordinates){
+        matchedToNode.setCoor(newCoordinates);
     }
 }

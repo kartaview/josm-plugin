@@ -126,7 +126,7 @@ public final class BoundingBoxUtil {
         if (fromEN != null && toEN != null) {
             LatLon from = projection.eastNorth2latlon(fromEN);
             LatLon to = projection.eastNorth2latlon(toEN);
-            result = Optional.of(new LatLon((from.lat() + to.lat()) / 2, (from.lon() + to.lon()) / 2));
+            result = Optional.of(from.getCenter(to));
         }
         return result;
     }

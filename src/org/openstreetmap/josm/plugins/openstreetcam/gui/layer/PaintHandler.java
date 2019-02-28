@@ -241,6 +241,7 @@ class PaintHandler {
                     break;
                 case RELATION:
                     final DownloadedRelation relation = (DownloadedRelation) element;
+                    relation.translateIdenticalMembers();
                     for (DownloadedWay member : relation.getDownloadedMembers()) {
                         Color color;
                         switch (member.getTag()) {
@@ -415,15 +416,26 @@ class PaintHandler {
             drawLine(graphics, mapView, new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon()),
                     new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon()), null, false);
             if (clusterSettings.isDisplayTags() && way.getTag() != null) {
-                final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
-                final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
-                final Optional<LatLon> middlePoint =
-                        BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
-                if (middlePoint.isPresent()) {
-                    PaintManager.drawText(graphics, way.getTag(), mapView.getPoint(middlePoint.get()),
-                            mapView.getFont().deriveFont(Font.BOLD), Color.WHITE, Color.BLACK, OPAQUE_COMPOSITE);
-                }
+                drawTag(graphics, mapView, way);
             }
+        }
+    }
+
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
+        final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
+        final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
+        final Optional<LatLon> middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        if (middlePoint.isPresent()) {
+            final Point textPoint = mapView.getPoint(middlePoint.get());
+            final int textWidth = graphics.getFontMetrics().stringWidth(way.getTag());
+            if (way.getTag().equals("FROM")) {
+                textPoint.translate(-textWidth, 0);
+            } else if (way.getTag().equals("TO")) {
+                textPoint.translate(textWidth, 0);
+            }
+            PaintManager
+                    .drawText(graphics, way.getTag(), textPoint, mapView.getFont().deriveFont(Font.BOLD), Color.WHITE,
+                            Color.BLACK, OPAQUE_COMPOSITE);
         }
     }
 }
