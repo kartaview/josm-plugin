@@ -32,6 +32,8 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int ROW_HEIGHT = 15;
     private static final int TABLE_COLUMNS_EXTRA_WIDTH = 12;
     private static final int ID_COLUMN = 0;
+    private static final int UPPER_ROW_MOVEMENT_UNIT = -1;
+    private static final int LOWER_ROW_MOVEMENT_UNIT = 1;
 
     private Cluster cluster;
     private int tableWidth = 0;
@@ -72,7 +74,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             public void actionPerformed(ActionEvent e) {
                 Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
                 if (getSelectedRow() < cluster.getDetectionIds().size() - 1) {
-                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() + 1);
+                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() + LOWER_ROW_MOVEMENT_UNIT);
                 }
                 notifyRowSelectionObserver(selectedTableDetection);
             }
@@ -84,8 +86,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
            public void actionPerformed(ActionEvent e) {
                 Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
                 if (getSelectedRow() > 0) {
-
-                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() - 1);
+                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() + UPPER_ROW_MOVEMENT_UNIT);
                 }
                 notifyRowSelectionObserver(selectedTableDetection);
             }
