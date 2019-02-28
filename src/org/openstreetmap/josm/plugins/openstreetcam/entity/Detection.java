@@ -98,7 +98,7 @@ public class Detection implements Comparable<Detection> {
     public Double getFacing() {
         return facing;
     }
-    
+
     public Float getDistance() {
         return distance;
     }
@@ -106,16 +106,18 @@ public class Detection implements Comparable<Detection> {
     public void setDistance(final Float distance) {
         this.distance = distance;
     }
- 
+
     public Float getAngleFromCenter() {
         return angleFromCenter;
     }
-    
+
     public Float getOrientation() {
         return orientation;
     }
 
-    public Long getTrackingId() { return trackingId; }
+    public Long getTrackingId() {
+        return trackingId;
+    }
 
     @Override
     public int hashCode() {

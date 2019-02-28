@@ -74,7 +74,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             final int tableWidth = table.getTableWidth();
 
             table.getTableHeader()
-            .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+                    .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
 
             add(table.getTableHeader());
             final int heightTableContent = detectionsNr * ROW_HEIGHT;
