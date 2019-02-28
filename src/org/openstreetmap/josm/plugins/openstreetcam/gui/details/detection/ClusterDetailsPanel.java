@@ -57,7 +57,6 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
 
-
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
             addClusterTable(cluster);

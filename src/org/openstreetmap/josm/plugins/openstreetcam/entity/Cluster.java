@@ -48,7 +48,6 @@ public class Cluster {
         this.photos = builder.getPhotos();
         this.componentValue = builder.getComponentValue();
         this.laneCount = builder.getLaneCount();
-
     }
 
 
