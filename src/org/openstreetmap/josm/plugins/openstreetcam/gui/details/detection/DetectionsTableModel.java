@@ -1,3 +1,10 @@
+/*
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ *
+ * Copyright (c)2019, Telenav, Inc. All Rights Reserved
+ */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.util.ArrayList;
@@ -14,7 +21,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 class DetectionsTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = 1L;
-    
+
     private static final int IDX_ID = 0;
     private static final int IDX_CREATION_DATE = 1;
     private static final int IDX_UPDATE_ON_DATE = 2;
@@ -24,10 +31,11 @@ class DetectionsTableModel extends AbstractTableModel {
     private static final int IDX_DISTANCE = 6;
     private static final int IDX_ANGLE_FROM_CENTER = 7;
     private static final int IDX_ORIENTATION = 8;
+    private static final int IDX_TRACKING_ID = 9;
     private static final int MILIMETER_METER_SCALE = 1000;
-    
+
     private List<Detection> data;
-    
+
     /**
      * @param data detections list corresponding to the selected cluster
      */
@@ -50,54 +58,57 @@ class DetectionsTableModel extends AbstractTableModel {
     public String getColumnName(final int colIdx) {
         return GuiConfig.getInstance().getClusterTableHeader()[colIdx];
     }
-    
+
     @Override
     public Object getValueAt(final int rowIndex, final int columnIndex) {
         Object value = null;
         if (rowIndex > -1 && rowIndex < data.size()) {
-               final Detection detection = data.get(rowIndex);
-               switch(columnIndex) {
-                   case IDX_ID:
-                       value = detection.getId();
-                       break;
-                   case IDX_CREATION_DATE:
-                       value = detection.getCreationTimestamp();
-                       break;
-                   case IDX_UPDATE_ON_DATE:
-                       value = detection.getLatestChangeTimestamp();
-                       break;
-                   case IDX_VALIDATION_STATUS:
-                       value = detection.getValidationStatus();
-                       break;
-                   case IDX_TASK_STATUS:
-                       value = detection.getEditStatus();
-                       break;
-                   case IDX_FACING:
-                       value = detection.getFacing();
-                       break;
-                   case IDX_DISTANCE:
-                       if (detection.getDistance() != null) {
-                           value = detection.getDistance() / MILIMETER_METER_SCALE;
-                       }
-                       break;
-                   case IDX_ANGLE_FROM_CENTER:
-                       value = detection.getAngleFromCenter();
-                       break;
-                   case IDX_ORIENTATION:
-                       value = detection.getOrientation();
-                       break;
-                   default:
-                       value = rowIndex;
-                       break;
-               }             
+            final Detection detection = data.get(rowIndex);
+            switch (columnIndex) {
+                case IDX_ID:
+                    value = detection.getId();
+                    break;
+                case IDX_CREATION_DATE:
+                    value = detection.getCreationTimestamp();
+                    break;
+                case IDX_UPDATE_ON_DATE:
+                    value = detection.getLatestChangeTimestamp();
+                    break;
+                case IDX_VALIDATION_STATUS:
+                    value = detection.getValidationStatus();
+                    break;
+                case IDX_TASK_STATUS:
+                    value = detection.getEditStatus();
+                    break;
+                case IDX_FACING:
+                    value = detection.getFacing();
+                    break;
+                case IDX_DISTANCE:
+                    if (detection.getDistance() != null) {
+                        value = detection.getDistance() / MILIMETER_METER_SCALE;
+                    }
+                    break;
+                case IDX_ANGLE_FROM_CENTER:
+                    value = detection.getAngleFromCenter();
+                    break;
+                case IDX_ORIENTATION:
+                    value = detection.getOrientation();
+                    break;
+                case IDX_TRACKING_ID:
+                    value = detection.getTrackingId();
+                    break;
+                default:
+                    value = rowIndex;
+                    break;
+            }
         }
         return value;
     }
-    
+
     void setData(final List<Detection> data) {
         this.data = data != null ? new ArrayList<>(data) : null;
     }
-    
+
     List<Detection> getData() {
         return data;
     }
