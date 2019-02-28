@@ -132,10 +132,6 @@ final class MatchedDataAction extends JosmAction {
             } else {
                 downloadedData.add(new DownloadedWay(element, downloadedWay.getNodes()));
             }
-        } else {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                    "Way " + element.getOsmId() + " was not found in the map.",
-                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
         }
     }
 
@@ -162,11 +158,6 @@ final class MatchedDataAction extends JosmAction {
             } else {
                 downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
             }
-        } else {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                    "The way section defined by ( " + element.getFromId() + "," + element.getToId()
-                            + ") was not found in the map.", GuiConfig.getInstance().getWarningTitle(),
-                    JOptionPane.WARNING_MESSAGE));
         }
     }
 

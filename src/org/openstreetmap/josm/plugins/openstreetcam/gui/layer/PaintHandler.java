@@ -228,38 +228,33 @@ class PaintHandler {
         for (OsmElement element : matchedData) {
             switch (element.getType()) {
                 case NODE:
-                    final DownloadedNode node = (DownloadedNode) element;
-                    drawNodeIcon(graphics, mapView, node);
+                    drawNodeIcon(graphics, mapView, (DownloadedNode) element);
                     break;
                 case WAY:
-                    final DownloadedWay way = (DownloadedWay) element;
-                    drawWay(graphics, mapView, way, Color.RED);
+                    drawWay(graphics, mapView, (DownloadedWay) element, Color.RED);
                     break;
                 case WAY_SECTION:
-                    final DownloadedWay waySection = (DownloadedWay) element;
-                    drawWay(graphics, mapView, waySection, Color.RED);
+                    drawWay(graphics, mapView, (DownloadedWay) element, Color.RED);
                     break;
                 case RELATION:
                     final DownloadedRelation relation = (DownloadedRelation) element;
                     relation.translateIdenticalMembers();
                     for (DownloadedWay member : relation.getDownloadedMembers()) {
-                        Color color;
                         switch (member.getTag()) {
                             case "FROM":
-                                color = Color.GREEN;
+                                drawWay(graphics, mapView, member, Color.GREEN);
                                 break;
                             case "VIA":
-                                color = Color.BLUE;
+                                drawWay(graphics, mapView, member, Color.BLUE);
                                 break;
                             case "TO":
-                                color = Color.RED;
+                                drawWay(graphics, mapView, member, Color.RED);
                                 break;
                             default:
-                                color = Color.RED;
+                                drawWay(graphics, mapView, member, Color.RED);
                                 break;
 
                         }
-                        drawWay(graphics, mapView, member, color);
                     }
                     break;
             }
