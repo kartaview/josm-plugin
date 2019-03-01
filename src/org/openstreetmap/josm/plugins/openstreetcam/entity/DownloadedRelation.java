@@ -9,15 +9,14 @@
 
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import org.openstreetmap.josm.data.coor.LatLon;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.openstreetmap.josm.data.coor.LatLon;
 
 
 /**
- * Entity that matched an OSM relation element to the corresponding downloaded element.
- * This type of element has no  osm_id or from, to nodes and is represented by WAY_SECTION members.
+ * Entity that matched an OSM relation element to the corresponding downloaded element. This type of element has no
+ * osm_id or from, to nodes and is represented by WAY_SECTION members.
  *
  * @author laurad
  */
@@ -42,20 +41,20 @@ public class DownloadedRelation extends OsmElement {
     }
 
     /**
-     *  To avoid overlapping ways, this method translates one of the ways to the right.
+     * To avoid overlapping ways, this method translates one of the ways to the right.
      */
     public void translateIdenticalMembers() {
         for (int i = 1; i < downloadedMembers.size(); i++) {
             if (downloadedMembers.get(i).getMatchedFromNode()
-                    .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedFromNode()) && downloadedMembers
-                    .get(i).getMatchedToNode()
+                    .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedFromNode())
+                    && downloadedMembers.get(i).getMatchedToNode()
                     .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedToNode())) {
-                downloadedMembers.get(i).setMatchedFromCoordinates(
-                        new LatLon(downloadedMembers.get(i).getMatchedFromNode().lat(),
-                                downloadedMembers.get(i).getMatchedFromNode().lon() + TRANSLATION));
-                downloadedMembers.get(i).setMatchedToCoordinates(
-                        new LatLon(downloadedMembers.get(i).getMatchedToNode().lat(),
-                                downloadedMembers.get(i).getMatchedToNode().lon() + TRANSLATION));
+                downloadedMembers.get(i)
+                .setMatchedFromCoordinates(new LatLon(downloadedMembers.get(i).getMatchedFromNode().lat(),
+                        downloadedMembers.get(i).getMatchedFromNode().lon() + TRANSLATION));
+                downloadedMembers.get(i)
+                .setMatchedToCoordinates(new LatLon(downloadedMembers.get(i).getMatchedToNode().lat(),
+                        downloadedMembers.get(i).getMatchedToNode().lon() + TRANSLATION));
             }
         }
     }

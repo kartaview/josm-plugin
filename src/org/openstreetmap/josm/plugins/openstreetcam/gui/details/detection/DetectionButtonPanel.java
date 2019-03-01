@@ -85,9 +85,8 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         final MatchedDataAction matchedDataAction =
                 new MatchedDataAction(GuiConfig.getInstance().getBtnMatchedDataShortcutText(), false);
         btnMatchedData = ButtonBuilder.build(matchedDataAction, IconConfig.getInstance().getMatchedWayIcon(),
-                GuiConfig.getInstance().getBtnMatchedData(), BUTTON_FONT_SIZE,
-                GuiConfig.getInstance().getBtnMatchedDataTlt()
-                        .replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
+                GuiConfig.getInstance().getBtnMatchedData(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
+                        .getBtnMatchedDataTlt().replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
         btnMatchedData.setEnabled(enabled);
         add(btnMatchedData);
     }

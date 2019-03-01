@@ -767,11 +767,12 @@ public final class DataSet {
 
     /**
      * Checks if the current selected detection has osm elements.
+     *
      * @return {@code boolean}
      */
     public boolean selectedDetectionHasOsmElements() {
-        return selectedDetection != null && selectedDetection.getOsmElements() != null && !selectedDetection
-                .getOsmElements().isEmpty();
+        return selectedDetection != null && selectedDetection.getOsmElements() != null
+                && !selectedDetection.getOsmElements().isEmpty();
     }
 
     /**
@@ -780,7 +781,7 @@ public final class DataSet {
      * @return {@code boolean}
      */
     public boolean selectedClusterHasOsmElements() {
-        return selectedCluster != null && selectedCluster.getOsmElements() != null && !selectedCluster.getOsmElements()
-                .isEmpty();
+        return selectedCluster != null && selectedCluster.getOsmElements() != null
+                && !selectedCluster.getOsmElements().isEmpty();
     }
 }

@@ -9,17 +9,15 @@
 
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 
-import java.util.List;
-
 
 /**
- * Entity that matched a WAY Osm Element to the downloaded data.
- * There are two cases:
- * 1. The OsmElement has toNode and fromNode so only those 2 Nodes are downloaded.
- * 2. The OsmElement only has the osmId, therefore the download returns a list of Node elements.
+ * Entity that matched a WAY Osm Element to the downloaded data. There are two cases: 1. The OsmElement has toNode and
+ * fromNode so only those 2 Nodes are downloaded. 2. The OsmElement only has the osmId, therefore the download returns a
+ * list of Node elements.
  *
  * @author laurad
  */
@@ -61,11 +59,11 @@ public class DownloadedWay extends OsmElement {
         return downloadedNodes != null && !downloadedNodes.isEmpty();
     }
 
-    void setMatchedFromCoordinates(final LatLon newCoordinates){
+    void setMatchedFromCoordinates(final LatLon newCoordinates) {
         matchedFromNode.setCoor(newCoordinates);
     }
 
-    void setMatchedToCoordinates(final LatLon newCoordinates){
+    void setMatchedToCoordinates(final LatLon newCoordinates) {
         matchedToNode.setCoor(newCoordinates);
     }
 }

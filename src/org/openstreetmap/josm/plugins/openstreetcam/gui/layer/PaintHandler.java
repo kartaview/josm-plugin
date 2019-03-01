@@ -15,7 +15,6 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.S
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEGMENT_STROKE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEQUENCE_LINE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.TRANSPARENT_COMPOSITE;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -31,7 +30,6 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
-
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
@@ -51,11 +49,11 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.entity.Coordinate;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.PaintManager;
 import com.telenav.josm.common.util.GeometryUtil;
-import org.openstreetmap.josm.tools.ImageProvider;
 
 
 /**
@@ -225,7 +223,7 @@ class PaintHandler {
     }
 
     void drawMatchedData(final Graphics2D graphics, final MapView mapView, final List<OsmElement> matchedData) {
-        for (OsmElement element : matchedData) {
+        for (final OsmElement element : matchedData) {
             switch (element.getType()) {
                 case NODE:
                     drawNodeIcon(graphics, mapView, (DownloadedNode) element);
@@ -239,7 +237,7 @@ class PaintHandler {
                 case RELATION:
                     final DownloadedRelation relation = (DownloadedRelation) element;
                     relation.translateIdenticalMembers();
-                    for (DownloadedWay member : relation.getDownloadedMembers()) {
+                    for (final DownloadedWay member : relation.getDownloadedMembers()) {
                         switch (member.getTag()) {
                             case "FROM":
                                 drawWay(graphics, mapView, member, Color.GREEN);
@@ -395,14 +393,14 @@ class PaintHandler {
 
     private void drawNodeIcon(final Graphics2D graphics, final MapView mapView, final DownloadedNode node) {
         final Point point = mapView.getPoint(new LatLon(node.getMatchedNode().lat(), node.getMatchedNode().lon()));
-        final ImageIcon icon = ImageProvider.get("data","node.svg", ImageProvider.ImageSizes.LARGEICON);
+        final ImageIcon icon = ImageProvider.get("data", "node.svg", ImageProvider.ImageSizes.LARGEICON);
         PaintManager.drawIcon(graphics, icon, point);
     }
 
-    private void drawWay(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, Color color) {
+    private void drawWay(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final Color color) {
         final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
         if (way.hasNodes()) {
-            List<Point> geometry =
+            final List<Point> geometry =
                     way.getDownloadedNodes().stream().map(mapView::getPoint).collect(Collectors.toList());
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
         } else {
@@ -428,9 +426,8 @@ class PaintHandler {
             } else if (way.getTag().equals("TO")) {
                 textPoint.translate(textWidth, 0);
             }
-            PaintManager
-                    .drawText(graphics, way.getTag(), textPoint, mapView.getFont().deriveFont(Font.BOLD), Color.WHITE,
-                            Color.BLACK, OPAQUE_COMPOSITE);
+            PaintManager.drawText(graphics, way.getTag(), textPoint, mapView.getFont().deriveFont(Font.BOLD),
+                    Color.WHITE, Color.BLACK, OPAQUE_COMPOSITE);
         }
     }
 }

@@ -29,7 +29,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
@@ -46,6 +45,7 @@ import java.util.List;
 
 final class MatchedDataAction extends JosmAction {
 
+    private static final long serialVersionUID = 6430604302041589704L;
     private final boolean isCluster;
 
     MatchedDataAction(final String shortcutText, final boolean isCluster) {
@@ -55,8 +55,8 @@ final class MatchedDataAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements() :
-                DataSet.getInstance().getSelectedDetection().getOsmElements();
+        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements()
+                : DataSet.getInstance().getSelectedDetection().getOsmElements();
         MultiFetchServerObjectReader reader = Util.retrieveServerObjectReader(osmElements);
         org.openstreetmap.josm.data.osm.DataSet result = null;
         try {
@@ -122,8 +122,8 @@ final class MatchedDataAction extends JosmAction {
     }
 
     /**
-     * Matches an OSM way to the retrieved information and creates an appropriate {@code DownloadedWay}
-     * containing the structural Node elements.
+     * Matches an OSM way to the retrieved information and creates an appropriate {@code DownloadedWay} containing the
+     * structural Node elements.
      *
      * @param result - josm DataSet containing the service response
      * @param downloadedData - the List of OsmElements where the {@code DownloadedWay} is added
@@ -162,8 +162,8 @@ final class MatchedDataAction extends JosmAction {
             if (fromPrimitive == null || toPrimitive == null) {
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
                         "The way section defined by ( " + element.getFromId() + "," + element.getToId()
-                                + ") was not found in the map.", GuiConfig.getInstance().getWarningTitle(),
-                        JOptionPane.WARNING_MESSAGE));
+                                + ") was not found in the map.",
+                        GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
             } else {
                 downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
             }
@@ -171,8 +171,8 @@ final class MatchedDataAction extends JosmAction {
     }
 
     /**
-     * Matches an OSM Node to the retrieved information and create an appropriate {@code DownloadedNode}
-     * containing the node location.
+     * Matches an OSM Node to the retrieved information and create an appropriate {@code DownloadedNode} containing the
+     * node location.
      *
      * @param result - josm DataSet containing the service response
      * @param downloadedData - the List of OsmElements where the {@code DownloadedNode} is added
