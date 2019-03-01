@@ -42,7 +42,6 @@ import java.util.List;
  *
  * @author laurad
  */
-
 final class MatchedDataAction extends JosmAction {
 
     private static final long serialVersionUID = 6430604302041589704L;
