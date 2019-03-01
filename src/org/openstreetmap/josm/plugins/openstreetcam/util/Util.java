@@ -18,18 +18,14 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
-import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
-import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.io.MultiFetchServerObjectReader;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -237,45 +233,5 @@ public final class Util {
             }
         }
         return filteredDetections;
-    }
-
-    public static MultiFetchServerObjectReader retrieveServerObjectReader(final Collection<OsmElement> elements) {
-        MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
-        for (OsmElement element : elements) {
-            appendOsmPrimitive(reader, element);
-            if (element.getMembers() != null) {
-                for (OsmElement member : element.getMembers()) {
-                    appendOsmPrimitive(reader, member);
-                }
-            }
-        }
-
-        return reader;
-    }
-
-    private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element) {
-        switch (element.getType()) {
-            case NODE:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
-                    reader.append(new Node(element.getOsmId()));
-                }
-                break;
-            case WAY:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
-                    reader.append(new Way(element.getOsmId()));
-                }
-                break;
-            case WAY_SECTION:
-                if (element.getFromId() != null && element.getToId() != null) {
-                    reader.append(new Node(element.getFromId()));
-                    reader.append(new Node(element.getToId()));
-                }
-                break;
-            case RELATION:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
-                    reader.append(new Relation(element.getOsmId()));
-                }
-                break;
-        }
     }
 }

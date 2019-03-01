@@ -16,9 +16,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
-import org.openstreetmap.josm.io.MultiFetchServerObjectReader;
-import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedNode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedRelation;
@@ -27,7 +24,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.OsmDataHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -35,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -54,40 +52,33 @@ final class MatchedDataAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements()
-                : DataSet.getInstance().getSelectedDetection().getOsmElements();
-        MultiFetchServerObjectReader reader = Util.retrieveServerObjectReader(osmElements);
-        org.openstreetmap.josm.data.osm.DataSet result = null;
-        try {
-            result = reader.parseOsm(NullProgressMonitor.INSTANCE);
-        } catch (OsmTransferException e1) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                    "Error retrieving OSM members from the OSM service", GuiConfig.getInstance().getWarningTitle(),
-                    JOptionPane.WARNING_MESSAGE));
-        }
-
-        List<OsmElement> downloadedData = new ArrayList<>();
-
-        for (OsmElement element : osmElements) {
-            switch (element.getType()) {
-                case NODE:
-                    handleNode(result, downloadedData, element);
-                    break;
-                case WAY:
-                    handleWay(result, downloadedData, element);
-                    break;
-                case WAY_SECTION:
-                    handleWaySection(result, downloadedData, element);
-                    break;
-                case RELATION:
-                    handleRelation(result, downloadedData, element);
-                    break;
+        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements() :
+                DataSet.getInstance().getSelectedDetection().getOsmElements();
+        Optional<org.openstreetmap.josm.data.osm.DataSet> result =
+                OsmDataHandler.retrieveServerObjects(osmElements);
+        if (result.isPresent()) {
+            List<OsmElement> downloadedData = new ArrayList<>();
+            for (OsmElement element : osmElements) {
+                switch (element.getType()) {
+                    case NODE:
+                        handleNode(result.get(), downloadedData, element);
+                        break;
+                    case WAY:
+                        handleWay(result.get(), downloadedData, element);
+                        break;
+                    case WAY_SECTION:
+                        handleWaySection(result.get(), downloadedData, element);
+                        break;
+                    case RELATION:
+                        handleRelation(result.get(), downloadedData, element);
+                        break;
+                }
             }
-        }
 
-        if (!downloadedData.isEmpty()) {
-            DataSet.getInstance().setMatchedData(downloadedData);
-            OpenStreetCamLayer.getInstance().invalidate();
+            if (!downloadedData.isEmpty()) {
+                DataSet.getInstance().setMatchedData(downloadedData);
+                OpenStreetCamLayer.getInstance().invalidate();
+            }
         }
     }
 

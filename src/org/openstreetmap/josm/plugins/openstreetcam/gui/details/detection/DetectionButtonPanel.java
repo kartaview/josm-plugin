@@ -110,7 +110,8 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         }
     }
 
-    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag, final boolean matchedDataFlag) {
+    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag,
+            final boolean matchedDataFlag) {
         btnMapped.setEnabled(mappedFlag);
         btnBadDetection.setEnabled(badDetectionFlag);
         btnComment.setEnabled(otherFlag);
