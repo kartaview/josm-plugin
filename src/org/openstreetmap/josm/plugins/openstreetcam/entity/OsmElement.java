@@ -21,7 +21,8 @@ public class OsmElement {
     private final List<OsmElement> members;
 
 
-    public OsmElement(final Long osmId, final OsmElementType type, final List<OsmElement> members, final Long fromId, final Long toId, final String tag) {
+    public OsmElement(final Long osmId, final OsmElementType type, final List<OsmElement> members, final Long fromId,
+            final Long toId, final String tag) {
         this.osmId = osmId;
         this.type = type;
         this.members = members;
