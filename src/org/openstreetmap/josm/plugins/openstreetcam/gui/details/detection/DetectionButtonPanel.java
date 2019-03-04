@@ -41,7 +41,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
 
 
     DetectionButtonPanel() {
-        super();
+        super(4);
     }
 
     @Override

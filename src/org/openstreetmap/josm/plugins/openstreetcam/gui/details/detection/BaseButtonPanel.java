@@ -23,12 +23,11 @@ abstract class BaseButtonPanel extends JPanel {
     private static final long serialVersionUID = -331431553297529288L;
 
     protected static final String SHORTCUT = "sc";
-    private static final int COLS = 3;
     private static final int ROWS = 1;
     private static final Dimension DIM = new Dimension(200, 24);
 
-    BaseButtonPanel() {
-        super(new GridLayout(ROWS, COLS));
+    BaseButtonPanel(final int cols) {
+        super(new GridLayout(ROWS, cols));
         createComponents();
         setPreferredSize(DIM);
     }

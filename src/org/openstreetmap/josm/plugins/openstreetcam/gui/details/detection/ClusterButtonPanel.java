@@ -38,11 +38,9 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     private JButton btnNext;
     private JButton btnMatchedData;
 
-    private Cluster cluster;
-
 
     ClusterButtonPanel() {
-        super();
+        super(3);
     }
 
 
@@ -80,7 +78,6 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
     }
 
     void updateUI(final Cluster cluster) {
-        this.cluster = cluster;
         boolean enablePhotoButtons = false;
         boolean enableMatchedDataButton = false;
         if (cluster != null) {
