@@ -182,6 +182,9 @@ public final class GuiConfig extends BaseConfig {
 
     private final String[] clusterTableHeader;
 
+    private final String nextRowSelection;
+    private final String prevRowSelection;
+
     private GuiConfig() {
         super(CONFIG_FILE);
 
@@ -343,6 +346,9 @@ public final class GuiConfig extends BaseConfig {
         clusterLaneCountText = readProperty("cluster.lane.count.text");
 
         clusterTableHeader = readPropertiesArray("cluster.table.header");
+
+        nextRowSelection = readProperty("table.next.row.selection");
+        prevRowSelection = readProperty("table.prev.row.selection");
     }
 
     public static GuiConfig getInstance() {
@@ -927,5 +933,13 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnMatchedDataTlt() {
         return btnMatchedDataTlt;
+    }
+
+    public String getNextRowSelection() {
+        return nextRowSelection;
+    }
+
+    public String getPrevRowSelection() {
+        return prevRowSelection;
     }
 }

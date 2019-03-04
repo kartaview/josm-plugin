@@ -9,15 +9,13 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent ;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
-;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -39,8 +37,8 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int ROW_HEIGHT = 15;
     private static final int TABLE_COLUMNS_EXTRA_WIDTH = 12;
     private static final int ID_COLUMN = 0;
-    private static final int UPPER_ROW_MOVEMENT_UNIT = -1;
-    private static final int LOWER_ROW_MOVEMENT_UNIT = 1;
+    private static final int UPPER_ROW_MOVEMENT = -1;
+    private static final int LOWER_ROW_MOVEMENT = 1;
 
     private Cluster cluster;
     private int tableWidth = 0;
@@ -77,34 +75,33 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             adjustColumnSizes();
         }
 
-        final Action selectNextRow = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
-                if (getSelectedRow() < cluster.getDetectionIds().size() - 1) {
-                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() + LOWER_ROW_MOVEMENT_UNIT);
-                }
-                notifyRowSelectionObserver(selectedTableDetection);
-            }
-
-        };
-
-        final Action selectPrevRow = new AbstractAction() {
-
-           public void actionPerformed(ActionEvent e) {
-                Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
-                if (getSelectedRow() > 0) {
-                    selectedTableDetection = cluster.getDetections().get(getSelectedRow() + UPPER_ROW_MOVEMENT_UNIT);
-                }
-                notifyRowSelectionObserver(selectedTableDetection);
-            }
-        };
-
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "nextSelection");
-        this.getActionMap().put("nextSelection", selectNextRow);
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "prevSelection");
-        this.getActionMap().put("prevSelection", selectPrevRow);
+        this.getInputMap()
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
+        this.getInputMap()
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
 
         adjustColumnSizes();
+    }
+
+    private class SelectRowAction extends AbstractAction {
+
+        int direction;
+
+        SelectRowAction(final int direction) {
+            this.direction = direction;
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
+            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
+                    (getSelectedRow() > 0 && direction == UPPER_ROW_MOVEMENT)) {
+                selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
+            }
+            notifyRowSelectionObserver(selectedTableDetection);
+        }
     }
 
     private void adjustColumnSizes() {

@@ -10,7 +10,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
-import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import javax.swing.ListSelectionModel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -43,7 +42,6 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
     @Override
     protected void createComponents(final Cluster cluster) {
-        DataSet.getInstance().setSelectedCluster(cluster);
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
