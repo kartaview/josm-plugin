@@ -40,6 +40,7 @@ public final class GuiConfig extends BaseConfig {
     private final String prefMouseHoverDelayLbl;
     private final String prefAggregatedLbl;
     private final String prefAggregatedDisplayDetectionLbl;
+    private final String prefAggregatedDisplayTagsLbl;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -146,10 +147,11 @@ public final class GuiConfig extends BaseConfig {
     private final String btnOtherActionOnDetection;
     private final String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
+    private final String btnMatchedData;
+    private final String btnMatchedDataShortcutText;
+    private final String btnMatchedDataTlt;
     private final String btnClusterNextShortcutText;
     private final String btnClusterPreviousShortcutText;
-    private final String btnClusterMatchedDataTlt;
-    private final String btnClusterMatchedDataShortcutText;
 
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
@@ -201,6 +203,7 @@ public final class GuiConfig extends BaseConfig {
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
+        prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -303,10 +306,11 @@ public final class GuiConfig extends BaseConfig {
         btnOtherActionOnDetection = readProperty("btn.detection.couldntFixed.other");
         btnOtherActionOnDetectionShortcutText = readProperty("btn.detection.couldntFixed.other.shortcut.text");
         btnOtherActionOnDetectionTlt = readProperty("btn.detection.couldntFixed.other.tlt");
+        btnMatchedData = readProperty("btn.matchedData.lbl");
         btnClusterNextShortcutText = readProperty("btn.cluster.next.shortcut.text");
         btnClusterPreviousShortcutText = readProperty("btn.cluster.previous.shortcut.text");
-        btnClusterMatchedDataTlt = readProperty("btn.cluster.matchedData.tlt");
-        btnClusterMatchedDataShortcutText = readProperty("btn.cluster.matchedData.shortcut.text");
+        btnMatchedDataTlt = readProperty("btn.matchedData.tlt");
+        btnMatchedDataShortcutText = readProperty("btn.matchedData.shortcut.text");
 
         detectionDialogTitleName = readProperty("detection.dialog.title");
         clusterDialogTitleName = readProperty("cluster.dialog.title");
@@ -407,6 +411,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefAggregatedDisplayDetectionLbl() {
         return prefAggregatedDisplayDetectionLbl;
+    }
+
+    public String getPrefAggregatedDisplayTagsLbl() {
+        return prefAggregatedDisplayTagsLbl;
     }
 
     public String getPrefTrackLbl() {
@@ -753,14 +761,6 @@ public final class GuiConfig extends BaseConfig {
         return btnClusterPreviousShortcutText;
     }
 
-    public String getBtnClusterMatchedDataTlt() {
-        return btnClusterMatchedDataTlt;
-    }
-
-    public String getBtnClusterMatchedDataShortcutText() {
-        return btnClusterMatchedDataShortcutText;
-    }
-
     public String getDetectedDetectionText() {
         return detectedDetectionText;
     }
@@ -915,5 +915,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String[] getClusterTableHeader() {
         return clusterTableHeader;
-    }  
+    }
+
+    public String getBtnMatchedData() {
+        return btnMatchedData;
+    }
+
+    public String getBtnMatchedDataShortcutText() {
+        return btnMatchedDataShortcutText;
+    }
+
+    public String getBtnMatchedDataTlt() {
+        return btnMatchedDataTlt;
+    }
 }

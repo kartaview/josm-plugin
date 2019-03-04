@@ -126,11 +126,12 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
     }
 
     private void selectDetection(final Detection detection) {
+        DataSet.getInstance().setSelectedDetection(detection);
+        DataSet.getInstance().setMatchedData(null);
         if (DataSet.getInstance().getSelectedCluster() == null || (DataSet.getInstance().getSelectedSequence() != null
                 && !DataSet.getInstance().selectedPhotoBelongsToSelectedCluster())) {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
         }
-        DataSet.getInstance().setSelectedDetection(detection);
         if (detection != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(detection.getPoint())) {
                 MainApplication.getMap().mapView.zoomTo(detection.getPoint());
@@ -147,8 +148,9 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
     }
 
     private void selectCluster(final Cluster cluster, final Detection detection) {
-        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster, detection);
         DataSet.getInstance().setSelectedCluster(cluster);
+        DataSet.getInstance().setMatchedData(null);
+        DetectionDetailsDialog.getInstance().updateClusterDetails(cluster, detection);
         if (cluster != null) {
             if (!MainApplication.getMap().mapView.getRealBounds().contains(cluster.getPoint())) {
                 MainApplication.getMap().mapView.zoomTo(cluster.getPoint());

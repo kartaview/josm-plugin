@@ -184,7 +184,7 @@ public class DataUpdateHandler {
     }
 
     private void updateUI(final HighZoomResultSet resultSet, final boolean checkSelection) {
-        final boolean isClusterInfoInPanel = DataSet.getInstance().getSelectedCluster() == null ? false : true;
+        final boolean isClusterInfoInPanel = DataSet.getInstance().getSelectedCluster() != null;
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
                 DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);

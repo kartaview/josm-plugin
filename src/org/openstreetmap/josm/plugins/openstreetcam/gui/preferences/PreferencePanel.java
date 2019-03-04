@@ -51,6 +51,7 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbDataLoad;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox agDisplayDetection;
+    private JCheckBox cbDisplayTags;
     private JCheckBox cbDisplayTrack;
     private JCheckBox cbMouseHover;
     private JSpinner spMouseHoverDelay;
@@ -123,12 +124,17 @@ class PreferencePanel extends JPanel {
     }
 
     private void createClusterSettingsComponents(final ClusterSettings settings) {
-        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAggregatedLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
-                Constraints.LBL_AGGREGATED);
-        agDisplayDetection = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefAggregatedDisplayDetectionLbl(),
-                new SelectionListener(), Font.PLAIN, settings.isDisplayDetectionLocations(), true);
+        add(LabelBuilder
+                .build(GuiConfig.getInstance().getPrefAggregatedLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
+                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_AGGREGATED);
+        agDisplayDetection = CheckBoxBuilder
+                .build(GuiConfig.getInstance().getPrefAggregatedDisplayDetectionLbl(), new SelectionListener(),
+                        Font.PLAIN, settings.isDisplayDetectionLocations(), true);
         add(agDisplayDetection, Constraints.CB_DISPLAY_DETECTION);
+        cbDisplayTags = CheckBoxBuilder
+                .build(GuiConfig.getInstance().getPrefAggregatedDisplayTagsLbl(), new SelectionListener(), Font.PLAIN,
+                        settings.isDisplayTags(), true);
+        add(cbDisplayTags, Constraints.CB_DISPLAY_TAGS);
     }
 
     private void createTrackVisualizationSettings(final PreferenceSettings settings) {
@@ -199,7 +205,8 @@ class PreferencePanel extends JPanel {
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected(), cbDataLoad.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
-        final ClusterSettings aggregatedSettings = new ClusterSettings(agDisplayDetection.isSelected());
+        final ClusterSettings aggregatedSettings =
+                new ClusterSettings(agDisplayDetection.isSelected(), cbDisplayTags.isSelected());
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);

@@ -8,16 +8,18 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.event.ActionEvent;
-import javax.swing.JButton;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
+
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 
 /**
  * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user
@@ -35,10 +37,11 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     private JButton btnMapped;
     private JButton btnBadDetection;
     private JButton btnComment;
+    private JButton btnMatchedData;
 
 
     DetectionButtonPanel() {
-        super();
+        super(4);
     }
 
     @Override
@@ -46,6 +49,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         addMappedButton();
         addBadDetectionButton();
         addCommentButton();
+        addMatchedDataButton();
     }
 
     private void addMappedButton() {
@@ -76,28 +80,42 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
         add(btnComment);
     }
 
+    private void addMatchedDataButton() {
+        final boolean enabled = DataSet.getInstance().selectedDetectionHasOsmElements();
+        final MatchedDataAction matchedDataAction =
+                new MatchedDataAction(GuiConfig.getInstance().getBtnMatchedDataShortcutText(), false);
+        btnMatchedData = ButtonBuilder.build(matchedDataAction, IconConfig.getInstance().getMatchedWayIcon(),
+                GuiConfig.getInstance().getBtnMatchedData(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
+                        .getBtnMatchedDataTlt().replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
+        btnMatchedData.setEnabled(enabled);
+        add(btnMatchedData);
+    }
+
     void enablePanelActions(final EditStatus editStatus) {
+        final boolean matchedDataFlag = DataSet.getInstance().selectedDetectionHasOsmElements();
         switch (editStatus) {
             case OPEN:
-                enablePanelActions(true, true, true);
+                enablePanelActions(true, true, true, matchedDataFlag);
                 break;
             case BAD_SIGN:
-                enablePanelActions(true, false, true);
+                enablePanelActions(true, false, true, matchedDataFlag);
                 break;
             case MAPPED:
-                enablePanelActions(false, true, true);
+                enablePanelActions(false, true, true, matchedDataFlag);
                 break;
             default:
                 // OTHER
-                enablePanelActions(true, true, false);
+                enablePanelActions(true, true, false, matchedDataFlag);
                 break;
         }
     }
 
-    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag) {
+    private void enablePanelActions(final boolean mappedFlag, final boolean badDetectionFlag, final boolean otherFlag,
+            final boolean matchedDataFlag) {
         btnMapped.setEnabled(mappedFlag);
         btnBadDetection.setEnabled(badDetectionFlag);
         btnComment.setEnabled(otherFlag);
+        btnMatchedData.setEnabled(matchedDataFlag);
     }
 
     @Override

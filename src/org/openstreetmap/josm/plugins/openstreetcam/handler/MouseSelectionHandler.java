@@ -130,8 +130,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     private Cluster enhanceCluster(final Cluster selectedCluster) {
         final Cluster cluster = ServiceHandler.getInstance().retrieveClusterDetails(selectedCluster.getId());
         final ClusterBuilder builder = new ClusterBuilder(selectedCluster);
-        if (cluster.getOsmElement() != null) {
-            builder.osmElement(cluster.getOsmElement());
+        if (cluster.getOsmElements() != null) {
+            builder.osmElements(cluster.getOsmElements());
         }
         if (cluster.getPhotos() != null) {
             builder.photos(cluster.getPhotos());
