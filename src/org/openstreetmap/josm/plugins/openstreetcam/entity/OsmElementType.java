@@ -32,6 +32,13 @@ public enum OsmElementType {
         public OsmPrimitiveType getOsmPrimitiveType() {
             return OsmPrimitiveType.RELATION;
         }
+    },
+    WAY_SECTION {
+
+        @Override
+        public OsmPrimitiveType getOsmPrimitiveType() {
+            return OsmPrimitiveType.WAY;
+        }
     };
 
     public abstract OsmPrimitiveType getOsmPrimitiveType();

@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 import org.openstreetmap.josm.data.coor.LatLon;
 import com.telenav.josm.common.entity.EntityUtil;
 
+import java.util.Collection;
+
 
 /**
  * Defines the detection entity.
@@ -25,14 +27,14 @@ public class Detection implements Comparable<Detection> {
     private ValidationStatus validationStatus;
     private final EditStatus editStatus;
     private OsmComparison osmComparison;
-    private OsmElement osmElement;
+    private Collection<OsmElement> osmElements;
     private DetectionMode mode;
     private Author author;
     private Double facing;
     private Float distance;
     private Float angleFromCenter;
     private Float orientation;
-    
+    private Long trackingId;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -83,8 +85,8 @@ public class Detection implements Comparable<Detection> {
         return osmComparison;
     }
 
-    public OsmElement getOsmElement() {
-        return osmElement;
+    public Collection<OsmElement> getOsmElements() {
+        return osmElements;
     }
 
     public DetectionMode getMode() {
@@ -98,7 +100,7 @@ public class Detection implements Comparable<Detection> {
     public Double getFacing() {
         return facing;
     }
-    
+
     public Float getDistance() {
         return distance;
     }
@@ -106,16 +108,19 @@ public class Detection implements Comparable<Detection> {
     public void setDistance(final Float distance) {
         this.distance = distance;
     }
- 
+
     public Float getAngleFromCenter() {
         return angleFromCenter;
     }
-    
+
     public Float getOrientation() {
         return orientation;
     }
 
-    
+    public Long getTrackingId() {
+        return trackingId;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

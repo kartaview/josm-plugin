@@ -47,7 +47,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
-                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterComponentValueLbl());
+                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterComponentValueLbl(),
+                GuiConfig.getInstance().getClusterLaneCountText());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
         if (cluster.getLatestChangeTimestamp() != null) {
@@ -56,6 +57,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         }
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
+        addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
 
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
@@ -75,7 +77,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             final int tableWidth = table.getTableWidth();
 
             table.getTableHeader()
-            .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+                    .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
 
             add(table.getTableHeader());
             final int heightTableContent = detectionsNr * ROW_HEIGHT;

@@ -16,7 +16,9 @@ import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.S
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEQUENCE_LINE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.TRANSPARENT_COMPOSITE;
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
@@ -33,14 +36,20 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedNode;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedRelation;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedWay;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
+import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.entity.Coordinate;
 import com.telenav.josm.common.entity.Pair;
 import com.telenav.josm.common.gui.PaintManager;
@@ -139,7 +148,7 @@ class PaintHandler {
                 for (int i = 1; i <= photos.size() - 1; i++) {
                     final Photo currentPhoto = photos.get(i);
                     // at least one of the photos is in current view draw line
-                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
+                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength, true);
 
                     if (drawPhotos) {
                         drawPhoto(graphics, mapView, prevPhoto, false);
@@ -213,6 +222,43 @@ class PaintHandler {
         }
     }
 
+    void drawMatchedData(final Graphics2D graphics, final MapView mapView, final List<OsmElement> matchedData) {
+        for (final OsmElement element : matchedData) {
+            switch (element.getType()) {
+                case NODE:
+                    drawNodeIcon(graphics, mapView, (DownloadedNode) element);
+                    break;
+                case WAY:
+                    drawWay(graphics, mapView, (DownloadedWay) element, Color.RED);
+                    break;
+                case WAY_SECTION:
+                    drawWay(graphics, mapView, (DownloadedWay) element, Color.RED);
+                    break;
+                case RELATION:
+                    final DownloadedRelation relation = (DownloadedRelation) element;
+                    relation.translateIdenticalMembers();
+                    for (final DownloadedWay member : relation.getDownloadedMembers()) {
+                        switch (member.getTag()) {
+                            case "FROM":
+                                drawWay(graphics, mapView, member, Color.GREEN);
+                                break;
+                            case "VIA":
+                                drawWay(graphics, mapView, member, Color.BLUE);
+                                break;
+                            case "TO":
+                                drawWay(graphics, mapView, member, Color.RED);
+                                break;
+                            default:
+                                drawWay(graphics, mapView, member, Color.RED);
+                                break;
+
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
     private void drawPhoto(final Graphics2D graphics, final MapView mapView, final Photo photo,
             final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
@@ -231,8 +277,8 @@ class PaintHandler {
 
 
     private void drawLine(final Graphics2D graphics, final MapView mapView, final LatLon start, final LatLon end,
-            final Double arrowLength) {
-        if (Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
+            final Double arrowLength, final boolean inView) {
+        if (!inView || Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
             final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(start), mapView.getPoint(end));
             if (arrowLength == null) {
                 PaintManager.drawLine(graphics, lineGeometry);
@@ -343,5 +389,45 @@ class PaintHandler {
             points.add(mapView.getPoint(latLon));
         }
         return points;
+    }
+
+    private void drawNodeIcon(final Graphics2D graphics, final MapView mapView, final DownloadedNode node) {
+        final Point point = mapView.getPoint(new LatLon(node.getMatchedNode().lat(), node.getMatchedNode().lon()));
+        final ImageIcon icon = ImageProvider.get("data", "node.svg", ImageProvider.ImageSizes.LARGEICON);
+        PaintManager.drawIcon(graphics, icon, point);
+    }
+
+    private void drawWay(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final Color color) {
+        final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
+        if (way.hasNodes()) {
+            final List<Point> geometry =
+                    way.getDownloadedNodes().stream().map(mapView::getPoint).collect(Collectors.toList());
+            PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
+        } else {
+            graphics.setColor(color);
+            graphics.setStroke(SEQUENCE_LINE);
+            drawLine(graphics, mapView, new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon()),
+                    new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon()), null, false);
+            if (clusterSettings.isDisplayTags() && way.getTag() != null) {
+                drawTag(graphics, mapView, way);
+            }
+        }
+    }
+
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
+        final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
+        final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
+        final Optional<LatLon> middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        if (middlePoint.isPresent()) {
+            final Point textPoint = mapView.getPoint(middlePoint.get());
+            final int textWidth = graphics.getFontMetrics().stringWidth(way.getTag());
+            if (way.getTag().equals("FROM")) {
+                textPoint.translate(-textWidth, 0);
+            } else if (way.getTag().equals("TO")) {
+                textPoint.translate(textWidth, 0);
+            }
+            PaintManager.drawText(graphics, way.getTag(), textPoint, mapView.getFont().deriveFont(Font.BOLD),
+                    Color.WHITE, Color.BLACK, OPAQUE_COMPOSITE);
+        }
     }
 }

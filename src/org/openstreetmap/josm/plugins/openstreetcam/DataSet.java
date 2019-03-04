@@ -17,6 +17,7 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
@@ -66,6 +67,9 @@ public final class DataSet {
     private Photo nearyPhotosStartPhoto;
     private Collection<Photo> nearbyPhotos;
 
+    /** the currently downloaded OSM matched data*/
+    private List<OsmElement> matchedData;
+
     private DataSet() {}
 
     public static DataSet getInstance() {
@@ -80,6 +84,7 @@ public final class DataSet {
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
         this.clusters = new ArrayList<>();
+        this.matchedData = new ArrayList<>();
         clearSelection();
     }
 
@@ -93,6 +98,7 @@ public final class DataSet {
         this.nearyPhotosStartPhoto = null;
         this.selectedSequence = null;
         this.selectedCluster = null;
+        this.matchedData = null;
     }
 
     /**
@@ -102,6 +108,7 @@ public final class DataSet {
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
         this.clusters = new ArrayList<>();
+        this.matchedData = new ArrayList<>();
         clearSelection();
     }
 
@@ -543,6 +550,14 @@ public final class DataSet {
     }
 
     /**
+     * Sets the downloaded OSM matched data for the selected detection.
+     * @param matchedData - List of downloaded osm elements.
+     */
+    public void setMatchedData(final List<OsmElement> matchedData) {
+        this.matchedData = matchedData;
+    }
+
+    /**
      * Returns the list of segments.
      *
      * @return a list of {@code Segment}s
@@ -621,6 +636,10 @@ public final class DataSet {
      */
     public Collection<Photo> getNearbyPhotos() {
         return nearbyPhotos;
+    }
+
+    public List<OsmElement> getMatchedData() {
+        return matchedData;
     }
 
     /**
@@ -708,6 +727,10 @@ public final class DataSet {
         return selectedCluster != null;
     }
 
+    public boolean hasMatchedData() {
+        return matchedData != null && !matchedData.isEmpty();
+    }
+
     /**
      * Checks if the currently selected photo belongs or not to the selected cluster.
      *
@@ -740,5 +763,25 @@ public final class DataSet {
     public boolean photoBelongsToSelectedCluster(final Photo photo) {
         return selectedCluster != null && selectedCluster.getPhotos() != null
                 && selectedCluster.getPhotos().contains(photo);
+    }
+
+    /**
+     * Checks if the current selected detection has osm elements.
+     *
+     * @return {@code boolean}
+     */
+    public boolean selectedDetectionHasOsmElements() {
+        return selectedDetection != null && selectedDetection.getOsmElements() != null
+                && !selectedDetection.getOsmElements().isEmpty();
+    }
+
+    /**
+     * Checks if the current selected cluster has osm elements.
+     *
+     * @return {@code boolean}
+     */
+    public boolean selectedClusterHasOsmElements() {
+        return selectedCluster != null && selectedCluster.getOsmElements() != null
+                && !selectedCluster.getOsmElements().isEmpty();
     }
 }

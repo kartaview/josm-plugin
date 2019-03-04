@@ -15,7 +15,6 @@ import javax.swing.JViewport;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
@@ -117,8 +116,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         cmpInfo.setViewportView(pnlDetails);
         cmpBtn.removeAll();
         cmpBtn.add(pnlButtons);
-        if (detection != null && detection.getOsmComparison() != null
-                && !detection.getOsmComparison().equals(OsmComparison.SAME)) {
+        if (detection != null) {
             pnlButtons.setVisible(true);
             pnlButtons.enablePanelActions(detection.getEditStatus());
             cmpBtn.setVisible(true);
