@@ -145,6 +145,7 @@ public class PhotoBuilder {
     }
 
     public Photo build() {
-        return new Photo(this);
+        // any photo should have a coordinate
+        return point != null ? new Photo(this) : null;
     }
 }
