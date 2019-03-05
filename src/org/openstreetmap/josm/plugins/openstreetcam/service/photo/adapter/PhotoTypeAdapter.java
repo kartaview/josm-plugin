@@ -97,7 +97,9 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
             }
         }
-        builder.point(latitude, longitude);
+        if (latitude != null && longitude != null) {
+            builder.point(latitude, longitude);
+        }
         reader.endObject();
         return builder.build();
     }

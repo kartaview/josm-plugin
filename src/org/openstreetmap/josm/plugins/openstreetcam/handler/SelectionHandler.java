@@ -94,7 +94,6 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
                 DataSet.getInstance().setSelectedDetection(detection);
             }
         } else {
-            selectPhoto(photo);
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
                 DetectionDetailsDialog.getInstance().updateClusterDetails(null, null);
                 if (!DataSet.getInstance().hasSelectedSequence()) {
@@ -105,6 +104,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
                 DetectionDetailsDialog.getInstance().updateClusterDetails(selectedCluster, detection);
             }
             selectDetection(detection);
+            selectPhoto(photo);
         }
         OpenStreetCamLayer.getInstance().invalidate();
     }
@@ -185,9 +185,9 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
     public synchronized void selectPhoto(final Photo photo, final PhotoSize photoType,
             final boolean displayLoadingMessage) {
         if (photo == null) {
-            if (DataSet.getInstance().hasSelectedCluster()) {
-                // special case the cluster has no photo
-                handlePhotoUnselection();
+            if (DataSet.getInstance().hasSelectedCluster() || DataSet.getInstance().hasSelectedDetection()) {
+                // special case the cluster or detection has no photo
+                SwingUtilities.invokeLater(() -> handlePhotoUnselection());
             } else {
                 SwingUtilities.invokeLater(() -> handleDataUnselection());
             }
