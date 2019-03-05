@@ -90,6 +90,9 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDataTypeDetectionsTxt;
     private final String dlgFilterDataTypeAggregatedDetectionsTxt;
     private final String dlgFilterDataRegionLbl;
+    private final String dlgFilterConfidenceLbl;
+    private final String dlgFilterConfidenceMinLbl;
+    private final String dlgFilterConfidenceMaxLbl;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -251,6 +254,9 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
         dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
         dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
+        dlgFilterConfidenceLbl = readProperty("filter.confidenceLevel.lbl");
+        dlgFilterConfidenceMinLbl = readProperty("filter.confidence.min.lbl");
+        dlgFilterConfidenceMaxLbl = readProperty("filter.confidence.max.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -511,6 +517,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterOsmComparisonLbl() {
         return dlgFilterOsmComparisonLbl;
+    }
+
+    public String getDlgFilterConfidenceLbl() {
+        return dlgFilterConfidenceLbl;
+    }
+
+    public String getDlgFilterConfidenceMinLbl() {
+        return dlgFilterConfidenceMinLbl;
+    }
+
+    public String getDlgFilterConfidenceMaxLbl() {
+        return dlgFilterConfidenceMaxLbl;
     }
 
     public String getDlgFilterModeLbl() {

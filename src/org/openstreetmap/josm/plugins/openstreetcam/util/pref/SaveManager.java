@@ -24,6 +24,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EMPTY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MAX_CONFIDENCE_LEVEL;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MIN_CONFIDENCE_LEVEL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -64,6 +66,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -163,6 +166,7 @@ final class SaveManager {
         List<String> signTypes = null;
         List<DetectionMode> detectionModes = null;
         String region = null;
+        ConfidenceLevel confidenceLevel = null;
         if (filter != null) {
             osmComparions = filter.getOsmComparisons();
             editStatuses = filter.getEditStatuses();
@@ -170,12 +174,14 @@ final class SaveManager {
             signTypes = filter.getSignTypes();
             detectionModes = filter.getModes();
             region = filter.getRegion();
+            confidenceLevel = filter.getConfidenceLevel();
         }
         saveOsmComparisonFilter(osmComparions);
         saveEditStatusFilter(editStatuses);
         saveSignTypeFilter(signTypes);
         saveSpecificSignsFilter(specificSigns);
         saveModesFilter(detectionModes);
+        saveConfidenceLevelFilter(confidenceLevel);
         if (region != null) {
             Preferences.main().put(FILTER_SEARCH_REGION, region);
         }
@@ -190,6 +196,22 @@ final class SaveManager {
         }
         StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_OSM_COMPARISON, entries,
                 OsmComparisonEntry.class);
+    }
+
+    private void saveConfidenceLevelFilter(final ConfidenceLevel confidenceLevel) {
+        if (confidenceLevel != null) {
+            if (confidenceLevel.getMinConfidenceLevel() != null) {
+                Preferences.main()
+                        .put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL, confidenceLevel.getMinConfidenceLevel().toString());
+            }
+            if (confidenceLevel.getMaxConfidenceLevel() != null) {
+                Preferences.main()
+                        .put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL, confidenceLevel.getMaxConfidenceLevel().toString());
+            }
+        } else {
+            Preferences.main().put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL, "");
+            Preferences.main().put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL, "");
+        }
     }
 
     private void saveEditStatusFilter(final List<EditStatus> editStatuses) {
