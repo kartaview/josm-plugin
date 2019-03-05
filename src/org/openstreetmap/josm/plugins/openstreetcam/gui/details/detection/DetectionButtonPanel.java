@@ -8,7 +8,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -17,9 +18,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObse
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-
-import javax.swing.JButton;
-import java.awt.event.ActionEvent;
+import com.telenav.josm.common.gui.builder.ButtonBuilder;
 
 /**
  * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user
@@ -32,6 +31,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
 
     private static final long serialVersionUID = -6885598017144429682L;
     private static final int BUTTON_FONT_SIZE = 13;
+    private static final int COLUMNS = 4;
 
     private DetectionChangeObserver detectionChangeObserver;
     private JButton btnMapped;
@@ -41,7 +41,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
 
 
     DetectionButtonPanel() {
-        super(4);
+        super(COLUMNS);
     }
 
     @Override
@@ -66,7 +66,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
                 new EditAction(GuiConfig.getInstance().getBtnBadDetectionShortcutText(), EditStatus.BAD_SIGN);
         btnBadDetection = ButtonBuilder.build(badAction, IconConfig.getInstance().getBadDetectionIcon(),
                 GuiConfig.getInstance().getBtnBadDetection(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
-                        .getBtnBadDetectionTlt().replace(SHORTCUT, badAction.getShortcut().getKeyText()));
+                .getBtnBadDetectionTlt().replace(SHORTCUT, badAction.getShortcut().getKeyText()));
         add(btnBadDetection);
     }
 
@@ -76,7 +76,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
                         GuiConfig.getInstance().getBtnOtherActionOnDetectionShortcutText());
         btnComment = ButtonBuilder.build(otherAction, IconConfig.getInstance().getOtherIcon(),
                 GuiConfig.getInstance().getBtnOtherActionOnDetection(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
-                        .getBtnOtherActionOnDetectionTlt().replace(SHORTCUT, otherAction.getShortcut().getKeyText()));
+                .getBtnOtherActionOnDetectionTlt().replace(SHORTCUT, otherAction.getShortcut().getKeyText()));
         add(btnComment);
     }
 
@@ -86,7 +86,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
                 new MatchedDataAction(GuiConfig.getInstance().getBtnMatchedDataShortcutText(), false);
         btnMatchedData = ButtonBuilder.build(matchedDataAction, IconConfig.getInstance().getMatchedWayIcon(),
                 GuiConfig.getInstance().getBtnMatchedData(), BUTTON_FONT_SIZE, GuiConfig.getInstance()
-                        .getBtnMatchedDataTlt().replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
+                .getBtnMatchedDataTlt().replace(SHORTCUT, matchedDataAction.getShortcut().getKeyText()));
         btnMatchedData.setEnabled(enabled);
         add(btnMatchedData);
     }
