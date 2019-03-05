@@ -199,19 +199,12 @@ final class SaveManager {
     }
 
     private void saveConfidenceLevelFilter(final ConfidenceLevel confidenceLevel) {
-        if (confidenceLevel != null) {
-            if (confidenceLevel.getMinConfidenceLevel() != null) {
-                Preferences.main()
-                        .put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL, confidenceLevel.getMinConfidenceLevel().toString());
-            }
-            if (confidenceLevel.getMaxConfidenceLevel() != null) {
-                Preferences.main()
-                        .put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL, confidenceLevel.getMaxConfidenceLevel().toString());
-            }
-        } else {
-            Preferences.main().put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL, "");
-            Preferences.main().put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL, "");
-        }
+        Preferences.main().put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL,
+                confidenceLevel != null && confidenceLevel.getMinConfidenceLevel() != null ?
+                        confidenceLevel.getMinConfidenceLevel().toString() : "");
+        Preferences.main().put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL,
+                confidenceLevel != null && confidenceLevel.getMaxConfidenceLevel() != null ?
+                        confidenceLevel.getMaxConfidenceLevel().toString() : "");
     }
 
     private void saveEditStatusFilter(final List<EditStatus> editStatuses) {

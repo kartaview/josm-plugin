@@ -411,7 +411,7 @@ class FilterPanel extends JPanel {
     }
 
     private ConfidenceLevel selectedConfidenceLevel() {
-        ConfidenceLevel result = null;
+        ConfidenceLevel result;
         Double minConfidence = null;
         Double maxConfidence = null;
 
@@ -421,9 +421,10 @@ class FilterPanel extends JPanel {
         if (maxConfidenceLvl.getText() != null && !maxConfidenceLvl.getText().isEmpty()) {
             maxConfidence = Double.parseDouble(maxConfidenceLvl.getText());
         }
-        if (minConfidence != null || maxConfidence != null) {
-            result = minConfidence <= maxConfidence ? new ConfidenceLevel(minConfidence, maxConfidence) :
-                    new ConfidenceLevel(maxConfidence, minConfidence);
+        if (minConfidence != null && maxConfidence != null && minConfidence > maxConfidence) {
+            result = new ConfidenceLevel(maxConfidence, minConfidence);
+        } else {
+            result = new ConfidenceLevel(minConfidence, maxConfidence);
         }
         return result;
     }

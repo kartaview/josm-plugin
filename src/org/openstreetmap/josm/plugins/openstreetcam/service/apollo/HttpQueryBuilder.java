@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -72,6 +73,7 @@ class HttpQueryBuilder {
             appendSignTypeFilter(filter.getSignTypes());
             appendSignInternalNameFilter(filter.getSignInternalNames());
             appendSignRegionFilter(filter.getRegion());
+            appendConfidenceLevelFilter(filter.getConfidenceLevel());
         }
         return build();
     }
@@ -224,6 +226,19 @@ class HttpQueryBuilder {
 
     private void appendFormatFilter(final StringBuilder query) {
         query.append(RequestConstants.FORMAT).append(EQ).append(RequestConstants.FORMAT_VAL);
+    }
+
+    private void appendConfidenceLevelFilter(final ConfidenceLevel confidenceLevel) {
+        if (confidenceLevel != null) {
+            if (confidenceLevel.getMinConfidenceLevel() != null) {
+                query.append(AND).append(RequestConstants.MIN_CONFIDENCE_LEVEL).append(EQ)
+                        .append(confidenceLevel.getMinConfidenceLevel());
+            }
+            if (confidenceLevel.getMaxConfidenceLevel() != null) {
+                query.append(AND).append(RequestConstants.MAX_CONFIDENCE_LEVEL).append(EQ)
+                        .append(confidenceLevel.getMaxConfidenceLevel());
+            }
+        }
     }
 
     private String build() {
