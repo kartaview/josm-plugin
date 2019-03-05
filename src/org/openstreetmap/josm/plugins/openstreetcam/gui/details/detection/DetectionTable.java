@@ -87,7 +87,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
 
     private class SelectRowAction extends AbstractAction {
 
-        int direction;
+        private int direction;
 
         SelectRowAction(final int direction) {
             this.direction = direction;
