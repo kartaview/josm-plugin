@@ -32,6 +32,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
 
     private static final long serialVersionUID = 8371616785853793886L;
 
+    private static final int COLUMNS = 3;
     private ClusterObserver clusterObserver;
 
     private JButton btnPrevious;
@@ -40,7 +41,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
 
 
     ClusterButtonPanel() {
-        super(3);
+        super(COLUMNS);
     }
 
 
