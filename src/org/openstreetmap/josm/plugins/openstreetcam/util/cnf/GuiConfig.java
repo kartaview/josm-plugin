@@ -116,6 +116,8 @@ public final class GuiConfig extends BaseConfig {
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
     private final String errorListRegionsText;
+    private final String incorrectConfidenceFilterText;
+    private final String unacceptedConfidenceFilterText;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -280,6 +282,8 @@ public final class GuiConfig extends BaseConfig {
         errorListRegionsText = readProperty("error.sign.region.list");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
+        incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
+        unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
@@ -625,6 +629,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getUnacceptedDateFilterText() {
         return unacceptedDateFilterText;
+    }
+
+    public String getIncorrectConfidenceFilterText() {
+        return incorrectConfidenceFilterText;
+    }
+
+    public String getUnacceptedConfidenceFilterText() {
+        return unacceptedConfidenceFilterText;
     }
 
     public String getErrorSequenceSaveText() {

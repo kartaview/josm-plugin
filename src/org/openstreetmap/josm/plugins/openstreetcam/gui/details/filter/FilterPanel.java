@@ -31,8 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -56,6 +54,7 @@ import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
 import com.telenav.josm.common.gui.builder.DatePickerBuilder;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
@@ -426,7 +425,7 @@ class FilterPanel extends JPanel {
         } else {
             result = new ConfidenceLevel(minConfidence, maxConfidence);
         }
-        return result;
+        return result; 
     }
 
     /**
@@ -558,7 +557,7 @@ class FilterPanel extends JPanel {
 
     private final class ConfidenceTextFieldListener implements DocumentListener {
 
-        private JTextField confidenceLevel;
+        private final JTextField confidenceLevel;
 
         ConfidenceTextFieldListener(final JTextField confidenceLevel) {
             super();
@@ -588,14 +587,16 @@ class FilterPanel extends JPanel {
                         SwingUtilities.invokeLater(() -> {
                             confidenceLevel.setText("");
                             JOptionPane.showMessageDialog(confidenceLevel.getParent(),
-                                    "min and max confidence must be between 0 and 1.");
+                                    GuiConfig.getInstance().getUnacceptedConfidenceFilterText(),
+                                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE);
                         });
                     }
-                } catch (NumberFormatException ex) {
+                } catch (final NumberFormatException ex) {
                     SwingUtilities.invokeLater(() -> {
                         confidenceLevel.setText("");
                         JOptionPane.showMessageDialog(confidenceLevel.getParent(),
-                                "min and max confidence must be valid double numbers.");
+                                GuiConfig.getInstance().getIncorrectConfidenceFilterText(),
+                                GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE);
                     });
                 }
             }

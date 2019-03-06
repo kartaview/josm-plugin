@@ -32,13 +32,15 @@ public class ConfidenceLevel {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         final ConfidenceLevel that = (ConfidenceLevel) o;
-        return Objects.equals(minConfidenceLevel, that.minConfidenceLevel) && Objects
-                .equals(maxConfidenceLevel, that.maxConfidenceLevel);
+        return Objects.equals(minConfidenceLevel, that.minConfidenceLevel)
+                && Objects.equals(maxConfidenceLevel, that.maxConfidenceLevel);
     }
 
     @Override
