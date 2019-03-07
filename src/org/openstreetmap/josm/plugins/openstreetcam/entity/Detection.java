@@ -34,7 +34,7 @@ public class Detection implements Comparable<Detection> {
     private Float distance;
     private Float angleFromCenter;
     private Float orientation;
-    private Long trackingId;
+    private String trackingId;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -117,7 +117,7 @@ public class Detection implements Comparable<Detection> {
         return orientation;
     }
 
-    public Long getTrackingId() {
+    public String getTrackingId() {
         return trackingId;
     }
 
