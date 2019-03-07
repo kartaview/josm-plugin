@@ -8,6 +8,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
@@ -52,41 +53,42 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 if (event.getClickCount() == UNSELECT_CLICK_COUNT) {
                     handleDataUnselection();
                 } else {
-                    handleDataSelection(event);
+                    final Point point = event.getPoint();
+                    final Cluster cluster = DataSet.getInstance().nearbyCluster(point);
+                    if (cluster != null) {
+                        handleClusterSelection(cluster);
+                    } else {
+                        ThreadPool.getInstance().execute(() -> handleDataSelection(point));
+                    }
                 }
             });
         }
     }
 
-    private void handleDataSelection(final MouseEvent event) {
-        final Cluster cluster = DataSet.getInstance().nearbyCluster(event.getPoint());
-        if (cluster != null) {
-            handleClusterSelection(cluster);
+    private void handleDataSelection(final Point point) {
+        Detection detection;
+        Photo photo;
+        detection = DataSet.getInstance().nearbyDetection(point);
+        if (detection != null) {
+            photo = loadDetectionPhoto(detection);
+            detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
         } else {
-            Detection detection;
-            Photo photo;
-            detection = DataSet.getInstance().nearbyDetection(event.getPoint());
-            if (detection != null) {
-                photo = loadDetectionPhoto(detection);
-                detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
-            } else {
-                photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
-                if (photo != null) {
-                    if (DataSet.getInstance().photoBelongsToSelectedCluster(photo)) {
-                        final Optional<Detection> clusterDetection = DataSet.getInstance()
-                                .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
-                        detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
-                        photo = enhanceClusterPhoto(photo, detection);
-                    } else {
-                        enhancePhoto(photo);
-                        detection = photoSelectedDetection(photo);
-                    }
+            photo = DataSet.getInstance().nearbyPhoto(point);
+            if (photo != null) {
+                if (DataSet.getInstance().photoBelongsToSelectedCluster(photo)) {
+                    final Optional<Detection> clusterDetection = DataSet.getInstance()
+                            .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
+                    detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
+                    photo = enhanceClusterPhoto(photo, detection);
+                } else {
+                    enhancePhoto(photo);
+                    detection = photoSelectedDetection(photo);
                 }
             }
-            DataSet.getInstance().selectNearbyPhotos(photo);
-            if (photo != null || detection != null) {
-                handleDataSelection(photo, detection, null, true);
-            }
+        }
+        DataSet.getInstance().selectNearbyPhotos(photo);
+        if (photo != null || detection != null) {
+            handleDataSelection(photo, detection, null, true);
         }
     }
 
@@ -111,20 +113,22 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
 
     private void handleClusterSelection(final Cluster selectedCluster) {
-        final Cluster cluster = enhanceCluster(selectedCluster);
+        ThreadPool.getInstance().execute(() -> {
+            final Cluster cluster = enhanceCluster(selectedCluster);
 
-        // select photo belonging to the first detection
-        final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
-        Photo clusterPhoto = null;
-        if (clusterDetection != null) {
-            final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster, clusterDetection.getSequenceId(),
-                    clusterDetection.getSequenceIndex());
-            if (photo.isPresent()) {
-                clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
+            // select photo belonging to the first detection
+            final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
+            Photo clusterPhoto = null;
+            if (clusterDetection != null) {
+                final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster,
+                        clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
+                if (photo.isPresent()) {
+                    clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
+                }
             }
-        }
-        DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
-        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
+            DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
+            handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
+        });
     }
 
     private Cluster enhanceCluster(final Cluster selectedCluster) {
@@ -153,15 +157,18 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     void enhancePhoto(final Photo photo) {
         if (photo != null) {
-            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
-                final List<Detection> detections = loadPhotoDetections(photo);
-                photo.setDetections(detections);
-            }
-            final Photo photoWithMatching =
-                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
-            if (photoWithMatching != null) {
-                photo.setMatching(photoWithMatching.getMatching());
-            }
+            ThreadPool.getInstance().execute(() -> {
+                if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                    final List<Detection> detections = loadPhotoDetections(photo);
+                    photo.setDetections(detections);
+                }
+                final Photo photoWithMatching =
+                        ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+                if (photoWithMatching != null) {
+                    photo.setMatching(photoWithMatching.getMatching());
+                }
+            });
+
         }
     }
 
@@ -178,7 +185,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         if (photo != null) {
             final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
                     ? Collections.singletonList(detection) : loadPhotoDetections(photo);
-            photo.setDetections(detections);
+                    photo.setDetections(detections);
         }
         return photo;
     }
