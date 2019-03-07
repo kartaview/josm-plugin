@@ -52,6 +52,8 @@ final class RequestConstants {
     static final String EDIT_STATUS_ALREADY_FIXED = "ALREADY_FIXED";
     static final String ID = "id";
     static final String SIGN_INTERNAL_NAMES = "signInternalNames";
+    static final String MIN_CONFIDENCE_LEVEL = "minConfidenceLevel";
+    static final String MAX_CONFIDENCE_LEVEL = "maxConfidenceLevel";
 
     static final String BLURRING_TYPE = "BLURRING";
 

@@ -43,6 +43,8 @@ final class Keys {
     static final String FILTER_SEARCH_REGION = "openstreetcam.filter.search.region";
     static final String FILTER_SEARCH_SIGN_TYPE = "openstreetcam.filter.search.signType";
     static final String FILTER_SEARCH_SPECIFIC_SIGN = "openstreetcam.filter.search.specificSign";
+    static final String FILTER_SEARCH_MIN_CONFIDENCE_LEVEL = "openstreetcam.filter.search.minConfidenceLvl";
+    static final String FILTER_SEARCH_MAX_CONFIDENCE_LEVEL = "openstreetcam.filter.search.maxConfidenceLvl";
     static final String FILTER_SEARCH_EMPTY = "EMPTY";
 
     static final String LAYER_OPENED = "openstreetcam.layerOpened";

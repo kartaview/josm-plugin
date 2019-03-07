@@ -90,6 +90,9 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDataTypeDetectionsTxt;
     private final String dlgFilterDataTypeAggregatedDetectionsTxt;
     private final String dlgFilterDataRegionLbl;
+    private final String dlgFilterConfidenceLbl;
+    private final String dlgFilterConfidenceMinLbl;
+    private final String dlgFilterConfidenceMaxLbl;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -113,6 +116,8 @@ public final class GuiConfig extends BaseConfig {
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
     private final String errorListRegionsText;
+    private final String incorrectConfidenceFilterText;
+    private final String unacceptedConfidenceFilterText;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -251,6 +256,9 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
         dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
         dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
+        dlgFilterConfidenceLbl = readProperty("filter.confidenceLevel.lbl");
+        dlgFilterConfidenceMinLbl = readProperty("filter.confidence.min.lbl");
+        dlgFilterConfidenceMaxLbl = readProperty("filter.confidence.max.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -274,6 +282,8 @@ public final class GuiConfig extends BaseConfig {
         errorListRegionsText = readProperty("error.sign.region.list");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
+        incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
+        unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
@@ -513,6 +523,18 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterOsmComparisonLbl;
     }
 
+    public String getDlgFilterConfidenceLbl() {
+        return dlgFilterConfidenceLbl;
+    }
+
+    public String getDlgFilterConfidenceMinLbl() {
+        return dlgFilterConfidenceMinLbl;
+    }
+
+    public String getDlgFilterConfidenceMaxLbl() {
+        return dlgFilterConfidenceMaxLbl;
+    }
+
     public String getDlgFilterModeLbl() {
         return dlgFilterModeLbl;
     }
@@ -607,6 +629,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getUnacceptedDateFilterText() {
         return unacceptedDateFilterText;
+    }
+
+    public String getIncorrectConfidenceFilterText() {
+        return incorrectConfidenceFilterText;
+    }
+
+    public String getUnacceptedConfidenceFilterText() {
+        return unacceptedConfidenceFilterText;
     }
 
     public String getErrorSequenceSaveText() {
