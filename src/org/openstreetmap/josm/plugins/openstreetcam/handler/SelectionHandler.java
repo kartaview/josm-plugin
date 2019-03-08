@@ -47,7 +47,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -64,7 +64,7 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
         handlePhotoUnselection();
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                .loadMapViewSettings().getPhotoZoom()) {
+                        .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -232,21 +232,21 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                        SwingUtilities.invokeLater(() -> {
-                            DataSet.getInstance().setSelectedSequence(sequence);
-                            PhotoDetailsDialog.getInstance().enableSequenceActions(
-                                    DataSet.getInstance().enablePreviousPhotoAction(),
-                                    DataSet.getInstance().enableNextPhotoAction(), null);
-                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
-                            }
-                            OpenStreetCamLayer.getInstance().invalidate();
-                            MainApplication.getMap().repaint();
-                        });
+            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                SwingUtilities.invokeLater(() -> {
+                    DataSet.getInstance().setSelectedSequence(sequence);
+                    PhotoDetailsDialog.getInstance().enableSequenceActions(
+                            DataSet.getInstance().enablePreviousPhotoAction(),
+                            DataSet.getInstance().enableNextPhotoAction(), null);
+                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
+                    OpenStreetCamLayer.getInstance().invalidate();
+                    MainApplication.getMap().repaint();
+                });
+            }
         });
     }
 
@@ -330,7 +330,6 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
             }
         } else {
             stopAutoplay();
-
             if (DataSet.getInstance().hasNearbyPhotos()) {
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
@@ -417,38 +416,40 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
     public void selectPhoto(final boolean isNext) {
         final Detection clusterDetection = DataSet.getInstance().clusterDetection(isNext);
         if (clusterDetection != null) {
-            final Optional<Photo> clusterPhoto = DataSet.getInstance()
-                    .selectedClusterPhoto(clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
-            Photo photo = clusterPhoto.isPresent() ? clusterPhoto.get() : null;
-            photo = enhanceClusterPhoto(photo, clusterDetection);
-            DataSet.getInstance().setSelectedDetection(clusterDetection);
-            final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                    ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-            selectPhoto(photo, photoType, true);
-            DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
-                    clusterDetection);
-            DataSet.getInstance().selectNearbyPhotos(photo);
+            ThreadPool.getInstance().execute(() -> {
+                final Optional<Photo> clusterPhoto = DataSet.getInstance()
+                        .selectedClusterPhoto(clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
+                Photo photo = clusterPhoto.isPresent() ? clusterPhoto.get() : null;
+                photo = enhanceClusterPhoto(photo, clusterDetection);
+                DataSet.getInstance().setSelectedDetection(clusterDetection);
+                final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                        ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
+                selectPhoto(photo, photoType, true);
+                DetectionDetailsDialog.getInstance().updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                        clusterDetection);
+                DataSet.getInstance().selectNearbyPhotos(photo);
+            });
         }
     }
 
 
     @Override
     public void selectPhotoDetection(final Detection selectedDetection) {
-        SwingUtilities.invokeLater(() -> {
+        ThreadPool.getInstance().execute(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
-                    selectDetection(detection);
+            SwingUtilities.invokeLater(() -> selectDetection(detection));
         });
     }
 
 
     @Override
     public void selectDetectionFromTable(final Detection detection) {
-        Photo photo = null;
-
         if (detection != null) {
-            photo = loadDetectionPhoto(detection);
-            handleDataSelection(photo, detection, null, true);
+            ThreadPool.getInstance().execute(() -> {
+                final Photo photo = loadDetectionPhoto(detection);
+                SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
+            });
         }
     }
 }

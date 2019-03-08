@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
@@ -175,17 +176,19 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             final Pair<BufferedImage, PhotoSize> imageResult =
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
-            if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null) {
-                if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
-                        && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
-                    pnlDetails.updateUI(photo, true);
-                    pnlDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
-                } else {
-                    pnlDetails.updateUI(photo, false);
-                    pnlDetails.setToolTipText(null);
+            SwingUtilities.invokeLater(() -> {
+                if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null) {
+                    if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
+                            && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
+                        pnlDetails.updateUI(photo, true);
+                        pnlDetails.setToolTipText(GuiConfig.getInstance().getWarningHighQualityPhoto());
+                    } else {
+                        pnlDetails.updateUI(photo, false);
+                        pnlDetails.setToolTipText(null);
+                    }
+                    pnlPhoto.updateUI(imageResult.getFirst(), photo.getDetections());
                 }
-                pnlPhoto.updateUI(imageResult.getFirst(), photo.getDetections());
-            }
+            });
         } catch (final Exception e) {
             pnlPhoto.displayErrorMessage();
         }
