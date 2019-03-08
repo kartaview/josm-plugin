@@ -56,7 +56,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                     final Point point = event.getPoint();
                     final Cluster cluster = DataSet.getInstance().nearbyCluster(point);
                     if (cluster != null) {
-                        handleClusterSelection(cluster);
+                        ThreadPool.getInstance().execute(() -> handleClusterSelection(cluster));
                     } else {
                         ThreadPool.getInstance().execute(() -> handleDataSelection(point));
                     }
@@ -113,22 +113,20 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
 
     private void handleClusterSelection(final Cluster selectedCluster) {
-        ThreadPool.getInstance().execute(() -> {
-            final Cluster cluster = enhanceCluster(selectedCluster);
+        final Cluster cluster = enhanceCluster(selectedCluster);
 
-            // select photo belonging to the first detection
-            final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
-            Photo clusterPhoto = null;
-            if (clusterDetection != null) {
-                final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster,
-                        clusterDetection.getSequenceId(), clusterDetection.getSequenceIndex());
-                if (photo.isPresent()) {
-                    clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
-                }
+        // select photo belonging to the first detection
+        final Detection clusterDetection = cluster.getDetections() != null ? cluster.getDetections().get(0) : null;
+        Photo clusterPhoto = null;
+        if (clusterDetection != null) {
+            final Optional<Photo> photo = DataSet.getInstance().clusterPhoto(cluster, clusterDetection.getSequenceId(),
+                    clusterDetection.getSequenceIndex());
+            if (photo.isPresent()) {
+                clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
             }
-            DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
-            handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
-        });
+        }
+        DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
+        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
     }
 
     private Cluster enhanceCluster(final Cluster selectedCluster) {
