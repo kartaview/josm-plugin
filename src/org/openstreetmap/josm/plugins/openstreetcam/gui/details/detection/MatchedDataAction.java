@@ -141,7 +141,7 @@ final class MatchedDataAction extends JosmAction {
                             GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
                 }
             } else {
-                downloadedData.add(new DownloadedWay(element, downloadedWay.getNodes()));
+                downloadedData.add(new DownloadedWay(element, downloadedWay));
             }
         }
     }
@@ -161,6 +161,8 @@ final class MatchedDataAction extends JosmAction {
                     (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getFromId(), OsmPrimitiveType.NODE));
             Node toPrimitive =
                     (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getToId(), OsmPrimitiveType.NODE));
+            Way downloadedWay =
+                    (Way) result.getPrimitiveById(new SimplePrimitiveId(element.getOsmId(), OsmPrimitiveType.WAY));
             if (fromPrimitive == null || toPrimitive == null) {
                 if (handleError) {
                     SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
@@ -169,7 +171,7 @@ final class MatchedDataAction extends JosmAction {
                             JOptionPane.WARNING_MESSAGE));
                 }
             } else {
-                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
+                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive, downloadedWay));
             }
         }
     }

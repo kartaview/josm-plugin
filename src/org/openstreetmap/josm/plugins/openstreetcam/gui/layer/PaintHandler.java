@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
+
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
@@ -40,6 +41,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedNode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedRelation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedWay;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -399,25 +401,32 @@ class PaintHandler {
 
     private void drawWay(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final Color color) {
         final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
-        if (way.hasNodes()) {
+        if (way.getType() == OsmElementType.WAY) {
             final List<Point> geometry =
                     way.getDownloadedNodes().stream().map(mapView::getPoint).collect(Collectors.toList());
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
         } else {
-            graphics.setColor(color);
-            graphics.setStroke(SEQUENCE_LINE);
-            drawLine(graphics, mapView, new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon()),
-                    new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon()), null, false);
+            final List<Point> geometry = new ArrayList<>();
+            for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode());
+                 i <= way.getDownloadedNodes().indexOf(way.getMatchedToNode()); i++) {
+                geometry.add(mapView.getPoint(way.getDownloadedNodes().get(i)));
+            }
+            PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
             if (clusterSettings.isDisplayTags() && way.getTag() != null) {
-                drawTag(graphics, mapView, way);
+                drawTag(graphics, mapView, way, geometry);
             }
         }
     }
 
-    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final List<Point> geometry) {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
-        final Optional<LatLon> middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        Optional<LatLon> middlePoint = Optional.empty();
+        if(way.isStraight()) {
+            middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        }else{
+
+        }
         if (middlePoint.isPresent()) {
             final Point textPoint = mapView.getPoint(middlePoint.get());
             final int textWidth = graphics.getFontMetrics().stringWidth(way.getTag());

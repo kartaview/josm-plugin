@@ -80,6 +80,9 @@ public class OsmDataHandler {
                     reader.append(new Node(element.getFromId()));
                     reader.append(new Node(element.getToId()));
                 }
+                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                    reader.append(new Way(element.getOsmId()));
+                }
                 break;
             case RELATION:
                 if (element.getOsmId() != null && element.getOsmId() > 0) {
