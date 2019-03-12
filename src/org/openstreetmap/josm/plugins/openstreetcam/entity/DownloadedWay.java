@@ -28,6 +28,7 @@ import org.openstreetmap.josm.tools.Geometry;
  */
 public class DownloadedWay extends OsmElement {
 
+    public static final int SIZE_OF_TWO_POINT_LIST = 2;
     private final Node matchedFromNode;
     private final Node matchedToNode;
     private final List<Node> downloadedNodes;
@@ -83,7 +84,7 @@ public class DownloadedWay extends OsmElement {
     private boolean determineWayStraightness(final Way way, final Node fromNode, final Node toNode) {
         boolean straight = true;
         final List<Node> waySection = new ArrayList<>(way.getNodes().subList( way.getNodes().indexOf(fromNode), way.getNodes().indexOf(toNode)));
-        if(waySection.size() > 2) {
+        if(waySection.size() > SIZE_OF_TWO_POINT_LIST) {
             List<Double> angles = new ArrayList<>();
             for (int i = 1; i < waySection.size() - 1; i++) {
                 angles.add(Geometry.getNormalizedAngleInDegrees(

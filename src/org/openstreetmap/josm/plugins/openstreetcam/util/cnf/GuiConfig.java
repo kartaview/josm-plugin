@@ -113,6 +113,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
     private final String errorListRegionsText;
+    private final String errorDownloadOsmData;
 
     private final String warningTitle;
     private final String warningHighQualityPhoto;
@@ -275,6 +276,7 @@ public final class GuiConfig extends BaseConfig {
         errorClusterRetrieveText = readProperty("error.cluster.retrieve");
         errorListSignsText = readProperty("error.sign.list");
         errorListRegionsText = readProperty("error.sign.region.list");
+        errorDownloadOsmData = readProperty("error.osmData.download");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
         warningTitle = readProperty("warning.title");
@@ -621,6 +623,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorSegmentListText() {
         return errorSegmentListText;
+    }
+
+    public String getErrorDownloadOsmData() {
+        return errorDownloadOsmData;
     }
 
     public String getWarningHighQualityPhoto() {

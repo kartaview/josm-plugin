@@ -32,6 +32,8 @@ import java.util.Optional;
  */
 public class OsmDataHandler {
 
+    public static final int INVALID_ID_VALUE = 0;
+
     private OsmDataHandler() {
     }
 
@@ -57,7 +59,7 @@ public class OsmDataHandler {
                 result = reader.parseOsm(NullProgressMonitor.INSTANCE);
             } catch (OsmTransferException e1) {
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                        "Error retrieving OSM members from the OSM service", GuiConfig.getInstance().getWarningTitle(),
+                        GuiConfig.getInstance().getErrorDownloadOsmData(), GuiConfig.getInstance().getWarningTitle(),
                         JOptionPane.WARNING_MESSAGE));
             }
         }
@@ -67,12 +69,12 @@ public class OsmDataHandler {
     private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element) {
         switch (element.getType()) {
             case NODE:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Node(element.getOsmId()));
                 }
                 break;
             case WAY:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Way(element.getOsmId()));
                 }
                 break;
@@ -81,12 +83,12 @@ public class OsmDataHandler {
                     reader.append(new Node(element.getFromId()));
                     reader.append(new Node(element.getToId()));
                 }
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Way(element.getOsmId()));
                 }
                 break;
             case RELATION:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Relation(element.getOsmId()));
                 }
                 break;
