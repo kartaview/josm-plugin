@@ -11,6 +11,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
@@ -193,6 +194,7 @@ final class MatchedDataAction extends JosmAction {
                         GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
             } else {
                 downloadedData.add(new DownloadedNode(element, downloadedNode));
+                MainApplication.getMap().mapView.zoomTo(new LatLon(downloadedNode.lat(), downloadedNode.lon()));
             }
         }
     }
