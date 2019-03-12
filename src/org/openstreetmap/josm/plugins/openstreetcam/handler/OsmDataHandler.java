@@ -43,23 +43,24 @@ public class OsmDataHandler {
      */
     public static Optional<DataSet> retrieveServerObjects(final Collection<OsmElement> elements) {
         DataSet result = null;
-        MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
-        for (OsmElement element : elements) {
-            appendOsmPrimitive(reader, element);
-            if (element.getMembers() != null) {
-                for (OsmElement member : element.getMembers()) {
-                    appendOsmPrimitive(reader, member);
+        if (elements != null) {
+            MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
+            for (OsmElement element : elements) {
+                appendOsmPrimitive(reader, element);
+                if (element.getMembers() != null) {
+                    for (OsmElement member : element.getMembers()) {
+                        appendOsmPrimitive(reader, member);
+                    }
                 }
             }
+            try {
+                result = reader.parseOsm(NullProgressMonitor.INSTANCE);
+            } catch (OsmTransferException e1) {
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                        "Error retrieving OSM members from the OSM service", GuiConfig.getInstance().getWarningTitle(),
+                        JOptionPane.WARNING_MESSAGE));
+            }
         }
-        try {
-            result = reader.parseOsm(NullProgressMonitor.INSTANCE);
-        } catch (OsmTransferException e1) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                    "Error retrieving OSM members from the OSM service", GuiConfig.getInstance().getWarningTitle(),
-                    JOptionPane.WARNING_MESSAGE));
-        }
-
         return Optional.ofNullable(result);
     }
 

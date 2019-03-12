@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -150,7 +151,7 @@ class PaintHandler {
                 for (int i = 1; i <= photos.size() - 1; i++) {
                     final Photo currentPhoto = photos.get(i);
                     // at least one of the photos is in current view draw line
-                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength, true);
+                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
 
                     if (drawPhotos) {
                         drawPhoto(graphics, mapView, prevPhoto, false);
@@ -279,8 +280,8 @@ class PaintHandler {
 
 
     private void drawLine(final Graphics2D graphics, final MapView mapView, final LatLon start, final LatLon end,
-            final Double arrowLength, final boolean inView) {
-        if (!inView || Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
+            final Double arrowLength) {
+        if (Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
             final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(start), mapView.getPoint(end));
             if (arrowLength == null) {
                 PaintManager.drawLine(graphics, lineGeometry);
@@ -421,11 +422,13 @@ class PaintHandler {
     private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final List<Point> geometry) {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
-        Optional<LatLon> middlePoint = Optional.empty();
+        Optional<LatLon> middlePoint;
         if(way.isStraight()) {
             middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
         }else{
-
+            final int middleIndex = (way.getDownloadedNodes().indexOf(way.getMatchedFromNode()) + way.getDownloadedNodes().indexOf(way.getMatchedToNode()))/2;
+            final Node middleNode = way.getDownloadedNodes().get(middleIndex);
+            middlePoint = Optional.of(new LatLon(middleNode.lat(), middleNode.lon()));
         }
         if (middlePoint.isPresent()) {
             final Point textPoint = mapView.getPoint(middlePoint.get());

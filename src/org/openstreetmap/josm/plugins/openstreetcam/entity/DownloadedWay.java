@@ -11,6 +11,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
@@ -37,14 +39,14 @@ public class DownloadedWay extends OsmElement {
                 element.getTag());
         this.matchedFromNode = new Node(matchedFromNode);
         this.matchedToNode = new Node(matchedToNode);
-        this.downloadedNodes = downloadedWay.getNodes();
+        this.downloadedNodes = copyNodes(downloadedWay.getNodes());
         isStraight = determineWayStraightness(downloadedWay, matchedFromNode, matchedToNode);
     }
 
     public DownloadedWay(final OsmElement element, final Way downloadedWay) {
         super(element.getOsmId(), element.getType(), element.getMembers(), element.getFromId(), element.getOsmId(),
                 element.getTag());
-        this.downloadedNodes = downloadedWay.getNodes();
+        this.downloadedNodes = copyNodes(downloadedWay.getNodes());
         matchedToNode = null;
         matchedFromNode = null;
         isStraight = null;
@@ -72,6 +74,10 @@ public class DownloadedWay extends OsmElement {
 
     void setMatchedToCoordinates(final LatLon newCoordinates) {
         matchedToNode.setCoor(newCoordinates);
+    }
+
+    private List<Node> copyNodes(final List<Node> nodes) {
+        return nodes.stream().map(Node::new).collect(Collectors.toList());
     }
 
     private boolean determineWayStraightness(final Way way, final Node fromNode, final Node toNode) {
