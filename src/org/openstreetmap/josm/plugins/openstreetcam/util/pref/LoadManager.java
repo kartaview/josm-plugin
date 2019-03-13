@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_COLOR_CODED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
@@ -277,7 +278,8 @@ final class LoadManager {
     ClusterSettings loadClusterSettings() {
         final boolean displayDetectionLocations = Preferences.main().getBoolean(DISPLAY_DETECTION_LOCATIONS);
         final boolean displayTags = Preferences.main().getBoolean(DISPLAY_TAGS);
-        return new ClusterSettings(displayDetectionLocations, displayTags);
+        final boolean displayColorCoded = Preferences.main().getBoolean(DISPLAY_COLOR_CODED);
+        return new ClusterSettings(displayDetectionLocations, displayTags, displayColorCoded);
     }
 
     SequenceSettings loadTrackSettings() {

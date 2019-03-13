@@ -53,6 +53,8 @@ final class Constants {
     static final Float OPAQUE_ALPHA = 1.0f;
     static final Map<RenderingHints.Key, Object> RENDERING_MAP = createRenderingMap();
 
+    static final double CLUSTER_CONFIDENCE_COLOR_RANGE_STEP = 0.1;
+
 
     private Constants() {}
 

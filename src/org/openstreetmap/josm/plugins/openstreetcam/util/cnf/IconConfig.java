@@ -13,6 +13,9 @@ import javax.swing.ImageIcon;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.cnf.BaseConfig;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * Loads icons and icon names.
@@ -56,8 +59,28 @@ public final class IconConfig extends BaseConfig {
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
-    private final ImageIcon clusterBackgroundIcon;
-    private final ImageIcon clusterBackgroundSelectedIcon;
+    private final ImageIcon clusterBackgroundIconColorless;
+    private final ImageIcon clusterBackgroundSelectedIconColorless;
+    private final ImageIcon clusterBackgroundIconColor1;
+    private final ImageIcon clusterBackgroundSelectedIconColor1;
+    private final ImageIcon clusterBackgroundIconColor2;
+    private final ImageIcon clusterBackgroundSelectedIconColor2;
+    private final ImageIcon clusterBackgroundIconColor3;
+    private final ImageIcon clusterBackgroundSelectedIconColor3;
+    private final ImageIcon clusterBackgroundIconColor4;
+    private final ImageIcon clusterBackgroundSelectedIconColor4;
+    private final ImageIcon clusterBackgroundIconColor5;
+    private final ImageIcon clusterBackgroundSelectedIconColor5;
+    private final ImageIcon clusterBackgroundIconColor6;
+    private final ImageIcon clusterBackgroundSelectedIconColor6;
+    private final ImageIcon clusterBackgroundIconColor7;
+    private final ImageIcon clusterBackgroundSelectedIconColor7;
+    private final ImageIcon clusterBackgroundIconColor8;
+    private final ImageIcon clusterBackgroundSelectedIconColor8;
+    private final ImageIcon clusterBackgroundIconColor9;
+    private final ImageIcon clusterBackgroundSelectedIconColor9;
+    private final ImageIcon clusterBackgroundIconColor10;
+    private final ImageIcon clusterBackgroundSelectedIconColor10;
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
@@ -96,17 +119,46 @@ public final class IconConfig extends BaseConfig {
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
-        final ImageProvider imageProvider = new ImageProvider(readProperty("cluster.background.icon"));
-        imageProvider.setSize(CLUSTER_BACKGROUND_SIZE, CLUSTER_BACKGROUND_SIZE);
-        clusterBackgroundIcon = imageProvider.get();
-        imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
-        clusterBackgroundSelectedIcon = imageProvider.get();
+        clusterBackgroundIconColorless = getUnselectedClusterBackground("cluster.background.icon");
+        clusterBackgroundSelectedIconColorless = getSelectedClusterBackground("cluster.background.icon");
+        clusterBackgroundIconColor1 = getUnselectedClusterBackground("cluster.background.icon.color1");
+        clusterBackgroundSelectedIconColor1 = getSelectedClusterBackground("cluster.background.icon.color1");
+        clusterBackgroundIconColor2 = getUnselectedClusterBackground("cluster.background.icon.color2");
+        clusterBackgroundSelectedIconColor2 = getSelectedClusterBackground("cluster.background.icon.color2");
+        clusterBackgroundIconColor3 = getUnselectedClusterBackground("cluster.background.icon.color3");
+        clusterBackgroundSelectedIconColor3 = getSelectedClusterBackground("cluster.background.icon.color3");
+        clusterBackgroundIconColor4 = getUnselectedClusterBackground("cluster.background.icon.color4");
+        clusterBackgroundSelectedIconColor4 = getSelectedClusterBackground("cluster.background.icon.color4");
+        clusterBackgroundIconColor5 = getUnselectedClusterBackground("cluster.background.icon.color5");
+        clusterBackgroundSelectedIconColor5 = getSelectedClusterBackground("cluster.background.icon.color5");
+        clusterBackgroundIconColor6 = getUnselectedClusterBackground("cluster.background.icon.color6");
+        clusterBackgroundSelectedIconColor6 = getSelectedClusterBackground("cluster.background.icon.color6");
+        clusterBackgroundIconColor7 = getUnselectedClusterBackground("cluster.background.icon.color7");
+        clusterBackgroundSelectedIconColor7 = getSelectedClusterBackground("cluster.background.icon.color7");
+        clusterBackgroundIconColor8 = getUnselectedClusterBackground("cluster.background.icon.color8");
+        clusterBackgroundSelectedIconColor8 = getSelectedClusterBackground("cluster.background.icon.color8");
+        clusterBackgroundIconColor9 = getUnselectedClusterBackground("cluster.background.icon.color9");
+        clusterBackgroundSelectedIconColor9 = getSelectedClusterBackground("cluster.background.icon.color9");
+        clusterBackgroundIconColor10 = getUnselectedClusterBackground("cluster.background.icon.color10");
+        clusterBackgroundSelectedIconColor10 = getSelectedClusterBackground("cluster.background.icon.color10");
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
         mappedIcon = ImageProvider.get(readProperty("mapped.icon"));
         badDetectionIcon = ImageProvider.get(readProperty("bad.detection.icon"));
         otherIcon = ImageProvider.get(readProperty("other.icon"));
+    }
+
+    private ImageIcon getUnselectedClusterBackground(final String key){
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(CLUSTER_BACKGROUND_SIZE, CLUSTER_BACKGROUND_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getSelectedClusterBackground(final String key){
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
+        return imageProvider.get();
     }
 
 
@@ -228,12 +280,27 @@ public final class IconConfig extends BaseConfig {
         return downloadIcon;
     }
 
-    public ImageIcon getClusterBackgroundIcon() {
-        return clusterBackgroundIcon;
+    public ImageIcon getClusterBackgroundIconColorless() {
+        return clusterBackgroundIconColorless;
     }
 
-    public ImageIcon getClusterBackgroundSelectedIcon() {
-        return clusterBackgroundSelectedIcon;
+    public ImageIcon getClusterBackgroundSelectedIconColorless() {
+        return clusterBackgroundSelectedIconColorless;
+    }
+
+    public List<ImageIcon> getClusterBordersColored() {
+        return Arrays.asList(clusterBackgroundIconColor1, clusterBackgroundIconColor2, clusterBackgroundIconColor3,
+                clusterBackgroundIconColor4, clusterBackgroundIconColor5, clusterBackgroundIconColor6,
+                clusterBackgroundIconColor7, clusterBackgroundIconColor8, clusterBackgroundIconColor9,
+                clusterBackgroundIconColor10);
+    }
+
+    public List<ImageIcon> getSelectedClusterBordersColored() {
+        return Arrays.asList(clusterBackgroundSelectedIconColor1, clusterBackgroundSelectedIconColor2,
+                clusterBackgroundSelectedIconColor3, clusterBackgroundSelectedIconColor4,
+                clusterBackgroundSelectedIconColor5, clusterBackgroundSelectedIconColor6,
+                clusterBackgroundSelectedIconColor7, clusterBackgroundSelectedIconColor8,
+                clusterBackgroundSelectedIconColor9, clusterBackgroundSelectedIconColor10);
     }
 
     public String getPreferenceIconName() {

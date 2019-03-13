@@ -66,6 +66,7 @@ final class Keys {
     /* aggregated detections user preference settings */
     static final String DISPLAY_DETECTION_LOCATIONS = "openstreetcam.preferences.aggregated.displayDetectionLoc";
     static final String DISPLAY_TAGS = "openstreetcam.preferences.aggregated.displayTags";
+    static final String DISPLAY_COLOR_CODED = "openstreetcam.preferences.aggregated.displayColorCoded";
 
     /* track related user preference settings */
     static final String DISPLAY_TRACK_FLAG = "openstreetcam.preferences.trackLoading";

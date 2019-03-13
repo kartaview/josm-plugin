@@ -9,6 +9,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.ARROW_LENGTH;
+import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.CLUSTER_CONFIDENCE_COLOR_RANGE_STEP;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.MIN_ARROW_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.OPAQUE_COMPOSITE;
 import static org.openstreetmap.josm.plugins.openstreetcam.gui.layer.Constants.SEGMENT_COLOR;
@@ -312,8 +313,8 @@ class PaintHandler {
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
             final Photo selectedPhoto, final boolean isSelected) {
+        final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
         if (isSelected) {
-            final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
             if (clusterSettings != null && clusterSettings.isDisplayDetectionLocations()) {
                 if (cluster.getDetections() != null && cluster.getPhotos() != null) {
                     drawClusterData(graphics, mapView, cluster, selectedPhoto);
@@ -325,7 +326,7 @@ class PaintHandler {
             }
         }
         if (Util.containsLatLon(mapView, cluster.getPoint())) {
-            drawClusterIcon(graphics, mapView, cluster, isSelected);
+            drawClusterIcon(graphics, mapView, cluster, isSelected, clusterSettings.isDisplayColorCoded());
         }
     }
 
@@ -365,9 +366,8 @@ class PaintHandler {
     }
 
     private void drawClusterIcon(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
-            final boolean isSelected) {
-        final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
-                : IconConfig.getInstance().getClusterBackgroundIcon();
+            final boolean isSelected, final boolean isColorCoded) {
+        final ImageIcon backgroundIcon = getClusterBackgroundIcon(cluster, isSelected, isColorCoded);
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
         double bearing = 0;
         final Point point = mapView.getPoint(cluster.getPoint());
@@ -381,6 +381,31 @@ class PaintHandler {
                 GeometryUtil.extrapolate(new Coordinate(cluster.getPoint().lat(), cluster.getPoint().lon()), bearing,
                         mapView.getDist100Pixel() * Constants.CLUSTER_EXTRAPOLATE_DISTANCE);
         PaintManager.drawIcon(graphics, icon, mapView.getPoint(new LatLon(coord.getLat(), coord.getLon())));
+    }
+
+    private ImageIcon getClusterBackgroundIcon(final Cluster cluster, final boolean isSelected,
+            final boolean isColorCoded) {
+        ImageIcon backgroundIcon = null;
+        if (isColorCoded) {
+            int i = 0;
+            while (i < IconConfig.getInstance().getClusterBordersColored().size() && backgroundIcon == null) {
+                double minRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * i;
+                double maxRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * (i + 1);
+                if (cluster.getConfidenceLevel() >= minRange && cluster.getConfidenceLevel() <= maxRange) {
+                    backgroundIcon = isSelected ? IconConfig.getInstance().getSelectedClusterBordersColored().get(i) :
+                            IconConfig.getInstance().getClusterBordersColored().get(i);
+                }
+                i++;
+            }
+            if (backgroundIcon == null) {
+                backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIconColorless() :
+                        IconConfig.getInstance().getClusterBackgroundIconColorless();
+            }
+        } else {
+            backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIconColorless() :
+                    IconConfig.getInstance().getClusterBackgroundIconColorless();
+        }
+        return backgroundIcon;
     }
 
     private List<Point> toPoints(final MapView mapView, final List<LatLon> geometry) {

@@ -18,6 +18,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -33,6 +34,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.gui.builder.TextComponentBuilder;
+
+import static org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.Constraints.TABLE_DISPLAY_COLOR_LEGEND;
 
 
 /**
@@ -52,6 +55,7 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox agDisplayDetection;
     private JCheckBox cbDisplayTags;
+    private JCheckBox cbDisplayColorBased;
     private JCheckBox cbDisplayTrack;
     private JCheckBox cbMouseHover;
     private JSpinner spMouseHoverDelay;
@@ -135,6 +139,14 @@ class PreferencePanel extends JPanel {
                 .build(GuiConfig.getInstance().getPrefAggregatedDisplayTagsLbl(), new SelectionListener(), Font.PLAIN,
                         settings.isDisplayTags(), true);
         add(cbDisplayTags, Constraints.CB_DISPLAY_TAGS);
+        cbDisplayColorBased = CheckBoxBuilder
+                .build(GuiConfig.getInstance().getPrefAggregatedDisplayColorCodedLbl(), new SelectionListener(),
+                        Font.PLAIN, settings.isDisplayColorCoded(), true);
+        add(cbDisplayColorBased, Constraints.CB_DISPLAY_COLOR_CODED);
+        add(LabelBuilder
+                .build(GuiConfig.getInstance().getPrefAggregatedLegendLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
+                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_DISPLAY_COLOR_LEGEND);
+        add(new JTable(new LegendTableModel()), TABLE_DISPLAY_COLOR_LEGEND);
     }
 
     private void createTrackVisualizationSettings(final PreferenceSettings settings) {
@@ -206,7 +218,8 @@ class PreferencePanel extends JPanel {
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
         final ClusterSettings aggregatedSettings =
-                new ClusterSettings(agDisplayDetection.isSelected(), cbDisplayTags.isSelected());
+                new ClusterSettings(agDisplayDetection.isSelected(), cbDisplayTags.isSelected(),
+                        cbDisplayColorBased.isSelected());
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
