@@ -26,6 +26,11 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * This table models the color legend from plugin preferences for the cluster confidence level display.
+ *
+ * @author laurad
+ */
 public class LegendTable {
 
     final private JScrollPane tablePane;
@@ -57,11 +62,7 @@ public class LegendTable {
         tablePane.setPreferredSize(LEGEND_TABLE_DIM);
     }
 
-    public JTable getTable() {
-        return legendTable;
-    }
-
-    public JScrollPane getComponent(){
+    public JScrollPane getComponent() {
         return tablePane;
     }
 
@@ -78,11 +79,11 @@ public class LegendTable {
 
     private class LegendTableModel extends AbstractTableModel {
 
-        private String[] columnNames =
+        private final String[] columnNames =
                 { "Confidence interval", "0-0.1", "0.1-0.2", "0.2-0.3", "0.3-0.4", "0.4-0.5", "0.5-0.6", "0.6-0.7",
                         "0.7-0.8", "0.8-0.9", "0.9-1" };
 
-        private Object[][] data = { { "Color", "", "", "", "", "", "", "", "", "", "" } };
+        private final Object[][] data = { { "Color", "", "", "", "", "", "", "", "", "", "" } };
 
 
         @Override
@@ -111,9 +112,10 @@ public class LegendTable {
         }
     }
 
+
     private class LegendTableRenderer extends JLabel implements TableCellRenderer {
 
-        LegendTableRenderer(){
+        LegendTableRenderer() {
             setOpaque(true);
         }
 

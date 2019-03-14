@@ -149,13 +149,13 @@ public final class IconConfig extends BaseConfig {
         otherIcon = ImageProvider.get(readProperty("other.icon"));
     }
 
-    private ImageIcon getUnselectedClusterBackground(final String key){
+    private ImageIcon getUnselectedClusterBackground(final String key) {
         final ImageProvider imageProvider = new ImageProvider(readProperty(key));
         imageProvider.setSize(CLUSTER_BACKGROUND_SIZE, CLUSTER_BACKGROUND_SIZE);
         return imageProvider.get();
     }
 
-    private ImageIcon getSelectedClusterBackground(final String key){
+    private ImageIcon getSelectedClusterBackground(final String key) {
         final ImageProvider imageProvider = new ImageProvider(readProperty(key));
         imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
         return imageProvider.get();

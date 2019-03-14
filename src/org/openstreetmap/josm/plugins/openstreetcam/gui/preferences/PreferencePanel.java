@@ -142,9 +142,9 @@ class PreferencePanel extends JPanel {
                 .build(GuiConfig.getInstance().getPrefAggregatedDisplayColorCodedLbl(), new SelectionListener(),
                         Font.PLAIN, settings.isDisplayColorCoded(), true);
         add(cbDisplayColorBased, Constraints.CB_DISPLAY_COLOR_CODED);
-        add(LabelBuilder
-                .build(GuiConfig.getInstance().getPrefAggregatedLegendLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
-                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_DISPLAY_COLOR_LEGEND);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAggregatedLegendLbl(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_DISPLAY_COLOR_LEGEND);
         final LegendTable legendTable = new LegendTable();
         add(legendTable.getComponent(), TABLE_DISPLAY_COLOR_LEGEND);
     }
