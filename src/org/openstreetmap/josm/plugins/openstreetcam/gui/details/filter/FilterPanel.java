@@ -37,7 +37,7 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -117,7 +117,7 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
-            addConfidenceLevelFilter(filter.getDetectionFilter().getConfidenceLevel());
+            addConfidenceLevelFilter(filter.getDetectionFilter().getConfidenceLevelFilter());
             addRegionFilter(filter.getDetectionFilter().getRegion());
             addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(),
                     filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion());
@@ -218,13 +218,13 @@ class FilterPanel extends JPanel {
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
     }
 
-    private void addConfidenceLevelFilter(final ConfidenceLevel confidenceLevel) {
+    private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceLbl(), Font.BOLD),
                 Constraints.LBL_CONFIDENCE_LEVEL);
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
                 Constraints.LBL_MIN_CONFIDENCE_LEVEL);
         final String min =
-                confidenceLevel.getMinConfidenceLevel() != null ? confidenceLevel.getMinConfidenceLevel().toString() :
+                confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
                         "";
         minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
         minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
@@ -232,7 +232,7 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
                 Constraints.LBL_MAX_CONFIDENCE_LEVEL);
         final String max =
-                confidenceLevel.getMaxConfidenceLevel() != null ? confidenceLevel.getMaxConfidenceLevel().toString() :
+                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
                         "";
         maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
         maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
@@ -332,10 +332,10 @@ class FilterPanel extends JPanel {
             final List<String> signTypes = detectionTypeList.getSelectedTypes();
             final List<Sign> signValues = detectionTypeList.getSelectedValues();
             final String region = selectedRegion();
-            final ConfidenceLevel confidenceLevel = selectedConfidenceLevel();
+            final ConfidenceLevelFilter confidenceLevelFilter = selectedConfidenceLevel();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes,
                     new DetectionFilter(selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes,
-                            region, confidenceLevel));
+                            region, confidenceLevelFilter));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -409,8 +409,8 @@ class FilterPanel extends JPanel {
         return region;
     }
 
-    private ConfidenceLevel selectedConfidenceLevel() {
-        ConfidenceLevel result;
+    private ConfidenceLevelFilter selectedConfidenceLevel() {
+        ConfidenceLevelFilter result;
         Double minConfidence = null;
         Double maxConfidence = null;
 
@@ -421,9 +421,9 @@ class FilterPanel extends JPanel {
             maxConfidence = Double.parseDouble(maxConfidenceLvl.getText());
         }
         if (minConfidence != null && maxConfidence != null && minConfidence > maxConfidence) {
-            result = new ConfidenceLevel(maxConfidence, minConfidence);
+            result = new ConfidenceLevelFilter(maxConfidence, minConfidence);
         } else {
-            result = new ConfidenceLevel(minConfidence, maxConfidence);
+            result = new ConfidenceLevelFilter(minConfidence, maxConfidence);
         }
         return result; 
     }

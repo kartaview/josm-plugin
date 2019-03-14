@@ -184,6 +184,12 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterDetectionsLbl;
     private final String clusterComponentValueLbl;
     private final String detectionIdLbl;
+    private final String detectionConfidenceLbl;
+    private final String facingConfidenceLbl;
+    private final String positioningConfidenceLbl;
+    private final String keypointsConfidenceLbl;
+    private final String trackingConfidenceLbl;
+    private final String ocrConfidenceLbl;
     private final String detectionTrackingIdLbl;
     private final String clusterLaneCountText;
 
@@ -354,6 +360,12 @@ public final class GuiConfig extends BaseConfig {
         clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
         detectionIdLbl = readProperty("detection.id");
         detectionTrackingIdLbl = readProperty("detection.tracking.id");
+        detectionConfidenceLbl = readProperty("detection.confidence.detection");
+        facingConfidenceLbl = readProperty("detection.confidence.facing");
+        positioningConfidenceLbl = readProperty("detection.confidece.positioning");
+        keypointsConfidenceLbl = readProperty("detection.confidence.keypoints");
+        trackingConfidenceLbl = readProperty("detection.confidence.tracking");
+        ocrConfidenceLbl = readProperty("detection.confidence.ocr");
         clusterLaneCountText = readProperty("cluster.lane.count.text");
 
         clusterTableHeader = readPropertiesArray("cluster.table.header");
@@ -945,6 +957,30 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionIdLbl() {
         return detectionIdLbl;
+    }
+
+    public String getDetectionConfidenceLbl() {
+        return detectionConfidenceLbl;
+    }
+
+    public String getFacingConfidenceLbl() {
+        return facingConfidenceLbl;
+    }
+
+    public String getPositioningConfidenceLbl() {
+        return positioningConfidenceLbl;
+    }
+
+    public String getKeypointsConfidenceLbl() {
+        return keypointsConfidenceLbl;
+    }
+
+    public String getTrackingConfidenceLbl() {
+        return trackingConfidenceLbl;
+    }
+
+    public String getOcrConfidenceLbl() {
+        return ocrConfidenceLbl;
     }
 
     public String getDetectionTrackingIdLbl() {
