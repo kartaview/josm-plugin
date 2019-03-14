@@ -67,7 +67,7 @@ final class Constraints {
     static final GridBagConstraints LBL_DISPLAY_COLOR_LEGEND = new GridBagConstraints(0, 15, 1, 1, 0, 0,
             GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
-    static final GridBagConstraints TABLE_DISPLAY_COLOR_LEGEND = new GridBagConstraints(0, 16, 1, 1, 0, 0,
+    static final GridBagConstraints TABLE_DISPLAY_COLOR_LEGEND = new GridBagConstraints(0, 16, 4, 1, 0, 0,
             GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
     static final GridBagConstraints LBL_TRACK = new GridBagConstraints(0, 17, 4, 1, 1, 1, GridBagConstraints.PAGE_START,

@@ -18,7 +18,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -146,7 +145,8 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder
                 .build(GuiConfig.getInstance().getPrefAggregatedLegendLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
                         SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_DISPLAY_COLOR_LEGEND);
-        add(new JTable(new LegendTableModel()), TABLE_DISPLAY_COLOR_LEGEND);
+        final LegendTable legendTable = new LegendTable();
+        add(legendTable.getComponent(), TABLE_DISPLAY_COLOR_LEGEND);
     }
 
     private void createTrackVisualizationSettings(final PreferenceSettings settings) {
