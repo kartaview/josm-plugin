@@ -35,6 +35,7 @@ public class Detection implements Comparable<Detection> {
     private Float angleFromCenter;
     private Float orientation;
     private Long trackingId;
+    private ConfidenceLevel confidenceLevel;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -119,6 +120,10 @@ public class Detection implements Comparable<Detection> {
 
     public Long getTrackingId() {
         return trackingId;
+    }
+
+    public ConfidenceLevel getConfidenceLevel() {
+        return confidenceLevel;
     }
 
     @Override
