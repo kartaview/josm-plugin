@@ -310,7 +310,9 @@ class PaintHandler {
             final boolean isSelected) {
         final Point point = mapView.getPoint(detection.getPoint());
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign(), isSelected);
-        PaintManager.drawIcon(graphics, icon, point);
+        if (Util.containsLatLon(mapView, detection.getPoint())) {
+            PaintManager.drawIcon(graphics, icon, point);
+        }
     }
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
