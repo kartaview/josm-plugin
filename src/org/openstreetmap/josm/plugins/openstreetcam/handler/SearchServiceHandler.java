@@ -187,7 +187,7 @@ class SearchServiceHandler {
             result = apolloService.searchDetections(area, date, osmUserId, detectionFilter);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadDetectionsSearchErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
                 PreferenceManager.getInstance().saveDetectionsSearchErrorSuppressFlag(flag);
             }
         }
@@ -206,7 +206,7 @@ class SearchServiceHandler {
             result = apolloService.searchClusters(area, date, detectionFilter);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadClustersSearchErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveClustersSearchErrorSuppressFlag(flag);
             }
         }
