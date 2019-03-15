@@ -10,14 +10,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -26,6 +18,13 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 
 
 /**
@@ -75,8 +74,8 @@ class LegendTable {
     private void initColumnSizes() {
         final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         for (int i = 0; i < model.getColumnCount(); i++) {
-            TableColumn column = legendTable.getColumnModel().getColumn(i);
-            int textWidth = (int) (font.getStringBounds(model.getColumnName(i), frc).getWidth());
+            final TableColumn column = legendTable.getColumnModel().getColumn(i);
+            final int textWidth = (int) (font.getStringBounds(model.getColumnName(i), frc).getWidth());
             column.setPreferredWidth(textWidth);
         }
 
@@ -84,11 +83,13 @@ class LegendTable {
 
     private class LegendTableModel extends AbstractTableModel {
 
+        private static final long serialVersionUID = 1L;
+
         private final String[] columnNames = GuiConfig.getInstance().getPrefAggregatedLegendHeaders();
 
         private final Object[][] data =
-                { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "", "", "", "", "", "", "", "", "",
-                        "" } };
+            { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "", "", "", "", "", "", "", "", "",
+            "" } };
 
 
         @Override
@@ -102,7 +103,7 @@ class LegendTable {
         }
 
         @Override
-        public String getColumnName(int col) {
+        public String getColumnName(final int col) {
             return columnNames[col];
         }
 
@@ -112,13 +113,15 @@ class LegendTable {
         }
 
         @Override
-        public Class getColumnClass(int c) {
+        public Class<String> getColumnClass(final int c) {
             return String.class;
         }
     }
 
 
     private class LegendTableRenderer extends JLabel implements TableCellRenderer {
+
+        private static final long serialVersionUID = 1L;
 
         private LegendTableRenderer() {
             setOpaque(true);
@@ -130,7 +133,7 @@ class LegendTable {
             if (column > 0) {
                 setBackground(colors.get(column - 1));
             } else {
-                Component firstCell = table.getTableHeader().getDefaultRenderer()
+                final Component firstCell = table.getTableHeader().getDefaultRenderer()
                         .getTableCellRendererComponent(table, value, isSelected, hasFocus, 0, 0);
                 firstCell.setBackground(Color.WHITE);
                 firstCell.setFont(font);
