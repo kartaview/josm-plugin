@@ -43,6 +43,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.ClusterBackgroundIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
@@ -312,8 +313,8 @@ class PaintHandler {
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
             final Photo selectedPhoto, final boolean isSelected) {
+        final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
         if (isSelected) {
-            final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
             if (clusterSettings != null && clusterSettings.isDisplayDetectionLocations()) {
                 if (cluster.getDetections() != null && cluster.getPhotos() != null) {
                     drawClusterData(graphics, mapView, cluster, selectedPhoto);
@@ -325,7 +326,7 @@ class PaintHandler {
             }
         }
         if (Util.containsLatLon(mapView, cluster.getPoint())) {
-            drawClusterIcon(graphics, mapView, cluster, isSelected);
+            drawClusterIcon(graphics, mapView, cluster, isSelected, clusterSettings.isDisplayColorCoded());
         }
     }
 
@@ -365,9 +366,9 @@ class PaintHandler {
     }
 
     private void drawClusterIcon(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
-            final boolean isSelected) {
-        final ImageIcon backgroundIcon = isSelected ? IconConfig.getInstance().getClusterBackgroundSelectedIcon()
-                : IconConfig.getInstance().getClusterBackgroundIcon();
+            final boolean isSelected, final boolean isColorCoded) {
+        final ImageIcon backgroundIcon =
+                ClusterBackgroundIconFactory.INSTANCE.getClusterBackground(cluster, isSelected, isColorCoded);
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(cluster.getSign(), false);
         double bearing = 0;
         final Point point = mapView.getPoint(cluster.getPoint());

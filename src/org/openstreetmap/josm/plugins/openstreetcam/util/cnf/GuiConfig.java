@@ -41,6 +41,10 @@ public final class GuiConfig extends BaseConfig {
     private final String prefAggregatedLbl;
     private final String prefAggregatedDisplayDetectionLbl;
     private final String prefAggregatedDisplayTagsLbl;
+    private final String prefAggregatedDisplayColorCodedLbl;
+    private final String prefAggregatedLegendLbl;
+    private final String[] prefAggregatedLegendHeader;
+    private final String pregAggregatedLegendHeaderColor;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -215,6 +219,10 @@ public final class GuiConfig extends BaseConfig {
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
+        prefAggregatedDisplayColorCodedLbl = readProperty("preference.aggregated.colorCoded");
+        prefAggregatedLegendLbl = readProperty("preference.aggregated.legend");
+        prefAggregatedLegendHeader = readPropertiesArray("preference.aggregated.legend.header");
+        pregAggregatedLegendHeaderColor = readProperty("preference.aggregated.legend.header.color");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -437,6 +445,22 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefAggregatedDisplayTagsLbl() {
         return prefAggregatedDisplayTagsLbl;
+    }
+
+    public String getPrefAggregatedDisplayColorCodedLbl() {
+        return prefAggregatedDisplayColorCodedLbl;
+    }
+
+    public String getPrefAggregatedLegendLbl() {
+        return prefAggregatedLegendLbl;
+    }
+
+    public String[] getPrefAggregatedLegendHeaders() {
+        return prefAggregatedLegendHeader;
+    }
+
+    public String getPregAggregatedLegendHeaderColor() {
+        return pregAggregatedLegendHeaderColor;
     }
 
     public String getPrefTrackLbl() {

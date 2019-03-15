@@ -19,6 +19,7 @@ public class ClusterSettings {
 
     private final boolean displayDetectionLocations;
     private final boolean displayTags;
+    private final boolean displayColorCoded;
 
     /**
      * Builds a new object with the arguments.
@@ -26,9 +27,10 @@ public class ClusterSettings {
      * @param displayDetectionLocations specifies if detection locations should be displayed when selecting an
      * aggregated detection
      */
-    public ClusterSettings(final boolean displayDetectionLocations, final boolean displayTags) {
+    public ClusterSettings(final boolean displayDetectionLocations, final boolean displayTags, final boolean displayColorCoded) {
         this.displayDetectionLocations = displayDetectionLocations;
         this.displayTags = displayTags;
+        this.displayColorCoded = displayColorCoded;
     }
 
     public boolean isDisplayDetectionLocations() {
@@ -37,5 +39,9 @@ public class ClusterSettings {
 
     public boolean isDisplayTags() {
         return displayTags;
+    }
+
+    public boolean isDisplayColorCoded() {
+        return displayColorCoded;
     }
 }

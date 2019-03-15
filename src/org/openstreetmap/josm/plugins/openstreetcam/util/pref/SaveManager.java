@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_COLOR_CODED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
@@ -262,6 +263,7 @@ final class SaveManager {
     void saveClusterSettings(final ClusterSettings aggregatedSettings) {
         Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());
         Preferences.main().putBoolean(DISPLAY_TAGS, aggregatedSettings.isDisplayTags());
+        Preferences.main().putBoolean(DISPLAY_COLOR_CODED, aggregatedSettings.isDisplayColorCoded());
     }
 
     void saveTrackSettings(final SequenceSettings trackSettings) {
