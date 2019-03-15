@@ -43,6 +43,18 @@ public final class GuiConfig extends BaseConfig {
     private final String prefAggregatedDisplayTagsLbl;
     private final String prefAggregatedDisplayColorCodedLbl;
     private final String prefAggregatedLegendLbl;
+    private final String prefAggregatedLegendHeaderInterval;
+    private final String prefAggregatedLegendHeaderRange1;
+    private final String prefAggregatedLegendHeaderRange2;
+    private final String prefAggregatedLegendHeaderRange3;
+    private final String prefAggregatedLegendHeaderRange4;
+    private final String prefAggregatedLegendHeaderRange5;
+    private final String prefAggregatedLegendHeaderRange6;
+    private final String prefAggregatedLegendHeaderRange7;
+    private final String prefAggregatedLegendHeaderRange8;
+    private final String prefAggregatedLegendHeaderRange9;
+    private final String prefAggregatedLegendHeaderRange10;
+    private final String pregAggregatedLegendHeaderColor;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -219,6 +231,18 @@ public final class GuiConfig extends BaseConfig {
         prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
         prefAggregatedDisplayColorCodedLbl = readProperty("preference.aggregated.colorCoded");
         prefAggregatedLegendLbl = readProperty("preference.aggregated.legend");
+        prefAggregatedLegendHeaderInterval = readProperty("preference.aggregated.legend.header.interval");
+        prefAggregatedLegendHeaderRange1 = readProperty("preference.aggregated.legend.header.range1");
+        prefAggregatedLegendHeaderRange2 = readProperty("preference.aggregated.legend.header.range2");
+        prefAggregatedLegendHeaderRange3 = readProperty("preference.aggregated.legend.header.range3");
+        prefAggregatedLegendHeaderRange4 = readProperty("preference.aggregated.legend.header.range4");
+        prefAggregatedLegendHeaderRange5 = readProperty("preference.aggregated.legend.header.range5");
+        prefAggregatedLegendHeaderRange6 = readProperty("preference.aggregated.legend.header.range6");
+        prefAggregatedLegendHeaderRange7 = readProperty("preference.aggregated.legend.header.range7");
+        prefAggregatedLegendHeaderRange8 = readProperty("preference.aggregated.legend.header.range8");
+        prefAggregatedLegendHeaderRange9 = readProperty("preference.aggregated.legend.header.range9");
+        prefAggregatedLegendHeaderRange10 = readProperty("preference.aggregated.legend.header.range10");
+        pregAggregatedLegendHeaderColor = readProperty("preference.aggregated.legend.header.color");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -449,6 +473,17 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefAggregatedLegendLbl() {
         return prefAggregatedLegendLbl;
+    }
+
+    public String[] getPrefAggregatedLegendHeaders() {
+        return new String[] { prefAggregatedLegendHeaderInterval, prefAggregatedLegendHeaderRange1,
+                prefAggregatedLegendHeaderRange2, prefAggregatedLegendHeaderRange3, prefAggregatedLegendHeaderRange4,
+                prefAggregatedLegendHeaderRange5, prefAggregatedLegendHeaderRange6, prefAggregatedLegendHeaderRange7,
+                prefAggregatedLegendHeaderRange8, prefAggregatedLegendHeaderRange9, prefAggregatedLegendHeaderRange10 };
+    }
+
+    public String getPregAggregatedLegendHeaderColor() {
+        return pregAggregatedLegendHeaderColor;
     }
 
     public String getPrefTrackLbl() {

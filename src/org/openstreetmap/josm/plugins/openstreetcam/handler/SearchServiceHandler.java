@@ -66,21 +66,21 @@ class SearchServiceHandler {
         final List<Future<List<Cluster>>> futureClusters = new ArrayList<>();
 
         for (final BoundingBox area : areas) {
-            final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO)
-                    ? executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
-                    if (futurePhotoDataSet != null) {
-                        futurePhotoDataSets.add(futurePhotoDataSet);
-                    }
-                    final Future<List<Detection>> futureDetectionList = filter.getDataTypes().contains(DataType.DETECTION)
-                            ? executorService.submit(() -> searchDetections(area, filter)) : null;
-                            if (futureDetectionList != null) {
-                                futureDetections.add(futureDetectionList);
-                            }
-                            final Future<List<Cluster>> futureClusterList = filter.getDataTypes().contains(DataType.CLUSTER)
-                                    ? executorService.submit(() -> searchClusters(area, filter)) : null;
-                                    if (futureClusterList != null) {
-                                        futureClusters.add(futureClusterList);
-                                    }
+            final Future<PhotoDataSet> futurePhotoDataSet = filter.getDataTypes().contains(DataType.PHOTO) ?
+                    executorService.submit(() -> listNearbyPhotos(area, filter, Paging.NEARBY_PHOTOS_DEAFULT)) : null;
+            if (futurePhotoDataSet != null) {
+                futurePhotoDataSets.add(futurePhotoDataSet);
+            }
+            final Future<List<Detection>> futureDetectionList = filter.getDataTypes().contains(DataType.DETECTION) ?
+                    executorService.submit(() -> searchDetections(area, filter)) : null;
+            if (futureDetectionList != null) {
+                futureDetections.add(futureDetectionList);
+            }
+            final Future<List<Cluster>> futureClusterList = filter.getDataTypes().contains(DataType.CLUSTER) ?
+                    executorService.submit(() -> searchClusters(area, filter)) : null;
+            if (futureClusterList != null) {
+                futureClusters.add(futureClusterList);
+            }
         }
         PhotoDataSet photoDataSet = null;
         try {

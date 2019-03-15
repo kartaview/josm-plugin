@@ -10,6 +10,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 
 
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,11 +33,11 @@ import java.util.List;
  *
  * @author laurad
  */
-public class LegendTable {
+class LegendTable {
 
-    final private JScrollPane tablePane;
-    final private JTable legendTable;
-    final private LegendTableModel model;
+    private final JScrollPane tablePane;
+    private final JTable legendTable;
+    private final LegendTableModel model;
     private final Color R1 = new Color(255, 0, 0);
     private final Color R2 = new Color(255, 42, 0);
     private final Color R3 = new Color(254, 91, 0);
@@ -47,8 +49,10 @@ public class LegendTable {
     private final Color R9 = new Color(91, 255, 0);
     private final Color R10 = new Color(0, 139, 0);
     private final List<Color> colors = Arrays.asList(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10);
-    private final int ROW_HEIGHT = 15;
-    private static final Dimension LEGEND_TABLE_DIM = new Dimension(13, 35);
+    private final int ROW_HEIGHT = 17;
+    private static final Dimension LEGEND_TABLE_DIM = new Dimension(13, 38);
+    private static final String FONT_NAME = "Tahoma";
+    final private Font font = new Font(FONT_NAME, Font.PLAIN, 12);
 
     LegendTable() {
         model = new LegendTableModel();
@@ -57,18 +61,19 @@ public class LegendTable {
         initColumnSizes();
         legendTable.setDefaultRenderer(String.class, new LegendTableRenderer());
         legendTable.getTableHeader().setBackground(Color.WHITE);
+        legendTable.getTableHeader().setFont(font);
+        legendTable.getTableHeader().setReorderingAllowed(false);
 
         tablePane = new JScrollPane(legendTable);
         tablePane.setPreferredSize(LEGEND_TABLE_DIM);
     }
 
-    public JScrollPane getComponent() {
+    JScrollPane getComponent() {
         return tablePane;
     }
 
     private void initColumnSizes() {
         final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
-        final Font font = new Font("Tahoma", Font.PLAIN, 12);
         for (int i = 0; i < model.getColumnCount(); i++) {
             TableColumn column = legendTable.getColumnModel().getColumn(i);
             int textWidth = (int) (font.getStringBounds(model.getColumnName(i), frc).getWidth());
@@ -79,11 +84,11 @@ public class LegendTable {
 
     private class LegendTableModel extends AbstractTableModel {
 
-        private final String[] columnNames =
-                { "Confidence interval", "0-0.1", "0.1-0.2", "0.2-0.3", "0.3-0.4", "0.4-0.5", "0.5-0.6", "0.6-0.7",
-                        "0.7-0.8", "0.8-0.9", "0.9-1" };
+        private final String[] columnNames = GuiConfig.getInstance().getPrefAggregatedLegendHeaders();
 
-        private final Object[][] data = { { "Color", "", "", "", "", "", "", "", "", "", "" } };
+        private final Object[][] data =
+                { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "", "", "", "", "", "", "", "", "",
+                        "" } };
 
 
         @Override
@@ -115,7 +120,7 @@ public class LegendTable {
 
     private class LegendTableRenderer extends JLabel implements TableCellRenderer {
 
-        LegendTableRenderer() {
+        private LegendTableRenderer() {
             setOpaque(true);
         }
 
@@ -125,7 +130,11 @@ public class LegendTable {
             if (column > 0) {
                 setBackground(colors.get(column - 1));
             } else {
-                setBackground(Color.WHITE);
+                Component firstCell = table.getTableHeader().getDefaultRenderer()
+                        .getTableCellRendererComponent(table, value, isSelected, hasFocus, 0, 0);
+                firstCell.setBackground(Color.WHITE);
+                firstCell.setFont(font);
+                return firstCell;
             }
             setText((String) model.getValueAt(row, column));
             return this;
