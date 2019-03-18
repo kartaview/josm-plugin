@@ -31,6 +31,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  *
  * @author nicoletav
  */
+
+// TODO: reorganize class - members order would be the following: static class fields, class fields
+// TODO: constructor, private methods used by constructor, other class methods, private inner classes
 class DetectionTable extends JTable implements RowSelectionObservable {
 
     private static final long serialVersionUID = 1L;
@@ -47,7 +50,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     /**
      * @param cluster represents the selected cluster from the map
      */
-
+    // TODO: re-organize constructor
     DetectionTable(final Cluster cluster) {
         super(new DetectionsTableModel(cluster.getDetections()));
         this.cluster = cluster;
@@ -63,6 +66,9 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             column.setResizable(false);
         }
 
+        // TODO: move MouseAdapter logic to a private inner class
+        // TODO: the logic of the getSelectedDetection() can be moved also to this class since it is used only by the
+        // MouseAdapter
         this.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -72,10 +78,13 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             }
         });
 
+        // TODO: check if adjustColumnSizes() method should be called only if condition meet or always (see last line
+        // from cosntructor)
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             adjustColumnSizes();
         }
 
+        // TODO: create private method for setting the keystrokes
         this.getInputMap()
         .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
         this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
@@ -91,7 +100,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         private static final long serialVersionUID = -303889953263348330L;
         private final int direction;
 
-        SelectRowAction(final int direction) {
+        private SelectRowAction(final int direction) {
             this.direction = direction;
         }
 
