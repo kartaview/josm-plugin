@@ -18,6 +18,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_A
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_BASIC_VAL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.JOSM_OAUTH_SECRET;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.MOUSE_HOVER_DELAY;
@@ -321,7 +322,7 @@ public final class PreferenceManager {
      */
     public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
         return isFiltersChangedKey(key, newValue) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || isLayerOpenedFlag(key, newValue);
+                || isLayerOpenedFlag(key, newValue) || isDataDownloadedFlag(key);
     }
 
     private boolean hasAuthMethodChanged(final String key, final String value) {
@@ -338,6 +339,10 @@ public final class PreferenceManager {
 
     private boolean isLayerOpenedFlag(final String key, final String newValue) {
         return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    private boolean isDataDownloadedFlag(final String key) {
+        return MAP_VIEW_DATA_LOAD.equals(key);
     }
 
     public boolean isDisplayDetectionLocationFlag(final String key) {
