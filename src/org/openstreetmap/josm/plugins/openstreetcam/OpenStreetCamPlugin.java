@@ -198,7 +198,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver, RowSelectionObser
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
             DetectionDetailsDialog.getInstance().clearDetailsDialog();
             OpenStreetCamLayer.destroyInstance();
-            DataSet.getInstance().clear();
+            DataSet.getInstance().clear(true);
         }
     }
 
