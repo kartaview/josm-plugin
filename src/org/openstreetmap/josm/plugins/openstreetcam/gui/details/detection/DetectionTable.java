@@ -8,14 +8,14 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.AbstractAction;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -40,7 +40,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int UPPER_ROW_MOVEMENT = -1;
     private static final int LOWER_ROW_MOVEMENT = 1;
 
-    private Cluster cluster;
+    private final Cluster cluster;
     private int tableWidth = 0;
     private RowSelectionObserver observer;
 
@@ -48,7 +48,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
      * @param cluster represents the selected cluster from the map
      */
 
-    DetectionTable(Cluster cluster) {
+    DetectionTable(final Cluster cluster) {
         super(new DetectionsTableModel(cluster.getDetections()));
         this.cluster = cluster;
 
@@ -65,8 +65,9 @@ class DetectionTable extends JTable implements RowSelectionObservable {
 
         this.addMouseListener(new MouseAdapter() {
 
-            public void mouseClicked(MouseEvent event) {
-                Detection selectedDetection = getSelectedDetection();
+            @Override
+            public void mouseClicked(final MouseEvent event) {
+                final Detection selectedDetection = getSelectedDetection();
                 notifyRowSelectionObserver(selectedDetection);
             }
         });
@@ -76,10 +77,10 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         }
 
         this.getInputMap()
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
         this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
         this.getInputMap()
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
         this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
 
         adjustColumnSizes();
@@ -87,7 +88,8 @@ class DetectionTable extends JTable implements RowSelectionObservable {
 
     private class SelectRowAction extends AbstractAction {
 
-        private int direction;
+        private static final long serialVersionUID = -303889953263348330L;
+        private final int direction;
 
         SelectRowAction(final int direction) {
             this.direction = direction;
@@ -139,7 +141,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         final List<Detection> detectionsList = cluster.getDetections();
         int index = 0;
         while (index < detectionsList.size()) {
-            long currentDetectionId = detectionsList.get(index).getId();
+            final long currentDetectionId = detectionsList.get(index).getId();
             if (currentDetectionId == selectedDetectionId) {
                 selectedDetection = detectionsList.get(index);
             }
