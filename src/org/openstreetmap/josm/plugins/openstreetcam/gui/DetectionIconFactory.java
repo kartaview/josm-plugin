@@ -7,8 +7,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -35,7 +35,7 @@ public enum DetectionIconFactory {
 
 
     private DetectionIconFactory() {
-        iconsMap = new HashMap<>();
+        iconsMap = new ConcurrentHashMap<>();
     }
 
     public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
