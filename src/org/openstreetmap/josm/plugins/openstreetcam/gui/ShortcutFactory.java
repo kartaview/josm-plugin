@@ -11,6 +11,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.tools.Shortcut;
 
@@ -30,7 +31,7 @@ public final class ShortcutFactory {
 
 
     private ShortcutFactory() {
-        shortcutMap = new HashMap<>();
+        shortcutMap = new ConcurrentHashMap<>();
         Shortcut.listAll().forEach(item -> {
             if (item.getShortText().startsWith(GuiConfig.getInstance().getPluginShortName())) {
                 shortcutMap.put(item.getShortText(), item);
