@@ -15,6 +15,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ValidationStatus;
 import com.telenav.josm.common.formatter.DateFormatter;
@@ -31,9 +32,11 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
 
     private static final long serialVersionUID = 1L;
     private static final String ZERO = "0";
-    private static final int IDX_TRACKING_ID = 9;
-    private static final double APROXIMATED_ZERO_DOUBLE = 0.0;
-    private static final float APROXIMATED_ZERO_FLOAT = 0.0f;
+    private static final String NULL_CONFIDENCE_LEVEL_TEXT = "-/-/-/-/-/-";
+    private static final String DELIMITER = "/";
+    private static final int IDX_TRACKING_ID = 10;
+    private static final double APPROXIMATED_ZERO_DOUBLE = 0.0;
+    private static final float APPROXIMATED_ZERO_FLOAT = 0.0f;
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
     private static final long MIN_DATE_VALUE = 1000000000;
 
@@ -49,16 +52,28 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
                 } else {
                     txt = value.toString();
                 }
+            } else if (value instanceof ConfidenceLevel) {
+                if (((ConfidenceLevel) value).isNotNull()) {
+                    ConfidenceLevel confidenceLevel = (ConfidenceLevel) value;
+                    txt = createConfidenceText(confidenceLevel.getDetectionConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getFacingConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getPositioningConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getKeyPointsConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getTrackingConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getOcrConfidence());
+                } else {
+                    txt = NULL_CONFIDENCE_LEVEL_TEXT;
+                }
             } else if (value instanceof ValidationStatus || value instanceof EditStatus) {
                 txt = value.toString();
             } else if (value instanceof Double) {
-                if ((double) value != APROXIMATED_ZERO_DOUBLE) {
+                if ((double) value != APPROXIMATED_ZERO_DOUBLE) {
                     txt = EntityFormatter.formatDouble((double) value, false, DecimalPattern.SHORT);
                 } else {
                     txt = ZERO;
                 }
             } else if (value instanceof Float) {
-                if ((float) value != APROXIMATED_ZERO_FLOAT) {
+                if ((float) value != APPROXIMATED_ZERO_FLOAT) {
                     final double convertedValue = (float) value;
                     txt = EntityFormatter.formatDouble(convertedValue, false, DecimalPattern.SHORT);
                 } else {
@@ -70,8 +85,21 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
                 setBorder(new MatteBorder(0, 0, 1, 1, Color.gray));
                 setFont(MainApplication.getMap().getFont().deriveFont(Font.BOLD));
             }
+
             setText(txt);
         }
         return this;
+    }
+
+    private String createConfidenceText(Double confidence) {
+        String confidenceText = "-";
+        if (confidence != null) {
+            if (confidence > APPROXIMATED_ZERO_DOUBLE) {
+                confidenceText = EntityFormatter.formatDouble(confidence, false, DecimalPattern.MEDIUM);
+            } else {
+                confidenceText = ZERO;
+            }
+        }
+        return confidenceText;
     }
 }

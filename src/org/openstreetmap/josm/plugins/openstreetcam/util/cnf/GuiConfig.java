@@ -196,6 +196,7 @@ public final class GuiConfig extends BaseConfig {
     private final String ocrConfidenceLbl;
     private final String detectionTrackingIdLbl;
     private final String clusterLaneCountText;
+    private final String clusterConfidenceLevelText;
 
     private final String[] clusterTableHeader;
 
@@ -377,6 +378,7 @@ public final class GuiConfig extends BaseConfig {
         trackingConfidenceLbl = readProperty("detection.confidence.tracking");
         ocrConfidenceLbl = readProperty("detection.confidence.ocr");
         clusterLaneCountText = readProperty("cluster.lane.count.text");
+        clusterConfidenceLevelText = readProperty("cluster.confidence.level.text");
 
         clusterTableHeader = readPropertiesArray("cluster.table.header");
 
@@ -1014,6 +1016,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getClusterLaneCountText() {
         return clusterLaneCountText;
+    }
+
+    public String getClusterConfidenceLevelText() {
+        return clusterConfidenceLevelText;
     }
 
     public String[] getClusterTableHeader() {
