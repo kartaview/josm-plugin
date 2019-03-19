@@ -8,19 +8,17 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Component;
-
-import java.util.List;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObservable;
@@ -74,11 +72,11 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     }
 
     private void setTableKeyStrokes() {
-        this.getInputMap()
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+                GuiConfig.getInstance().getNextRowSelection());
         this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
-        this.getInputMap()
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+                GuiConfig.getInstance().getPrevRowSelection());
         this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
     }
 
@@ -157,17 +155,19 @@ class DetectionTable extends JTable implements RowSelectionObservable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
-            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
-                    (getSelectedRow() > FIRST_DETECTION && direction == UPPER_ROW_MOVEMENT)) {
-                selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
+            int index = 0;
+            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT)
+                    || (getSelectedRow() > FIRST_DETECTION && direction == UPPER_ROW_MOVEMENT)) {
+                index = getSelectedRow() + direction;
             }
             if (getSelectedRow() == cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) {
-                selectedTableDetection = cluster.getDetections().get(FIRST_DETECTION);
+                index = FIRST_DETECTION;
             }
             if (getSelectedRow() == FIRST_DETECTION && direction == UPPER_ROW_MOVEMENT) {
-                selectedTableDetection = cluster.getDetections().get(cluster.getDetectionIds().size() - 1);
+                index = cluster.getDetectionIds().size() - 1;
             }
+            index = index < cluster.getDetections().size() ? index : 0;
+            final Detection selectedTableDetection = cluster.getDetections().get(index);
             notifyRowSelectionObserver(selectedTableDetection);
         }
     }
