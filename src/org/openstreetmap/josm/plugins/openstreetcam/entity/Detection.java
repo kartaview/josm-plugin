@@ -1,9 +1,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.util.Collection;
 import org.openstreetmap.josm.data.coor.LatLon;
 import com.telenav.josm.common.entity.EntityUtil;
-
-import java.util.Collection;
 
 
 /**
@@ -34,8 +33,8 @@ public class Detection implements Comparable<Detection> {
     private Float distance;
     private Float angleFromCenter;
     private Float orientation;
-    private Long trackingId;
     private ConfidenceLevel confidenceLevel;
+    private String trackingId;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -118,7 +117,7 @@ public class Detection implements Comparable<Detection> {
         return orientation;
     }
 
-    public Long getTrackingId() {
+    public String getTrackingId() {
         return trackingId;
     }
 

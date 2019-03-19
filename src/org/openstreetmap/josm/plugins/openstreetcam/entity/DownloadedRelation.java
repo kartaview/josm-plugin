@@ -46,15 +46,17 @@ public class DownloadedRelation extends OsmElement {
     public void translateIdenticalMembers() {
         for (int i = 1; i < downloadedMembers.size(); i++) {
             if (downloadedMembers.get(i).getMatchedFromNode()
-                    .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedFromNode())
-                    && downloadedMembers.get(i).getMatchedToNode()
+                    .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedFromNode()) && downloadedMembers
+                    .get(i).getMatchedToNode()
                     .hasEqualSemanticAttributes(downloadedMembers.get(i - 1).getMatchedToNode())) {
-                downloadedMembers.get(i)
-                .setMatchedFromCoordinates(new LatLon(downloadedMembers.get(i).getMatchedFromNode().lat(),
-                        downloadedMembers.get(i).getMatchedFromNode().lon() + TRANSLATION));
-                downloadedMembers.get(i)
-                .setMatchedToCoordinates(new LatLon(downloadedMembers.get(i).getMatchedToNode().lat(),
-                        downloadedMembers.get(i).getMatchedToNode().lon() + TRANSLATION));
+                downloadedMembers.get(i).setMatchedFromCoordinates(
+                        new LatLon(downloadedMembers.get(i).getMatchedFromNode().lat(),
+                                downloadedMembers.get(i).getMatchedFromNode().lon() + TRANSLATION));
+                downloadedMembers.get(i).setMatchedToCoordinates(
+                        new LatLon(downloadedMembers.get(i).getMatchedToNode().lat(),
+                                downloadedMembers.get(i).getMatchedToNode().lon() + TRANSLATION));
+                downloadedMembers.get(i).getDownloadedNodes().parallelStream()
+                        .forEach(node -> node.setCoor(new LatLon(node.lat(), node.lon() + TRANSLATION)));
             }
         }
     }

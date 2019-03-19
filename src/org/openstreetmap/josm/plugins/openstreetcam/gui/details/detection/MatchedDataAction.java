@@ -11,6 +11,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
@@ -52,32 +53,35 @@ final class MatchedDataAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        Collection<OsmElement> osmElements = isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements() :
-                DataSet.getInstance().getSelectedDetection().getOsmElements();
-        Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                OsmDataHandler.retrieveServerObjects(osmElements);
-        if (result.isPresent()) {
-            List<OsmElement> downloadedData = new ArrayList<>();
-            for (OsmElement element : osmElements) {
-                switch (element.getType()) {
-                    case NODE:
-                        handleNode(result.get(), downloadedData, element);
-                        break;
-                    case WAY:
-                        handleWay(result.get(), downloadedData, element);
-                        break;
-                    case WAY_SECTION:
-                        handleWaySection(result.get(), downloadedData, element);
-                        break;
-                    case RELATION:
-                        handleRelation(result.get(), downloadedData, element);
-                        break;
+        if (DataSet.getInstance().hasSelectedDetection() || DataSet.getInstance().hasSelectedCluster()) {
+            Collection<OsmElement> osmElements =
+                    isCluster ? DataSet.getInstance().getSelectedCluster().getOsmElements() :
+                            DataSet.getInstance().getSelectedDetection().getOsmElements();
+            Optional<org.openstreetmap.josm.data.osm.DataSet> result =
+                    OsmDataHandler.retrieveServerObjects(osmElements);
+            if (result.isPresent()) {
+                List<OsmElement> downloadedData = new ArrayList<>();
+                for (OsmElement element : osmElements) {
+                    switch (element.getType()) {
+                        case NODE:
+                            handleNode(result.get(), downloadedData, element);
+                            break;
+                        case WAY:
+                            handleWay(result.get(), downloadedData, element, true);
+                            break;
+                        case WAY_SECTION:
+                            handleWaySection(result.get(), downloadedData, element, true);
+                            break;
+                        case RELATION:
+                            handleRelation(result.get(), downloadedData, element);
+                            break;
+                    }
                 }
-            }
 
-            if (!downloadedData.isEmpty()) {
-                DataSet.getInstance().setMatchedData(downloadedData);
-                OpenStreetCamLayer.getInstance().invalidate();
+                if (!downloadedData.isEmpty()) {
+                    DataSet.getInstance().setMatchedData(downloadedData);
+                    OpenStreetCamLayer.getInstance().invalidate();
+                }
             }
         }
     }
@@ -97,9 +101,9 @@ final class MatchedDataAction extends JosmAction {
         if (element.getMembers() != null) {
             for (OsmElement member : element.getMembers()) {
                 if (member.getType() == OsmElementType.WAY_SECTION) {
-                    handleWaySection(result, downloadedWays, member);
+                    handleWaySection(result, downloadedWays, member, false);
                 } else if (member.getType() == OsmElementType.WAY) {
-                    handleWay(result, downloadedWays, member);
+                    handleWay(result, downloadedWays, member, false);
                 }
             }
             if (element.getMembers().size() == downloadedWays.size()) {
@@ -107,6 +111,16 @@ final class MatchedDataAction extends JosmAction {
                     downloadedRelation.addMember((DownloadedWay) downloadedWay);
                 }
                 downloadedData.add(downloadedRelation);
+            } else {
+                StringBuilder errorMessage = new StringBuilder("The relation defined by: \n");
+                for (OsmElement member : element.getMembers()) {
+                    errorMessage.append(member.getTag()).append(" member - ").append(member.getFromId()).append(" , ")
+                            .append(member.getToId()).append(" -\n");
+                }
+                errorMessage.append("was not found in the map.");
+                SwingUtilities.invokeLater(() -> JOptionPane
+                        .showMessageDialog(MainApplication.getMainPanel(), errorMessage.toString(),
+                                GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
             }
         }
     }
@@ -120,16 +134,18 @@ final class MatchedDataAction extends JosmAction {
      * @param element - the OsmElement of type WAY to be matched in the service result
      */
     private void handleWay(final org.openstreetmap.josm.data.osm.DataSet result, final List<OsmElement> downloadedData,
-            final OsmElement element) {
+            final OsmElement element, final boolean handleError) {
         if (element.getOsmId() != null) {
             Way downloadedWay =
                     (Way) result.getPrimitiveById(new SimplePrimitiveId(element.getOsmId(), OsmPrimitiveType.WAY));
             if (downloadedWay == null) {
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                        "Way " + element.getOsmId() + " was not found in the map.",
-                        GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
+                if (handleError) {
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                            "Way " + element.getOsmId() + " was not found in the map.",
+                            GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
+                }
             } else {
-                downloadedData.add(new DownloadedWay(element, downloadedWay.getNodes()));
+                downloadedData.add(new DownloadedWay(element, downloadedWay));
             }
         }
     }
@@ -143,19 +159,23 @@ final class MatchedDataAction extends JosmAction {
      * @param element - the OsmElement of type WAY_SECTION to be matched in the service result
      */
     private void handleWaySection(final org.openstreetmap.josm.data.osm.DataSet result,
-            final List<OsmElement> downloadedData, final OsmElement element) {
+            final List<OsmElement> downloadedData, final OsmElement element, final boolean handleError) {
         if (element.getFromId() != null && element.getToId() != null) {
             Node fromPrimitive =
                     (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getFromId(), OsmPrimitiveType.NODE));
             Node toPrimitive =
                     (Node) result.getPrimitiveById(new SimplePrimitiveId(element.getToId(), OsmPrimitiveType.NODE));
+            Way downloadedWay =
+                    (Way) result.getPrimitiveById(new SimplePrimitiveId(element.getOsmId(), OsmPrimitiveType.WAY));
             if (fromPrimitive == null || toPrimitive == null) {
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                        "The way section defined by ( " + element.getFromId() + "," + element.getToId()
-                                + ") was not found in the map.",
-                        GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
+                if (handleError) {
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                            "The way section defined by ( " + element.getFromId() + "," + element.getToId()
+                                    + ") was not found in the map.", GuiConfig.getInstance().getWarningTitle(),
+                            JOptionPane.WARNING_MESSAGE));
+                }
             } else {
-                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive));
+                downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive, downloadedWay));
             }
         }
     }
@@ -179,6 +199,7 @@ final class MatchedDataAction extends JosmAction {
                         GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
             } else {
                 downloadedData.add(new DownloadedNode(element, downloadedNode));
+                MainApplication.getMap().mapView.zoomTo(new LatLon(downloadedNode.lat(), downloadedNode.lon()));
             }
         }
     }
