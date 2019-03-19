@@ -91,11 +91,10 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     /**
      * Registers the observers to the corresponding UI components.
      *
-     * @param detectionChangeObserver a {@code DetectionChangeObserver} listens for the detection
-     * status/comment changes
-     * @param clusterObserver a {@code ClusterObserver} listens for the cluster next/previous photo
-     * actions
-     * @param rowSelectionObserver a {@code RowSelectionObserver} listens for the selection of a row from the clusters's table
+     * @param detectionChangeObserver a {@code DetectionChangeObserver} listens for the detection status/comment changes
+     * @param clusterObserver a {@code ClusterObserver} listens for the cluster next/previous photo actions
+     * @param rowSelectionObserver a {@code RowSelectionObserver} listens for the selection of a row from the clusters's
+     * table
      */
     public void registerObservers(final DetectionChangeObserver detectionChangeObserver,
             final ClusterObserver clusterObserver, final RowSelectionObserver rowSelectionObserver) {
@@ -137,24 +136,30 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * @param cluster a {@code Detection} object
      */
     public void updateClusterDetails(final Cluster cluster, final Detection detection) {
-        setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
-        pnlCluster.updateData(cluster);
-        pnlCluster.addSelectedDetectionToTable(detection);
-        pnlCluster.revalidate();
-        cmpInfo.setViewportView(pnlCluster);
-        pnlClusterButtons.updateUI(cluster);
-        cmpBtn.removeAll();
-        cmpBtn.add(pnlClusterButtons);
-        final boolean enableButtonPanel = cluster != null;
-        pnlClusterButtons.setVisible(enableButtonPanel);
-        cmpBtn.setVisible(enableButtonPanel);
-        cmpInfo.getViewport().revalidate();
+        if (cluster != null && cluster.equals(pnlCluster.getCluster())) {
+            // only the selected detection changed
+            pnlCluster.addSelectedDetectionToTable(detection);
+            pnlCluster.invalidate();
+        } else {
+            setTitle(GuiConfig.getInstance().getClusterDialogTitleName());
+            pnlCluster.updateData(cluster);
+            pnlCluster.addSelectedDetectionToTable(detection);
+            pnlCluster.revalidate();
+            cmpInfo.setViewportView(pnlCluster);
+            pnlClusterButtons.updateUI(cluster);
+            cmpBtn.removeAll();
+            cmpBtn.add(pnlClusterButtons);
+            final boolean enableButtonPanel = cluster != null;
+            pnlClusterButtons.setVisible(enableButtonPanel);
+            cmpBtn.setVisible(enableButtonPanel);
+            cmpInfo.getViewport().revalidate();
+        }
         cmpInfo.revalidate();
         revalidate();
         repaint();
     }
 
-    public void clearDetailsDialog(){
+    public void clearDetailsDialog() {
         updateDetectionDetails(null);
         updateClusterDetails(null, null);
     }

@@ -40,8 +40,11 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     private DetectionTable table;
     private RowSelectionObserver rowSelectionObserver;
 
+    private Cluster cluster;
+
     @Override
     protected void createComponents(final Cluster cluster) {
+        this.cluster = cluster;
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
@@ -75,7 +78,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             final int tableWidth = table.getTableWidth();
 
             table.getTableHeader()
-                    .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
+            .setBounds(new Rectangle(0, getPnlY() + INFO_TO_TABLE_EXTRA_HEIGHT, tableWidth, LINE_HEIGHT));
 
             add(table.getTableHeader());
             final int heightTableContent = detectionsNr * ROW_HEIGHT;
@@ -107,5 +110,10 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
     void registerObserver(final RowSelectionObserver rowSelectionObserver) {
         this.rowSelectionObserver = rowSelectionObserver;
+    }
+
+
+    Cluster getCluster() {
+        return cluster;
     }
 }
