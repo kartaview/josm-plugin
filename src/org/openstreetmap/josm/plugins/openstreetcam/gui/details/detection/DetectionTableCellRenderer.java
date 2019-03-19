@@ -54,12 +54,13 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
                 }
             } else if (value instanceof ConfidenceLevel) {
                 if (((ConfidenceLevel) value).isNotNull()) {
-                    txt = createConfidenceText(((ConfidenceLevel) value).getDetectionConfidence()) + DELIMITER +
-                            createConfidenceText(((ConfidenceLevel) value).getFacingConfidence()) + DELIMITER +
-                            createConfidenceText(((ConfidenceLevel) value).getPositioningConfidence()) + DELIMITER +
-                            createConfidenceText(((ConfidenceLevel) value).getKeyPointsConfidence()) + DELIMITER +
-                            createConfidenceText(((ConfidenceLevel) value).getTrackingConfidence()) + DELIMITER +
-                            createConfidenceText(((ConfidenceLevel) value).getOcrConfidence());
+                    ConfidenceLevel confidenceLevel = (ConfidenceLevel) value;
+                    txt = createConfidenceText(confidenceLevel.getDetectionConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getFacingConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getPositioningConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getKeyPointsConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getTrackingConfidence()) + DELIMITER +
+                            createConfidenceText(confidenceLevel.getOcrConfidence());
                 } else {
                     txt = NULL_CONFIDENCE_LEVEL_TEXT;
                 }

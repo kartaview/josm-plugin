@@ -11,6 +11,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import javax.swing.ListSelectionModel;
+
+import com.telenav.josm.common.formatter.DecimalPattern;
+import com.telenav.josm.common.formatter.EntityFormatter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
@@ -35,6 +38,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     private static final int LINE_HEIGHT = 25;
     private static final String EMPTY_STRING = "";
     private static final int ID_COLUMN = 0;
+    private static final double ZERO_DOUBLE = 0;
+    private static final String ZERO_STRING = "0";
 
 
     private DetectionTable table;
@@ -45,7 +50,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
-                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterComponentValueLbl(),
+                GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterConfidenceLevelText(),
+                GuiConfig.getInstance().getClusterComponentValueLbl(),
                 GuiConfig.getInstance().getClusterLaneCountText());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
@@ -54,6 +60,15 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                     DateFormatter.formatTimestamp(cluster.getLatestChangeTimestamp()), widthLbl);
         }
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
+        if (cluster.getConfidenceLevel() != null) {
+            if (cluster.getConfidenceLevel() > ZERO_DOUBLE) {
+                addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(),
+                        EntityFormatter.formatDouble(cluster.getConfidenceLevel(), false, DecimalPattern.MEDIUM),
+                        widthLbl);
+            } else {
+                addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(), ZERO_STRING, widthLbl);
+            }
+        }
         addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
 
