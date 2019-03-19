@@ -15,7 +15,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.ImageProvider.ImageSizes;
 import org.openstreetmap.josm.tools.JosmRuntimeException;
-import com.telenav.josm.common.entity.Pair;
+import org.openstreetmap.josm.tools.Pair;
 
 
 /**
@@ -39,11 +39,14 @@ public enum DetectionIconFactory {
     }
 
     public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
-        final String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
+        String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
+        iconName = iconName == null ? IconConfig.getInstance().getDetectionIconsPath() + DELIMITER + UNKNOWN_ICON_NAME
+                : iconName;
         final Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName,
                 n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
         return isSelected ? iconPair.getSecond() : iconPair.getFirst();
     }
+
 
     private ImageIcon loadIcon(final String name, final ImageSizes size) {
         final String iconPath = IconConfig.getInstance().getDetectionIconsPath() + DELIMITER + name;
