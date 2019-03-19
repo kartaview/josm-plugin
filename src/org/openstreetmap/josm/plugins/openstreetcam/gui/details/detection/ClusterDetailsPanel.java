@@ -75,6 +75,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
             addClusterTable(cluster);
+            table.requestFocusInWindow();
         }
 
         final int pnlHeight = getPnlY() + SPACE_Y;

@@ -30,7 +30,9 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
+
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
@@ -40,6 +42,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedNode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedRelation;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DownloadedWay;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -149,7 +152,7 @@ class PaintHandler {
                 for (int i = 1; i <= photos.size() - 1; i++) {
                     final Photo currentPhoto = photos.get(i);
                     // at least one of the photos is in current view draw line
-                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength, true);
+                    drawLine(graphics, mapView, prevPhoto.getPoint(), currentPhoto.getPoint(), arrowLength);
 
                     if (drawPhotos) {
                         drawPhoto(graphics, mapView, prevPhoto, false);
@@ -278,8 +281,8 @@ class PaintHandler {
 
 
     private void drawLine(final Graphics2D graphics, final MapView mapView, final LatLon start, final LatLon end,
-            final Double arrowLength, final boolean inView) {
-        if (!inView || Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
+            final Double arrowLength) {
+        if (Util.containsLatLon(mapView, start) || Util.containsLatLon(mapView, end)) {
             final Pair<Point, Point> lineGeometry = new Pair<>(mapView.getPoint(start), mapView.getPoint(end));
             if (arrowLength == null) {
                 PaintManager.drawLine(graphics, lineGeometry);
@@ -308,7 +311,9 @@ class PaintHandler {
             final boolean isSelected) {
         final Point point = mapView.getPoint(detection.getPoint());
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(detection.getSign(), isSelected);
-        PaintManager.drawIcon(graphics, icon, point);
+        if (Util.containsLatLon(mapView, detection.getPoint())) {
+            PaintManager.drawIcon(graphics, icon, point);
+        }
     }
 
     private void drawCluster(final Graphics2D graphics, final MapView mapView, final Cluster cluster,
@@ -400,25 +405,34 @@ class PaintHandler {
 
     private void drawWay(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final Color color) {
         final ClusterSettings clusterSettings = PreferenceManager.getInstance().loadClusterSettings();
-        if (way.hasNodes()) {
+        if (way.getType() == OsmElementType.WAY) {
             final List<Point> geometry =
                     way.getDownloadedNodes().stream().map(mapView::getPoint).collect(Collectors.toList());
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
         } else {
-            graphics.setColor(color);
-            graphics.setStroke(SEQUENCE_LINE);
-            drawLine(graphics, mapView, new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon()),
-                    new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon()), null, false);
+            final List<Point> geometry = new ArrayList<>();
+            for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode());
+                 i <= way.getDownloadedNodes().indexOf(way.getMatchedToNode()); i++) {
+                geometry.add(mapView.getPoint(way.getDownloadedNodes().get(i)));
+            }
+            PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
             if (clusterSettings.isDisplayTags() && way.getTag() != null) {
-                drawTag(graphics, mapView, way);
+                drawTag(graphics, mapView, way, geometry);
             }
         }
     }
 
-    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final List<Point> geometry) {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
-        final Optional<LatLon> middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        Optional<LatLon> middlePoint;
+        if(way.isStraight()) {
+            middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
+        }else{
+            final int middleIndex = (way.getDownloadedNodes().indexOf(way.getMatchedFromNode()) + way.getDownloadedNodes().indexOf(way.getMatchedToNode()))/2;
+            final Node middleNode = way.getDownloadedNodes().get(middleIndex);
+            middlePoint = Optional.of(new LatLon(middleNode.lat(), middleNode.lon()));
+        }
         if (middlePoint.isPresent()) {
             final Point textPoint = mapView.getPoint(middlePoint.get());
             final int textWidth = graphics.getFontMetrics().stringWidth(way.getTag());

@@ -1,12 +1,11 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 
 
 /**
@@ -23,7 +22,7 @@ public class DetectionTypeContent {
 
     private DetectionTypeContent() {
         if (allSigns == null) {
-            List<Sign> signs = ServiceHandler.getInstance().listSigns();
+            final List<Sign> signs = ServiceHandler.getInstance().listSigns();
             if (signs != null) {
                 allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
                 allSigns.remove(BLURRING_TYPE);

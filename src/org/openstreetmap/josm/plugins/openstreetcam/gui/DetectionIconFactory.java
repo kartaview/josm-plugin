@@ -7,8 +7,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -35,11 +35,13 @@ public enum DetectionIconFactory {
 
 
     private DetectionIconFactory() {
-        iconsMap = new HashMap<>();
+        iconsMap = new ConcurrentHashMap<>();
     }
 
     public ImageIcon getIcon(final Sign sign, final boolean isSelected) {
-        final String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
+        String iconName = sign.getType().equals(SIGN_POST_TYPE) ? SIGN_POST_ICON_NAME : sign.getIconName();
+        iconName = iconName == null ? IconConfig.getInstance().getDetectionIconsPath() + DELIMITER + UNKNOWN_ICON_NAME
+                : iconName;
         final Pair<ImageIcon, ImageIcon> iconPair = iconsMap.computeIfAbsent(iconName,
                 n -> new Pair<>(loadIcon(n, ImageSizes.LARGEICON), loadIcon(n, ImageSizes.CURSOR)));
         return isSelected ? iconPair.getSecond() : iconPair.getFirst();

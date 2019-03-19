@@ -8,10 +8,14 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -27,22 +31,27 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  *
  * @author nicoletav
  */
+
+// TODO: reorganize class - members order would be the following: static class fields, class fields
+// TODO: constructor, private methods used by constructor, other class methods, private inner classes
 class DetectionTable extends JTable implements RowSelectionObservable {
 
     private static final long serialVersionUID = 1L;
     private static final int ROW_HEIGHT = 15;
     private static final int TABLE_COLUMNS_EXTRA_WIDTH = 12;
     private static final int ID_COLUMN = 0;
+    private static final int UPPER_ROW_MOVEMENT = -1;
+    private static final int LOWER_ROW_MOVEMENT = 1;
 
-    private Cluster cluster;
+    private final Cluster cluster;
     private int tableWidth = 0;
     private RowSelectionObserver observer;
 
     /**
      * @param cluster represents the selected cluster from the map
      */
-
-    DetectionTable(Cluster cluster) {
+    // TODO: re-organize constructor
+    DetectionTable(final Cluster cluster) {
         super(new DetectionsTableModel(cluster.getDetections()));
         this.cluster = cluster;
 
@@ -57,16 +66,52 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             column.setResizable(false);
         }
 
+        // TODO: move MouseAdapter logic to a private inner class
+        // TODO: the logic of the getSelectedDetection() can be moved also to this class since it is used only by the
+        // MouseAdapter
         this.addMouseListener(new MouseAdapter() {
 
-            public void mouseClicked(MouseEvent event) {
-                Detection selectedDetection = getSelectedDetection();
+            @Override
+            public void mouseClicked(final MouseEvent event) {
+                final Detection selectedDetection = getSelectedDetection();
                 notifyRowSelectionObserver(selectedDetection);
             }
         });
 
+        // TODO: check if adjustColumnSizes() method should be called only if condition meet or always (see last line
+        // from cosntructor)
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             adjustColumnSizes();
+        }
+
+        // TODO: create private method for setting the keystrokes
+        this.getInputMap()
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
+        this.getInputMap()
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
+
+        adjustColumnSizes();
+    }
+
+    private class SelectRowAction extends AbstractAction {
+
+        private static final long serialVersionUID = -303889953263348330L;
+        private final int direction;
+
+        private SelectRowAction(final int direction) {
+            this.direction = direction;
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
+            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
+                    (getSelectedRow() > 0 && direction == UPPER_ROW_MOVEMENT)) {
+                selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
+            }
+            notifyRowSelectionObserver(selectedTableDetection);
         }
     }
 
@@ -105,7 +150,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         final List<Detection> detectionsList = cluster.getDetections();
         int index = 0;
         while (index < detectionsList.size()) {
-            long currentDetectionId = detectionsList.get(index).getId();
+            final long currentDetectionId = detectionsList.get(index).getId();
             if (currentDetectionId == selectedDetectionId) {
                 selectedDetection = detectionsList.get(index);
             }
@@ -127,7 +172,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     @Override
     public void registerObserver(final RowSelectionObserver observer) {
         this.observer = observer;
-
     }
 
     @Override

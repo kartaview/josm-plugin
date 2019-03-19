@@ -9,9 +9,14 @@
 
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.tools.Geometry;
 
 
 /**
@@ -23,24 +28,29 @@ import org.openstreetmap.josm.data.osm.Node;
  */
 public class DownloadedWay extends OsmElement {
 
+    public static final int SIZE_OF_TWO_POINT_LIST = 2;
     private final Node matchedFromNode;
     private final Node matchedToNode;
     private final List<Node> downloadedNodes;
+    private final Boolean isStraight;
 
-    public DownloadedWay(final OsmElement element, final Node matchedFromNode, final Node matchedToNode) {
+    public DownloadedWay(final OsmElement element, final Node matchedFromNode, final Node matchedToNode,
+            final Way downloadedWay) {
         super(element.getOsmId(), element.getType(), element.getMembers(), element.getFromId(), element.getOsmId(),
                 element.getTag());
         this.matchedFromNode = new Node(matchedFromNode);
         this.matchedToNode = new Node(matchedToNode);
-        downloadedNodes = null;
+        this.downloadedNodes = copyNodes(downloadedWay.getNodes());
+        isStraight = determineWayStraightness(downloadedWay, matchedFromNode, matchedToNode);
     }
 
-    public DownloadedWay(final OsmElement element, final List<Node> downloadedNodes) {
+    public DownloadedWay(final OsmElement element, final Way downloadedWay) {
         super(element.getOsmId(), element.getType(), element.getMembers(), element.getFromId(), element.getOsmId(),
                 element.getTag());
-        this.downloadedNodes = downloadedNodes;
+        this.downloadedNodes = copyNodes(downloadedWay.getNodes());
         matchedToNode = null;
         matchedFromNode = null;
+        isStraight = null;
     }
 
     public Node getMatchedFromNode() {
@@ -55,8 +65,8 @@ public class DownloadedWay extends OsmElement {
         return downloadedNodes;
     }
 
-    public boolean hasNodes() {
-        return downloadedNodes != null && !downloadedNodes.isEmpty();
+    public boolean isStraight() {
+        return isStraight;
     }
 
     void setMatchedFromCoordinates(final LatLon newCoordinates) {
@@ -65,5 +75,27 @@ public class DownloadedWay extends OsmElement {
 
     void setMatchedToCoordinates(final LatLon newCoordinates) {
         matchedToNode.setCoor(newCoordinates);
+    }
+
+    private List<Node> copyNodes(final List<Node> nodes) {
+        return nodes.stream().map(Node::new).collect(Collectors.toList());
+    }
+
+    private boolean determineWayStraightness(final Way way, final Node fromNode, final Node toNode) {
+        boolean straight = true;
+        final List<Node> waySection = new ArrayList<>(way.getNodes().subList( way.getNodes().indexOf(fromNode), way.getNodes().indexOf(toNode)));
+        if(waySection.size() > SIZE_OF_TWO_POINT_LIST) {
+            List<Double> angles = new ArrayList<>();
+            for (int i = 1; i < waySection.size() - 1; i++) {
+                angles.add(Geometry.getNormalizedAngleInDegrees(
+                        Geometry.getCornerAngle(waySection.get(i - 1).getEastNorth(), waySection.get(i).getEastNorth(), waySection.get(i).getEastNorth())));
+            }
+            for (int i = 0; i < angles.size() - 2; i++) {
+                if (Math.abs(angles.get(i) - angles.get(i + 1)) > 2) {
+                    straight = false;
+                }
+            }
+        }
+        return straight;
     }
 }

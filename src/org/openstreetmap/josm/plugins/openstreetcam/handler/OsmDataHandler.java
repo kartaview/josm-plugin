@@ -32,6 +32,8 @@ import java.util.Optional;
  */
 public class OsmDataHandler {
 
+    public static final int INVALID_ID_VALUE = 0;
+
     private OsmDataHandler() {
     }
 
@@ -43,35 +45,36 @@ public class OsmDataHandler {
      */
     public static Optional<DataSet> retrieveServerObjects(final Collection<OsmElement> elements) {
         DataSet result = null;
-        MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
-        for (OsmElement element : elements) {
-            appendOsmPrimitive(reader, element);
-            if (element.getMembers() != null) {
-                for (OsmElement member : element.getMembers()) {
-                    appendOsmPrimitive(reader, member);
+        if (elements != null) {
+            MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
+            for (OsmElement element : elements) {
+                appendOsmPrimitive(reader, element);
+                if (element.getMembers() != null) {
+                    for (OsmElement member : element.getMembers()) {
+                        appendOsmPrimitive(reader, member);
+                    }
                 }
             }
+            try {
+                result = reader.parseOsm(NullProgressMonitor.INSTANCE);
+            } catch (OsmTransferException e1) {
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                        GuiConfig.getInstance().getErrorDownloadOsmData(), GuiConfig.getInstance().getWarningTitle(),
+                        JOptionPane.WARNING_MESSAGE));
+            }
         }
-        try {
-            result = reader.parseOsm(NullProgressMonitor.INSTANCE);
-        } catch (OsmTransferException e1) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
-                    "Error retrieving OSM members from the OSM service", GuiConfig.getInstance().getWarningTitle(),
-                    JOptionPane.WARNING_MESSAGE));
-        }
-
         return Optional.ofNullable(result);
     }
 
     private static void appendOsmPrimitive(final MultiFetchServerObjectReader reader, final OsmElement element) {
         switch (element.getType()) {
             case NODE:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Node(element.getOsmId()));
                 }
                 break;
             case WAY:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Way(element.getOsmId()));
                 }
                 break;
@@ -80,9 +83,12 @@ public class OsmDataHandler {
                     reader.append(new Node(element.getFromId()));
                     reader.append(new Node(element.getToId()));
                 }
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
+                    reader.append(new Way(element.getOsmId()));
+                }
                 break;
             case RELATION:
-                if (element.getOsmId() != null && element.getOsmId() > 0) {
+                if (element.getOsmId() != null && element.getOsmId() > INVALID_ID_VALUE) {
                     reader.append(new Relation(element.getOsmId()));
                 }
                 break;
