@@ -10,8 +10,8 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 import java.awt.Component;
 
 import java.util.List;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
@@ -43,7 +43,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int UPPER_ROW_MOVEMENT = -1;
     private static final int LOWER_ROW_MOVEMENT = 1;
     private static final int FIRST_DETECTION = 0;
-    private static final int FIRST_TABLE_ROW = 0;
 
     private final Cluster cluster;
     private int tableWidth = 0;
@@ -160,46 +159,25 @@ class DetectionTable extends JTable implements RowSelectionObservable {
         public void actionPerformed(final ActionEvent e) {
             Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
             if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
-                    (getSelectedRow() > FIRST_TABLE_ROW && direction == UPPER_ROW_MOVEMENT)) {
+                    (getSelectedRow() > FIRST_DETECTION && direction == UPPER_ROW_MOVEMENT)) {
                 selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
             }
             if (getSelectedRow() == cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) {
                 selectedTableDetection = cluster.getDetections().get(FIRST_DETECTION);
             }
-            if (getSelectedRow() == FIRST_TABLE_ROW && direction == UPPER_ROW_MOVEMENT) {
+            if (getSelectedRow() == FIRST_DETECTION && direction == UPPER_ROW_MOVEMENT) {
                 selectedTableDetection = cluster.getDetections().get(cluster.getDetectionIds().size() - 1);
             }
             notifyRowSelectionObserver(selectedTableDetection);
         }
     }
 
-
-    private class MouseActionsListener implements MouseListener {
+    private class MouseActionsListener extends MouseAdapter {
 
         @Override
         public void mouseClicked(final MouseEvent e) {
             final Detection selectedDetection = getSelectedDetection();
             notifyRowSelectionObserver(selectedDetection);
-        }
-
-        @Override
-        public void mousePressed(final MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(final MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseEntered(final MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(final MouseEvent e) {
-
         }
     }
 }
