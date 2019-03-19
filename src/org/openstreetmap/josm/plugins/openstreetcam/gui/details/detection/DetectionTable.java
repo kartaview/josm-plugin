@@ -8,17 +8,19 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Component;
+
+import java.util.List;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObservable;
@@ -32,8 +34,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  * @author nicoletav
  */
 
-// TODO: reorganize class - members order would be the following: static class fields, class fields
-// TODO: constructor, private methods used by constructor, other class methods, private inner classes
 class DetectionTable extends JTable implements RowSelectionObservable {
 
     private static final long serialVersionUID = 1L;
@@ -42,6 +42,8 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int ID_COLUMN = 0;
     private static final int UPPER_ROW_MOVEMENT = -1;
     private static final int LOWER_ROW_MOVEMENT = 1;
+    private static final int FIRST_DETECTION = 0;
+    private static final int FIRST_TABLE_ROW = 0;
 
     private final Cluster cluster;
     private int tableWidth = 0;
@@ -50,7 +52,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     /**
      * @param cluster represents the selected cluster from the map
      */
-    // TODO: re-organize constructor
     DetectionTable(final Cluster cluster) {
         super(new DetectionsTableModel(cluster.getDetections()));
         this.cluster = cluster;
@@ -66,53 +67,20 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             column.setResizable(false);
         }
 
-        // TODO: move MouseAdapter logic to a private inner class
-        // TODO: the logic of the getSelectedDetection() can be moved also to this class since it is used only by the
-        // MouseAdapter
-        this.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(final MouseEvent event) {
-                final Detection selectedDetection = getSelectedDetection();
-                notifyRowSelectionObserver(selectedDetection);
-            }
-        });
-
-        // TODO: check if adjustColumnSizes() method should be called only if condition meet or always (see last line
-        // from cosntructor)
+        this.addMouseListener(new MouseActionsListener());
+        this.setTableKeyStrokes();
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             adjustColumnSizes();
         }
-
-        // TODO: create private method for setting the keystrokes
-        this.getInputMap()
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
-        this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
-        this.getInputMap()
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
-        this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
-
-        adjustColumnSizes();
     }
 
-    private class SelectRowAction extends AbstractAction {
-
-        private static final long serialVersionUID = -303889953263348330L;
-        private final int direction;
-
-        private SelectRowAction(final int direction) {
-            this.direction = direction;
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
-            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
-                    (getSelectedRow() > 0 && direction == UPPER_ROW_MOVEMENT)) {
-                selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
-            }
-            notifyRowSelectionObserver(selectedTableDetection);
-        }
+    private void setTableKeyStrokes() {
+        this.getInputMap()
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), GuiConfig.getInstance().getNextRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getNextRowSelection(), new SelectRowAction(LOWER_ROW_MOVEMENT));
+        this.getInputMap()
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), GuiConfig.getInstance().getPrevRowSelection());
+        this.getActionMap().put(GuiConfig.getInstance().getPrevRowSelection(), new SelectRowAction(UPPER_ROW_MOVEMENT));
     }
 
     private void adjustColumnSizes() {
@@ -177,5 +145,61 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     @Override
     public void notifyRowSelectionObserver(final Detection detection) {
         observer.selectDetectionFromTable(detection);
+    }
+
+    private class SelectRowAction extends AbstractAction {
+
+        private static final long serialVersionUID = -303889953263348330L;
+        private final int direction;
+
+        private SelectRowAction(final int direction) {
+            this.direction = direction;
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            Detection selectedTableDetection = cluster.getDetections().get(getSelectedRow());
+            if ((getSelectedRow() < cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) ||
+                    (getSelectedRow() > FIRST_TABLE_ROW && direction == UPPER_ROW_MOVEMENT)) {
+                selectedTableDetection = cluster.getDetections().get(getSelectedRow() + direction);
+            }
+            if (getSelectedRow() == cluster.getDetectionIds().size() - 1 && direction == LOWER_ROW_MOVEMENT) {
+                selectedTableDetection = cluster.getDetections().get(FIRST_DETECTION);
+            }
+            if (getSelectedRow() == FIRST_TABLE_ROW && direction == UPPER_ROW_MOVEMENT) {
+                selectedTableDetection = cluster.getDetections().get(cluster.getDetectionIds().size() - 1);
+            }
+            notifyRowSelectionObserver(selectedTableDetection);
+        }
+    }
+
+
+    private class MouseActionsListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(final MouseEvent e) {
+            final Detection selectedDetection = getSelectedDetection();
+            notifyRowSelectionObserver(selectedDetection);
+        }
+
+        @Override
+        public void mousePressed(final MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(final MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(final MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(final MouseEvent e) {
+
+        }
     }
 }
