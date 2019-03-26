@@ -8,7 +8,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public enum OsmComparison {
 
-    SAME, NEW, CHANGED, UNKNOWN;
+    SAME, NEW, CHANGED, UNKNOWN, IMPLIED;
 
     @Override
     public String toString() {
