@@ -48,8 +48,8 @@ class LegendTable {
     private final Color R9 = new Color(91, 255, 0);
     private final Color R10 = new Color(0, 139, 0);
     private final List<Color> colors = Arrays.asList(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10);
-    private final int ROW_HEIGHT = 17;
-    private static final Dimension LEGEND_TABLE_DIM = new Dimension(13, 38);
+    private final int ROW_HEIGHT = 15;
+    private final int TABLE_WIDTH = 13;
     private static final String FONT_NAME = "Tahoma";
     final private Font font = new Font(FONT_NAME, Font.PLAIN, 12);
 
@@ -62,9 +62,10 @@ class LegendTable {
         legendTable.getTableHeader().setBackground(Color.WHITE);
         legendTable.getTableHeader().setFont(font);
         legendTable.getTableHeader().setReorderingAllowed(false);
+        legendTable.setPreferredScrollableViewportSize(new Dimension(TABLE_WIDTH, ROW_HEIGHT));
 
         tablePane = new JScrollPane(legendTable);
-        tablePane.setPreferredSize(LEGEND_TABLE_DIM);
+        tablePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     }
 
     JScrollPane getComponent() {
