@@ -35,6 +35,7 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
                 GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText(), GuiConfig.getInstance().getDetectionIdLbl(),
                 GuiConfig.getInstance().getDetectionTrackingIdLbl(),
+                GuiConfig.getInstance().getDetectionComponentValueLbl(),
                 GuiConfig.getInstance().getDetectionConfidenceLbl(), GuiConfig.getInstance().getFacingConfidenceLbl(),
                 GuiConfig.getInstance().getPositioningConfidenceLbl(),
                 GuiConfig.getInstance().getKeypointsConfidenceLbl(), GuiConfig.getInstance().getTrackingConfidenceLbl(),
@@ -61,8 +62,12 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         }
 
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), detection.getId(), widthLbl);
-        if (detection.getTrackingId() != null) {
+        if (detection.getTrackingId() != null && !detection.getTrackingId().isEmpty()) {
             addInformation(GuiConfig.getInstance().getDetectionTrackingIdLbl(), detection.getTrackingId(), widthLbl);
+        }
+        if (detection.getComponentValue() != null && !detection.getComponentValue().isEmpty()) {
+            addInformation(GuiConfig.getInstance().getDetectionComponentValueLbl(), detection.getComponentValue(),
+                    widthLbl);
         }
         if (detection.getConfidenceLevel() != null && detection.getConfidenceLevel().isNotNull()) {
             if (detection.getConfidenceLevel().getDetectionConfidence() != null) {
