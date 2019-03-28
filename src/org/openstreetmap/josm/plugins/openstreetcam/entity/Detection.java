@@ -35,6 +35,7 @@ public class Detection implements Comparable<Detection> {
     private Float orientation;
     private ConfidenceLevel confidenceLevel;
     private String trackingId;
+    private String componentValue;
 
     public Detection(final Long id, final EditStatus editStatus) {
         this.id = id;
@@ -123,6 +124,10 @@ public class Detection implements Comparable<Detection> {
 
     public ConfidenceLevel getConfidenceLevel() {
         return confidenceLevel;
+    }
+
+    public String getComponentValue() {
+        return componentValue;
     }
 
     @Override
