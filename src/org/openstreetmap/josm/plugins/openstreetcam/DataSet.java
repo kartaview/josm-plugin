@@ -395,12 +395,12 @@ public final class DataSet {
      */
     public Photo nearbyPhoto() {
         Photo result = null;
-        if (!nearbyPhotos.isEmpty()) {
+        if (nearbyPhotos != null && !nearbyPhotos.isEmpty()) {
             result = nearbyPhotos.iterator().next();
             nearbyPhotos.remove(result);
         }
         // recalculate closest photos when latest closest photo is returned
-        if (nearbyPhotos.isEmpty()) {
+        if (nearbyPhotos != null && nearbyPhotos.isEmpty() && nearyPhotosStartPhoto != null) {
             nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto,
                     Config.getInstance().getClosestPhotosMaxItems());
         }
