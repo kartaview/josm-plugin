@@ -91,6 +91,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbChangedOsmComparison;
     private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
+    private JCheckBox cbbImpliedOsmComparison;
 
     /* confidence filter*/
     private JTextField minConfidenceLvl;
@@ -216,6 +217,9 @@ class FilterPanel extends JPanel {
         cbbSameOsmComparison = CheckBoxBuilder.build(OsmComparison.SAME.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
+        cbbImpliedOsmComparison = CheckBoxBuilder.build(OsmComparison.IMPLIED.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.IMPLIED));
+        add(cbbImpliedOsmComparison, Constraints.CBB_IMPLIED_OSM_COMPARISON);
     }
 
     private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
@@ -356,6 +360,9 @@ class FilterPanel extends JPanel {
         if (cbbSameOsmComparison.isSelected()) {
             osmComparisons.add(OsmComparison.SAME);
         }
+        if (cbbImpliedOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.IMPLIED);
+        }
         return osmComparisons;
     }
 
@@ -443,6 +450,7 @@ class FilterPanel extends JPanel {
             boolean changedOsmComparisonSelected = false;
             boolean unknownOsmComparisonSelected = false;
             boolean sameOsmComparisonSelected = false;
+            boolean impliedOsmComparisonSelected = false;
             if (SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons() != null) {
                 newOsmComparisonSelected =
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW);
@@ -452,11 +460,14 @@ class FilterPanel extends JPanel {
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN);
                 sameOsmComparisonSelected =
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME);
+                impliedOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.IMPLIED);
             }
             cbbNewOsmComparison.setSelected(newOsmComparisonSelected);
             cbbChangedOsmComparison.setSelected(changedOsmComparisonSelected);
             cbbUnknownOsmComparison.setSelected(unknownOsmComparisonSelected);
             cbbSameOsmComparison.setSelected(sameOsmComparisonSelected);
+            cbbImpliedOsmComparison.setSelected(impliedOsmComparisonSelected);
             minConfidenceLvl.setText("");
             maxConfidenceLvl.setText("");
 
