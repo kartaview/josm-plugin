@@ -34,7 +34,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
     private static final String ZERO = "0";
     private static final String NULL_CONFIDENCE_LEVEL_TEXT = "-/-/-/-/-/-";
     private static final String DELIMITER = "/";
-    private static final int IDX_TRACKING_ID = 10;
+    private static final int IDX_TRACKING_ID = 2;
     private static final double APPROXIMATED_ZERO_DOUBLE = 0.0;
     private static final float APPROXIMATED_ZERO_FLOAT = 0.0f;
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
