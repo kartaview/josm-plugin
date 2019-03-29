@@ -28,7 +28,7 @@ public enum DetectionIconFactory {
     INSTANCE;
 
     private static final String DELIMITER = "/";
-    private static final String UNKNOWN_ICON_NAME = "unknown.png";
+    private static final String UNKNOWN_ICON_NAME = "unknown.svg";
     private static final String SIGN_POST_TYPE = "SIGN_POST";
     private static final String SIGN_POST_ICON_NAME = "information--highway-interchange--g1.svg";
     private final Map<String, Pair<ImageIcon, ImageIcon>> iconsMap;
