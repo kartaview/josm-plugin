@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -127,20 +128,25 @@ public final class Util {
      * @return a set of {@code Photo}
      */
     public static Collection<Photo> nearbyPhotos(final List<Photo> photos, final Photo selectedPhoto, final int size) {
-        final BBox bbox = new BBox(selectedPhoto.getPoint().getX() - RADIUS, selectedPhoto.getPoint().getY() - RADIUS,
-                selectedPhoto.getPoint().getX() + RADIUS, selectedPhoto.getPoint().getY() + RADIUS);
-        final Map<Double, Photo> candidateMap = new TreeMap<>();
-        for (final Photo photo : photos) {
-            if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getPoint()) && isPointInActiveArea(
-                    photo.getPoint())) {
-                final double dist = selectedPhoto.getPoint().distance(photo.getPoint());
-                if (dist <= MAX_DISTANCE) {
-                    candidateMap.put(dist, photo);
+        Collection<Photo> result = Collections.emptyList();
+        if (selectedPhoto != null) {
+            final BBox bbox =
+                    new BBox(selectedPhoto.getPoint().getX() - RADIUS, selectedPhoto.getPoint().getY() - RADIUS,
+                            selectedPhoto.getPoint().getX() + RADIUS, selectedPhoto.getPoint().getY() + RADIUS);
+            final Map<Double, Photo> candidateMap = new TreeMap<>();
+            for (final Photo photo : photos) {
+                if (!photo.equals(selectedPhoto) && bbox.bounds(photo.getPoint()) && isPointInActiveArea(
+                        photo.getPoint())) {
+                    final double dist = selectedPhoto.getPoint().distance(photo.getPoint());
+                    if (dist <= MAX_DISTANCE) {
+                        candidateMap.put(dist, photo);
+                    }
                 }
             }
+            result = size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size) :
+                    candidateMap.values();
         }
-        return size < candidateMap.size() ? new ArrayList<>(candidateMap.values()).subList(0, size) :
-            candidateMap.values();
+        return result;
     }
 
     /**
