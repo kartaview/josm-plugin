@@ -34,6 +34,7 @@ import javax.swing.ImageIcon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
@@ -267,14 +268,27 @@ class PaintHandler {
             final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
             final Point point = mapView.getPoint(photo.getPoint());
-            if (photo.getHeading() != null) {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
-                        : IconConfig.getInstance().getPhotoIcon();
-                PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+            if (DataSet.getInstance().getSelectedCluster() != null &&
+                    DataSet.getInstance().getSelectedCluster().getPhotos().contains(photo)) {
+                if (photo.getHeading() != null) {
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple() :
+                            IconConfig.getInstance().getPhotoUnselectedIconPurple();
+                    PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+                } else {
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple() :
+                            IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
+                    PaintManager.drawIcon(graphics, icon, point);
+                }
             } else {
-                final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
-                        : IconConfig.getInstance().getPhotoNoHeadingIcon();
-                PaintManager.drawIcon(graphics, icon, point);
+                if (photo.getHeading() != null) {
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon() :
+                            IconConfig.getInstance().getPhotoIcon();
+                    PaintManager.drawIcon(graphics, icon, point);
+                } else {
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon() :
+                            IconConfig.getInstance().getPhotoNoHeadingIcon();
+                    PaintManager.drawIcon(graphics, icon, point);
+                }
             }
         }
     }
