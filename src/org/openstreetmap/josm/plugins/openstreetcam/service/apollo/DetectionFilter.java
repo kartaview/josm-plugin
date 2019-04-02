@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
  */
 public class DetectionFilter {
 
-    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, null);
+    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, "");
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
