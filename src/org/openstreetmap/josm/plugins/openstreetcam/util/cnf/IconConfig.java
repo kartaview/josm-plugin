@@ -29,6 +29,8 @@ public final class IconConfig extends BaseConfig {
     private static final String CONFIG_FILE = "openstreetcam_icon.properties";
     private static final int CLUSTER_BACKGROUND_SIZE = 49;
     private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
+    private static final int SELECTED_ICON_SIZE = 28;
+    private static final int UNSELECTED_ICON_SIZE = 14;
 
 
     private final String pluginIconName;
@@ -44,6 +46,10 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoSelectedIcon;
     private final ImageIcon photoNoHeadingIcon;
     private final ImageIcon photoNoHeadingSelectedIcon;
+    private final ImageIcon photoSelectedIconPurple;
+    private final ImageIcon photoUnselectedIconPurple;
+    private final ImageIcon photoNoHeadingSelectedIconPurple;
+    private final ImageIcon photoNoHeadingUnselectedIconPurple;
     private final ImageIcon filterIcon;
     private final String filterIconName;
     private final Icon previousIcon;
@@ -100,10 +106,14 @@ public final class IconConfig extends BaseConfig {
         saveIconName = readProperty("save.icon");
         layerIcon = ImageProvider.get(layerIconName);
         layerIconFiltered = ImageProvider.get(readProperty("layer.icon.filtered"));
-        photoIcon = ImageProvider.get(readProperty("photo.icon"));
-        photoSelectedIcon = ImageProvider.get(readProperty("photo.sel.icon"));
-        photoNoHeadingIcon = ImageProvider.get(readProperty("photo.noHeading.icon"));
-        photoNoHeadingSelectedIcon = ImageProvider.get(readProperty("photo.noHeading.sel.icon"));
+        photoIcon = getUnselectedPhotoIcon("photo.icon");
+        photoSelectedIcon = getSelectedPhotoIcon("photo.icon");
+        photoNoHeadingIcon = getUnselectedPhotoIcon("photo.noHeading.icon");
+        photoNoHeadingSelectedIcon = getSelectedPhotoIcon("photo.noHeading.icon");
+        photoSelectedIconPurple = getSelectedPhotoIcon("photo.icon.purple");
+        photoUnselectedIconPurple = getUnselectedPhotoIcon("photo.icon.purple");
+        photoNoHeadingSelectedIconPurple = getSelectedPhotoIcon("photo.noHeading.icon.purple");
+        photoNoHeadingUnselectedIconPurple = getUnselectedPhotoIcon("photo.noHeading.icon.purple");
         filterIconName = readProperty("filter.icon");
         filterIcon = ImageProvider.get(filterIconName);
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
@@ -161,6 +171,17 @@ public final class IconConfig extends BaseConfig {
         return imageProvider.get();
     }
 
+    private ImageIcon getUnselectedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(UNSELECTED_ICON_SIZE, UNSELECTED_ICON_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getSelectedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(SELECTED_ICON_SIZE, SELECTED_ICON_SIZE);
+        return imageProvider.get();
+    }
 
     public static IconConfig getInstance() {
         return INSTANCE;
@@ -218,6 +239,26 @@ public final class IconConfig extends BaseConfig {
 
     public ImageIcon getPhotoNoHeadingSelectedIcon() {
         return photoNoHeadingSelectedIcon;
+    }
+
+    public static IconConfig getINSTANCE() {
+        return INSTANCE;
+    }
+
+    public ImageIcon getPhotoSelectedIconPurple() {
+        return photoSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoUnselectedIconPurple() {
+        return photoUnselectedIconPurple;
+    }
+
+    public ImageIcon getPhotoNoHeadingSelectedIconPurple() {
+        return photoNoHeadingSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoNoHeadingUnselectedIconPurple() {
+        return photoNoHeadingUnselectedIconPurple;
     }
 
     public ImageIcon getFilterIcon() {
