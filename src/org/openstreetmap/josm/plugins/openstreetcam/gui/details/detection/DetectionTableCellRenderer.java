@@ -42,6 +42,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
     private static final double APPROXIMATED_ZERO_DOUBLE = 0.0;
     private static final float APPROXIMATED_ZERO_FLOAT = 0.0f;
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
+    private static final MatteBorder HEADER_BORDER = new MatteBorder(0, 0, 1, 1, Color.gray);
 
     public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
             final boolean hasFocus, final int row, final int column) {
@@ -53,7 +54,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
             if (value instanceof String && headerList.contains(value)) {
                 txt = value.toString();
                 setBackground(HEADER_GRAY);
-                setBorder(new MatteBorder(0, 0, 1, 1, Color.gray));
+                setBorder(HEADER_BORDER);
                 setFont(MainApplication.getMap().getFont().deriveFont(Font.BOLD));
             } else if (value instanceof ValidationStatus || value instanceof EditStatus || column == IDX_TRACKING_ID ||
                     column == IDX_ID) {
