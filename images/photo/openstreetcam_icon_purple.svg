@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="57px" height="57px" viewBox="0 0 57 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>ic_arrow-mov</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="28.5" cy="28.5" r="28.5"></circle>
+        <filter x="-20.2%" y="-16.7%" width="140.4%" height="140.4%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.732910991   0 0 0 0 0   0 0 0 0 0.891534626  0 0 0 1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="ic_arrow-mov" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Oval">
+            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+            <circle stroke="#FFFFFF" stroke-width="4" stroke-linejoin="square" fill="#B621E0" fill-rule="evenodd" cx="28.5" cy="28.5" r="26.5"></circle>
+        </g>
+        <g id="Group" transform="translate(29.000000, 29.000000) scale(1, -1) translate(-29.000000, -29.000000) translate(16.000000, 11.000000)" fill="#FFFFFF">
+            <path d="M13,35.6358132 C16.8679018,35.6358132 26,23.4115716 26,16.1997695 C26,8.98796749 26,19.2801252 13,19.2801252 C1.84741111e-13,19.2801252 0,8.98796749 0,16.1997695 C0,23.4115716 9.13209822,35.6358132 13,35.6358132 Z" id="Oval"></path>
+            <rect id="Rectangle" x="10" y="0" width="6" height="14"></rect>
+        </g>
+    </g>
+</svg>

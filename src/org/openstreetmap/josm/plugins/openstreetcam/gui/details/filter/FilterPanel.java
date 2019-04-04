@@ -27,12 +27,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.jdesktop.swingx.JXDatePicker;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -49,6 +54,7 @@ import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
 import com.telenav.josm.common.gui.builder.DatePickerBuilder;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.telenav.josm.common.gui.builder.TextComponentBuilder;
 import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
 
 
@@ -85,6 +91,11 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbChangedOsmComparison;
     private JCheckBox cbbUnknownOsmComparison;
     private JCheckBox cbbSameOsmComparison;
+    private JCheckBox cbbImpliedOsmComparison;
+
+    /* confidence filter*/
+    private JTextField minConfidenceLvl;
+    private JTextField maxConfidenceLvl;
 
     private DetectionTypeList detectionTypeList;
     private JComboBox<String> detectionRegion;
@@ -107,6 +118,7 @@ class FilterPanel extends JPanel {
             addModeFilter(filter.getDetectionFilter().getModes());
             addEditStatusFilter(filter.getDetectionFilter().getEditStatuses());
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
+            addConfidenceLevelFilter(filter.getDetectionFilter().getConfidenceLevelFilter());
             addRegionFilter(filter.getDetectionFilter().getRegion());
             addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(),
                     filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion());
@@ -205,6 +217,30 @@ class FilterPanel extends JPanel {
         cbbSameOsmComparison = CheckBoxBuilder.build(OsmComparison.SAME.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
         add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
+        cbbImpliedOsmComparison = CheckBoxBuilder.build(OsmComparison.IMPLIED.toString(), Font.PLAIN, null,
+                osmComparisons != null && osmComparisons.contains(OsmComparison.IMPLIED));
+        add(cbbImpliedOsmComparison, Constraints.CBB_IMPLIED_OSM_COMPARISON);
+    }
+
+    private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceLbl(), Font.BOLD),
+                Constraints.LBL_CONFIDENCE_LEVEL);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
+                Constraints.LBL_MIN_CONFIDENCE_LEVEL);
+        final String min =
+                confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
+                        "";
+        minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
+        minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
+        add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
+                Constraints.LBL_MAX_CONFIDENCE_LEVEL);
+        final String max =
+                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
+                        "";
+        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
+        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
+        add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
     }
 
     private void addRegionFilter(final String region) {
@@ -240,9 +276,11 @@ class FilterPanel extends JPanel {
     private void enableDetectionFilters(final List<DataType> dataTypes) {
         boolean enableCommonFilters = false;
         boolean enableDetectionFilters = false;
+        boolean enableClusterFilters = false;
         if (dataTypes != null) {
             enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
             enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
+            enableClusterFilters = dataTypes.contains(DataType.CLUSTER);
         }
 
         // common filters
@@ -261,6 +299,10 @@ class FilterPanel extends JPanel {
         cbbMappedEditStatus.setEnabled(enableDetectionFilters);
         cbbBadSignEditStatus.setEnabled(enableDetectionFilters);
         cbbOtherEditStatus.setEnabled(enableDetectionFilters);
+
+        // cluster only filters
+        minConfidenceLvl.setEnabled(enableClusterFilters);
+        maxConfidenceLvl.setEnabled(enableClusterFilters);
     }
 
 
@@ -294,8 +336,10 @@ class FilterPanel extends JPanel {
             final List<String> signTypes = detectionTypeList.getSelectedTypes();
             final List<Sign> signValues = detectionTypeList.getSelectedValues();
             final String region = selectedRegion();
-            searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes, new DetectionFilter(
-                    selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes, region));
+            final ConfidenceLevelFilter confidenceLevelFilter = selectedConfidenceLevel();
+            searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes,
+                    new DetectionFilter(selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes,
+                            region, confidenceLevelFilter));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }
@@ -315,6 +359,9 @@ class FilterPanel extends JPanel {
         }
         if (cbbSameOsmComparison.isSelected()) {
             osmComparisons.add(OsmComparison.SAME);
+        }
+        if (cbbImpliedOsmComparison.isSelected()) {
+            osmComparisons.add(OsmComparison.IMPLIED);
         }
         return osmComparisons;
     }
@@ -369,6 +416,25 @@ class FilterPanel extends JPanel {
         return region;
     }
 
+    private ConfidenceLevelFilter selectedConfidenceLevel() {
+        ConfidenceLevelFilter result;
+        Double minConfidence = null;
+        Double maxConfidence = null;
+
+        if (minConfidenceLvl.getText() != null && !minConfidenceLvl.getText().isEmpty()) {
+            minConfidence = Double.parseDouble(minConfidenceLvl.getText());
+        }
+        if (maxConfidenceLvl.getText() != null && !maxConfidenceLvl.getText().isEmpty()) {
+            maxConfidence = Double.parseDouble(maxConfidenceLvl.getText());
+        }
+        if (minConfidence != null && maxConfidence != null && minConfidence > maxConfidence) {
+            result = new ConfidenceLevelFilter(maxConfidence, minConfidence);
+        } else {
+            result = new ConfidenceLevelFilter(minConfidence, maxConfidence);
+        }
+        return result; 
+    }
+
     /**
      * Clears the filters.
      */
@@ -384,6 +450,7 @@ class FilterPanel extends JPanel {
             boolean changedOsmComparisonSelected = false;
             boolean unknownOsmComparisonSelected = false;
             boolean sameOsmComparisonSelected = false;
+            boolean impliedOsmComparisonSelected = false;
             if (SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons() != null) {
                 newOsmComparisonSelected =
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.NEW);
@@ -393,11 +460,16 @@ class FilterPanel extends JPanel {
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.UNKNOWN);
                 sameOsmComparisonSelected =
                         SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.SAME);
+                impliedOsmComparisonSelected =
+                        SearchFilter.DEFAULT.getDetectionFilter().getOsmComparisons().contains(OsmComparison.IMPLIED);
             }
             cbbNewOsmComparison.setSelected(newOsmComparisonSelected);
             cbbChangedOsmComparison.setSelected(changedOsmComparisonSelected);
             cbbUnknownOsmComparison.setSelected(unknownOsmComparisonSelected);
             cbbSameOsmComparison.setSelected(sameOsmComparisonSelected);
+            cbbImpliedOsmComparison.setSelected(impliedOsmComparisonSelected);
+            minConfidenceLvl.setText("");
+            maxConfidenceLvl.setText("");
 
             boolean openEditStatusSelected = false;
             boolean mappedEditStatusSelected = false;
@@ -491,5 +563,54 @@ class FilterPanel extends JPanel {
             detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString());
         }
 
+    }
+
+
+    private final class ConfidenceTextFieldListener implements DocumentListener {
+
+        private final JTextField confidenceLevel;
+
+        ConfidenceTextFieldListener(final JTextField confidenceLevel) {
+            super();
+            this.confidenceLevel = confidenceLevel;
+        }
+
+        @Override
+        public void insertUpdate(final DocumentEvent e) {
+            update();
+        }
+
+        @Override
+        public void removeUpdate(final DocumentEvent e) {
+            update();
+        }
+
+        @Override
+        public void changedUpdate(final DocumentEvent e) {
+            update();
+        }
+
+        private void update() {
+            if (confidenceLevel.getText() != null && !confidenceLevel.getText().isEmpty()) {
+                try {
+                    final Double confidenceLvl = Double.parseDouble(confidenceLevel.getText());
+                    if (confidenceLvl < 0 || confidenceLvl > 1) {
+                        SwingUtilities.invokeLater(() -> {
+                            confidenceLevel.setText("");
+                            JOptionPane.showMessageDialog(confidenceLevel.getParent(),
+                                    GuiConfig.getInstance().getUnacceptedConfidenceFilterText(),
+                                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE);
+                        });
+                    }
+                } catch (final NumberFormatException ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        confidenceLevel.setText("");
+                        JOptionPane.showMessageDialog(confidenceLevel.getParent(),
+                                GuiConfig.getInstance().getIncorrectConfidenceFilterText(),
+                                GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE);
+                    });
+                }
+            }
+        }
     }
 }

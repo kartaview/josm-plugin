@@ -34,7 +34,12 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText(), GuiConfig.getInstance().getDetectionIdLbl(),
-                GuiConfig.getInstance().getDetectionTrackingIdLbl());
+                GuiConfig.getInstance().getDetectionTrackingIdLbl(),
+                GuiConfig.getInstance().getDetectionComponentValueLbl(),
+                GuiConfig.getInstance().getDetectionConfidenceLbl(), GuiConfig.getInstance().getFacingConfidenceLbl(),
+                GuiConfig.getInstance().getPositioningConfidenceLbl(),
+                GuiConfig.getInstance().getKeypointsConfidenceLbl(), GuiConfig.getInstance().getTrackingConfidenceLbl(),
+                GuiConfig.getInstance().getOcrConfidenceLbl());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), detection.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), detection.getOsmComparison(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionModeText(), detection.getMode(), widthLbl);
@@ -57,8 +62,45 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         }
 
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), detection.getId(), widthLbl);
-        if (detection.getTrackingId() != null) {
+        if (detection.getTrackingId() != null && !detection.getTrackingId().isEmpty()) {
             addInformation(GuiConfig.getInstance().getDetectionTrackingIdLbl(), detection.getTrackingId(), widthLbl);
+        }
+        if (detection.getComponentValue() != null && !detection.getComponentValue().isEmpty()) {
+            addInformation(GuiConfig.getInstance().getDetectionComponentValueLbl(), detection.getComponentValue(),
+                    widthLbl);
+        }
+        if (detection.getConfidenceLevel() != null && detection.getConfidenceLevel().isNotNull()) {
+            if (detection.getConfidenceLevel().getDetectionConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getDetectionConfidenceLbl(), EntityFormatter
+                        .formatDouble(detection.getConfidenceLevel().getDetectionConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (detection.getConfidenceLevel().getFacingConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getFacingConfidenceLbl(), EntityFormatter
+                        .formatDouble(detection.getConfidenceLevel().getFacingConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (detection.getConfidenceLevel().getPositioningConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getPositioningConfidenceLbl(), EntityFormatter
+                        .formatDouble(detection.getConfidenceLevel().getPositioningConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (detection.getConfidenceLevel().getKeyPointsConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getKeypointsConfidenceLbl(), EntityFormatter
+                        .formatDouble(detection.getConfidenceLevel().getKeyPointsConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (detection.getConfidenceLevel().getTrackingConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getTrackingConfidenceLbl(), EntityFormatter
+                        .formatDouble(detection.getConfidenceLevel().getTrackingConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (detection.getConfidenceLevel().getOcrConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(), EntityFormatter
+                                .formatDouble(detection.getConfidenceLevel().getOcrConfidence(), false, DecimalPattern.MEDIUM),
+                        widthLbl);
+            }
+
         }
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));

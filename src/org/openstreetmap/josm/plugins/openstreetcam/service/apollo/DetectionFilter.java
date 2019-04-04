@@ -11,12 +11,12 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
-import com.telenav.josm.common.entity.EntityUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
+import com.telenav.josm.common.entity.EntityUtil;
 
 
 /**
@@ -26,7 +26,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
  */
 public class DetectionFilter {
 
-    public static final DetectionFilter DEFAULT = new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, "");
+    public static final DetectionFilter DEFAULT =
+            new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, "", null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
@@ -34,17 +35,19 @@ public class DetectionFilter {
     private final List<Sign> specificSigns;
     private final List<DetectionMode> modes;
     private final String region;
+    private final ConfidenceLevelFilter confidenceLevelFilter;
 
 
     public DetectionFilter(final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
             final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes,
-            final String region) {
+            final String region, final ConfidenceLevelFilter confidenceLevelFilter) {
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
         this.specificSigns = specificSigns;
         this.modes = modes;
         this.region = region;
+        this.confidenceLevelFilter = confidenceLevelFilter;
     }
 
 
@@ -65,8 +68,8 @@ public class DetectionFilter {
     }
 
     List<String> getSignInternalNames() {
-        return specificSigns != null ?
-                specificSigns.stream().map(Sign::getInternalName).distinct().collect(Collectors.toList()) : null;
+        return specificSigns != null
+                ? specificSigns.stream().map(Sign::getInternalName).distinct().collect(Collectors.toList()) : null;
     }
 
     public List<DetectionMode> getModes() {
@@ -75,6 +78,10 @@ public class DetectionFilter {
 
     public String getRegion() {
         return region;
+    }
+
+    public ConfidenceLevelFilter getConfidenceLevelFilter() {
+        return confidenceLevelFilter;
     }
 
     public boolean containsEditStatus(final EditStatus editStatus) {
@@ -91,6 +98,7 @@ public class DetectionFilter {
         result = prime * result + EntityUtil.hashCode(specificSigns);
         result = prime * result + EntityUtil.hashCode(region);
         result = prime * result + EntityUtil.hashCode(modes);
+        result = prime * result + EntityUtil.hashCode(confidenceLevelFilter);
         return result;
     }
 
@@ -107,6 +115,7 @@ public class DetectionFilter {
             result = result && EntityUtil.bothNullOrEqual(specificSigns, other.getSpecificSigns());
             result = result && EntityUtil.bothNullOrEqual(region, other.getRegion());
             result = result && EntityUtil.bothNullOrEqual(modes, other.getModes());
+            result = result && EntityUtil.bothNullOrEqual(confidenceLevelFilter, other.getConfidenceLevelFilter());
         }
         return result;
     }

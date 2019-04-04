@@ -113,7 +113,7 @@ public class DataUpdateHandler {
     private void normalFlow(final MapViewSettings mapViewSettings, final int zoom, final boolean checkSelection,
             final boolean boundingBoxChanged) {
         final MapViewType dataType = PreferenceManager.getInstance().loadMapViewType();
-        if (zoom < mapViewSettings.getPhotoZoom()) {
+        if (zoom < mapViewSettings.getPhotoZoom() && !DataSet.getInstance().hasActiveSelection()) {
             if (dataType == null || dataType == MapViewType.ELEMENT) {
                 // user zoomed out to segment view
                 PreferenceManager.getInstance().saveMapViewType(MapViewType.COVERAGE);
@@ -132,7 +132,7 @@ public class DataUpdateHandler {
         // clear previous data type
         if (DataSet.getInstance().hasPhotos()) {
             SwingUtilities.invokeLater(() -> {
-                DataSet.getInstance().clear();
+                DataSet.getInstance().clear(false);
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 if (mapViewSettings.isManualSwitchFlag()) {
@@ -164,7 +164,7 @@ public class DataUpdateHandler {
         // clear previous data type
         if (DataSet.getInstance().hasSegments()) {
             SwingUtilities.invokeLater(() -> {
-                DataSet.getInstance().clear();
+                DataSet.getInstance().clear(false);
                 if (mapViewSettings.isManualSwitchFlag()) {
                     PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.ELEMENT, null, null);
                 }

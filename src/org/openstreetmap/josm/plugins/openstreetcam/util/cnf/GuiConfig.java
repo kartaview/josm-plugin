@@ -41,6 +41,10 @@ public final class GuiConfig extends BaseConfig {
     private final String prefAggregatedLbl;
     private final String prefAggregatedDisplayDetectionLbl;
     private final String prefAggregatedDisplayTagsLbl;
+    private final String prefAggregatedDisplayColorCodedLbl;
+    private final String prefAggregatedLegendLbl;
+    private final String[] prefAggregatedLegendHeader;
+    private final String pregAggregatedLegendHeaderColor;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -90,6 +94,9 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDataTypeDetectionsTxt;
     private final String dlgFilterDataTypeAggregatedDetectionsTxt;
     private final String dlgFilterDataRegionLbl;
+    private final String dlgFilterConfidenceLbl;
+    private final String dlgFilterConfidenceMinLbl;
+    private final String dlgFilterConfidenceMaxLbl;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -113,8 +120,11 @@ public final class GuiConfig extends BaseConfig {
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
     private final String errorListRegionsText;
-    private final String errorDownloadOsmData;
 
+    private final String incorrectConfidenceFilterText;
+    private final String unacceptedConfidenceFilterText;
+
+    private final String errorDownloadOsmData;
     private final String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
@@ -178,8 +188,16 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterDetectionsLbl;
     private final String clusterComponentValueLbl;
     private final String detectionIdLbl;
+    private final String detectionConfidenceLbl;
+    private final String facingConfidenceLbl;
+    private final String positioningConfidenceLbl;
+    private final String keypointsConfidenceLbl;
+    private final String trackingConfidenceLbl;
+    private final String ocrConfidenceLbl;
     private final String detectionTrackingIdLbl;
+    private final String detectionComponentValueLbl;
     private final String clusterLaneCountText;
+    private final String clusterConfidenceLevelText;
 
     private final String[] clusterTableHeader;
 
@@ -208,6 +226,10 @@ public final class GuiConfig extends BaseConfig {
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
+        prefAggregatedDisplayColorCodedLbl = readProperty("preference.aggregated.colorCoded");
+        prefAggregatedLegendLbl = readProperty("preference.aggregated.legend");
+        prefAggregatedLegendHeader = readPropertiesArray("preference.aggregated.legend.header");
+        pregAggregatedLegendHeaderColor = readProperty("preference.aggregated.legend.header.color");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -255,6 +277,9 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
         dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
         dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
+        dlgFilterConfidenceLbl = readProperty("filter.confidenceLevel.lbl");
+        dlgFilterConfidenceMinLbl = readProperty("filter.confidence.min.lbl");
+        dlgFilterConfidenceMaxLbl = readProperty("filter.confidence.max.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -279,6 +304,8 @@ public final class GuiConfig extends BaseConfig {
         errorDownloadOsmData = readProperty("error.osmData.download");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
+        incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
+        unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
@@ -345,7 +372,15 @@ public final class GuiConfig extends BaseConfig {
         clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
         detectionIdLbl = readProperty("detection.id");
         detectionTrackingIdLbl = readProperty("detection.tracking.id");
+        detectionConfidenceLbl = readProperty("detection.confidence.detection");
+        detectionComponentValueLbl = readProperty("detection.componentValue.lbl");
+        facingConfidenceLbl = readProperty("detection.confidence.facing");
+        positioningConfidenceLbl = readProperty("detection.confidece.positioning");
+        keypointsConfidenceLbl = readProperty("detection.confidence.keypoints");
+        trackingConfidenceLbl = readProperty("detection.confidence.tracking");
+        ocrConfidenceLbl = readProperty("detection.confidence.ocr");
         clusterLaneCountText = readProperty("cluster.lane.count.text");
+        clusterConfidenceLevelText = readProperty("cluster.confidence.level.text");
 
         clusterTableHeader = readPropertiesArray("cluster.table.header");
 
@@ -423,6 +458,22 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefAggregatedDisplayTagsLbl() {
         return prefAggregatedDisplayTagsLbl;
+    }
+
+    public String getPrefAggregatedDisplayColorCodedLbl() {
+        return prefAggregatedDisplayColorCodedLbl;
+    }
+
+    public String getPrefAggregatedLegendLbl() {
+        return prefAggregatedLegendLbl;
+    }
+
+    public String[] getPrefAggregatedLegendHeaders() {
+        return prefAggregatedLegendHeader;
+    }
+
+    public String getPregAggregatedLegendHeaderColor() {
+        return pregAggregatedLegendHeaderColor;
     }
 
     public String getPrefTrackLbl() {
@@ -521,6 +572,18 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterOsmComparisonLbl;
     }
 
+    public String getDlgFilterConfidenceLbl() {
+        return dlgFilterConfidenceLbl;
+    }
+
+    public String getDlgFilterConfidenceMinLbl() {
+        return dlgFilterConfidenceMinLbl;
+    }
+
+    public String getDlgFilterConfidenceMaxLbl() {
+        return dlgFilterConfidenceMaxLbl;
+    }
+
     public String getDlgFilterModeLbl() {
         return dlgFilterModeLbl;
     }
@@ -615,6 +678,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getUnacceptedDateFilterText() {
         return unacceptedDateFilterText;
+    }
+
+    public String getIncorrectConfidenceFilterText() {
+        return incorrectConfidenceFilterText;
+    }
+
+    public String getUnacceptedConfidenceFilterText() {
+        return unacceptedConfidenceFilterText;
     }
 
     public String getErrorSequenceSaveText() {
@@ -917,12 +988,44 @@ public final class GuiConfig extends BaseConfig {
         return detectionIdLbl;
     }
 
+    public String getDetectionConfidenceLbl() {
+        return detectionConfidenceLbl;
+    }
+
+    public String getFacingConfidenceLbl() {
+        return facingConfidenceLbl;
+    }
+
+    public String getPositioningConfidenceLbl() {
+        return positioningConfidenceLbl;
+    }
+
+    public String getKeypointsConfidenceLbl() {
+        return keypointsConfidenceLbl;
+    }
+
+    public String getTrackingConfidenceLbl() {
+        return trackingConfidenceLbl;
+    }
+
+    public String getOcrConfidenceLbl() {
+        return ocrConfidenceLbl;
+    }
+
     public String getDetectionTrackingIdLbl() {
         return detectionTrackingIdLbl;
     }
 
+    public String getDetectionComponentValueLbl() {
+        return detectionComponentValueLbl;
+    }
+
     public String getClusterLaneCountText() {
         return clusterLaneCountText;
+    }
+
+    public String getClusterConfidenceLevelText() {
+        return clusterConfidenceLevelText;
     }
 
     public String[] getClusterTableHeader() {

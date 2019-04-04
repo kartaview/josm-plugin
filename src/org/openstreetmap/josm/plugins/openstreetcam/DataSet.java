@@ -79,13 +79,15 @@ public final class DataSet {
     /**
      * Clears the current data set, including the selections.
      */
-    public synchronized void clear() {
+    public synchronized void clear(final boolean clearSelection) {
         this.segments = new ArrayList<>();
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
         this.clusters = new ArrayList<>();
         this.matchedData = new ArrayList<>();
-        clearSelection();
+        if (clearSelection) {
+            clearSelection();
+        }
     }
 
     /**
@@ -725,6 +727,11 @@ public final class DataSet {
 
     public boolean hasSelectedCluster() {
         return selectedCluster != null;
+    }
+
+    public boolean hasActiveSelection() {
+        return selectedCluster != null || selectedDetection != null || selectedPhoto != null
+                || selectedSequence != null;
     }
 
     public boolean hasMatchedData() {

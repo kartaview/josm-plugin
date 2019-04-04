@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_NEARBY_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_PREV_NEXT_COUNT;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_COLOR_CODED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
@@ -23,6 +24,8 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_ONLY_USER_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_EMPTY;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MAX_CONFIDENCE_LEVEL;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MIN_CONFIDENCE_LEVEL;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -66,6 +69,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
@@ -151,8 +155,10 @@ final class LoadManager {
         final List<String> signTypes = loadSignTypeFilter();
         final List<DetectionMode> modes = loadModes();
         final String region = Preferences.main().get(FILTER_SEARCH_REGION);
+        final ConfidenceLevelFilter confidenceLevelFilter = loadConfidenceLevelFilter();
         return new SearchFilter(date, onlyUserFlag, dataType,
-                new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes, region));
+                new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes, region,
+                        confidenceLevelFilter));
     }
 
     private List<DataType> loadDataTypeFilter() {
@@ -241,6 +247,18 @@ final class LoadManager {
         return list;
     }
 
+    private ConfidenceLevelFilter loadConfidenceLevelFilter() {
+        final String minConfidenceLevel = Preferences.main().get(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL);
+        final String maxConfidenceLevel = Preferences.main().get(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL);
+        final Double minConfidence =
+                minConfidenceLevel != null && !minConfidenceLevel.isEmpty() ? Double.parseDouble(minConfidenceLevel) :
+                        null;
+        final Double maxConfidence =
+                maxConfidenceLevel != null && !maxConfidenceLevel.isEmpty() ? Double.parseDouble(maxConfidenceLevel) :
+                        null;
+        return new ConfidenceLevelFilter(minConfidence, maxConfidence);
+    }
+
     MapViewSettings loadMapViewSettings() {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
@@ -260,7 +278,8 @@ final class LoadManager {
     ClusterSettings loadClusterSettings() {
         final boolean displayDetectionLocations = Preferences.main().getBoolean(DISPLAY_DETECTION_LOCATIONS);
         final boolean displayTags = Preferences.main().getBoolean(DISPLAY_TAGS);
-        return new ClusterSettings(displayDetectionLocations, displayTags);
+        final boolean displayColorCoded = Preferences.main().getBoolean(DISPLAY_COLOR_CODED);
+        return new ClusterSettings(displayDetectionLocations, displayTags, displayColorCoded);
     }
 
     SequenceSettings loadTrackSettings() {
