@@ -122,6 +122,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         } else {
             pnlButtons.setVisible(false);
             cmpBtn.setVisible(false);
+            pnlCluster.clearCluster();
         }
         cmpInfo.getViewport().revalidate();
         cmpInfo.revalidate();

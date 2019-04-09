@@ -758,7 +758,8 @@ public final class DataSet {
      * @return boolean
      */
     public boolean detectionBelongsToSelectedCluster(final Detection detection) {
-        return selectedCluster != null && detection != null && selectedCluster.getDetections().contains(detection);
+        return selectedCluster != null && detection != null && selectedCluster.getDetections() != null
+                && selectedCluster.getDetections().contains(detection);
     }
 
     /**
