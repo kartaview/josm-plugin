@@ -72,8 +72,11 @@
 		<copy todir="${plugin.build.dir}">
 			<fileset dir="resources" />
 		</copy>
-		<replaceregexp if:set="osc_service_url" file="${plugin.build.dir}/openstreetview_service.properties" match="${url.key}" replace="${osc_service_url}" />
+		<replaceregexp if:set="osc_service_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="${url.key}" replace="${osc_service_url}" />
+		<replaceregexp if:set="osc_details_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="${url.key}" replace="${osc_details_url}" />
+		<replaceregexp if:set="osc_user_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="${url.key}" replace="${osc_user_url}" />
 		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/openstreetcam_apollo_service.properties" match="${url.key}" replace="${apollo_service_url}" />
+
 		<copy todir="${plugin.build.dir}/images">
 			<fileset dir="images" />
 		</copy>
