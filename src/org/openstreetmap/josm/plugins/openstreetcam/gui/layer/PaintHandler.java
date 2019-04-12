@@ -268,8 +268,9 @@ class PaintHandler {
             final boolean isSelected) {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
             final Point point = mapView.getPoint(photo.getPoint());
-            if (DataSet.getInstance().getSelectedCluster() != null &&
-                    DataSet.getInstance().getSelectedCluster().getPhotos().contains(photo)) {
+            if (DataSet.getInstance().getSelectedCluster() != null
+                    && DataSet.getInstance().getSelectedCluster().getPhotos() != null && DataSet.getInstance()
+                    .getSelectedCluster().getPhotos().contains(photo)) {
                 if (photo.getHeading() != null) {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple() :
                             IconConfig.getInstance().getPhotoUnselectedIconPurple();

@@ -131,4 +131,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     Cluster getCluster() {
         return cluster;
     }
+
+    void clearCluster() {
+        this.cluster = null;
+    }
 }
