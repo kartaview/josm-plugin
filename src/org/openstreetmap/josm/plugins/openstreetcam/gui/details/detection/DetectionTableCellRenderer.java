@@ -15,15 +15,14 @@ import java.util.Arrays;
 import javax.swing.JTable;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ValidationStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
 import com.telenav.josm.common.formatter.DecimalPattern;
 import com.telenav.josm.common.formatter.EntityFormatter;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 
 
 /**
@@ -44,13 +43,15 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
     private static final Color HEADER_GRAY = new Color(235, 237, 239);
     private static final MatteBorder HEADER_BORDER = new MatteBorder(0, 0, 1, 1, Color.gray);
 
+    @Override
     public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
             final boolean hasFocus, final int row, final int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         setFont(MainApplication.getMap().getFont().deriveFont(Font.PLAIN));
         String txt = "-";
         if (value != null) {
-            ArrayList headerList = new ArrayList<>(Arrays.asList(GuiConfig.getInstance().getClusterTableHeader()));
+            final ArrayList<String> headerList =
+                    new ArrayList<>(Arrays.asList(GuiConfig.getInstance().getClusterTableHeader()));
             if (value instanceof String && headerList.contains(value)) {
                 txt = value.toString();
                 setBackground(HEADER_GRAY);
@@ -61,7 +62,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
                 txt = value.toString();
             } else if (value instanceof ConfidenceLevel) {
                 if (((ConfidenceLevel) value).isNotNull()) {
-                    ConfidenceLevel confidenceLevel = (ConfidenceLevel) value;
+                    final ConfidenceLevel confidenceLevel = (ConfidenceLevel) value;
                     txt = createConfidenceText(confidenceLevel.getDetectionConfidence()) + DELIMITER +
                             createConfidenceText(confidenceLevel.getFacingConfidence()) + DELIMITER +
                             createConfidenceText(confidenceLevel.getPositioningConfidence()) + DELIMITER +
@@ -92,7 +93,7 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
         return this;
     }
 
-    private String createConfidenceText(Double confidence) {
+    private String createConfidenceText(final Double confidence) {
         String confidenceText = "-";
         if (confidence != null) {
             if (confidence > APPROXIMATED_ZERO_DOUBLE) {
