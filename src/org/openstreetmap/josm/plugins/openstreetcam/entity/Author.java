@@ -9,19 +9,19 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public class Author {
 
-    private final Long externalId;
+    private final String externalId;
     private final String userName;
     private final String type;
 
 
-    public Author(final Long externalId, final String userName) {
+    public Author(final String externalId, final String userName) {
         this.externalId = externalId;
         this.userName = userName;
         this.type = "OSM";
     }
 
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 

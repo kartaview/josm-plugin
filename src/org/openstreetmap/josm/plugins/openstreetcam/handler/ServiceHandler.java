@@ -276,7 +276,7 @@ public final class ServiceHandler extends SearchServiceHandler {
                     GuiConfig.getInstance().getAuthenticationNeededErrorMessage(),
                     GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE, null);
         } else {
-            final Author author = new Author(userId, userName);
+            final Author author = new Author(userId.toString(), userName);
             try {
                 apolloService.updateDetection(new Detection(detectionId, editStatus),
                         new Contribution(author, comment));
