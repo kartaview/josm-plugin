@@ -67,7 +67,7 @@ public final class DataSet {
     private Photo nearyPhotosStartPhoto;
     private Collection<Photo> nearbyPhotos;
 
-    /** the currently downloaded OSM matched data*/
+    /** the currently downloaded OSM matched data */
     private List<OsmElement> matchedData;
 
     private DataSet() {}
@@ -370,7 +370,7 @@ public final class DataSet {
      * returns empty
      */
     public Optional<Photo> clusterPhoto(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
-        return cluster != null ? cluster.getPhotos().stream()
+        return cluster != null && cluster.getPhotos() != null ? cluster.getPhotos().stream()
                 .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
                 .findFirst() : Optional.empty();
     }
@@ -553,6 +553,7 @@ public final class DataSet {
 
     /**
      * Sets the downloaded OSM matched data for the selected detection.
+     *
      * @param matchedData - List of downloaded osm elements.
      */
     public void setMatchedData(final List<OsmElement> matchedData) {
