@@ -448,6 +448,12 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         if (detection != null) {
             ThreadPool.getInstance().execute(() -> {
                 final Photo photo = loadDetectionPhoto(detection);
+                // enhance photo with heading
+                final Optional<Photo> clusterPhoto = DataSet.getInstance()
+                        .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
+                if (clusterPhoto.isPresent()) {
+                    photo.setHeading(clusterPhoto.get().getHeading());
+                }
                 SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
             });
         }
