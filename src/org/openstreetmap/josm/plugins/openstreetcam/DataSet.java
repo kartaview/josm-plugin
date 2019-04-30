@@ -77,7 +77,9 @@ public final class DataSet {
     }
 
     /**
-     * Clears the current data set, including the selections.
+     * Clears the current data set.
+     *
+     * @param clearSelection if true also the previously selected data is removed.
      */
     public synchronized void clear(final boolean clearSelection) {
         this.segments = new ArrayList<>();
@@ -150,8 +152,7 @@ public final class DataSet {
             final boolean updateSelection) {
         this.clusters = clusters;
         if (updateSelection && selectedCluster != null) {
-            selectedCluster = (clusters == null || (clusters != null && !clusters.contains(selectedCluster))) ? null
-                    : selectedCluster;
+            selectedCluster = (clusters == null || !clusters.contains(selectedCluster)) ? null : selectedCluster;
         }
     }
 

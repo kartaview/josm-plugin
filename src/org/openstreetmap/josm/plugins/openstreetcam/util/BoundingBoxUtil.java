@@ -62,6 +62,7 @@ public final class BoundingBoxUtil {
      * Returns a list of bounding boxes, representing the current search area. The method takes into consideration also
      * the edit layer bounds. Use this method for segments.
      *
+     * @param mapViewDataLoad if true only the data inside the current bounding box is loaded
      * @return a list of {@code BoundingBox}
      */
     public static List<BoundingBox> currentBoundingBoxes(final boolean mapViewDataLoad) {

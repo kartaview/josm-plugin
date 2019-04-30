@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
-
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MapView;
@@ -273,21 +272,21 @@ class PaintHandler {
                     .getSelectedCluster().getPhotos().contains(photo)) {
                 if (photo.getHeading() != null) {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple() :
-                            IconConfig.getInstance().getPhotoUnselectedIconPurple();
+                        IconConfig.getInstance().getPhotoUnselectedIconPurple();
                     PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
                 } else {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple() :
-                            IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
+                        IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
                     PaintManager.drawIcon(graphics, icon, point);
                 }
             } else {
                 if (photo.getHeading() != null) {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon() :
-                            IconConfig.getInstance().getPhotoIcon();
+                        IconConfig.getInstance().getPhotoIcon();
                     PaintManager.drawIcon(graphics, icon, point);
                 } else {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon() :
-                            IconConfig.getInstance().getPhotoNoHeadingIcon();
+                        IconConfig.getInstance().getPhotoNoHeadingIcon();
                     PaintManager.drawIcon(graphics, icon, point);
                 }
             }
@@ -346,7 +345,8 @@ class PaintHandler {
             }
         }
         if (Util.containsLatLon(mapView, cluster.getPoint())) {
-            drawClusterIcon(graphics, mapView, cluster, isSelected, clusterSettings.isDisplayColorCoded());
+            final boolean isColored = clusterSettings != null && clusterSettings.isDisplayColorCoded();
+            drawClusterIcon(graphics, mapView, cluster, isSelected, isColored);
         }
     }
 
@@ -427,17 +427,17 @@ class PaintHandler {
         } else {
             final List<Point> geometry = new ArrayList<>();
             for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode());
-                 i <= way.getDownloadedNodes().indexOf(way.getMatchedToNode()); i++) {
+                    i <= way.getDownloadedNodes().indexOf(way.getMatchedToNode()); i++) {
                 geometry.add(mapView.getPoint(way.getDownloadedNodes().get(i)));
             }
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
             if (clusterSettings.isDisplayTags() && way.getTag() != null) {
-                drawTag(graphics, mapView, way, geometry);
+                drawTag(graphics, mapView, way);
             }
         }
     }
 
-    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final List<Point> geometry) {
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
         Optional<LatLon> middlePoint;

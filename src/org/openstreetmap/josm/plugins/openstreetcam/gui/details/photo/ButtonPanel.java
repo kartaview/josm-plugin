@@ -72,14 +72,14 @@ SequenceObservable, SequenceAutoplayObservable {
     private JButton btnMatchedWay;
 
     /* notifies the plugin main class */
-    private NearbyPhotoObserver nearbyPhotoObserver;
-    private MapViewTypeChangeObserver dataUpdateObserver;
-    private LocationObserver locationObserver;
-    private SequenceObserver sequenceObserver;
-    private SequenceAutoplayObserver sequenceAutoplayObserver;
+    private transient NearbyPhotoObserver nearbyPhotoObserver;
+    private transient MapViewTypeChangeObserver dataUpdateObserver;
+    private transient LocationObserver locationObserver;
+    private transient SequenceObserver sequenceObserver;
+    private transient SequenceAutoplayObserver sequenceAutoplayObserver;
 
     /* the currently selected photo */
-    private Photo photo;
+    private transient Photo photo;
 
 
     ButtonPanel() {

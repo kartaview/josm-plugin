@@ -65,7 +65,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     private Dimension size;
 
     /** the currently selected element */
-    private Pair<Photo, PhotoSize> selectedElement;
+    private transient Pair<Photo, PhotoSize> selectedElement;
 
 
     private PhotoDetailsDialog() {

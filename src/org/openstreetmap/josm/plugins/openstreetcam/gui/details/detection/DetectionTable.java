@@ -42,9 +42,9 @@ class DetectionTable extends JTable implements RowSelectionObservable {
     private static final int LOWER_ROW_MOVEMENT = 1;
     private static final int FIRST_DETECTION = 0;
 
-    private final Cluster cluster;
+    private final transient Cluster cluster;
     private int tableWidth = 0;
-    private RowSelectionObserver observer;
+    private transient RowSelectionObserver observer;
 
     /**
      * @param cluster represents the selected cluster from the map
@@ -121,7 +121,6 @@ class DetectionTable extends JTable implements RowSelectionObservable {
             }
             ++index;
         }
-
         return selectedDetection;
     }
 

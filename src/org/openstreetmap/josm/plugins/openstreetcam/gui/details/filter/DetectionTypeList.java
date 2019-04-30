@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -20,7 +21,7 @@ class DetectionTypeList extends JPanel {
 
     private static final long serialVersionUID = 212486274590615046L;
     private final List<DetectionTypeListItem> listItems;
-    private final Map<String, List<Sign>> allSigns;
+    private final transient Map<String, List<Sign>> allSigns;
 
     DetectionTypeList() {
         listItems = new ArrayList<>();
@@ -34,13 +35,13 @@ class DetectionTypeList extends JPanel {
             final String region) {
         listItems.clear();
         if (allSigns != null) {
-            for (final String key : allSigns.keySet()) {
-                final List<Sign> signsToDisplay = region == null || region.isEmpty() ? allSigns.get(key) :
-                        filterRegionSigns(allSigns.get(key), region);
+            for (final Entry<String, List<Sign>> entry : allSigns.entrySet()) {
+                final List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue()
+                        : filterRegionSigns(entry.getValue(), region);
                 if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
                     boolean typeSelected = false;
                     if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
-                        typeSelected = selectedSignTypes.contains(key);
+                        typeSelected = selectedSignTypes.contains(entry.getKey());
                     }
                     List<Sign> selectedSigns = null;
                     if (selectedSpecificSigns != null && !selectedSpecificSigns.isEmpty()) {
@@ -48,7 +49,7 @@ class DetectionTypeList extends JPanel {
                         selectedSigns.retainAll(selectedSpecificSigns);
                     }
                     final DetectionTypeListItem listItem =
-                            new DetectionTypeListItem(key, typeSelected, signsToDisplay, selectedSigns);
+                            new DetectionTypeListItem(entry.getKey(), typeSelected, signsToDisplay, selectedSigns);
                     listItems.add(listItem);
                 }
             }

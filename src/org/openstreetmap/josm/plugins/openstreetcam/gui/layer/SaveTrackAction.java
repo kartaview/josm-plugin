@@ -31,7 +31,7 @@ class SaveTrackAction extends JosmAction {
 
     private static final long serialVersionUID = -7721418682849752904L;
     private static final String EXT = ".gpx";
-    private final GpxManager gpxManager;
+    private final transient GpxManager gpxManager;
     private static final String TRACK = "Track";
 
 

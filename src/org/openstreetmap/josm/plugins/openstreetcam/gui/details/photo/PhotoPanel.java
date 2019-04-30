@@ -69,8 +69,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private Dimension size;
 
     /** detection related entities */
-    private DetectionSelectionObserver detectionSelectionObserver;
-    private List<Detection> detections;
+    private transient DetectionSelectionObserver detectionSelectionObserver;
+    private transient List<Detection> detections;
 
 
     PhotoPanel() {
@@ -389,7 +389,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
 
         @Override
         public void mouseClicked(final MouseEvent e) {
-            if (detections != null) {
+            if (detections != null && image != null) {
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());

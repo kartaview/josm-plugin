@@ -10,6 +10,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -69,40 +70,38 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
             addInformation(GuiConfig.getInstance().getDetectionComponentValueLbl(), detection.getComponentValue(),
                     widthLbl);
         }
-        if (detection.getConfidenceLevel() != null && detection.getConfidenceLevel().isNotNull()) {
-            if (detection.getConfidenceLevel().getDetectionConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getDetectionConfidenceLbl(), EntityFormatter
-                        .formatDouble(detection.getConfidenceLevel().getDetectionConfidence(), false,
-                                DecimalPattern.MEDIUM), widthLbl);
-            }
-            if (detection.getConfidenceLevel().getFacingConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getFacingConfidenceLbl(), EntityFormatter
-                        .formatDouble(detection.getConfidenceLevel().getFacingConfidence(), false,
-                                DecimalPattern.MEDIUM), widthLbl);
-            }
-            if (detection.getConfidenceLevel().getPositioningConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getPositioningConfidenceLbl(), EntityFormatter
-                        .formatDouble(detection.getConfidenceLevel().getPositioningConfidence(), false,
-                                DecimalPattern.MEDIUM), widthLbl);
-            }
-            if (detection.getConfidenceLevel().getKeyPointsConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getKeypointsConfidenceLbl(), EntityFormatter
-                        .formatDouble(detection.getConfidenceLevel().getKeyPointsConfidence(), false,
-                                DecimalPattern.MEDIUM), widthLbl);
-            }
-            if (detection.getConfidenceLevel().getTrackingConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getTrackingConfidenceLbl(), EntityFormatter
-                        .formatDouble(detection.getConfidenceLevel().getTrackingConfidence(), false,
-                                DecimalPattern.MEDIUM), widthLbl);
-            }
-            if (detection.getConfidenceLevel().getOcrConfidence() != null) {
-                addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(), EntityFormatter
-                                .formatDouble(detection.getConfidenceLevel().getOcrConfidence(), false, DecimalPattern.MEDIUM),
-                        widthLbl);
-            }
-
-        }
+        addConfidenceLevel(detection.getConfidenceLevel(), widthLbl);
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
+    }
+
+    private void addConfidenceLevel(final ConfidenceLevel confidenceLevel, final int widthLbl) {
+        if (confidenceLevel != null && confidenceLevel.isNotNull()) {
+            if (confidenceLevel.getDetectionConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getDetectionConfidenceLbl(), EntityFormatter.formatDouble(
+                        confidenceLevel.getDetectionConfidence(), false, DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (confidenceLevel.getFacingConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getFacingConfidenceLbl(), EntityFormatter
+                        .formatDouble(confidenceLevel.getFacingConfidence(), false, DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (confidenceLevel.getPositioningConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getPositioningConfidenceLbl(), EntityFormatter.formatDouble(
+                        confidenceLevel.getPositioningConfidence(), false, DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (confidenceLevel.getKeyPointsConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getKeypointsConfidenceLbl(), EntityFormatter.formatDouble(
+                        confidenceLevel.getKeyPointsConfidence(), false, DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (confidenceLevel.getTrackingConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getTrackingConfidenceLbl(), EntityFormatter
+                        .formatDouble(confidenceLevel.getTrackingConfidence(), false, DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (confidenceLevel.getOcrConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(),
+                        EntityFormatter.formatDouble(confidenceLevel.getOcrConfidence(), false, DecimalPattern.MEDIUM),
+                        widthLbl);
+            }
+        }
     }
 }
