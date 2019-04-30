@@ -134,7 +134,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
      * Updates the dialog with a cluster information.
      *
      * @param cluster a {@code Cluster} object
-     * @param cluster a {@code Detection} object
+     * @param detection a {@code Detection} object
      */
     public void updateClusterDetails(final Cluster cluster, final Detection detection) {
         if (cluster != null && cluster.equals(pnlCluster.getCluster())) {

@@ -26,8 +26,12 @@ public class ClusterSettings {
      *
      * @param displayDetectionLocations specifies if detection locations should be displayed when selecting an
      * aggregated detection
+     * @param displayTags specifies if the tags associated with an OSM element are displayed on the map
+     * @param displayColorCoded specifies if the clusters are displayed taking into consideration the color scheme
+     * associated with the confidence level
      */
-    public ClusterSettings(final boolean displayDetectionLocations, final boolean displayTags, final boolean displayColorCoded) {
+    public ClusterSettings(final boolean displayDetectionLocations, final boolean displayTags,
+            final boolean displayColorCoded) {
         this.displayDetectionLocations = displayDetectionLocations;
         this.displayTags = displayTags;
         this.displayColorCoded = displayColorCoded;
