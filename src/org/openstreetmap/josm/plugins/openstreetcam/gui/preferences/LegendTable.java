@@ -37,21 +37,21 @@ class LegendTable {
     private final JScrollPane tablePane;
     private final JTable legendTable;
     private final LegendTableModel model;
-    private final Color R1 = new Color(255, 0, 0);
-    private final Color R2 = new Color(255, 42, 0);
-    private final Color R3 = new Color(254, 91, 0);
-    private final Color R4 = new Color(255, 144, 0);
-    private final Color R5 = new Color(255, 198, 2);
-    private final Color R6 = new Color(254, 255, 0);
-    private final Color R7 = new Color(198, 255, 0);
-    private final Color R8 = new Color(144, 255, 3);
-    private final Color R9 = new Color(91, 255, 0);
-    private final Color R10 = new Color(0, 139, 0);
-    private final List<Color> colors = Arrays.asList(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10);
-    private final int ROW_HEIGHT = 15;
-    private final int TABLE_WIDTH = 13;
+    private static final Color R1 = new Color(255, 0, 0);
+    private static final Color R2 = new Color(255, 42, 0);
+    private static final Color R3 = new Color(254, 91, 0);
+    private static final Color R4 = new Color(255, 144, 0);
+    private static final Color R5 = new Color(255, 198, 2);
+    private static final Color R6 = new Color(254, 255, 0);
+    private static final Color R7 = new Color(198, 255, 0);
+    private static final Color R8 = new Color(144, 255, 3);
+    private static final Color R9 = new Color(91, 255, 0);
+    private static final Color R10 = new Color(0, 139, 0);
+    private static final List<Color> COLORS = Arrays.asList(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10);
+    private static final int ROW_HEIGHT = 15;
+    private static final int TABLE_WIDTH = 13;
     private static final String FONT_NAME = "Tahoma";
-    final private Font font = new Font(FONT_NAME, Font.PLAIN, 12);
+    private static final Font FONT = new Font(FONT_NAME, Font.PLAIN, 12);
 
     LegendTable() {
         model = new LegendTableModel();
@@ -60,7 +60,7 @@ class LegendTable {
         initColumnSizes();
         legendTable.setDefaultRenderer(String.class, new LegendTableRenderer());
         legendTable.getTableHeader().setBackground(Color.WHITE);
-        legendTable.getTableHeader().setFont(font);
+        legendTable.getTableHeader().setFont(FONT);
         legendTable.getTableHeader().setReorderingAllowed(false);
         legendTable.setPreferredScrollableViewportSize(new Dimension(TABLE_WIDTH, ROW_HEIGHT));
 
@@ -76,7 +76,7 @@ class LegendTable {
         final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         for (int i = 0; i < model.getColumnCount(); i++) {
             final TableColumn column = legendTable.getColumnModel().getColumn(i);
-            final int textWidth = (int) (font.getStringBounds(model.getColumnName(i), frc).getWidth());
+            final int textWidth = (int) (FONT.getStringBounds(model.getColumnName(i), frc).getWidth());
             column.setPreferredWidth(textWidth);
         }
 
@@ -88,9 +88,8 @@ class LegendTable {
 
         private final String[] columnNames = GuiConfig.getInstance().getPrefAggregatedLegendHeaders();
 
-        private final Object[][] data =
-            { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "", "", "", "", "", "", "", "", "",
-            "" } };
+        private final transient Object[][] data = { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "",
+            "", "", "", "", "", "", "", "", "" } };
 
 
         @Override
@@ -132,12 +131,12 @@ class LegendTable {
         public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
                 final boolean hasFocus, final int row, final int column) {
             if (column > 0) {
-                setBackground(colors.get(column - 1));
+                setBackground(COLORS.get(column - 1));
             } else {
                 final Component firstCell = table.getTableHeader().getDefaultRenderer()
                         .getTableCellRendererComponent(table, value, isSelected, hasFocus, 0, 0);
                 firstCell.setBackground(Color.WHITE);
-                firstCell.setFont(font);
+                firstCell.setFont(FONT);
                 return firstCell;
             }
             setText((String) model.getValueAt(row, column));

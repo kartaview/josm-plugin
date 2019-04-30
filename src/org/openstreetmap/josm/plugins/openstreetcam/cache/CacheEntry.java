@@ -57,9 +57,7 @@ public class CacheEntry extends BufferedImageCacheEntry {
         boolean result = false;
         if (this == obj) {
             result = true;
-        } else if (!super.equals(obj)) {
-            result = false;
-        } else if (obj.getClass() == this.getClass()) {
+        } else if (obj != null && obj.getClass() == this.getClass()) {
             final CacheEntry other = (CacheEntry) obj;
             result = EntityUtil.bothNullOrEqual(warning, other.isWarning());
         }

@@ -49,7 +49,7 @@ class CommentDialog extends ModalDialog implements DetectionChangeObservable {
     private static final int SCROLL_BAR_UNIT = 100;
 
     private JTextArea txtComment;
-    private DetectionChangeObserver observer;
+    private transient DetectionChangeObserver observer;
 
 
     CommentDialog(final String title) {

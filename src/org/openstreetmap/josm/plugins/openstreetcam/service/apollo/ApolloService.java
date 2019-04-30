@@ -34,7 +34,7 @@ import com.telenav.josm.common.argument.BoundingBox;
  */
 public class ApolloService extends BaseService {
 
-    private static double AREA_EXTEND = 0.004;
+    private static final double AREA_EXTEND = 0.004;
 
     @Override
     public Gson createGson() {

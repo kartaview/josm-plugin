@@ -69,8 +69,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private Dimension size;
 
     /** detection related entities */
-    private DetectionSelectionObserver detectionSelectionObserver;
-    private List<Detection> detections;
+    private transient DetectionSelectionObserver detectionSelectionObserver;
+    private transient List<Detection> detections;
 
 
     PhotoPanel() {

@@ -345,7 +345,7 @@ class PaintHandler {
             }
         }
         if (Util.containsLatLon(mapView, cluster.getPoint())) {
-            final boolean isColored = clusterSettings != null ? clusterSettings.isDisplayColorCoded() : false;
+            final boolean isColored = clusterSettings != null && clusterSettings.isDisplayColorCoded();
             drawClusterIcon(graphics, mapView, cluster, isSelected, isColored);
         }
     }
@@ -432,12 +432,12 @@ class PaintHandler {
             }
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
             if (clusterSettings.isDisplayTags() && way.getTag() != null) {
-                drawTag(graphics, mapView, way, geometry);
+                drawTag(graphics, mapView, way);
             }
         }
     }
 
-    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way, final List<Point> geometry) {
+    private void drawTag(final Graphics2D graphics, final MapView mapView, final DownloadedWay way) {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
         Optional<LatLon> middlePoint;

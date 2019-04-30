@@ -11,14 +11,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import javax.swing.ListSelectionModel;
-
-import com.telenav.josm.common.formatter.DecimalPattern;
-import com.telenav.josm.common.formatter.EntityFormatter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.telenav.josm.common.formatter.DateFormatter;
+import com.telenav.josm.common.formatter.DecimalPattern;
+import com.telenav.josm.common.formatter.EntityFormatter;
 
 
 /**
@@ -43,9 +42,9 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
 
     private DetectionTable table;
-    private RowSelectionObserver rowSelectionObserver;
+    private transient RowSelectionObserver rowSelectionObserver;
 
-    private Cluster cluster;
+    private transient Cluster cluster;
 
     @Override
     protected void createComponents(final Cluster cluster) {
@@ -111,7 +110,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
             int detectionRow = 0;
             for (int rowIndex = 0; rowIndex < table.getRowCount(); ++rowIndex) {
                 if (table.getValueAt(rowIndex, ID_COLUMN) != null) {
-                    final int currentRowId = Integer.valueOf(table.getValueAt(rowIndex, ID_COLUMN).toString());
+                    final int currentRowId = Integer.parseInt(table.getValueAt(rowIndex, ID_COLUMN).toString());
                     if (currentRowId == detection.getId()) {
                         detectionRow = rowIndex;
                     }

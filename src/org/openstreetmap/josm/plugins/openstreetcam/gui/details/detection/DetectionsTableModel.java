@@ -33,7 +33,7 @@ class DetectionsTableModel extends AbstractTableModel {
     private static final int IDX_UPDATE_ON_DATE = 8;
     private static final int MILLIMETER_METER_SCALE = 1000;
 
-    private List<Detection> data;
+    private transient List<Detection> data;
 
     /**
      * @param data detections list corresponding to the selected cluster

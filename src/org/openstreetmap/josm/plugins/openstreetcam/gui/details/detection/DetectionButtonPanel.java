@@ -33,7 +33,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     private static final int BUTTON_FONT_SIZE = 13;
     private static final int COLUMNS = 4;
 
-    private DetectionChangeObserver detectionChangeObserver;
+    private transient DetectionChangeObserver detectionChangeObserver;
     private JButton btnMapped;
     private JButton btnBadDetection;
     private JButton btnComment;

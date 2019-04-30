@@ -8,13 +8,12 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.cnf;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.telenav.josm.common.cnf.BaseConfig;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -239,10 +238,6 @@ public final class IconConfig extends BaseConfig {
 
     public ImageIcon getPhotoNoHeadingSelectedIcon() {
         return photoNoHeadingSelectedIcon;
-    }
-
-    public static IconConfig getINSTANCE() {
-        return INSTANCE;
     }
 
     public ImageIcon getPhotoSelectedIconPurple() {

@@ -150,8 +150,7 @@ public final class DataSet {
             final boolean updateSelection) {
         this.clusters = clusters;
         if (updateSelection && selectedCluster != null) {
-            selectedCluster = (clusters == null || (clusters != null && !clusters.contains(selectedCluster))) ? null
-                    : selectedCluster;
+            selectedCluster = (clusters == null || !clusters.contains(selectedCluster)) ? null : selectedCluster;
         }
     }
 
@@ -173,7 +172,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -329,7 +328,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getDetections().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-                    detection = selectedCluster.getDetections().get(index);
+            detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -420,13 +419,13 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                Optional<Photo> result = Optional.empty();
-                if (photos != null) {
-                    result = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                }
-                return result;
+        Optional<Photo> result = Optional.empty();
+        if (photos != null) {
+            result = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+        }
+        return result;
     }
 
     /**
