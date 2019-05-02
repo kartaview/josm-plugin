@@ -57,15 +57,16 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     private static PhotoDetailsDialog instance = new PhotoDetailsDialog();
 
     /* dialog components */
-    private final DetailsPanel pnlDetails;
-    private final PhotoPanel pnlPhoto;
-    private final ButtonPanel pnlBtn;
+    private DetailsPanel pnlDetails;
+    private PhotoPanel pnlPhoto;
+    private ButtonPanel pnlBtn;
 
     /** the dimension of the dialog window, it is used to detect if the user had maximized or not the dialog window */
     private Dimension size;
 
     /** the currently selected element */
     private transient Pair<Photo, PhotoSize> selectedElement;
+    private boolean isDetached = false;
 
 
     private PhotoDetailsDialog() {
@@ -100,6 +101,10 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * Destroys the instance of the dialog.
      */
     public static synchronized void destroyInstance() {
+        instance.pnlDetails = null;
+        instance.pnlPhoto = null;
+        instance.pnlBtn = null;
+        instance.selectedElement = null;
         instance = null;
     }
 
@@ -122,8 +127,11 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      */
     @Override
     protected void detach() {
-        pnlPhoto.initializeCurrentImageView();
-        super.detach();
+        if (!isDetached) {
+            pnlPhoto.initializeCurrentImageView();
+            super.detach();
+            isDetached = true;
+        }
     }
 
     /**
@@ -133,6 +141,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     protected void dock() {
         pnlPhoto.initializeCurrentImageView();
         super.dock();
+        isDetached = false;
     }
 
     @Override
