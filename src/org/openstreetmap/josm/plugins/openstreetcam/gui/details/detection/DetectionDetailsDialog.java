@@ -47,12 +47,13 @@ public final class DetectionDetailsDialog extends ToggleDialog {
     private static DetectionDetailsDialog instance = new DetectionDetailsDialog();
 
     /** dialog components */
-    private final JScrollPane cmpInfo;
-    private final JViewport cmpBtn;
-    private final DetectionDetailsPanel pnlDetails;
-    private final ClusterDetailsPanel pnlCluster;
-    private final DetectionButtonPanel pnlButtons;
-    private final ClusterButtonPanel pnlClusterButtons;
+    private JScrollPane cmpInfo;
+    private JViewport cmpBtn;
+    private DetectionDetailsPanel pnlDetails;
+    private ClusterDetailsPanel pnlCluster;
+    private DetectionButtonPanel pnlButtons;
+    private ClusterButtonPanel pnlClusterButtons;
+    private boolean isDetached = false;
 
 
     private DetectionDetailsDialog() {
@@ -86,6 +87,19 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             instance = new DetectionDetailsDialog();
         }
         return instance;
+    }
+
+    /**
+     * Destroys the instance of the dialog.
+     */
+    public static synchronized void destroyInstance() {
+        instance.pnlDetails = null;
+        instance.pnlButtons = null;
+        instance.pnlCluster = null;
+        instance.pnlClusterButtons = null;
+        instance.cmpBtn = null;
+        instance.cmpInfo = null;
+        instance = null;
     }
 
     /**
@@ -165,12 +179,6 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         updateClusterDetails(null, null);
     }
 
-    /**
-     * Destroys the instance of the dialog.
-     */
-    public static synchronized void destroyInstance() {
-        instance = null;
-    }
 
     @Override
     public void expand() {
@@ -181,6 +189,17 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         DetectionDetailsDialog.getInstance().getButton().setSelected(true);
         if (isCollapsed) {
             super.expand();
+        }
+    }
+
+    /**
+     * It is called when the detached dialog is opened.
+     */
+    @Override
+    protected void detach() {
+        if (!isDetached) {
+            super.detach();
+            isDetached = true;
         }
     }
 }

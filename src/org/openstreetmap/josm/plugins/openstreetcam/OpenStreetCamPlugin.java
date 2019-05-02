@@ -117,6 +117,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             // clean-up
             layerActivatorMenuItem.setEnabled(false);
             Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
+            oldMapFrame.removeToggleDialog(PhotoDetailsDialog.getInstance());
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
             OpenStreetCamLayer.destroyInstance();
@@ -132,7 +133,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
         detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
                 selectionHandler);
-        mapFrame.addToggleDialog(detailsDialog, true);
+        mapFrame.addToggleDialog(detailsDialog, false);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();
         } else {
@@ -142,7 +143,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     private void initializeDetectionDetailsDialog(final MapFrame mapFrame) {
         final DetectionDetailsDialog detectionDetailsDialog = DetectionDetailsDialog.getInstance();
-        mapFrame.addToggleDialog(detectionDetailsDialog, true);
+        mapFrame.addToggleDialog(detectionDetailsDialog, false);
         detectionDetailsDialog.registerObservers(this, selectionHandler, selectionHandler);
         if (PreferenceManager.getInstance().loadDetectionPanelOpenedFlag()) {
             detectionDetailsDialog.showDialog();
