@@ -202,4 +202,10 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             isDetached = true;
         }
     }
+
+    @Override
+    public void hideDialog() {
+        super.hideDialog();
+        isDetached = false;
+    }
 }
