@@ -151,6 +151,12 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         }
     }
 
+    @Override
+    public void hideDialog() {
+        super.hideDialog();
+        isDetached = false;
+    }
+
     /**
      * Updates the details dialog with the details of the given photo.
      *
