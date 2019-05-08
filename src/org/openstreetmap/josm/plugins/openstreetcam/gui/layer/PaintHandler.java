@@ -204,9 +204,11 @@ class PaintHandler {
             final Cluster selectedCluster, final Photo selectedPhoto, final Detection selectedDetection) {
         final Composite composite = selectedCluster != null ? TRANSPARENT_COMPOSITE : graphics.getComposite();
         graphics.setComposite(composite);
-        for (final Cluster cluster : clusters) {
-            if (selectedCluster == null || !cluster.equals(selectedCluster)) {
-                drawCluster(graphics, mapView, cluster, selectedPhoto, false);
+        if (clusters != null) {
+            for (final Cluster cluster : clusters) {
+                if (selectedCluster == null || !cluster.equals(selectedCluster)) {
+                    drawCluster(graphics, mapView, cluster, selectedPhoto, false);
+                }
             }
         }
         if (selectedCluster != null) {
@@ -268,25 +270,25 @@ class PaintHandler {
         if (Util.containsLatLon(mapView, photo.getPoint())) {
             final Point point = mapView.getPoint(photo.getPoint());
             if (DataSet.getInstance().getSelectedCluster() != null
-                    && DataSet.getInstance().getSelectedCluster().getPhotos() != null && DataSet.getInstance()
-                    .getSelectedCluster().getPhotos().contains(photo)) {
+                    && DataSet.getInstance().getSelectedCluster().getPhotos() != null
+                    && DataSet.getInstance().getSelectedCluster().getPhotos().contains(photo)) {
                 if (photo.getHeading() != null) {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple() :
-                        IconConfig.getInstance().getPhotoUnselectedIconPurple();
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple()
+                            : IconConfig.getInstance().getPhotoUnselectedIconPurple();
                     PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
                 } else {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple() :
-                        IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple()
+                            : IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
                     PaintManager.drawIcon(graphics, icon, point);
                 }
             } else {
                 if (photo.getHeading() != null) {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon() :
-                        IconConfig.getInstance().getPhotoIcon();
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
+                            : IconConfig.getInstance().getPhotoIcon();
                     PaintManager.drawIcon(graphics, icon, point);
                 } else {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon() :
-                        IconConfig.getInstance().getPhotoNoHeadingIcon();
+                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
+                            : IconConfig.getInstance().getPhotoNoHeadingIcon();
                     PaintManager.drawIcon(graphics, icon, point);
                 }
             }
@@ -426,8 +428,8 @@ class PaintHandler {
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
         } else {
             final List<Point> geometry = new ArrayList<>();
-            for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode());
-                    i <= way.getDownloadedNodes().indexOf(way.getMatchedToNode()); i++) {
+            for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode()); i <= way.getDownloadedNodes()
+                    .indexOf(way.getMatchedToNode()); i++) {
                 geometry.add(mapView.getPoint(way.getDownloadedNodes().get(i)));
             }
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
@@ -441,10 +443,11 @@ class PaintHandler {
         final LatLon fromPoint = new LatLon(way.getMatchedFromNode().lat(), way.getMatchedFromNode().lon());
         final LatLon toPoint = new LatLon(way.getMatchedToNode().lat(), way.getMatchedToNode().lon());
         Optional<LatLon> middlePoint;
-        if(way.isStraight()) {
+        if (way.isStraight()) {
             middlePoint = BoundingBoxUtil.middlePointOfLineInMapViewBounds(fromPoint, toPoint);
-        }else{
-            final int middleIndex = (way.getDownloadedNodes().indexOf(way.getMatchedFromNode()) + way.getDownloadedNodes().indexOf(way.getMatchedToNode()))/2;
+        } else {
+            final int middleIndex = (way.getDownloadedNodes().indexOf(way.getMatchedFromNode())
+                    + way.getDownloadedNodes().indexOf(way.getMatchedToNode())) / 2;
             final Node middleNode = way.getDownloadedNodes().get(middleIndex);
             middlePoint = Optional.of(new LatLon(middleNode.lat(), middleNode.lon()));
         }

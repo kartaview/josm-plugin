@@ -70,6 +70,9 @@ public final class DataSet {
     /** the currently downloaded OSM matched data */
     private List<OsmElement> matchedData;
 
+    /** true if the currently selected elements are a result of a remote selection action */
+    private boolean isRemoteSelection;
+
     private DataSet() {}
 
     public static DataSet getInstance() {
@@ -103,6 +106,7 @@ public final class DataSet {
         this.selectedSequence = null;
         this.selectedCluster = null;
         this.matchedData = null;
+        setRemoteSelection(false);
     }
 
     /**
@@ -793,5 +797,24 @@ public final class DataSet {
     public boolean selectedClusterHasOsmElements() {
         return selectedCluster != null && selectedCluster.getOsmElements() != null
                 && !selectedCluster.getOsmElements().isEmpty();
+    }
+
+    /**
+     * Returns the 'isRemoteSelection' flag.
+     *
+     * @return a {@code boolean} value
+     */
+    public boolean isRemoteSelection() {
+        return isRemoteSelection;
+    }
+
+    /**
+     * Sets the 'isRemoteSelection' flag. This flag indicates if the selected items are selected as a result of a remote
+     * item selection.
+     *
+     * @param isRemoteSelection boolean value
+     */
+    public void setRemoteSelection(final boolean isRemoteSelection) {
+        this.isRemoteSelection = isRemoteSelection;
     }
 }

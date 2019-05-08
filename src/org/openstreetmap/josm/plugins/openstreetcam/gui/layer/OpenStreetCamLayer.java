@@ -81,7 +81,8 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                 }
 
                 // draw clusters
-                if (dataSet.getClusters() != null && dataTypes.contains(DataType.CLUSTER)) {
+                if ((dataSet.getClusters() != null && dataTypes.contains(DataType.CLUSTER))
+                        || dataSet.isRemoteSelection()) {
                     paintHandler.drawClusters(graphics, mapView, dataSet.getClusters(), dataSet.getSelectedCluster(),
                             dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
                 }
@@ -93,7 +94,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                         dataSet.getSelectedDetection());
             }
 
-            //draw downloaded matched data
+            // draw downloaded matched data
             if (dataSet.hasMatchedData()) {
                 paintHandler.drawMatchedData(graphics, mapView, dataSet.getMatchedData());
             }
