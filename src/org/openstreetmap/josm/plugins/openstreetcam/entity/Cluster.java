@@ -131,4 +131,9 @@ public class Cluster {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return point.lat() + ";" + point.lon() + ";" + facing + ";" + sign.getInternalName();
+    }
 }

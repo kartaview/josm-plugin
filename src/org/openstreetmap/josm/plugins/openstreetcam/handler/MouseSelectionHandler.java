@@ -112,7 +112,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
 
-    private void handleClusterSelection(final Cluster selectedCluster) {
+    void handleClusterSelection(final Cluster selectedCluster) {
         final Cluster cluster = enhanceCluster(selectedCluster);
 
         // select photo belonging to the first detection
