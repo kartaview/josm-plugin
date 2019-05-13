@@ -285,7 +285,7 @@ class PaintHandler {
                 if (photo.getHeading() != null) {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIcon()
                             : IconConfig.getInstance().getPhotoIcon();
-                    PaintManager.drawIcon(graphics, icon, point);
+                    PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
                 } else {
                     final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIcon()
                             : IconConfig.getInstance().getPhotoNoHeadingIcon();
