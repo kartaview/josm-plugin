@@ -656,7 +656,7 @@ public final class DataSet {
      * @return boolean
      */
     public boolean hasItems() {
-        return hasSegments() || hasDetections() || hasPhotos() || hasClusters();
+        return hasSegments() || hasDetections() || hasPhotos() || hasClusters() || isRemoteSelection;
     }
 
     /**
