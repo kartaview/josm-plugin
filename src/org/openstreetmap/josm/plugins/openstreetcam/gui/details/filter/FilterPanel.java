@@ -127,7 +127,7 @@ class FilterPanel extends JPanel {
             addUserFilter(filter.isOlnyUserData());
             addDateFilter(filter.getDate());
         }
-        if(DataSet.getInstance().getSelectedSequence() != null){
+        if (DataSet.getInstance().getSelectedSequence() != null) {
             pickerDate.setEnabled(false);
             cbbUser.setEnabled(false);
         }
@@ -136,11 +136,13 @@ class FilterPanel extends JPanel {
     private void addDataTypeFilter(final List<DataType> types) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeLbl(), Font.BOLD),
                 Constraints.LBL_DATA_TYPE);
-        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), Font.PLAIN, null,
-                types != null && types.contains(DataType.PHOTO));
+        cbbPhotos = CheckBoxBuilder
+                .build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), new DataTypeSelectionListener(),
+                        Font.PLAIN, null, types != null && types.contains(DataType.PHOTO));
         add(cbbPhotos, Constraints.CBB_PHOTOS);
-        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(),
-                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
+        cbbDetections = CheckBoxBuilder
+                .build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(), new DataTypeSelectionListener(),
+                        Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
         add(cbbDetections, Constraints.CBB_DETECTIONS);
         cbbCluster = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(),
                 new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.CLUSTER), true);
@@ -277,10 +279,12 @@ class FilterPanel extends JPanel {
         boolean enableCommonFilters = false;
         boolean enableDetectionFilters = false;
         boolean enableClusterFilters = false;
+        boolean enableRegionFilter = false;
         if (dataTypes != null) {
             enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
             enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
             enableClusterFilters = dataTypes.contains(DataType.CLUSTER);
+            enableRegionFilter = !(dataTypes.contains(DataType.PHOTO) && (dataTypes.size() == 1));
         }
 
         // common filters
@@ -303,6 +307,9 @@ class FilterPanel extends JPanel {
         // cluster only filters
         minConfidenceLvl.setEnabled(enableClusterFilters);
         maxConfidenceLvl.setEnabled(enableClusterFilters);
+
+        // region filter
+        detectionRegion.setEnabled(enableRegionFilter);
     }
 
 
@@ -432,7 +439,7 @@ class FilterPanel extends JPanel {
         } else {
             result = new ConfidenceLevelFilter(minConfidence, maxConfidence);
         }
-        return result; 
+        return result;
     }
 
     /**
