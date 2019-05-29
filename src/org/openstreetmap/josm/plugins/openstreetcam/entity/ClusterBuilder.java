@@ -98,7 +98,7 @@ public class ClusterBuilder {
         this.componentValue = componentValue;
     }
 
-    public void laneCount(final Short laneCount){
+    public void laneCount(final Short laneCount) {
         this.laneCount = laneCount;
     }
 
@@ -150,7 +150,9 @@ public class ClusterBuilder {
         return componentValue;
     }
 
-    public Short getLaneCount() { return laneCount; }
+    public Short getLaneCount() {
+        return laneCount;
+    }
 
     public Cluster build() {
         return new Cluster(this);

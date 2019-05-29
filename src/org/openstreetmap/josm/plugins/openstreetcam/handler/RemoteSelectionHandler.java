@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.List;
 import java.util.Optional;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
@@ -23,7 +24,14 @@ import com.telenav.josm.common.thread.ThreadPool;
  */
 public class RemoteSelectionHandler {
 
+    private final static String SEPARATOR = ";";
+    private final static int LAT_POZ = 0;
+    private final static int LON_POZ = 0;
+    private final static int FACING_POZ = 0;
+    private final static int INTERNAL_NAME_POZ = 0;
+
     private final SelectionHandler selectionHandler = new SelectionHandler();
+
 
     /**
      * Selects the clusters associated with the given identifier.
@@ -36,8 +44,11 @@ public class RemoteSelectionHandler {
                 final List<Cluster> clusters =
                         ServiceHandler.getInstance().searchClusters(BoundingBoxUtil.currentBoundingBox(), null);
                 if (clusters != null && !clusters.isEmpty()) {
-                    final Optional<Cluster> selectedCluster =
+                    Optional<Cluster> selectedCluster =
                             clusters.stream().filter(c -> c.toString().equals(identifier)).findFirst();
+                    if (!selectedCluster.isPresent()) {
+                        selectedCluster = findCluster(clusters, identifier);
+                    }
                     if (selectedCluster.isPresent()) {
                         DataSet.getInstance().setRemoteSelection(true);
                         selectionHandler.handleClusterSelection(selectedCluster.get());
@@ -45,5 +56,19 @@ public class RemoteSelectionHandler {
                 }
             });
         }
+    }
+
+
+    private Optional<Cluster> findCluster(final List<Cluster> clusters, final String identifier) {
+        final String[] parts = identifier.split(SEPARATOR);
+        final double lat = Double.parseDouble(parts[LAT_POZ]);
+        final double lon = Double.parseDouble(parts[LON_POZ]);
+        final double facing = Double.parseDouble(parts[FACING_POZ]);
+        final LatLon point = new LatLon(lat, lon);
+        final String signInternalName = parts[INTERNAL_NAME_POZ];
+        final Optional<Cluster> selectedCluster = clusters.stream()
+                .filter(ClusterPredicates.hasSameSign(signInternalName)).filter(ClusterPredicates.hasSameFacing(facing))
+                .filter(ClusterPredicates.isNearby(point)).findFirst();
+        return selectedCluster;
     }
 }

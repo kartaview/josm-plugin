@@ -30,6 +30,9 @@ public final class Config extends BaseConfig {
     private static final int MOUSE_HOVER_MAX_DELAY = 30000;
     private static final int AUTOPLAY_MIN_DELAY = 200;
     private static final int AUTOPLAY_MAX_DELAY = 2000;
+    private static final double FACING_THRESHOLD = 30.0;
+    private static final double DISTANCE_THRESHOLD = 30.0;
+
 
     private final int closestPhotosMaxItems;
     private final int tracksMaxZoom;
@@ -40,6 +43,8 @@ public final class Config extends BaseConfig {
     private final int mouseHoverMaxDelay;
     private final int autoplayMinDelay;
     private final int autoplayMaxDelay;
+    private final double clusterFacingThreshold;
+    private final double clusterDistanceThreshold;
 
 
     private Config() {
@@ -54,6 +59,9 @@ public final class Config extends BaseConfig {
         mouseHoverMaxDelay = readIntegerProperty("mouseHover.maxDelay", MOUSE_HOVER_MAX_DELAY);
         autoplayMinDelay = readIntegerProperty("autoplay.minDelay", AUTOPLAY_MIN_DELAY);
         autoplayMaxDelay = readIntegerProperty("autoplay.maxDelay", AUTOPLAY_MAX_DELAY);
+
+        clusterFacingThreshold = readDoubleProperty("cluster.facing.threshold", FACING_THRESHOLD);
+        clusterDistanceThreshold = readDoubleProperty("cluster.distance.threshold", DISTANCE_THRESHOLD);
     }
 
 
@@ -96,5 +104,13 @@ public final class Config extends BaseConfig {
 
     public int getAutoplayMaxDelay() {
         return autoplayMaxDelay;
+    }
+
+    public double getClusterFacingThreshold() {
+        return clusterFacingThreshold;
+    }
+
+    public double getClusterDistanceThreshold() {
+        return clusterDistanceThreshold;
     }
 }
