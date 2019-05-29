@@ -52,6 +52,9 @@ public class RemoteSelectionHandler {
                     if (selectedCluster.isPresent()) {
                         DataSet.getInstance().setRemoteSelection(true);
                         selectionHandler.handleClusterSelection(selectedCluster.get());
+                    } else {
+                        DataSet.getInstance().setRemoteSelection(false);
+                        selectionHandler.handleDataUnselection();
                     }
                 }
             });
