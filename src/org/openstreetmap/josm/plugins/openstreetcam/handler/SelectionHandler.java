@@ -435,6 +435,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
     @Override
     public void selectPhotoDetection(final Detection selectedDetection) {
+        DataSet.getInstance().setSelectedDetection(selectedDetection);
         ThreadPool.getInstance().execute(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
