@@ -26,6 +26,7 @@ import com.telenav.josm.common.gui.CancelAction;
 import com.telenav.josm.common.gui.ModalDialog;
 import com.telenav.josm.common.gui.builder.ButtonBuilder;
 import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import org.openstreetmap.josm.tools.GuiSizesHelper;
 
 
 /**
@@ -37,7 +38,7 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
 public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
-    private static final Dimension HIGH_ZOOM_DIM = new Dimension(500, 470);
+    private static final Dimension HIGH_ZOOM_DIM = new Dimension(650, 500);
     private static final Dimension DIM = new Dimension(380, 150);
 
     private FilterPanel pnlFilter;
@@ -47,10 +48,10 @@ public class FilterDialog extends ModalDialog {
         super(GuiConfig.getInstance().getDlgFilterTitle(), icon.getImage());
         final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
-        Dimension dimension = DIM;
+        Dimension dimension = GuiSizesHelper.getDimensionDpiAdjusted(DIM);
         if (zoom >= mapViewSettings.getPhotoZoom()) {
             isHighLevelZoom = true;
-            dimension = HIGH_ZOOM_DIM;
+            dimension = GuiSizesHelper.getDimensionDpiAdjusted(HIGH_ZOOM_DIM);
         }
         createComponents();
         setLocationRelativeTo(MainApplication.getMap().mapView);
