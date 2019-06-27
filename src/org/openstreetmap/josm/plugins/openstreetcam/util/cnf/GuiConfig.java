@@ -186,7 +186,7 @@ public final class GuiConfig extends BaseConfig {
     private final String detectionCreatedDate;
     private final String detectionUpdatedDate;
     private final String clusterDetectionsLbl;
-    private final String clusterComponentValueLbl;
+    private final String clusterOcrValueLbl;
     private final String detectionIdLbl;
     private final String detectionConfidenceLbl;
     private final String facingConfidenceLbl;
@@ -195,7 +195,8 @@ public final class GuiConfig extends BaseConfig {
     private final String trackingConfidenceLbl;
     private final String ocrConfidenceLbl;
     private final String detectionTrackingIdLbl;
-    private final String detectionComponentValueLbl;
+    private final String detectionAutomaticOcrValueLbl;
+    private final String detectionManualOcrValueLbl;
     private final String clusterLaneCountText;
     private final String clusterConfidenceLevelText;
 
@@ -369,11 +370,12 @@ public final class GuiConfig extends BaseConfig {
         detectionCreatedDate = readProperty("detection.date.created");
         detectionUpdatedDate = readProperty("detection.date.updated");
         clusterDetectionsLbl = readProperty("cluster.detections.lbl");
-        clusterComponentValueLbl = readProperty("cluster.componentValue.lbl");
+        clusterOcrValueLbl = readProperty("cluster.ocrValue.lbl");
         detectionIdLbl = readProperty("detection.id");
         detectionTrackingIdLbl = readProperty("detection.tracking.id");
         detectionConfidenceLbl = readProperty("detection.confidence.detection");
-        detectionComponentValueLbl = readProperty("detection.componentValue.lbl");
+        detectionAutomaticOcrValueLbl = readProperty("detection.automaticOcrValue.lbl");
+        detectionManualOcrValueLbl = readProperty("detection.manualOcrValue.lbl");
         facingConfidenceLbl = readProperty("detection.confidence.facing");
         positioningConfidenceLbl = readProperty("detection.confidece.positioning");
         keypointsConfidenceLbl = readProperty("detection.confidence.keypoints");
@@ -980,8 +982,8 @@ public final class GuiConfig extends BaseConfig {
         return detectionFacingText;
     }
 
-    public String getClusterComponentValueLbl() {
-        return clusterComponentValueLbl;
+    public String getClusterOcrValueLbl() {
+        return clusterOcrValueLbl;
     }
 
     public String getDetectionIdLbl() {
@@ -1016,8 +1018,8 @@ public final class GuiConfig extends BaseConfig {
         return detectionTrackingIdLbl;
     }
 
-    public String getDetectionComponentValueLbl() {
-        return detectionComponentValueLbl;
+    public String getDetectionAutomaticOcrValueLbl() {
+        return detectionAutomaticOcrValueLbl;
     }
 
     public String getClusterLaneCountText() {
@@ -1050,5 +1052,9 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrevRowSelection() {
         return prevRowSelection;
+    }
+
+    public String getDetectionManualOcrValueLbl() {
+        return detectionManualOcrValueLbl;
     }
 }

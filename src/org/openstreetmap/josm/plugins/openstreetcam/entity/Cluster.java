@@ -31,7 +31,7 @@ public class Cluster {
     private final Collection<OsmElement> osmElements;
     private final List<Detection> detections;
     private final List<Photo> photos;
-    private final String componentValue;
+    private final String ocrValue;
     private final Short laneCount;
 
 
@@ -47,7 +47,7 @@ public class Cluster {
         this.osmElements = builder.getOsmElements();
         this.detections = builder.getDetections();
         this.photos = builder.getPhotos();
-        this.componentValue = builder.getComponentValue();
+        this.ocrValue = builder.getComponentValue();
         this.laneCount = builder.getLaneCount();
     }
 
@@ -96,8 +96,8 @@ public class Cluster {
         return photos;
     }
 
-    public String getComponentValue() {
-        return componentValue;
+    public String getOcrValue() {
+        return ocrValue;
     }
 
     public Short getLaneCount() {
