@@ -92,7 +92,7 @@ class DetectionButtonPanel extends BaseButtonPanel implements DetectionChangeObs
     }
 
     void enablePanelActions(final EditStatus editStatus) {
-        final boolean matchedDataFlag = DataSet.getInstance().selectedDetectionHasOsmElements();
+        final boolean matchedDataFlag = DataSet.getInstance().selectedDetectionHasValidOsmElements();
         switch (editStatus) {
             case OPEN:
                 enablePanelActions(true, true, true, matchedDataFlag);
