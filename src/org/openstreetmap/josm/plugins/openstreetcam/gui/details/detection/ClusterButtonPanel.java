@@ -82,7 +82,7 @@ class ClusterButtonPanel extends BaseButtonPanel implements ClusterObservable {
         boolean enablePhotoButtons = false;
         boolean enableMatchedDataButton = false;
         if (cluster != null) {
-            enableMatchedDataButton = DataSet.getInstance().selectedClusterHasOsmElements();
+            enableMatchedDataButton = DataSet.getInstance().selectedClusterHasValidOsmElements();
             enablePhotoButtons = cluster.getDetectionIds() != null && cluster.getDetectionIds().size() > 1;
         }
         btnNext.setEnabled(enablePhotoButtons);
