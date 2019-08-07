@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="josm-common-3.4.10">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/josm-common-3.4.10.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
