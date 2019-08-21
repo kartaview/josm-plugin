@@ -36,7 +36,8 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
                 GuiConfig.getInstance().getDetectionModeText(), GuiConfig.getInstance().getDetectionTaskStatusText(),
                 GuiConfig.getInstance().getDetectionValidationStatusText(), GuiConfig.getInstance().getDetectionIdLbl(),
                 GuiConfig.getInstance().getDetectionTrackingIdLbl(),
-                GuiConfig.getInstance().getDetectionComponentValueLbl(),
+                GuiConfig.getInstance().getDetectionAutomaticOcrValueLbl(),
+                GuiConfig.getInstance().getDetectionManualOcrValueLbl(),
                 GuiConfig.getInstance().getDetectionConfidenceLbl(), GuiConfig.getInstance().getFacingConfidenceLbl(),
                 GuiConfig.getInstance().getPositioningConfidenceLbl(),
                 GuiConfig.getInstance().getKeypointsConfidenceLbl(), GuiConfig.getInstance().getTrackingConfidenceLbl(),
@@ -66,8 +67,12 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         if (detection.getTrackingId() != null && !detection.getTrackingId().isEmpty()) {
             addInformation(GuiConfig.getInstance().getDetectionTrackingIdLbl(), detection.getTrackingId(), widthLbl);
         }
-        if (detection.getComponentValue() != null && !detection.getComponentValue().isEmpty()) {
-            addInformation(GuiConfig.getInstance().getDetectionComponentValueLbl(), detection.getComponentValue(),
+        if (detection.getAutomaticOcrValue() != null && !detection.getAutomaticOcrValue().isEmpty()) {
+            addInformation(GuiConfig.getInstance().getDetectionAutomaticOcrValueLbl(), detection.getAutomaticOcrValue(),
+                    widthLbl);
+        }
+        if (detection.getManualOcrValue() != null && !detection.getManualOcrValue().isEmpty()) {
+            addInformation(GuiConfig.getInstance().getDetectionManualOcrValueLbl(), detection.getManualOcrValue(),
                     widthLbl);
         }
         addConfidenceLevel(detection.getConfidenceLevel(), widthLbl);

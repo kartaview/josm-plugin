@@ -46,7 +46,7 @@ public class ClusterBuilder {
         detectionIds(cluster.getDetectionIds());
         osmComparison(cluster.getOsmComparison());
         osmElements(cluster.getOsmElements());
-        componentValue(cluster.getComponentValue());
+        componentValue(cluster.getOcrValue());
         laneCount(cluster.getLaneCount());
     }
 

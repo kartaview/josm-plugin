@@ -53,7 +53,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
                 GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterConfidenceLevelText(),
-                GuiConfig.getInstance().getClusterComponentValueLbl(),
+                GuiConfig.getInstance().getClusterOcrValueLbl(),
                 GuiConfig.getInstance().getClusterLaneCountText());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
@@ -71,7 +71,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                 addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(), ZERO_STRING, widthLbl);
             }
         }
-        addInformation(GuiConfig.getInstance().getClusterComponentValueLbl(), cluster.getComponentValue(), widthLbl);
+        addInformation(GuiConfig.getInstance().getClusterOcrValueLbl(), cluster.getOcrValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
 
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
