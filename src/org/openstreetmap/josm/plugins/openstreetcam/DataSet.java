@@ -14,19 +14,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElementType;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.OsmDataHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
@@ -797,12 +796,12 @@ public final class DataSet {
 
     public boolean selectedDetectionHasValidOsmElements() {
         boolean validOsmElement = true;
-        List<OsmElement> selectedDetectionOsmElements = (List) selectedDetection.getOsmElements();
+        final List<OsmElement> selectedDetectionOsmElements = (List<OsmElement>) selectedDetection.getOsmElements();
         if (selectedDetectionOsmElements != null) {
             final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
                     OsmDataHandler.retrieveServerObjects(selectedDetectionOsmElements);
             for (int i = 0; i < selectedDetectionOsmElements.size(); ++i) {
-                OsmElementType element = selectedDetectionOsmElements.get(0).getType();
+                final OsmElementType element = selectedDetectionOsmElements.get(0).getType();
                 if (element.equals(OsmElementType.WAY_SECTION)) {
                     final Way downloadedWay = (Way) result.get().getPrimitiveById(
                             new SimplePrimitiveId(selectedDetectionOsmElements.get(0).getOsmId(),
@@ -829,12 +828,12 @@ public final class DataSet {
 
     public boolean selectedClusterHasValidOsmElements() {
         boolean validOsmElement = true;
-        List<OsmElement> selectedClusterOsmElements = (List) selectedCluster.getOsmElements();
+        final List<OsmElement> selectedClusterOsmElements = (List<OsmElement>) selectedCluster.getOsmElements();
         if (selectedClusterOsmElements != null) {
             final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
                     OsmDataHandler.retrieveServerObjects(selectedClusterOsmElements);
             for (int i = 0; i < selectedClusterOsmElements.size(); ++i) {
-                OsmElementType element = selectedClusterOsmElements.get(0).getType();
+                final OsmElementType element = selectedClusterOsmElements.get(0).getType();
                 if (element.equals(OsmElementType.WAY_SECTION)) {
                     final Way downloadedWay = (Way) result.get().getPrimitiveById(
                             new SimplePrimitiveId(selectedClusterOsmElements.get(0).getOsmId(), OsmPrimitiveType.WAY));
