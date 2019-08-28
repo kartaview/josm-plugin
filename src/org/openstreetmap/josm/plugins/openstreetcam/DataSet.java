@@ -183,7 +183,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -339,7 +339,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getDetections().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-                    detection = selectedCluster.getDetections().get(index);
+            detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -430,13 +430,13 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                Optional<Photo> result = Optional.empty();
-                if (photos != null) {
-                    result = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                }
-                return result;
+        Optional<Photo> result = Optional.empty();
+        if (photos != null) {
+            result = photos.stream()
+                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+        }
+        return result;
     }
 
     /**
@@ -785,67 +785,69 @@ public final class DataSet {
     }
 
     /**
-     * Checks if the current selected detection has osm elements.
+     * Checks if the current selected detection has OSM elements.
      *
      * @return {@code boolean}
      */
     public boolean selectedDetectionHasOsmElements() {
-        return selectedDetection != null && selectedDetection.getOsmElements() != null &&
-                !selectedDetection.getOsmElements().isEmpty();
-    }
-
-    public boolean selectedDetectionHasValidOsmElements() {
-        boolean validOsmElement = true;
-        final List<OsmElement> selectedDetectionOsmElements = (List<OsmElement>) selectedDetection.getOsmElements();
-        if (selectedDetectionOsmElements != null) {
-            final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                    OsmDataHandler.retrieveServerObjects(selectedDetectionOsmElements);
-            for (int i = 0; i < selectedDetectionOsmElements.size(); ++i) {
-                final OsmElementType element = selectedDetectionOsmElements.get(0).getType();
-                if (element.equals(OsmElementType.WAY_SECTION)) {
-                    final Way downloadedWay = (Way) result.get().getPrimitiveById(
-                            new SimplePrimitiveId(selectedDetectionOsmElements.get(0).getOsmId(),
-                                    OsmPrimitiveType.WAY));
-                    if (downloadedWay.getNodesCount() <= 0) {
-                        validOsmElement = false;
-                    }
-                }
-            }
-        }
-        return selectedDetection != null && selectedDetection.getOsmElements() != null &&
-                !selectedDetection.getOsmElements().isEmpty() && validOsmElement;
+        return selectedDetection != null && selectedDetection.getOsmElements() != null
+                && !selectedDetection.getOsmElements().isEmpty();
     }
 
     /**
-     * Checks if the current selected cluster has osm elements.
+     * Checks if the currently selected detection has valid OSM elements.
      *
-     * @return {@code boolean}
+     * @return a {@code boolean} value
      */
-    public boolean selectedClusterHasOsmElements() {
-        return selectedCluster != null && selectedCluster.getOsmElements() != null &&
-                !selectedCluster.getOsmElements().isEmpty();
+    public boolean selectedDetectionHasValidOsmElements() {
+        boolean validOsmElement = false;
+        if (selectedClusterHasOsmElements()) {
+            validOsmElement = hasValidOsmElements(selectedDetection.getOsmElements());
+        }
+        return validOsmElement;
     }
 
+    /**
+     * Checks if the current selected cluster has OSM elements.
+     *
+     * @return {@code boolean} value
+     */
+    public boolean selectedClusterHasOsmElements() {
+        return selectedCluster != null && selectedCluster.getOsmElements() != null
+                && !selectedCluster.getOsmElements().isEmpty();
+    }
+
+    /**
+     * Checks if the currently selected cluster has valid OSM elements.
+     *
+     * @return a {@code boolean} value
+     */
     public boolean selectedClusterHasValidOsmElements() {
-        boolean validOsmElement = true;
-        final List<OsmElement> selectedClusterOsmElements = (List<OsmElement>) selectedCluster.getOsmElements();
-        if (selectedClusterOsmElements != null) {
-            final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                    OsmDataHandler.retrieveServerObjects(selectedClusterOsmElements);
-            for (int i = 0; i < selectedClusterOsmElements.size(); ++i) {
-                final OsmElementType element = selectedClusterOsmElements.get(0).getType();
-                if (element.equals(OsmElementType.WAY_SECTION)) {
-                    final Way downloadedWay = (Way) result.get().getPrimitiveById(
-                            new SimplePrimitiveId(selectedClusterOsmElements.get(0).getOsmId(), OsmPrimitiveType.WAY));
-                    if (downloadedWay.getNodesCount() <= 0) {
-                        validOsmElement = false;
-                    }
+        boolean validOsmElement = false;
+        if (selectedClusterHasOsmElements()) {
+            validOsmElement = hasValidOsmElements(selectedCluster.getOsmElements());
+        }
+        return validOsmElement;
+    }
+
+
+    private boolean hasValidOsmElements(final Collection<OsmElement> osmElements) {
+        boolean isValid = true;
+        final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
+                OsmDataHandler.retrieveServerObjects(osmElements);
+        for (final OsmElement osmElement : osmElements) {
+            final OsmElementType element = osmElement.getType();
+            if (element.equals(OsmElementType.WAY_SECTION)) {
+                final Way downloadedWay = (Way) result.get()
+                        .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
+                if (downloadedWay.getNodesCount() <= 0) {
+                    isValid = false;
                 }
             }
         }
-        return selectedCluster != null && selectedCluster.getOsmElements() != null &&
-                !selectedCluster.getOsmElements().isEmpty() && validOsmElement;
+        return isValid;
     }
+
 
     /**
      * Returns the 'isRemoteSelection' flag.
