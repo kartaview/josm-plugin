@@ -183,7 +183,7 @@ public final class DataSet {
             ThreadPool.getInstance().execute(() -> {
                 final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
                 PhotoHandler.getInstance()
-                        .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
+                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
     }
@@ -339,7 +339,7 @@ public final class DataSet {
             int index = isNext ? ++selectedIndex : --selectedIndex;
             index = index > selectedCluster.getDetections().size() - 1 ? 0
                     : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-            detection = selectedCluster.getDetections().get(index);
+                    detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -430,13 +430,13 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-        Optional<Photo> result = Optional.empty();
-        if (photos != null) {
-            result = photos.stream()
-                    .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
-        }
-        return result;
+                Optional<Photo> result = Optional.empty();
+                if (photos != null) {
+                    result = photos.stream()
+                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
+                            .findFirst();
+                }
+                return result;
     }
 
     /**
@@ -830,24 +830,25 @@ public final class DataSet {
         return validOsmElement;
     }
 
-
     private boolean hasValidOsmElements(final Collection<OsmElement> osmElements) {
-        boolean isValid = true;
+        boolean isValid = false;
         final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
                 OsmDataHandler.retrieveServerObjects(osmElements);
-        for (final OsmElement osmElement : osmElements) {
-            final OsmElementType element = osmElement.getType();
-            if (element.equals(OsmElementType.WAY_SECTION)) {
-                final Way downloadedWay = (Way) result.get()
-                        .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
-                if (downloadedWay.getNodesCount() <= 0) {
-                    isValid = false;
+        if (result.isPresent()) {
+            isValid = true;
+            for (final OsmElement osmElement : osmElements) {
+                final OsmElementType element = osmElement.getType();
+                if (element.equals(OsmElementType.WAY_SECTION)) {
+                    final Way downloadedWay = (Way) result.get()
+                            .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
+                    if (downloadedWay.getNodesCount() <= 0) {
+                        isValid = false;
+                    }
                 }
             }
         }
         return isValid;
     }
-
 
     /**
      * Returns the 'isRemoteSelection' flag.
