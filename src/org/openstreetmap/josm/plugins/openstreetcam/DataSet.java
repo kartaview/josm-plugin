@@ -785,66 +785,69 @@ public final class DataSet {
     }
 
     /**
-     * Checks if the current selected detection has osm elements.
+     * Checks if the current selected detection has OSM elements.
      *
      * @return {@code boolean}
      */
     public boolean selectedDetectionHasOsmElements() {
-        return selectedDetection != null && selectedDetection.getOsmElements() != null &&
-                !selectedDetection.getOsmElements().isEmpty();
-    }
-
-    public boolean selectedDetectionHasValidOsmElements() {
-        boolean validOsmElement = true;
-        final List<OsmElement> selectedDetectionOsmElements = (List<OsmElement>) selectedDetection.getOsmElements();
-        if (selectedDetectionOsmElements != null) {
-            final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                    OsmDataHandler.retrieveServerObjects(selectedDetectionOsmElements);
-            for (int i = 0; i < selectedDetectionOsmElements.size(); ++i) {
-                final OsmElementType element = selectedDetectionOsmElements.get(0).getType();
-                if (element.equals(OsmElementType.WAY_SECTION)) {
-                    final Way downloadedWay = (Way) result.get().getPrimitiveById(
-                            new SimplePrimitiveId(selectedDetectionOsmElements.get(0).getOsmId(),
-                                    OsmPrimitiveType.WAY));
-                    if (downloadedWay.getNodesCount() <= 0) {
-                        validOsmElement = false;
-                    }
-                }
-            }
-        }
-        return selectedDetection != null && selectedDetection.getOsmElements() != null &&
-                !selectedDetection.getOsmElements().isEmpty() && validOsmElement;
+        return selectedDetection != null && selectedDetection.getOsmElements() != null
+                && !selectedDetection.getOsmElements().isEmpty();
     }
 
     /**
-     * Checks if the current selected cluster has osm elements.
+     * Checks if the currently selected detection has valid OSM elements.
      *
-     * @return {@code boolean}
+     * @return a {@code boolean} value
      */
-    public boolean selectedClusterHasOsmElements() {
-        return selectedCluster != null && selectedCluster.getOsmElements() != null &&
-                !selectedCluster.getOsmElements().isEmpty();
+    public boolean selectedDetectionHasValidOsmElements() {
+        boolean validOsmElement = false;
+        if (selectedClusterHasOsmElements()) {
+            validOsmElement = hasValidOsmElements(selectedDetection.getOsmElements());
+        }
+        return validOsmElement;
     }
 
+    /**
+     * Checks if the current selected cluster has OSM elements.
+     *
+     * @return {@code boolean} value
+     */
+    public boolean selectedClusterHasOsmElements() {
+        return selectedCluster != null && selectedCluster.getOsmElements() != null
+                && !selectedCluster.getOsmElements().isEmpty();
+    }
+
+    /**
+     * Checks if the currently selected cluster has valid OSM elements.
+     *
+     * @return a {@code boolean} value
+     */
     public boolean selectedClusterHasValidOsmElements() {
-        boolean validOsmElement = true;
-        final List<OsmElement> selectedClusterOsmElements = (List<OsmElement>) selectedCluster.getOsmElements();
-        if (selectedClusterOsmElements != null) {
-            final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                    OsmDataHandler.retrieveServerObjects(selectedClusterOsmElements);
-            for (int i = 0; i < selectedClusterOsmElements.size(); ++i) {
-                final OsmElementType element = selectedClusterOsmElements.get(0).getType();
+        boolean validOsmElement = false;
+        if (selectedClusterHasOsmElements()) {
+            validOsmElement = hasValidOsmElements(selectedCluster.getOsmElements());
+        }
+        return validOsmElement;
+    }
+
+    private boolean hasValidOsmElements(final Collection<OsmElement> osmElements) {
+        boolean isValid = false;
+        final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
+                OsmDataHandler.retrieveServerObjects(osmElements);
+        if (result.isPresent()) {
+            isValid = true;
+            for (final OsmElement osmElement : osmElements) {
+                final OsmElementType element = osmElement.getType();
                 if (element.equals(OsmElementType.WAY_SECTION)) {
-                    final Way downloadedWay = (Way) result.get().getPrimitiveById(
-                            new SimplePrimitiveId(selectedClusterOsmElements.get(0).getOsmId(), OsmPrimitiveType.WAY));
+                    final Way downloadedWay = (Way) result.get()
+                            .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
                     if (downloadedWay.getNodesCount() <= 0) {
-                        validOsmElement = false;
+                        isValid = false;
                     }
                 }
             }
         }
-        return selectedCluster != null && selectedCluster.getOsmElements() != null &&
-                !selectedCluster.getOsmElements().isEmpty() && validOsmElement;
+        return isValid;
     }
 
     /**
