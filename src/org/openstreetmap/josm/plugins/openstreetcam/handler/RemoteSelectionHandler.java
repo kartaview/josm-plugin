@@ -25,6 +25,7 @@ import com.telenav.josm.common.thread.ThreadPool;
 public class RemoteSelectionHandler {
 
     private final static String SEPARATOR = ";";
+    private final static String NUMBER_PATTERN = "-?\\d+(\\.\\d+)?";
     private final static int LAT_POZ = 0;
     private final static int LON_POZ = 0;
     private final static int FACING_POZ = 0;
@@ -64,14 +65,18 @@ public class RemoteSelectionHandler {
 
     private Optional<Cluster> findCluster(final List<Cluster> clusters, final String identifier) {
         final String[] parts = identifier.split(SEPARATOR);
-        final double lat = Double.parseDouble(parts[LAT_POZ]);
-        final double lon = Double.parseDouble(parts[LON_POZ]);
-        final double facing = Double.parseDouble(parts[FACING_POZ]);
-        final LatLon point = new LatLon(lat, lon);
-        final String signInternalName = parts[INTERNAL_NAME_POZ];
-        final Optional<Cluster> selectedCluster = clusters.stream()
-                .filter(ClusterPredicates.hasSameSign(signInternalName)).filter(ClusterPredicates.hasSameFacing(facing))
-                .filter(ClusterPredicates.isNearby(point)).findFirst();
+        Optional<Cluster> selectedCluster = Optional.empty();
+        if (parts[LAT_POZ].matches(NUMBER_PATTERN) && parts[LON_POZ].matches(NUMBER_PATTERN)
+                && parts[FACING_POZ].matches(NUMBER_PATTERN)) {
+            final double lat = Double.parseDouble(parts[LAT_POZ]);
+            final double lon = Double.parseDouble(parts[LON_POZ]);
+            final double facing = Double.parseDouble(parts[FACING_POZ]);
+            final LatLon point = new LatLon(lat, lon);
+            final String signInternalName = parts[INTERNAL_NAME_POZ];
+            selectedCluster = clusters.stream().filter(ClusterPredicates.hasSameSign(signInternalName))
+                    .filter(ClusterPredicates.hasSameFacing(facing)).filter(ClusterPredicates.isNearby(point))
+                    .findFirst();
+        }
         return selectedCluster;
     }
 }
