@@ -452,7 +452,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 // enhance photo with heading
                 final Optional<Photo> clusterPhoto = DataSet.getInstance()
                         .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
-                if (clusterPhoto.isPresent()) {
+                if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {
                     photo.setHeading(clusterPhoto.get().getHeading());
                 }
                 SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
