@@ -167,7 +167,8 @@ public class DataUpdateHandler {
 
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         final List<BoundingBox> areas = BoundingBoxUtil.currentBoundingBoxes(mapViewSettings.isDataLoadFlag());
-        if (!areas.isEmpty()) {
+        final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
+        if (!areas.isEmpty() && zoom >= mapViewSettings.getPhotoZoom()) {
             final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(areas, searchFilter);
             if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
                 updateUI(resultSet, checkSelection);
