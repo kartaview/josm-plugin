@@ -196,26 +196,28 @@ public class DataUpdateHandler {
 
     private void updateSelection(final boolean checkSelection, final boolean isClusterInfoInPanel) {
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
-            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-            DetectionDetailsDialog.getInstance().clearDetailsDialog();
+            DetectionDetailsDialog.getInstance().clearClusterDetailsDialog(isClusterInfoInPanel);
         } else {
             if (checkSelection) {
                 final List<Detection> displayedPhotoDetections =
                         PhotoDetailsDialog.getInstance().getDisplayedPhotoDetections();
                 List<Detection> exposedDetections = null;
                 if (displayedPhotoDetections != null && DataSet.getInstance().hasDetections()) {
-                    exposedDetections = displayedPhotoDetections.stream()
-                            .filter(DataSet.getInstance().getDetections()::contains).collect(Collectors.toList());
+                    exposedDetections =
+                            displayedPhotoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
+                                    .collect(Collectors.toList());
                 }
-                PhotoDetailsDialog.getInstance().updatePhotoDetections(exposedDetections);
                 if (isClusterInfoInPanel) {
-                    DetectionDetailsDialog.getInstance()
-                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
-                    DetectionDetailsDialog.getInstance().updateClusterDetails(
-                            DataSet.getInstance().getSelectedCluster(), DataSet.getInstance().getSelectedDetection());
+                    if (!DataSet.getInstance().hasSelectedCluster() && !DataSet.getInstance().hasSelectedDetection()) {
+                        DetectionDetailsDialog.getInstance()
+                                .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                        DetectionDetailsDialog.getInstance()
+                                .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                                        DataSet.getInstance().getSelectedDetection());
+                    }
                 } else {
                     DetectionDetailsDialog.getInstance()
-                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                            .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
                 }
             }
         }

@@ -16,6 +16,7 @@ import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
@@ -179,6 +180,13 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         updateClusterDetails(null, null);
     }
 
+    public void clearClusterDetailsDialog(final boolean isClusterInfoDisplayed) {
+        if (isClusterInfoDisplayed) {
+            updateDetectionDetails(null);
+            updateClusterDetails(null, null);
+            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+        }
+    }
 
     @Override
     public void expand() {
