@@ -13,11 +13,14 @@ import java.awt.Dimension;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
@@ -185,6 +188,26 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             updateDetectionDetails(null);
             updateClusterDetails(null, null);
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+        }
+        if (DataSet.getInstance().hasSelectedCluster() && DataSet.getInstance().hasSelectedDetection()) {
+            if( !isClusterInfoDisplayed) {
+                final Cluster cluster = ServiceHandler.getInstance().retrieveClusterDetails(DataSet.getInstance().getSelectedCluster().getId());
+                final ClusterBuilder builder = new ClusterBuilder(DataSet.getInstance().getSelectedCluster());
+                if (cluster.getOsmElements() != null) {
+                    builder.osmElements(cluster.getOsmElements());
+                }
+                if (cluster.getPhotos() != null) {
+                    builder.photos(cluster.getPhotos());
+                }
+                if (cluster.getDetections() != null) {
+                    builder.detections(cluster.getDetections());
+                }
+                DataSet.getInstance().setSelectedCluster(builder.build());
+                updateClusterDetails(DataSet.getInstance().getSelectedCluster(), DataSet.getInstance().getSelectedDetection());
+                cmpInfo.revalidate();
+                revalidate();
+                repaint();
+            }
         }
     }
 

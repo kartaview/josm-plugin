@@ -144,9 +144,21 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
             final boolean updateSelection) {
         this.detections = detections;
-        if (updateSelection && selectedDetection != null && !selectedDetectionBelongsToSelectedCluster()) {
-            selectedDetection = detections != null ? detections.stream()
-                    .filter(detection -> detection.equals(selectedDetection)).findFirst().orElse(null) : null;
+        if (updateSelection && selectedDetection != null && !selectedDetectionBelongsToSelectedCluster() &&
+                selectedCluster != null) {
+            selectedDetection = detections != null ?
+                    detections.stream().filter(detection -> detection.equals(selectedDetection)).findFirst()
+                            .orElse(null) : null;
+        }
+
+        if (updateSelection && selectedDetection != null && selectedCluster == null) {
+            if (clusters != null) {
+                for (Cluster cluster : clusters) {
+                    if (cluster.getDetectionIds().contains(selectedDetection.getId())) {
+                        DataSet.getInstance().setSelectedCluster(cluster);
+                    }
+                }
+            }
         }
     }
 

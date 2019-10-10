@@ -179,8 +179,8 @@ public class DataUpdateHandler {
         final boolean isClusterInfoInPanel = DataSet.getInstance().getSelectedCluster() != null;
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
             GuiHelper.runInEDT(() -> {
-                DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelClusterData(resultSet.getClusters(), checkSelection);
+                DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
                 updateSelection(checkSelection, isClusterInfoInPanel);
                 if (DataSet.getInstance().hasNearbyPhotos()
