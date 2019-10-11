@@ -191,8 +191,9 @@ public final class DetectionDetailsDialog extends ToggleDialog {
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         }
         if (DataSet.getInstance().hasSelectedCluster() && DataSet.getInstance().hasSelectedDetection()) {
-            if( !isClusterInfoDisplayed) {
-                final Cluster cluster = ServiceHandler.getInstance().retrieveClusterDetails(DataSet.getInstance().getSelectedCluster().getId());
+            if (!isClusterInfoDisplayed) {
+                final Cluster cluster = ServiceHandler.getInstance()
+                        .retrieveClusterDetails(DataSet.getInstance().getSelectedCluster().getId());
                 final ClusterBuilder builder = new ClusterBuilder(DataSet.getInstance().getSelectedCluster());
                 if (cluster.getOsmElements() != null) {
                     builder.osmElements(cluster.getOsmElements());
