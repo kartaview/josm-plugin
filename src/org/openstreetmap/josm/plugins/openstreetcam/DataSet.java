@@ -148,12 +148,12 @@ public final class DataSet {
                 selectedCluster != null) {
             selectedDetection = detections != null ?
                     detections.stream().filter(detection -> detection.equals(selectedDetection)).findFirst()
-                            .orElse(null) : null;
+                    .orElse(null) : null;
         }
 
         if (updateSelection && selectedDetection != null && selectedCluster == null) {
             if (clusters != null) {
-                for (Cluster cluster : clusters) {
+                for (final Cluster cluster : clusters) {
                     if (cluster.getDetectionIds().contains(selectedDetection.getId())) {
                         DataSet.getInstance().setSelectedCluster(cluster);
                     }
@@ -853,7 +853,7 @@ public final class DataSet {
                 if (element.equals(OsmElementType.WAY_SECTION)) {
                     final Way downloadedWay = (Way) result.get()
                             .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
-                    if (downloadedWay.getNodesCount() <= 0) {
+                    if (downloadedWay != null && downloadedWay.getNodesCount() <= 0) {
                         isValid = false;
                     }
                 }
