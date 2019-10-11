@@ -8,7 +8,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
@@ -16,7 +15,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
@@ -200,25 +198,17 @@ public class DataUpdateHandler {
             DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
         } else {
             if (checkSelection) {
-                final List<Detection> displayedPhotoDetections =
-                        PhotoDetailsDialog.getInstance().getDisplayedPhotoDetections();
-                List<Detection> exposedDetections = null;
-                if (displayedPhotoDetections != null && DataSet.getInstance().hasDetections()) {
-                    exposedDetections =
-                            displayedPhotoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
-                                    .collect(Collectors.toList());
-                }
                 if (isClusterInfoInPanel) {
                     if (!DataSet.getInstance().hasSelectedCluster() && !DataSet.getInstance().hasSelectedDetection()) {
                         DetectionDetailsDialog.getInstance()
-                                .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                        .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
                         DetectionDetailsDialog.getInstance()
-                                .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
-                                        DataSet.getInstance().getSelectedDetection());
+                        .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                                DataSet.getInstance().getSelectedDetection());
                     }
                 } else {
                     DetectionDetailsDialog.getInstance()
-                            .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
                 }
             }
         }
