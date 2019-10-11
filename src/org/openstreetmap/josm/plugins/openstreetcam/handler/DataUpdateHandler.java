@@ -196,7 +196,7 @@ public class DataUpdateHandler {
 
     private void updateSelection(final boolean checkSelection, final boolean isClusterInfoInPanel) {
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
-            DetectionDetailsDialog.getInstance().clearClusterDetailsDialog(isClusterInfoInPanel);
+            DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
         } else {
             if (checkSelection) {
                 final List<Detection> displayedPhotoDetections =

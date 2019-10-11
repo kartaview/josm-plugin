@@ -20,6 +20,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
@@ -183,7 +184,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         updateClusterDetails(null, null);
     }
 
-    public void clearClusterDetailsDialog(final boolean isClusterInfoDisplayed) {
+    public void changeClusterDetailsDialog(final boolean isClusterInfoDisplayed) {
         if (isClusterInfoDisplayed) {
             updateDetectionDetails(null);
             updateClusterDetails(null, null);
@@ -203,10 +204,12 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                     builder.detections(cluster.getDetections());
                 }
                 DataSet.getInstance().setSelectedCluster(builder.build());
-                updateClusterDetails(DataSet.getInstance().getSelectedCluster(), DataSet.getInstance().getSelectedDetection());
+                SelectionHandler selectionHandler = new SelectionHandler();
+                selectionHandler.selectDetectionFromTable(DataSet.getInstance().getSelectedDetection());
                 cmpInfo.revalidate();
                 revalidate();
                 repaint();
+
             }
         }
     }
