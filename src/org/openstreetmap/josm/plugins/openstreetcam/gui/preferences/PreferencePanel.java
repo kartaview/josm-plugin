@@ -1,13 +1,13 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- *  https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * Copyright (c)2017, Telenav, Inc. All Rights Reserved
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ *
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.preferences;
 
 
+import static org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.Constraints.TABLE_DISPLAY_COLOR_LEGEND;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
@@ -33,8 +33,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
 import com.telenav.josm.common.gui.builder.LabelBuilder;
 import com.telenav.josm.common.gui.builder.TextComponentBuilder;
-
-import static org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.Constraints.TABLE_DISPLAY_COLOR_LEGEND;
 
 
 /**

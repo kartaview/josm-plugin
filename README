@@ -1,7 +1,6 @@
 This project display images from OpenStreetCam
-* this plugin was created by Telenav
 
 The detection icons are the following sources and have MIT license:
   *Mapillary (https://github.com/mapillary/mapillary_sprite_source)
   *Wikimedia commons
-  *Telenav creations
+  *Grab creations

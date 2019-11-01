@@ -1,18 +1,14 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
  *
- * Copyright (c)2019, Telenav, Inc. All Rights Reserved
  */
-
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
@@ -85,7 +81,7 @@ public class DownloadedWay extends OsmElement {
         boolean straight = true;
         final List<Node> waySection = new ArrayList<>(way.getNodes().subList( way.getNodes().indexOf(fromNode), way.getNodes().indexOf(toNode)));
         if(waySection.size() > SIZE_OF_TWO_POINT_LIST) {
-            List<Double> angles = new ArrayList<>();
+            final List<Double> angles = new ArrayList<>();
             for (int i = 1; i < waySection.size() - 1; i++) {
                 angles.add(Geometry.getNormalizedAngleInDegrees(
                         Geometry.getCornerAngle(waySection.get(i - 1).getEastNorth(), waySection.get(i).getEastNorth(), waySection.get(i).getEastNorth())));

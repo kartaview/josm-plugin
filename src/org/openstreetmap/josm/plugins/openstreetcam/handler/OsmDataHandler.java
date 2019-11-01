@@ -1,13 +1,15 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
  *
- * Copyright (c)2019, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
+import java.util.Collection;
+import java.util.Optional;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
@@ -18,11 +20,6 @@ import org.openstreetmap.josm.io.MultiFetchServerObjectReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmElement;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.util.Collection;
-import java.util.Optional;
 
 
 /**
@@ -46,18 +43,18 @@ public class OsmDataHandler {
     public static Optional<DataSet> retrieveServerObjects(final Collection<OsmElement> elements) {
         DataSet result = null;
         if (elements != null) {
-            MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
-            for (OsmElement element : elements) {
+            final MultiFetchServerObjectReader reader = MultiFetchServerObjectReader.create();
+            for (final OsmElement element : elements) {
                 appendOsmPrimitive(reader, element);
                 if (element.getMembers() != null) {
-                    for (OsmElement member : element.getMembers()) {
+                    for (final OsmElement member : element.getMembers()) {
                         appendOsmPrimitive(reader, member);
                     }
                 }
             }
             try {
                 result = reader.parseOsm(NullProgressMonitor.INSTANCE);
-            } catch (OsmTransferException e1) {
+            } catch (final OsmTransferException e1) {
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
                         GuiConfig.getInstance().getErrorDownloadOsmData(), GuiConfig.getInstance().getWarningTitle(),
                         JOptionPane.WARNING_MESSAGE));

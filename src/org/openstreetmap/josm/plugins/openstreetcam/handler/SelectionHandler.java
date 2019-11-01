@@ -1,10 +1,8 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
  *
- * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
@@ -47,7 +45,7 @@ import com.telenav.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -64,7 +62,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         handlePhotoUnselection();
         if (DataSet.getInstance().hasSelectedSequence() && DataSet.getInstance().hasItems()
                 && Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < PreferenceManager.getInstance()
-                        .loadMapViewSettings().getPhotoZoom()) {
+                .loadMapViewSettings().getPhotoZoom()) {
             // user zoomed out to segment view
             DataSet.getInstance().cleaHighZoomLevelData();
         }
@@ -232,21 +230,21 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         ThreadPool.getInstance().execute(() -> {
             final Long sequenceId =
                     photo != null ? photo.getSequenceId() : DataSet.getInstance().getSelectedPhoto().getSequenceId();
-            final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
+                    final Sequence sequence = ServiceHandler.getInstance().retrieveSequence(sequenceId);
 
-            if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
-                SwingUtilities.invokeLater(() -> {
-                    DataSet.getInstance().setSelectedSequence(sequence);
-                    PhotoDetailsDialog.getInstance().enableSequenceActions(
-                            DataSet.getInstance().enablePreviousPhotoAction(),
-                            DataSet.getInstance().enableNextPhotoAction(), null);
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                    if (sequence != null && sequence.hasData() && photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+                        SwingUtilities.invokeLater(() -> {
+                            DataSet.getInstance().setSelectedSequence(sequence);
+                            PhotoDetailsDialog.getInstance().enableSequenceActions(
+                                    DataSet.getInstance().enablePreviousPhotoAction(),
+                                    DataSet.getInstance().enableNextPhotoAction(), null);
+                            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
+                                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
+                            }
+                            OpenStreetCamLayer.getInstance().invalidate();
+                            MainApplication.getMap().repaint();
+                        });
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
-                    MainApplication.getMap().repaint();
-                });
-            }
         });
     }
 
@@ -439,7 +437,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         ThreadPool.getInstance().execute(() -> {
             final Detection detection = selectedDetection != null
                     ? ServiceHandler.getInstance().retrieveDetection(selectedDetection.getId()) : null;
-            SwingUtilities.invokeLater(() -> selectDetection(detection));
+                    SwingUtilities.invokeLater(() -> selectDetection(detection));
         });
     }
 

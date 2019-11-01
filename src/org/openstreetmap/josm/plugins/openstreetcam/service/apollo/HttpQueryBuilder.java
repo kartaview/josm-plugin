@@ -1,9 +1,8 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * Copyright (c)2017, Telenav, Inc. All Rights Reserved
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ *
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
@@ -232,11 +231,11 @@ class HttpQueryBuilder {
         if (confidenceLevelFilter != null) {
             if (confidenceLevelFilter.getMinConfidenceLevel() != null) {
                 query.append(AND).append(RequestConstants.MIN_CONFIDENCE_LEVEL).append(EQ)
-                        .append(confidenceLevelFilter.getMinConfidenceLevel());
+                .append(confidenceLevelFilter.getMinConfidenceLevel());
             }
             if (confidenceLevelFilter.getMaxConfidenceLevel() != null) {
                 query.append(AND).append(RequestConstants.MAX_CONFIDENCE_LEVEL).append(EQ)
-                        .append(confidenceLevelFilter.getMaxConfidenceLevel());
+                .append(confidenceLevelFilter.getMaxConfidenceLevel());
             }
         }
     }

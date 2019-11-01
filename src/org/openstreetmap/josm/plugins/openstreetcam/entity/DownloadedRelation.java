@@ -1,12 +1,9 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
  *
- * Copyright (c)2019, Telenav, Inc. All Rights Reserved
  */
-
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import java.util.ArrayList;
@@ -56,7 +53,7 @@ public class DownloadedRelation extends OsmElement {
                         new LatLon(downloadedMembers.get(i).getMatchedToNode().lat(),
                                 downloadedMembers.get(i).getMatchedToNode().lon() + TRANSLATION));
                 downloadedMembers.get(i).getDownloadedNodes().parallelStream()
-                        .forEach(node -> node.setCoor(new LatLon(node.lat(), node.lon() + TRANSLATION)));
+                .forEach(node -> node.setCoor(new LatLon(node.lat(), node.lon() + TRANSLATION)));
             }
         }
     }

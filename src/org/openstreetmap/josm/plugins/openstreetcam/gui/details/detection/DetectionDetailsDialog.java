@@ -1,10 +1,8 @@
 /*
- * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
  *
- * The collected imagery is protected & available under the CC BY-SA version 4 International license.
- * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
  *
- * Copyright (c) 2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
@@ -205,7 +203,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                     builder.detections(cluster.getDetections());
                 }
                 DataSet.getInstance().setSelectedCluster(builder.build());
-                SelectionHandler selectionHandler = new SelectionHandler();
+                final SelectionHandler selectionHandler = new SelectionHandler();
                 selectionHandler.selectDetectionFromTable(DataSet.getInstance().getSelectedDetection());
                 cmpInfo.revalidate();
                 revalidate();
