@@ -1,17 +1,21 @@
 /*
- * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  *
- * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
+ * Copyright (c)2019, Telenav, Inc. All Rights Reserved
  */
+
 package org.openstreetmap.josm.plugins.openstreetcam.gui;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.ImageIcon;
+import com.telenav.josm.common.entity.Pair;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.entity.Pair;
+
+import javax.swing.ImageIcon;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -41,8 +45,8 @@ public enum ClusterBackgroundIconFactory {
         if (isColorCoded) {
             int i = 0;
             while (i < coloredBorders.size() && backgroundIcon == null) {
-                final double minRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * i;
-                final double maxRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * (i + 1);
+                double minRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * i;
+                double maxRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * (i + 1);
                 if (cluster.getConfidenceLevel() >= minRange && cluster.getConfidenceLevel() <= maxRange) {
                     backgroundIcon = isSelected ? coloredBorders.get(i).getSecond() : coloredBorders.get(i).getFirst();
                 }

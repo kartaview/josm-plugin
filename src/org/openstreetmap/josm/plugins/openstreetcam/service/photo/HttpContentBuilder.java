@@ -1,8 +1,10 @@
 /*
- * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  *
- * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.photo;
 

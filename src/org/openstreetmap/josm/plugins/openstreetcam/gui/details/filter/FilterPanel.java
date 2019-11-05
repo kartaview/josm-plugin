@@ -1,8 +1,10 @@
 /*
- * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ * The code is licensed under the LGPL Version 3 license http://www.gnu.org/licenses/lgpl-3.0.en.html.
  *
- * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ * The collected imagery is protected & available under the CC BY-SA version 4 International license.
+ * https://creativecommons.org/licenses/by-sa/4.0/legalcode.
  *
+ * Copyright (c)2017, Telenav, Inc. All Rights Reserved
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
@@ -229,18 +231,18 @@ class FilterPanel extends JPanel {
                 Constraints.LBL_MIN_CONFIDENCE_LEVEL);
         final String min =
                 confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
-                    "";
-                minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
-                minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
-                add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
-                add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
-                        Constraints.LBL_MAX_CONFIDENCE_LEVEL);
-                final String max =
-                        confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
-                            "";
-                        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
-                        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
-                        add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
+                        "";
+        minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
+        minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
+        add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
+                Constraints.LBL_MAX_CONFIDENCE_LEVEL);
+        final String max =
+                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
+                        "";
+        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
+        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
+        add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
     }
 
     private void addRegionFilter(final String region) {

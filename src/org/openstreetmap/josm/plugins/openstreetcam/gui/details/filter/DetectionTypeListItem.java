@@ -1,9 +1,3 @@
-/*
- * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
- *
- */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 
 import java.awt.Color;
@@ -53,11 +47,11 @@ class DetectionTypeListItem extends JPanel {
 
         final int visibleRows =
                 signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1; //TODO calculate size based on width
-                final List<Sign> selection = typeSelected ? signs : selectedSigns;
-                signList = ListBuilder
-                        .build(signs, selection, new DetectionTypeListRenderer(), new DetectionListSelectionListener(),
-                                Font.PLAIN, JList.HORIZONTAL_WRAP, Component.LEFT_ALIGNMENT, visibleRows);
-                add(signList);
+        final List<Sign> selection = typeSelected ? signs : selectedSigns;
+        signList = ListBuilder
+                .build(signs, selection, new DetectionTypeListRenderer(), new DetectionListSelectionListener(),
+                        Font.PLAIN, JList.HORIZONTAL_WRAP, Component.LEFT_ALIGNMENT, visibleRows);
+        add(signList);
     }
 
     void selectAll() {

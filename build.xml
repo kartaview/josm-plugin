@@ -90,7 +90,7 @@
 			<zipfileset src="${plugin.lib.dir}/gson-2.5.jar" />
 			<zipfileset src="${plugin.lib.dir}/josm-common-3.4.10.jar" />
 			<manifest>
-				<attribute name="Author" value="Grab" />
+				<attribute name="Author" value="Telenav" />
 				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetcam.OpenStreetCamPlugin" />
 				<attribute name="Plugin-Date" value="${TODAY}" />
 				<attribute name="Plugin-Description" value="Lets you map from OpenStreetCam street level imagery." />
@@ -98,6 +98,8 @@
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Mainversion" value="14178" />
+				<attribute name="14178_Plugin-Url" value="${build-label};​https://grab.community.improve-osm.org/plugins/openstreetcam/1.0/OpenStreetCam.jar"/>
+				<attribute name="15509_Plugin-Url" value="274;https://grab.community.improve-osm.org/plugins/openstreetcam/2.0/OpenStreetCam.jar" />
 			</manifest>
 		</jar>
 	</target>
