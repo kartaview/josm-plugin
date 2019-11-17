@@ -36,8 +36,6 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     private static final int LINE_HEIGHT = 25;
     private static final String EMPTY_STRING = "";
     private static final int ID_COLUMN = 0;
-    private static final double ZERO_DOUBLE = 0;
-    private static final String ZERO_STRING = "0";
 
 
     private DetectionTable table;
@@ -52,7 +50,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
                 GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterConfidenceLevelText(),
-                GuiConfig.getInstance().getClusterOcrValueLbl(),
+                GuiConfig.getInstance().getClusterOcrValueLbl(), GuiConfig.getInstance().getOcrConfidenceLbl(),
                 GuiConfig.getInstance().getClusterLaneCountText());
         addSignType(GuiConfig.getInstance().getDetectedDetectionText(), cluster.getSign(), widthLbl);
         addInformation(GuiConfig.getInstance().getDetectionOnOsmText(), cluster.getOsmComparison(), widthLbl);
@@ -62,12 +60,15 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         }
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
         if (cluster.getConfidenceLevel() != null) {
-            if (cluster.getConfidenceLevel() > ZERO_DOUBLE) {
-                addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(),
-                        EntityFormatter.formatDouble(cluster.getConfidenceLevel(), false, DecimalPattern.MEDIUM),
+            if (cluster.getConfidenceLevel().getDetectionConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(), EntityFormatter
+                        .formatDouble(cluster.getConfidenceLevel().getDetectionConfidence(), false,
+                                DecimalPattern.MEDIUM), widthLbl);
+            }
+            if (cluster.getConfidenceLevel().getOcrConfidence() != null) {
+                addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(), EntityFormatter
+                                .formatDouble(cluster.getConfidenceLevel().getOcrConfidence(), false, DecimalPattern.MEDIUM),
                         widthLbl);
-            } else {
-                addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(), ZERO_STRING, widthLbl);
             }
         }
         addInformation(GuiConfig.getInstance().getClusterOcrValueLbl(), cluster.getOcrValue(), widthLbl);
