@@ -42,8 +42,10 @@ class DetectionTypeList extends JPanel {
         listItems.clear();
         if (allSigns != null) {
             for (final Entry<String, List<Sign>> entry : allSigns.entrySet()) {
-                final List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue()
-                        : filterRegionSigns(entry.getValue(), region);
+                List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue() :
+                        filterRegionSigns(entry.getValue(), region);
+               // signsToDisplay = inputText.equals("") ? signsToDisplay :
+                 //       filterSearchTextSigns(signsToDisplay, inputText.toLowerCase());
                 if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
                     boolean typeSelected = false;
                     if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
@@ -67,6 +69,16 @@ class DetectionTypeList extends JPanel {
 
     private List<Sign> filterRegionSigns(final List<Sign> signs, final String region) {
         return signs.parallelStream().filter(sign -> sign.getRegion().equals(region)).collect(Collectors.toList());
+    }
+
+    private List<Sign> filterSearchTextSigns(final List<Sign> signs, final String inputText) {
+        return signs.parallelStream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
+    }
+
+    boolean matchesInputText(final Sign sign, final String inputString) {
+        return sign.getName().toLowerCase().matches(".*" + inputString + ".*") ||
+                sign.getInternalName().toLowerCase().matches(".*" + inputString + ".*") ||
+                sign.getType().toLowerCase().matches(".*" + inputString + ".*");
     }
 
     @Override
@@ -107,5 +119,4 @@ class DetectionTypeList extends JPanel {
         }
         return selectedValues.isEmpty() ? null : selectedValues;
     }
-
 }

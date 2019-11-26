@@ -127,13 +127,19 @@ final class Constraints {
     static final GridBagConstraints CB_SIGN_REGION = new GridBagConstraints(1, 10, 1, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 11, 1, 1, 1, 1,
+    static final GridBagConstraints LBL_SEARCH_SIGN = new GridBagConstraints(0, 11, 1, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 11, 4, 1, 1, 1,
+    static final GridBagConstraints TXT_SEARCH_SIGN = new GridBagConstraints(1, 11, 1, 1, 0, 0,
+            GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
+
+    static final GridBagConstraints LBL_SIGN_TYPE = new GridBagConstraints(0, 12, 1, 1, 1, 1,
+            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
+
+    static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 12, 4, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 10), 0, 100);
 
-    static final GridBagConstraints PNL_BTN = new GridBagConstraints(2, 12, 3, 1, 0, 0, GridBagConstraints.PAGE_START,
+    static final GridBagConstraints PNL_BTN = new GridBagConstraints(2, 13, 3, 1, 0, 0, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(0, 3, 3, 0), 0, 0);
 
     private Constraints() {}
