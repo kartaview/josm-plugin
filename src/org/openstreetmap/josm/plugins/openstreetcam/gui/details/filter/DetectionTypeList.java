@@ -74,14 +74,14 @@ class DetectionTypeList extends JPanel {
     }
 
     private List<Sign> filterSearchTextSigns(final List<Sign> signs, final String inputText) {
-        return signs.parallelStream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
+        return signs.stream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
     }
 
     boolean matchesInputText(final Sign sign, final String inputString) {
         boolean matchesName = true;
         boolean matchesInternalName = true;
         boolean matchesType = true;
-        List<String> inputWords = Arrays.asList(inputString.split(" "));
+        final List<String> inputWords = Arrays.asList(inputString.split(" "));
         for (String word : inputWords) {
             if (sign.getName().toLowerCase().matches(".*" + word + ".*") == false) {
                 matchesName = false;
