@@ -78,7 +78,7 @@ class DetectionTypeList extends JPanel {
         return signs.stream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
     }
 
-    boolean matchesInputText(final Sign sign, final String input) {
+    private boolean matchesInputText(final Sign sign, final String input) {
         boolean matchesName = true;
         boolean matchesInternalName = true;
         boolean matchesType = true;
