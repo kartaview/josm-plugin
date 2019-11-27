@@ -93,6 +93,7 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDataTypeAggregatedDetectionsTxt;
     private final String dlgFilterDataRegionLbl;
     private final String dlgFilterSearchDataLbl;
+    private final String dlgFilterSearchDataExplicationLbl;
     private final String dlgFilterConfidenceLbl;
     private final String dlgFilterConfidenceMinLbl;
     private final String dlgFilterConfidenceMaxLbl;
@@ -278,6 +279,7 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
         dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
         dlgFilterSearchDataLbl = readProperty("filter.searchData.lbl");
+        dlgFilterSearchDataExplicationLbl = readProperty("filter.searchData.explication.lbl");
         dlgFilterConfidenceLbl = readProperty("filter.confidenceLevel.lbl");
         dlgFilterConfidenceMinLbl = readProperty("filter.confidence.min.lbl");
         dlgFilterConfidenceMaxLbl = readProperty("filter.confidence.max.lbl");
@@ -604,6 +606,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDlgFilterSearchDataLbl() {
         return dlgFilterSearchDataLbl;
+    }
+
+    public String getDlgFilterSearchDataExplicationLbl() {
+        return dlgFilterSearchDataExplicationLbl;
     }
 
     public String getBtnOkLbl() {

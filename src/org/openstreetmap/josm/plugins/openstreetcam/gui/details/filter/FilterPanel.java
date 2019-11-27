@@ -121,7 +121,7 @@ class FilterPanel extends JPanel {
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
             addConfidenceLevelFilter(filter.getDetectionFilter().getConfidenceLevelFilter());
             addRegionFilter(filter.getDetectionFilter().getRegion());
-          //  addSearchFilter();
+            addSearchFilter();
             addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(),
                     filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion(), "");
             enableDetectionFilters(filter.getDataTypes());
@@ -264,10 +264,12 @@ class FilterPanel extends JPanel {
     }
 
     private void addSearchFilter() {
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterSearchDataLbl(), Font.BOLD),
-                Constraints.LBL_SEARCH_SIGN);
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterSearchDataExplicationLbl(), Font.ITALIC),
+                Constraints.LBL_SEARCH_SIGN_EXPLANATION);
         searchDataTextField = TextComponentBuilder.buildTextField("", Font.PLAIN, Color.WHITE);
         searchDataTextField.addKeyListener(new SearchSignListener());
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterSearchDataLbl(), Font.BOLD),
+                Constraints.LBL_SEARCH_SIGN);
         add(searchDataTextField, Constraints.TXT_SEARCH_SIGN);
     }
 
@@ -275,7 +277,7 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
         detectionTypeList = new DetectionTypeList();
-        detectionTypeList.populateDetectionList(signTypes, specificSigns, region);
+        detectionTypeList.populateDetectionList(signTypes, specificSigns, region, inputText);
         add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
@@ -577,13 +579,14 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            //detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(), searchDataTextField.getText());
-            detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString());
+            detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(),
+                    searchDataTextField.getText());
         }
-
     }
 
+
     private final class SearchSignListener implements KeyListener {
+
         @Override
         public void keyTyped(final KeyEvent e) {
 
@@ -591,8 +594,9 @@ class FilterPanel extends JPanel {
 
         @Override
         public void keyPressed(final KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_ENTER){
-               // detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(), searchDataTextField.getText());
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(),
+                        searchDataTextField.getText());
             }
         }
 

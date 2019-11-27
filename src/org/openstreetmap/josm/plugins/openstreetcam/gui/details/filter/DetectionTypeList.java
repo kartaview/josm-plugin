@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,14 +39,14 @@ class DetectionTypeList extends JPanel {
     }
 
     void populateDetectionList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns,
-            final String region) {
+            final String region, final String inputText) {
         listItems.clear();
         if (allSigns != null) {
             for (final Entry<String, List<Sign>> entry : allSigns.entrySet()) {
                 List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue() :
                         filterRegionSigns(entry.getValue(), region);
-               // signsToDisplay = inputText.equals("") ? signsToDisplay :
-                 //       filterSearchTextSigns(signsToDisplay, inputText.toLowerCase());
+                signsToDisplay = inputText.equals("") ? signsToDisplay :
+                        filterSearchTextSigns(signsToDisplay, inputText.toLowerCase());
                 if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
                     boolean typeSelected = false;
                     if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
@@ -64,6 +65,7 @@ class DetectionTypeList extends JPanel {
         }
         removeAll();
         listItems.forEach(this::add);
+        repaint();
         revalidate();
     }
 
@@ -76,9 +78,22 @@ class DetectionTypeList extends JPanel {
     }
 
     boolean matchesInputText(final Sign sign, final String inputString) {
-        return sign.getName().toLowerCase().matches(".*" + inputString + ".*") ||
-                sign.getInternalName().toLowerCase().matches(".*" + inputString + ".*") ||
-                sign.getType().toLowerCase().matches(".*" + inputString + ".*");
+        boolean matchesName = true;
+        boolean matchesInternalName = true;
+        boolean matchesType = true;
+        List<String> inputWords = Arrays.asList(inputString.split(" "));
+        for (String word : inputWords) {
+            if (sign.getName().toLowerCase().matches(".*" + word + ".*") == false) {
+                matchesName = false;
+            }
+            if (sign.getInternalName().toLowerCase().matches(".*" + word + ".*") == false) {
+                matchesInternalName = false;
+            }
+            if (sign.getType().toLowerCase().matches(".*" + word + ".*") == false) {
+                matchesType = false;
+            }
+        }
+        return matchesName || matchesInternalName || matchesType;
     }
 
     @Override
