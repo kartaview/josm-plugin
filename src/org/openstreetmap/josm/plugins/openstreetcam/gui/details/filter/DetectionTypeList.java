@@ -27,6 +27,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 class DetectionTypeList extends JPanel {
 
     private static final long serialVersionUID = 212486274590615046L;
+    private static final String REGEX_MATCHES_ANY = ".*";
     private final List<DetectionTypeListItem> listItems;
     private final transient Map<String, List<Sign>> allSigns;
 
@@ -77,23 +78,27 @@ class DetectionTypeList extends JPanel {
         return signs.stream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
     }
 
-    boolean matchesInputText(final Sign sign, final String inputString) {
+    boolean matchesInputText(final Sign sign, final String input) {
         boolean matchesName = true;
         boolean matchesInternalName = true;
         boolean matchesType = true;
-        final List<String> inputWords = Arrays.asList(inputString.split(" "));
+        final List<String> inputWords = Arrays.asList(input.split(" "));
         for (String word : inputWords) {
-            if (sign.getName().toLowerCase().matches(".*" + word + ".*") == false) {
+            if (matchesInputText(sign.getName(), word) == false) {
                 matchesName = false;
             }
-            if (sign.getInternalName().toLowerCase().matches(".*" + word + ".*") == false) {
+            if (matchesInputText(sign.getInternalName(), word) == false) {
                 matchesInternalName = false;
             }
-            if (sign.getType().toLowerCase().matches(".*" + word + ".*") == false) {
+            if (matchesInputText(sign.getType(), word) == false) {
                 matchesType = false;
             }
         }
         return matchesName || matchesInternalName || matchesType;
+    }
+
+    private boolean matchesInputText(final String original, final String input) {
+        return original.toLowerCase().matches(REGEX_MATCHES_ANY + input + REGEX_MATCHES_ANY);
     }
 
     @Override
