@@ -13,6 +13,8 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,6 +101,7 @@ class FilterPanel extends JPanel {
     private JComboBox<String> detectionRegion;
     private JButton btnSelectSignTypes;
     private JButton btnClearSignTypes;
+    private JTextField searchDataTextField;
     private final boolean isHighZoomLevel;
 
 
@@ -118,8 +121,9 @@ class FilterPanel extends JPanel {
             addOsmComparisonFilter(filter.getDetectionFilter().getOsmComparisons());
             addConfidenceLevelFilter(filter.getDetectionFilter().getConfidenceLevelFilter());
             addRegionFilter(filter.getDetectionFilter().getRegion());
+            addSearchFilter();
             addDetectionTypeFilter(filter.getDetectionFilter().getSignTypes(),
-                    filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion());
+                    filter.getDetectionFilter().getSpecificSigns(), filter.getDetectionFilter().getRegion(), "");
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
@@ -259,11 +263,21 @@ class FilterPanel extends JPanel {
         add(detectionRegion, Constraints.CB_SIGN_REGION);
     }
 
-    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns, final String region) {
+    private void addSearchFilter() {
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterSearchDataExplicationLbl(), Font.ITALIC),
+                Constraints.LBL_SEARCH_SIGN_EXPLANATION);
+        searchDataTextField = TextComponentBuilder.buildTextField("", Font.PLAIN, Color.WHITE);
+        searchDataTextField.addKeyListener(new SearchSignListener());
+        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterSearchDataLbl(), Font.BOLD),
+                Constraints.LBL_SEARCH_SIGN);
+        add(searchDataTextField, Constraints.TXT_SEARCH_SIGN);
+    }
+
+    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns, final String region, final String inputText) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
         detectionTypeList = new DetectionTypeList();
-        detectionTypeList.populateDetectionList(signTypes, specificSigns, region);
+        detectionTypeList.populateDetectionList(signTypes, specificSigns, region, inputText);
         add(ContainerBuilder.buildScrollPane(detectionTypeList, getBackground()), Constraints.CBB_SIGN_TYPE);
         btnSelectSignTypes =
                 ButtonBuilder.build(new SignTypesSelectAction(), GuiConfig.getInstance().getBtnSelectLbl());
@@ -565,11 +579,32 @@ class FilterPanel extends JPanel {
 
         @Override
         public void actionPerformed(final ActionEvent event) {
-            detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString());
+            detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(),
+                    searchDataTextField.getText());
         }
-
     }
 
+
+    private final class SearchSignListener implements KeyListener {
+
+        @Override
+        public void keyTyped(final KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(final KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                detectionTypeList.populateDetectionList(null, null, detectionRegion.getSelectedItem().toString(),
+                        searchDataTextField.getText());
+            }
+        }
+
+        @Override
+        public void keyReleased(final KeyEvent e) {
+
+        }
+    }
 
     private final class ConfidenceTextFieldListener implements DocumentListener {
 
