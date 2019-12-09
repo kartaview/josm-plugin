@@ -39,7 +39,7 @@ public class Detection implements Comparable<Detection> {
     private Float distance;
     private Float angleFromCenter;
     private Float orientation;
-    private ConfidenceLevel confidenceLevel;
+    private DetectionConfidenceLevel confidenceLevel;
     private String trackingId;
     private String automaticOcrValue;
     private String manualOcrValue;
@@ -129,7 +129,7 @@ public class Detection implements Comparable<Detection> {
         return trackingId;
     }
 
-    public ConfidenceLevel getConfidenceLevel() {
+    public DetectionConfidenceLevel getConfidenceLevel() {
         return confidenceLevel;
     }
 

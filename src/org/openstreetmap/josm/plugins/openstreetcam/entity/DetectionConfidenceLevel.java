@@ -12,7 +12,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  *
  * @author beataj
  */
-public class ConfidenceLevel {
+public class DetectionConfidenceLevel {
 
     private final Double detectionConfidence;
     private final Double facingConfidence;
@@ -22,7 +22,7 @@ public class ConfidenceLevel {
     private final Double ocrConfidence;
 
 
-    public ConfidenceLevel(final Double detectionConfidence, final Double facingConfidence,
+    public DetectionConfidenceLevel(final Double detectionConfidence, final Double facingConfidence,
             final Double positioningConfidence, final Double keyPointsConfidence, final Double trackingConfidence,
             final Double ocrConfidence) {
         this.detectionConfidence = detectionConfidence;

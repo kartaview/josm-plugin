@@ -24,7 +24,7 @@ public class Cluster {
     private final LatLon point;
     private final Double facing;
     private final Sign sign;
-    private final ConfidenceLevel confidenceLevel;
+    private final ClusterConfidenceLevel confidenceLevel;
     private final List<Long> detectionIds;
     private final OsmComparison osmComparison;
     private final Collection<OsmElement> osmElements;
@@ -71,7 +71,7 @@ public class Cluster {
         return sign;
     }
 
-    public ConfidenceLevel getConfidenceLevel() {
+    public ClusterConfidenceLevel getConfidenceLevel() {
         return confidenceLevel;
     }
 

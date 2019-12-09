@@ -60,14 +60,14 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         }
         addInformation(GuiConfig.getInstance().getDetectionIdLbl(), cluster.getId(), widthLbl);
         if (cluster.getConfidenceLevel() != null) {
-            if (cluster.getConfidenceLevel().getDetectionConfidence() != null) {
+            if (cluster.getConfidenceLevel().getOverallConfidence() != null) {
                 addInformation(GuiConfig.getInstance().getClusterConfidenceLevelText(), EntityFormatter
-                        .formatDouble(cluster.getConfidenceLevel().getDetectionConfidence(), false,
+                        .formatDouble(cluster.getConfidenceLevel().getOverallConfidence(), false,
                                 DecimalPattern.MEDIUM), widthLbl);
             }
             if (cluster.getConfidenceLevel().getOcrConfidence() != null) {
                 addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(), EntityFormatter
-                                .formatDouble(cluster.getConfidenceLevel().getOcrConfidence(), false, DecimalPattern.MEDIUM),
+                        .formatDouble(cluster.getConfidenceLevel().getOcrConfidence(), false, DecimalPattern.MEDIUM),
                         widthLbl);
             }
         }
