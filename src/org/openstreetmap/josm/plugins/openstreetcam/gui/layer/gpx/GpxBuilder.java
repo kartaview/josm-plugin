@@ -18,7 +18,6 @@ import java.util.Map;
 import org.openstreetmap.josm.data.gpx.GpxConstants;
 import org.openstreetmap.josm.data.gpx.GpxData;
 import org.openstreetmap.josm.data.gpx.GpxTrack;
-import org.openstreetmap.josm.data.gpx.ImmutableGpxTrack;
 import org.openstreetmap.josm.data.gpx.WayPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sequence;
@@ -32,7 +31,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
  * @version $Revision$
  */
 final class GpxBuilder {
-
     private static final String EXTENSIONS = "extensions";
     private static final String HEADING = "heading";
     private static final String TIME = "time";
@@ -61,7 +59,7 @@ final class GpxBuilder {
         final Map<String, Object> trkAttr = new HashMap<>();
         trkAttr.put(EXTENSIONS, HEADING);
         trkAttr.put(GpxConstants.GPX_DESC, GuiConfig.getInstance().getGpxTrackDescription());
-        final GpxTrack gpsTrack = new ImmutableGpxTrack(trk, trkAttr);
+        final GpxTrack gpsTrack = new GpxTrack(trk, trkAttr);
         final GpxData gpxData = new GpxData();
         // need to set fromServer=true, otherwise GpxWriter will not add the necessary extension URI
         gpxData.fromServer = true;
@@ -80,7 +78,7 @@ final class GpxBuilder {
             wayPoint.put(TIME, formattedDate);
         }
         if (photo.getHeading() != null) {
-            wayPoint.addExtension(HEADING, Double.toString(photo.getHeading()));
+            wayPoint.put(HEADING, Double.toString(photo.getHeading()));
         }
         return wayPoint;
     }
