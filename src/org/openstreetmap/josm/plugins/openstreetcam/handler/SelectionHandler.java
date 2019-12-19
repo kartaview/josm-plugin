@@ -86,10 +86,10 @@ SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelect
             final boolean displayLoadingMessage) {
         if (cluster != null) {
             selectCluster(cluster, detection);
-            selectPhoto(photo);
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
+                selectDetectionFromTable(detection);
             }
         } else {
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
