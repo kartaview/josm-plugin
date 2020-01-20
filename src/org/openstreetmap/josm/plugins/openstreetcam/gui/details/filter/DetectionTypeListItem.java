@@ -34,6 +34,7 @@ import com.telenav.josm.common.gui.builder.ListBuilder;
 class DetectionTypeListItem extends JPanel {
 
     private static final long serialVersionUID = -7115447482264760072L;
+    private static final int MAXIMUM_SIGNS_DISPLAYED_ON_ROW = 12;
     private final JCheckBox signType;
     private final JList<Sign> signList;
     private final int listSize;
@@ -52,12 +53,13 @@ class DetectionTypeListItem extends JPanel {
         add(signType);
 
         final int visibleRows =
-                signs.size() % 8 == 0 ? signs.size() / 8 : signs.size() / 8 + 1; //TODO calculate size based on width
-                final List<Sign> selection = typeSelected ? signs : selectedSigns;
-                signList = ListBuilder
-                        .build(signs, selection, new DetectionTypeListRenderer(), new DetectionListSelectionListener(),
-                                Font.PLAIN, JList.HORIZONTAL_WRAP, Component.LEFT_ALIGNMENT, visibleRows);
-                add(signList);
+                signs.size() % MAXIMUM_SIGNS_DISPLAYED_ON_ROW == 0 ? signs.size() / MAXIMUM_SIGNS_DISPLAYED_ON_ROW :
+                        signs.size() / MAXIMUM_SIGNS_DISPLAYED_ON_ROW + 1; //TODO calculate size based on width
+        final List<Sign> selection = typeSelected ? signs : selectedSigns;
+        signList = ListBuilder
+                .build(signs, selection, new DetectionTypeListRenderer(), new DetectionListSelectionListener(),
+                        Font.PLAIN, JList.HORIZONTAL_WRAP, Component.LEFT_ALIGNMENT, visibleRows);
+        add(signList);
     }
 
     void selectAll() {

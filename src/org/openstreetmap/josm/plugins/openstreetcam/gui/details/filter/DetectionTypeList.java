@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +27,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 class DetectionTypeList extends JPanel {
 
     private static final long serialVersionUID = 212486274590615046L;
+    private static final String REGEX_MATCHES_ANY = ".*";
     private final List<DetectionTypeListItem> listItems;
     private final transient Map<String, List<Sign>> allSigns;
 
@@ -38,12 +40,14 @@ class DetectionTypeList extends JPanel {
     }
 
     void populateDetectionList(final List<String> selectedSignTypes, final List<Sign> selectedSpecificSigns,
-            final String region) {
+            final String region, final String inputText) {
         listItems.clear();
         if (allSigns != null) {
             for (final Entry<String, List<Sign>> entry : allSigns.entrySet()) {
-                final List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue()
-                        : filterRegionSigns(entry.getValue(), region);
+                List<Sign> signsToDisplay = region == null || region.isEmpty() ? entry.getValue() :
+                        filterRegionSigns(entry.getValue(), region);
+                signsToDisplay = inputText.equals("") ? signsToDisplay :
+                        filterSearchTextSigns(signsToDisplay, inputText.toLowerCase());
                 if (signsToDisplay != null && !signsToDisplay.isEmpty()) {
                     boolean typeSelected = false;
                     if (selectedSignTypes != null && !selectedSignTypes.isEmpty()) {
@@ -62,11 +66,39 @@ class DetectionTypeList extends JPanel {
         }
         removeAll();
         listItems.forEach(this::add);
+        repaint();
         revalidate();
     }
 
     private List<Sign> filterRegionSigns(final List<Sign> signs, final String region) {
         return signs.parallelStream().filter(sign -> sign.getRegion().equals(region)).collect(Collectors.toList());
+    }
+
+    private List<Sign> filterSearchTextSigns(final List<Sign> signs, final String inputText) {
+        return signs.stream().filter(sign -> matchesInputText(sign, inputText)).collect(Collectors.toList());
+    }
+
+    private boolean matchesInputText(final Sign sign, final String input) {
+        boolean matchesName = true;
+        boolean matchesInternalName = true;
+        boolean matchesType = true;
+        final List<String> inputWords = Arrays.asList(input.split(" "));
+        for (String word : inputWords) {
+            if (matchesInputText(sign.getName(), word) == false) {
+                matchesName = false;
+            }
+            if (matchesInputText(sign.getInternalName(), word) == false) {
+                matchesInternalName = false;
+            }
+            if (matchesInputText(sign.getType(), word) == false) {
+                matchesType = false;
+            }
+        }
+        return matchesName || matchesInternalName || matchesType;
+    }
+
+    private boolean matchesInputText(final String original, final String input) {
+        return original.toLowerCase().matches(REGEX_MATCHES_ANY + input + REGEX_MATCHES_ANY);
     }
 
     @Override
@@ -107,5 +139,4 @@ class DetectionTypeList extends JPanel {
         }
         return selectedValues.isEmpty() ? null : selectedValues;
     }
-
 }
