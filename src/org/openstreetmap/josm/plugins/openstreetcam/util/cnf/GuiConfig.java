@@ -108,6 +108,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorPhotoListText;
     private final String errorSequenceText;
     private final String errorPhotoLoadingText;
+    private final String errorLoadingPhotoPanelText;
     private final String errorPhotoPageText;
     private final String errorUserPageText;
     private final String errorFeedbackPageText;
@@ -294,6 +295,7 @@ public final class GuiConfig extends BaseConfig {
         errorPhotoListText = readProperty("error.photo.list");
         errorSequenceText = readProperty("error.track");
         errorPhotoLoadingText = readProperty("error.photo.loading");
+        errorLoadingPhotoPanelText = readProperty("error.loading.photo.panel");
         errorPhotoPageText = readProperty("error.photo.page");
         errorUserPageText = readProperty("error.user.page");
         errorFeedbackPageText = readProperty("error.feedback.page");
@@ -650,6 +652,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorPhotoLoadingText() {
         return errorPhotoLoadingText;
+    }
+
+    public String getErrorLoadingPhotoPanelText() {
+        return errorLoadingPhotoPanelText;
     }
 
     public String getErrorPhotoPageText() {
