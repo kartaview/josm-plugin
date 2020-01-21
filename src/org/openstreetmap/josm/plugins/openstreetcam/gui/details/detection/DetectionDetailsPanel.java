@@ -8,7 +8,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -78,7 +78,7 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
         setPreferredSize(new Dimension(getPnlWidth() + SPACE_Y, pnlHeight));
     }
 
-    private void addConfidenceLevel(final ConfidenceLevel confidenceLevel, final int widthLbl) {
+    private void addConfidenceLevel(final DetectionConfidenceLevel confidenceLevel, final int widthLbl) {
         if (confidenceLevel != null && confidenceLevel.isNotNull()) {
             if (confidenceLevel.getDetectionConfidence() != null) {
                 addInformation(GuiConfig.getInstance().getDetectionConfidenceLbl(), EntityFormatter.formatDouble(

@@ -43,7 +43,8 @@ public enum ClusterBackgroundIconFactory {
             while (i < coloredBorders.size() && backgroundIcon == null) {
                 final double minRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * i;
                 final double maxRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * (i + 1);
-                if (cluster.getConfidenceLevel() >= minRange && cluster.getConfidenceLevel() <= maxRange) {
+                if (cluster.getConfidenceLevel().getOverallConfidence() >= minRange
+                        && cluster.getConfidenceLevel().getOverallConfidence() <= maxRange) {
                     backgroundIcon = isSelected ? coloredBorders.get(i).getSecond() : coloredBorders.get(i).getFirst();
                 }
                 i++;

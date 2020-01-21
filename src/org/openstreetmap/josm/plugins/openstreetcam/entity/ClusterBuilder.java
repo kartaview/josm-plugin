@@ -24,7 +24,7 @@ public class ClusterBuilder {
     private LatLon point;
     private Double facing;
     private Sign sign;
-    private Double confidenceLevel;
+    private ClusterConfidenceLevel confidenceLevel;
     private List<Long> detectionIds;
     private OsmComparison osmComparison;
     private Collection<OsmElement> osmElements;
@@ -69,7 +69,7 @@ public class ClusterBuilder {
         this.sign = sign;
     }
 
-    public void confidenceLevel(final Double confidenceLevel) {
+    public void confidenceLevel(final ClusterConfidenceLevel confidenceLevel) {
         this.confidenceLevel = confidenceLevel;
     }
 
@@ -121,7 +121,7 @@ public class ClusterBuilder {
         return sign;
     }
 
-    Double getConfidenceLevel() {
+    ClusterConfidenceLevel getConfidenceLevel() {
         return confidenceLevel;
     }
 

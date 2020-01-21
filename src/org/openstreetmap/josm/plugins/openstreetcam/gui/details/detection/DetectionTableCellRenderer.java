@@ -15,7 +15,7 @@ import javax.swing.JTable;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevel;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ValidationStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -59,9 +59,9 @@ class DetectionTableCellRenderer extends DefaultTableCellRenderer {
             } else if (value instanceof ValidationStatus || value instanceof EditStatus || column == IDX_TRACKING_ID ||
                     column == IDX_ID) {
                 txt = value.toString();
-            } else if (value instanceof ConfidenceLevel) {
-                if (((ConfidenceLevel) value).isNotNull()) {
-                    final ConfidenceLevel confidenceLevel = (ConfidenceLevel) value;
+            } else if (value instanceof DetectionConfidenceLevel) {
+                if (((DetectionConfidenceLevel) value).isNotNull()) {
+                    final DetectionConfidenceLevel confidenceLevel = (DetectionConfidenceLevel) value;
                     txt = createConfidenceText(confidenceLevel.getDetectionConfidence()) + DELIMITER +
                             createConfidenceText(confidenceLevel.getFacingConfidence()) + DELIMITER +
                             createConfidenceText(confidenceLevel.getPositioningConfidence()) + DELIMITER +
