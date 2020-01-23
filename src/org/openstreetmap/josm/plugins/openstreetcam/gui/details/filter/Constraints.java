@@ -67,59 +67,38 @@ final class Constraints {
     static final GridBagConstraints LBL_MODE = new GridBagConstraints(0, 5, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints CBB_AUTOMATIC_MODE = new GridBagConstraints(1, 5, 1, 1, 0, 0,
+    static final GridBagConstraints MODE_PANEL = new GridBagConstraints(1, 5, 4, 1, 0, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_MANUAL_MODE = new GridBagConstraints(2, 5, 3, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 10), 0, 0);
 
     static final GridBagConstraints LBL_EDIT_STATUS = new GridBagConstraints(0, 6, 1, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints CBB_OPEN_EDIT_STATUS = new GridBagConstraints(1, 6, 1, 1, 0, 0,
+    static final GridBagConstraints EDIT_STATUS_PANEL = new GridBagConstraints(1, 6, 4, 1, 0, 0,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_MAPPED_EDIT_STATUS = new GridBagConstraints(2, 6, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_BAD_SIGN_EDIT_STATUS = new GridBagConstraints(3, 6, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_OTHER_EDIT_STATUS = new GridBagConstraints(4, 6, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(2, 0, 3, 10), 0, 0);
 
     static final GridBagConstraints LBL_OSM_COMPARISON = new GridBagConstraints(0, 7, 2, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints CBB_NEW_OSM_COMPARISON = new GridBagConstraints(1, 7, 1, 1, 0, 0,
+    static final GridBagConstraints OSM_COMPARISON_PANEL = new GridBagConstraints(1, 7, 4, 2, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_CHANGED_OSM_COMPARISON = new GridBagConstraints(2, 7, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_UNKNOWN_OSM_COMPARISON = new GridBagConstraints(3, 7, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_SAME_OSM_COMPARISON = new GridBagConstraints(4, 7, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(2, 0, 3, 10), 0, 0);
-
-    static final GridBagConstraints CBB_IMPLIED_OSM_COMPARISON = new GridBagConstraints(1, 8, 2, 1, 0, 0,
-            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 10), 0, 0);
 
     static final GridBagConstraints LBL_CONFIDENCE_LEVEL = new GridBagConstraints(0, 9, 2, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 15), 0, 0);
 
-    static final GridBagConstraints LBL_MIN_CONFIDENCE_LEVEL = new GridBagConstraints(1, 9, 1, 1, 0, 0,
-            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 8, 3, 15), 0, 0);
+    static final GridBagConstraints CONFIDENCE_LEVEL_PANEL = new GridBagConstraints(1, 9, 2, 1, 0, 0,
+            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 10, 3, 0), 0, 0);
 
-    static final GridBagConstraints TXT_MIN_CONFIDENCE_LEVEL = new GridBagConstraints(1, 9, 1, 1, 0, 0,
-            GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL, new Insets(2, 35, 3, 10), 0, 0);
+    static final GridBagConstraints LBL_MIN_CONFIDENCE_LEVEL = new GridBagConstraints(0, 0, 1, 1, 0, 0,
+            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
 
-    static final GridBagConstraints LBL_MAX_CONFIDENCE_LEVEL = new GridBagConstraints(2, 9, 1, 1, 0, 0,
-            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 15), 0, 0);
+    static final GridBagConstraints TXT_MIN_CONFIDENCE_LEVEL = new GridBagConstraints(1, 0, 1, 1, 1, 0,
+            GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
 
-    static final GridBagConstraints TXT_MAX_CONFIDENCE_LEVEL = new GridBagConstraints(2, 9, 1, 1, 0, 0,
-            GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL, new Insets(2, 35, 3, 10), 0, 0);
+    static final GridBagConstraints LBL_MAX_CONFIDENCE_LEVEL = new GridBagConstraints(2, 0, 1, 1, 0, 0,
+            GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
+
+    static final GridBagConstraints TXT_MAX_CONFIDENCE_LEVEL = new GridBagConstraints(3, 0, 1, 1, 1, 0,
+            GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
 
     static final GridBagConstraints LBL_SIGN_REGION = new GridBagConstraints(0, 10, 1, 1, 1, 1,
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
@@ -140,7 +119,7 @@ final class Constraints {
             GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
     static final GridBagConstraints CBB_SIGN_TYPE = new GridBagConstraints(1, 12, 4, 1, 1, 1,
-            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 10), 0, 160);
+            GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 3, 10), 0, 160);
 
     static final GridBagConstraints PNL_BTN = new GridBagConstraints(2, 13, 3, 1, 0, 0, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(0, 3, 3, 0), 0, 0);

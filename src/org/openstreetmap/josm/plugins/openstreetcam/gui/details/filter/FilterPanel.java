@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -179,72 +180,78 @@ class FilterPanel extends JPanel {
 
     private void addModeFilter(final List<DetectionMode> modes) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
+        JPanel modePanel = new JPanel(new GridLayout(0, 4));
         cbbAutomaticMode = CheckBoxBuilder.build(DetectionMode.AUTOMATIC.toString(), Font.PLAIN, null,
                 modes != null && modes.contains(DetectionMode.AUTOMATIC));
-        add(cbbAutomaticMode, Constraints.CBB_AUTOMATIC_MODE);
+        modePanel.add(cbbAutomaticMode);
         cbbManualMode = CheckBoxBuilder.build(DetectionMode.MANUAL.toString(), Font.PLAIN, null,
                 modes != null && modes.contains(DetectionMode.MANUAL));
-        add(cbbManualMode, Constraints.CBB_MANUAL_MODE);
+        modePanel.add(cbbManualMode);
+        add(modePanel, Constraints.MODE_PANEL);
     }
 
     private void addEditStatusFilter(final List<EditStatus> editStatuses) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterEditStatusLbl(), Font.BOLD),
                 Constraints.LBL_EDIT_STATUS);
-
+        JPanel editStatusPanel = new JPanel(new GridLayout(1, 4));
         cbbOpenEditStatus = CheckBoxBuilder.build(EditStatus.OPEN.toString(), Font.PLAIN, null,
                 editStatuses != null && editStatuses.contains(EditStatus.OPEN));
-        add(cbbOpenEditStatus, Constraints.CBB_OPEN_EDIT_STATUS);
+        editStatusPanel.add(cbbOpenEditStatus);
         cbbMappedEditStatus = CheckBoxBuilder.build(EditStatus.MAPPED.toString(), Font.PLAIN, null,
                 editStatuses != null && editStatuses.contains(EditStatus.MAPPED));
-        add(cbbMappedEditStatus, Constraints.CBB_MAPPED_EDIT_STATUS);
+        editStatusPanel.add(cbbMappedEditStatus);
         cbbBadSignEditStatus = CheckBoxBuilder.build(EditStatus.BAD_SIGN.toString(), Font.PLAIN, null,
                 editStatuses != null && editStatuses.contains(EditStatus.BAD_SIGN));
-        add(cbbBadSignEditStatus, Constraints.CBB_BAD_SIGN_EDIT_STATUS);
+        editStatusPanel.add(cbbBadSignEditStatus);
         cbbOtherEditStatus = CheckBoxBuilder.build(EditStatus.OTHER.toString(), Font.PLAIN, null,
                 editStatuses != null && editStatuses.contains(EditStatus.OTHER));
-        add(cbbOtherEditStatus, Constraints.CBB_OTHER_EDIT_STATUS);
+        editStatusPanel.add(cbbOtherEditStatus);
+        add(editStatusPanel, Constraints.EDIT_STATUS_PANEL);
     }
 
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterOsmComparisonLbl(), Font.BOLD),
                 Constraints.LBL_OSM_COMPARISON);
-
+        JPanel osmComparisonPanel = new JPanel(new GridLayout(0, 4));
         cbbNewOsmComparison = CheckBoxBuilder.build(OsmComparison.NEW.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.NEW));
-        add(cbbNewOsmComparison, Constraints.CBB_NEW_OSM_COMPARISON);
+        osmComparisonPanel.add(cbbNewOsmComparison);
         cbbChangedOsmComparison = CheckBoxBuilder.build(OsmComparison.CHANGED.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.CHANGED));
-        add(cbbChangedOsmComparison, Constraints.CBB_CHANGED_OSM_COMPARISON);
+        osmComparisonPanel.add(cbbChangedOsmComparison);
         cbbUnknownOsmComparison = CheckBoxBuilder.build(OsmComparison.UNKNOWN.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.UNKNOWN));
-        add(cbbUnknownOsmComparison, Constraints.CBB_UNKNOWN_OSM_COMPARISON);
+        osmComparisonPanel.add(cbbUnknownOsmComparison);
         cbbSameOsmComparison = CheckBoxBuilder.build(OsmComparison.SAME.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.SAME));
-        add(cbbSameOsmComparison, Constraints.CBB_SAME_OSM_COMPARISON);
+        osmComparisonPanel.add(cbbSameOsmComparison);
         cbbImpliedOsmComparison = CheckBoxBuilder.build(OsmComparison.IMPLIED.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.IMPLIED));
-        add(cbbImpliedOsmComparison, Constraints.CBB_IMPLIED_OSM_COMPARISON);
+        osmComparisonPanel.add(cbbImpliedOsmComparison);
+        add(osmComparisonPanel, Constraints.OSM_COMPARISON_PANEL);
     }
 
     private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceLbl(), Font.BOLD),
                 Constraints.LBL_CONFIDENCE_LEVEL);
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
+        JPanel confidencePanel = new JPanel(new GridBagLayout());
+        confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
                 Constraints.LBL_MIN_CONFIDENCE_LEVEL);
         final String min =
                 confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
-                    "";
-                minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
-                minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
-                add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
-                add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
-                        Constraints.LBL_MAX_CONFIDENCE_LEVEL);
-                final String max =
-                        confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
-                            "";
-                        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
-                        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
-                        add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
+                        "";
+        minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
+        minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
+        confidencePanel.add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
+        confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
+                Constraints.LBL_MAX_CONFIDENCE_LEVEL);
+        final String max =
+                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
+                        "";
+        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
+        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
+        confidencePanel.add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
+        add(confidencePanel, Constraints.CONFIDENCE_LEVEL_PANEL);
     }
 
     private void addRegionFilter(final String region) {
