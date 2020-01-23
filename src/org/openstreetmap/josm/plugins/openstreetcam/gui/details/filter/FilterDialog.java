@@ -36,7 +36,7 @@ import com.telenav.josm.common.gui.builder.ContainerBuilder;
 public class FilterDialog extends ModalDialog {
 
     private static final long serialVersionUID = -8822903239223085640L;
-    private static final Dimension HIGH_ZOOM_DIM = new Dimension(700, 550);
+    private static final Dimension HIGH_ZOOM_DIM = new Dimension(700, 600);
     private static final Dimension DIM = new Dimension(380, 150);
 
     private FilterPanel pnlFilter;
