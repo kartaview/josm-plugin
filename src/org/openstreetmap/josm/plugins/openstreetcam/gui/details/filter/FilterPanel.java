@@ -229,22 +229,24 @@ class FilterPanel extends JPanel {
     private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceLbl(), Font.BOLD),
                 Constraints.LBL_CONFIDENCE_LEVEL);
-        add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
+        JPanel confidencePanel = new JPanel(new GridBagLayout());
+        confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
                 Constraints.LBL_MIN_CONFIDENCE_LEVEL);
         final String min =
                 confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
-                    "";
-                minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
-                minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
-                add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
-                add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
-                        Constraints.LBL_MAX_CONFIDENCE_LEVEL);
-                final String max =
-                        confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
-                            "";
-                        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
-                        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
-                        add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
+                        "";
+        minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
+        minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
+        confidencePanel.add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
+        confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
+                Constraints.LBL_MAX_CONFIDENCE_LEVEL);
+        final String max =
+                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
+                        "";
+        maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
+        maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
+        confidencePanel.add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
+        add(confidencePanel, Constraints.CONFIDENCE_LEVEL_PANEL);
     }
 
     private void addRegionFilter(final String region) {

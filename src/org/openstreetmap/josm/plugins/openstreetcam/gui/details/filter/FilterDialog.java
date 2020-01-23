@@ -54,8 +54,8 @@ public class FilterDialog extends ModalDialog {
         createComponents();
         setLocationRelativeTo(MainApplication.getMap().mapView);
 
-        setSize(dimension);
         setMinimumSize(dimension);
+        setMaximumSize(dimension);
         setPreferredSize(dimension);
     }
 
