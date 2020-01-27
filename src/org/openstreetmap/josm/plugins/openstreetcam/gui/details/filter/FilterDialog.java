@@ -57,6 +57,7 @@ public class FilterDialog extends ModalDialog {
         setMinimumSize(dimension);
         setMaximumSize(dimension);
         setPreferredSize(dimension);
+        this.setResizable(false);
     }
 
     @Override
