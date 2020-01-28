@@ -359,7 +359,7 @@ class FilterPanel extends JPanel {
             final List<DataType> dataTypes = selectedDataTypes();
             final List<EditStatus> editStatuses = selectedEditStatuses();
             final List<DetectionMode> detectionModes = selectedModes();
-            final List<String> signTypes = detectionTypeList.getSelectedTypes();
+            final List<String> signTypes = detectionTypeList.getSelectedTypes(searchDataTextField.getText());
             final List<Sign> signValues = detectionTypeList.getSelectedValues();
             final String region = selectedRegion();
             final ConfidenceLevelFilter confidenceLevelFilter = selectedConfidenceLevel();

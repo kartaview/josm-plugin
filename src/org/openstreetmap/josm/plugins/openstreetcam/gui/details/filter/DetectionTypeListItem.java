@@ -72,6 +72,10 @@ class DetectionTypeListItem extends JPanel {
         signList.clearSelection();
     }
 
+    void clearTypeSelection() {
+        signType.setSelected(false);
+    }
+
     @Override
     public void setEnabled(final boolean enabled) {
         signType.setEnabled(enabled);

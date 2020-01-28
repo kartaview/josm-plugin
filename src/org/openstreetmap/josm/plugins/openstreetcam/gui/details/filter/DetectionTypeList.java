@@ -120,13 +120,16 @@ class DetectionTypeList extends JPanel {
         }
     }
 
-    List<String> getSelectedTypes() {
+    List<String> getSelectedTypes(final String searchFieldText) {
         final List<String> selectedTypes = new ArrayList<>();
-        for (final DetectionTypeListItem detectionItem : listItems) {
-            if (detectionItem.isTypeSelected()) {
-                selectedTypes.add(detectionItem.getTypeName());
+            for (final DetectionTypeListItem detectionItem : listItems) {
+                if(searchFieldText != null || !searchFieldText.equals("")){
+                    detectionItem.clearTypeSelection();
+                }
+                if (detectionItem.isTypeSelected()) {
+                    selectedTypes.add(detectionItem.getTypeName());
+                }
             }
-        }
         return selectedTypes.isEmpty() ? null : selectedTypes;
     }
 
