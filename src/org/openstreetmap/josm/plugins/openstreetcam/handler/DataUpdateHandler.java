@@ -230,19 +230,29 @@ public class DataUpdateHandler {
         final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
 
         if (selectedDetection != null && filter.getDetectionFilter().getSignTypes() != null) {
-            List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
+            final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
                     filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
-            if (!matchedSignNames.isEmpty() || matchedSignNames.size() < 1)
+            if (matchedSignNames.size() == 1)
                 isCorresponding = false;
-        }
-
-        if (selectedDetection != null && filter.getDetectionFilter().getSpecificSigns() != null) {
-            List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
+        } else if (selectedDetection != null && filter.getDetectionFilter().getSpecificSigns() != null) {
+            final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
                     filter(s -> s.getName().equals(selectedDetection.getSign().getName())).collect(Collectors.toList());
             if (matchedSignNames.isEmpty())
                 isCorresponding = false;
+        } else if (selectedDetection != null && filter.getDetectionFilter().getEditStatuses() != null && !filter
+                .getDetectionFilter().getEditStatuses().isEmpty() && selectedDetection.getEditStatus() != null
+                && !filter.getDetectionFilter().getEditStatuses().contains(selectedDetection.getEditStatus())) {
+            isCorresponding = false;
+        } else if (selectedDetection != null && filter.getDetectionFilter().getOsmComparisons() != null
+                && selectedDetection.getOsmComparison() != null && !filter.getDetectionFilter().getOsmComparisons()
+                .isEmpty() && !filter.getDetectionFilter().getOsmComparisons()
+                .contains(selectedDetection.getOsmComparison())) {
+            isCorresponding = false;
+        } else if (selectedDetection != null && filter.getDetectionFilter().getModes() != null
+                && selectedDetection.getMode() != null && !filter.getDetectionFilter().getModes().isEmpty() && !filter
+                .getDetectionFilter().getModes().contains(selectedDetection.getMode())) {
+            isCorresponding = false;
         }
-
         return isCorresponding;
     }
 }
