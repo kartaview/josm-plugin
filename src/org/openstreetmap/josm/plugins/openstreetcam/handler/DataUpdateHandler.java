@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
@@ -14,8 +15,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
@@ -200,16 +203,46 @@ public class DataUpdateHandler {
                 if (isClusterInfoInPanel) {
                     if (!DataSet.getInstance().hasSelectedCluster() && !DataSet.getInstance().hasSelectedDetection()) {
                         DetectionDetailsDialog.getInstance()
-                        .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                                .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
                         DetectionDetailsDialog.getInstance()
-                        .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
-                                DataSet.getInstance().getSelectedDetection());
+                                .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
+                                        DataSet.getInstance().getSelectedDetection());
                     }
                 } else {
-                    DetectionDetailsDialog.getInstance()
-                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                    if (DataSet.getInstance().getSelectedDetection() != null) {
+                        final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
+                        if (!correspondsSelectedDetectionToFilter(searchFilter)) {
+                            DataSet.getInstance().setSelectedDetection(null);
+                            DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+                            PhotoDetailsDialog.getInstance().updatePhotoDetections(null);
+                        } else {
+                            DetectionDetailsDialog.getInstance()
+                                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private boolean correspondsSelectedDetectionToFilter(final SearchFilter filter) {
+        boolean isCorresponding = true;
+        final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
+
+        if (selectedDetection != null && filter.getDetectionFilter().getSignTypes() != null) {
+            List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
+                    filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
+            if (!matchedSignNames.isEmpty() || matchedSignNames.size() < 1)
+                isCorresponding = false;
+        }
+
+        if (selectedDetection != null && filter.getDetectionFilter().getSpecificSigns() != null) {
+            List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
+                    filter(s -> s.getName().equals(selectedDetection.getSign().getName())).collect(Collectors.toList());
+            if (matchedSignNames.isEmpty())
+                isCorresponding = false;
+        }
+
+        return isCorresponding;
     }
 }
