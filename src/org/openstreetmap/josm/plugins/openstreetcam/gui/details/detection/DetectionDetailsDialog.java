@@ -177,6 +177,10 @@ public final class DetectionDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    public void clearClusterPanel(){
+        pnlCluster.clearCluster();
+    }
+
     public void clearDetailsDialog() {
         updateDetectionDetails(null);
         updateClusterDetails(null, null);

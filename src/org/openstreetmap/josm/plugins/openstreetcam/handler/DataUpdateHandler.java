@@ -207,21 +207,30 @@ public class DataUpdateHandler {
                         DetectionDetailsDialog.getInstance()
                                 .updateClusterDetails(DataSet.getInstance().getSelectedCluster(),
                                         DataSet.getInstance().getSelectedDetection());
+                    } else if (!DataSet.getInstance().hasSelectedCluster()) {
+                        updateDetectionPanelAccordingToFilters();
+                        DetectionDetailsDialog.getInstance().clearClusterPanel();
                     }
                 } else {
-                    if (DataSet.getInstance().getSelectedDetection() != null) {
-                        final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-                        if (!correspondsSelectedDetectionToFilter(searchFilter)) {
-                            DataSet.getInstance().setSelectedDetection(null);
-                            DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-                            PhotoDetailsDialog.getInstance().updatePhotoDetections(null);
-                        } else {
-                            DetectionDetailsDialog.getInstance()
-                                    .updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
-                        }
+                    if (DataSet.getInstance().getSelectedDetection() != null
+                            && DataSet.getInstance().getSelectedCluster() == null) {
+                        updateDetectionPanelAccordingToFilters();
+                    } else {
+                        DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(false);
                     }
                 }
             }
+        }
+    }
+
+    private void updateDetectionPanelAccordingToFilters() {
+        final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
+        if (!correspondsSelectedDetectionToFilter(searchFilter)) {
+            DataSet.getInstance().setSelectedDetection(null);
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+            PhotoDetailsDialog.getInstance().updatePhotoDetections(null);
+        } else {
+            DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
         }
     }
 
@@ -229,17 +238,7 @@ public class DataUpdateHandler {
         boolean isCorresponding = true;
         final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
 
-        if (selectedDetection != null && filter.getDetectionFilter().getSignTypes() != null) {
-            final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
-                    filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
-            if (matchedSignNames.size() == 1)
-                isCorresponding = false;
-        } else if (selectedDetection != null && filter.getDetectionFilter().getSpecificSigns() != null) {
-            final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
-                    filter(s -> s.getName().equals(selectedDetection.getSign().getName())).collect(Collectors.toList());
-            if (matchedSignNames.isEmpty())
-                isCorresponding = false;
-        } else if (selectedDetection != null && filter.getDetectionFilter().getEditStatuses() != null && !filter
+        if (selectedDetection != null && filter.getDetectionFilter().getEditStatuses() != null && !filter
                 .getDetectionFilter().getEditStatuses().isEmpty() && selectedDetection.getEditStatus() != null
                 && !filter.getDetectionFilter().getEditStatuses().contains(selectedDetection.getEditStatus())) {
             isCorresponding = false;
@@ -252,6 +251,16 @@ public class DataUpdateHandler {
                 && selectedDetection.getMode() != null && !filter.getDetectionFilter().getModes().isEmpty() && !filter
                 .getDetectionFilter().getModes().contains(selectedDetection.getMode())) {
             isCorresponding = false;
+        } else if (selectedDetection != null && filter.getDetectionFilter().getSignTypes() != null) {
+            final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
+                    filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
+            if (matchedSignNames.size() == 1)
+                isCorresponding = false;
+        } else if (selectedDetection != null && filter.getDetectionFilter().getSpecificSigns() != null) {
+            final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
+                    filter(s -> s.getName().equals(selectedDetection.getSign().getName())).collect(Collectors.toList());
+            if (matchedSignNames.isEmpty())
+                isCorresponding = false;
         }
         return isCorresponding;
     }
