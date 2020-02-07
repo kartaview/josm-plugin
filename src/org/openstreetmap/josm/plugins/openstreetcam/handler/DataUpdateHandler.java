@@ -196,8 +196,13 @@ public class DataUpdateHandler {
     }
 
     private void updateSelection(final boolean checkSelection, final boolean isClusterInfoInPanel) {
+        final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
-            DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
+                DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
+            if (DataSet.getInstance().getSelectedDetection() != null && shouldFilterDetection(searchFilter,
+                    DataSet.getInstance().getSelectedDetection())) {
+                PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+            }
         } else {
             if (checkSelection) {
                 if (isClusterInfoInPanel) {
@@ -228,7 +233,7 @@ public class DataUpdateHandler {
         if (!shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
             DataSet.getInstance().setSelectedDetection(null);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-            PhotoDetailsDialog.getInstance().updatePhotoDetections(null);
+            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         } else {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
         }
