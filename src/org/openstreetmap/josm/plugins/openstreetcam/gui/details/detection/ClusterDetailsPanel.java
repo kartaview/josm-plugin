@@ -14,9 +14,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.formatter.DecimalPattern;
-import com.telenav.josm.common.formatter.EntityFormatter;
+import com.grab.josm.common.formatter.DateFormatter;
+import com.grab.josm.common.formatter.DecimalPattern;
+import com.grab.josm.common.formatter.EntityFormatter;
 
 
 /**

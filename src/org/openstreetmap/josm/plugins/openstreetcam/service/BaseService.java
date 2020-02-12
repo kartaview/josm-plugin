@@ -19,9 +19,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.telenav.josm.common.http.ContentType;
-import com.telenav.josm.common.http.HttpConnector;
-import com.telenav.josm.common.http.HttpConnectorException;
+import com.grab.josm.common.http.ContentType;
+import com.grab.josm.common.http.HttpConnector;
+import com.grab.josm.common.http.HttpConnectorException;
 
 
 /**

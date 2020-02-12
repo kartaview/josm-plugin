@@ -31,9 +31,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.entity.Pair;
+import com.grab.josm.common.gui.builder.ContainerBuilder;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**

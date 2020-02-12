@@ -14,7 +14,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.ImageProvider.ImageSizes;
 import org.openstreetmap.josm.tools.JosmRuntimeException;
-import com.telenav.josm.common.entity.Pair;
+import com.grab.josm.common.entity.Pair;
 
 
 /**

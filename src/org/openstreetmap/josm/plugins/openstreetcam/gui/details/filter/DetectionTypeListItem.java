@@ -22,8 +22,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
-import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
-import com.telenav.josm.common.gui.builder.ListBuilder;
+import com.grab.josm.common.gui.builder.CheckBoxBuilder;
+import com.grab.josm.common.gui.builder.ListBuilder;
 
 
 /**

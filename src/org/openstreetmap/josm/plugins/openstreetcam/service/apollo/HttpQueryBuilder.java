@@ -16,8 +16,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
-import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.http.HttpUtil;
+import com.grab.josm.common.argument.BoundingBox;
+import com.grab.josm.common.http.HttpUtil;
 
 
 /**

@@ -6,7 +6,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
-import com.telenav.josm.common.entity.EntityUtil;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**

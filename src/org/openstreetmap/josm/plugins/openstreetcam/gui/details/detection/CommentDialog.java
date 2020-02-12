@@ -27,11 +27,11 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObse
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.tools.GuiSizesHelper;
-import com.telenav.josm.common.gui.CancelAction;
-import com.telenav.josm.common.gui.ModalDialog;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
+import com.grab.josm.common.gui.CancelAction;
+import com.grab.josm.common.gui.ModalDialog;
+import com.grab.josm.common.gui.builder.ButtonBuilder;
+import com.grab.josm.common.gui.builder.ContainerBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**

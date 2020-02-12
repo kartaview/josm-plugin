@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.xml.sax.SAXException;
-import com.telenav.josm.common.argument.BoundingBox;
+import com.grab.josm.common.argument.BoundingBox;
 
 
 /**

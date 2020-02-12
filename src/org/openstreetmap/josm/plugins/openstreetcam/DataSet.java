@@ -31,7 +31,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**

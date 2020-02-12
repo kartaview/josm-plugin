@@ -12,7 +12,7 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**

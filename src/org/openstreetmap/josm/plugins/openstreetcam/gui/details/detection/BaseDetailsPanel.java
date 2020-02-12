@@ -15,9 +15,9 @@ import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.tools.Platform;
-import com.telenav.josm.common.gui.BasicInfoPanel;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
+import com.grab.josm.common.gui.BasicInfoPanel;
+import com.grab.josm.common.gui.builder.LabelBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**

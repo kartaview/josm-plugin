@@ -11,7 +11,7 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.entity.Pair;
+import com.grab.josm.common.entity.Pair;
 
 
 /**

@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.openstreetmap.josm.tools.ImageProvider;
-import com.telenav.josm.common.cnf.BaseConfig;
+import com.grab.josm.common.cnf.BaseConfig;
 
 
 /**

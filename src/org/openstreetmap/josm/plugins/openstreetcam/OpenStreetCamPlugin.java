@@ -50,7 +50,7 @@ import org.openstreetmap.josm.spi.preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.spi.preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.Logging;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**

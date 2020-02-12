@@ -38,8 +38,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.gui.builder.ButtonBuilder;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**
