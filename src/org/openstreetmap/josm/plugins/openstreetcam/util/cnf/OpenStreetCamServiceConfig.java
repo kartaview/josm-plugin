@@ -6,7 +6,7 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.util.cnf;
 
-import com.telenav.josm.common.cnf.BaseConfig;
+import com.grab.josm.common.cnf.BaseConfig;
 
 
 /**

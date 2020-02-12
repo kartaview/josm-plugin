@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.tools.OpenBrowser;
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**

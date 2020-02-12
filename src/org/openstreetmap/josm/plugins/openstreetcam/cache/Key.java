@@ -7,7 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.cache;
 
 import java.io.Serializable;
-import com.telenav.josm.common.entity.EntityUtil;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**

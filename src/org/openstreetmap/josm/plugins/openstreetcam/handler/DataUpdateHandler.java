@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.argument.BoundingBox;
+import com.grab.josm.common.argument.BoundingBox;
 
 
 /**

@@ -30,9 +30,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
+import com.grab.josm.common.gui.builder.CheckBoxBuilder;
+import com.grab.josm.common.gui.builder.LabelBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**

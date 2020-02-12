@@ -33,8 +33,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
+import com.grab.josm.common.entity.Pair;
+import com.grab.josm.common.gui.builder.LabelBuilder;
 
 
 /**

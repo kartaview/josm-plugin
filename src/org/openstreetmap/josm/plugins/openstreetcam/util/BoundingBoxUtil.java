@@ -19,7 +19,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Geometry;
-import com.telenav.josm.common.argument.BoundingBox;
+import com.grab.josm.common.argument.BoundingBox;
 
 
 /**

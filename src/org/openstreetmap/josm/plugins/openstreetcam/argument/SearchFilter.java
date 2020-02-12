@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
-import com.telenav.josm.common.entity.EntityUtil;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**

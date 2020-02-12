@@ -25,7 +25,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObse
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
+import com.grab.josm.common.gui.builder.ContainerBuilder;
 
 
 /**

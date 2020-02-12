@@ -19,9 +19,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionConfidenceLe
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ValidationStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.formatter.DecimalPattern;
-import com.telenav.josm.common.formatter.EntityFormatter;
+import com.grab.josm.common.formatter.DateFormatter;
+import com.grab.josm.common.formatter.DecimalPattern;
+import com.grab.josm.common.formatter.EntityFormatter;
 
 
 /**

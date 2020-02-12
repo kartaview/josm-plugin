@@ -26,7 +26,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.thread.ThreadPool;
+import com.grab.josm.common.thread.ThreadPool;
 
 
 /**

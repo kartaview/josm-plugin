@@ -52,10 +52,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.ImageProvider;
-import com.telenav.josm.common.entity.Coordinate;
-import com.telenav.josm.common.entity.Pair;
-import com.telenav.josm.common.gui.PaintManager;
-import com.telenav.josm.common.util.GeometryUtil;
+import com.grab.josm.common.entity.Coordinate;
+import com.grab.josm.common.entity.Pair;
+import com.grab.josm.common.gui.PaintManager;
+import com.grab.josm.common.util.GeometryUtil;
 
 
 /**

@@ -49,14 +49,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import com.telenav.josm.common.formatter.DateFormatter;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
-import com.telenav.josm.common.gui.builder.CheckBoxBuilder;
-import com.telenav.josm.common.gui.builder.ContainerBuilder;
-import com.telenav.josm.common.gui.builder.DatePickerBuilder;
-import com.telenav.josm.common.gui.builder.LabelBuilder;
-import com.telenav.josm.common.gui.builder.TextComponentBuilder;
-import com.telenav.josm.common.gui.verifier.AbstractDateVerifier;
+import com.grab.josm.common.formatter.DateFormatter;
+import com.grab.josm.common.gui.builder.ButtonBuilder;
+import com.grab.josm.common.gui.builder.CheckBoxBuilder;
+import com.grab.josm.common.gui.builder.ContainerBuilder;
+import com.grab.josm.common.gui.builder.DatePickerBuilder;
+import com.grab.josm.common.gui.builder.LabelBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
+import com.grab.josm.common.gui.verifier.AbstractDateVerifier;
 
 
 /**

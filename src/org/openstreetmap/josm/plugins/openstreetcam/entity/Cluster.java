@@ -9,7 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 import java.util.Collection;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
-import com.telenav.josm.common.entity.EntityUtil;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**

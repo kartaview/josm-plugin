@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.grab.josm.common.gui.builder.ButtonBuilder;
 
 
 /**

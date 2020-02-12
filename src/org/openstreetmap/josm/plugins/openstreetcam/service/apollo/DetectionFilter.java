@@ -14,7 +14,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
-import com.telenav.josm.common.entity.EntityUtil;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**

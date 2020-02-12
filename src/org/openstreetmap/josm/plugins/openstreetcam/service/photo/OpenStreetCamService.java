@@ -32,9 +32,9 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServic
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.telenav.josm.common.argument.BoundingBox;
-import com.telenav.josm.common.http.HttpConnector;
-import com.telenav.josm.common.http.HttpConnectorException;
+import com.grab.josm.common.argument.BoundingBox;
+import com.grab.josm.common.http.HttpConnector;
+import com.grab.josm.common.http.HttpConnectorException;
 
 
 /**

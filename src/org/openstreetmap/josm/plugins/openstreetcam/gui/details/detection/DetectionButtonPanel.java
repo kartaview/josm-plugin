@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObse
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
-import com.telenav.josm.common.gui.builder.ButtonBuilder;
+import com.grab.josm.common.gui.builder.ButtonBuilder;
 
 /**
  * Defines a button panel with detection specific actions that an user can perform. If a detection is selected an user

@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Reques
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.telenav.josm.common.argument.BoundingBox;
+import com.grab.josm.common.argument.BoundingBox;
 
 
 /**
