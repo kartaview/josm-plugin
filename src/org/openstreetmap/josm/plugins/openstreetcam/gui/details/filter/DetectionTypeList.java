@@ -123,7 +123,7 @@ class DetectionTypeList extends JPanel {
     List<String> getSelectedTypes(final String searchFieldText) {
         final List<String> selectedTypes = new ArrayList<>();
         for (final DetectionTypeListItem detectionItem : listItems) {
-            if (searchFieldText != null || !searchFieldText.equals("")) {
+            if (searchFieldText != null && !searchFieldText.equals("")) {
                 detectionItem.clearTypeSelection();
             }
             if (detectionItem.isTypeSelected()) {
