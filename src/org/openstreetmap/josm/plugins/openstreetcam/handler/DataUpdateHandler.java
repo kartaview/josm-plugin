@@ -259,7 +259,7 @@ public class DataUpdateHandler {
             } else if (filter.getDetectionFilter().getSignTypes() != null) {
                 final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
                         filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
-                if (matchedSignNames.size() == 1)
+                if (matchedSignNames.size() != 1)
                     isCorresponding = false;
             } else if (filter.getDetectionFilter().getSpecificSigns() != null) {
                 final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
