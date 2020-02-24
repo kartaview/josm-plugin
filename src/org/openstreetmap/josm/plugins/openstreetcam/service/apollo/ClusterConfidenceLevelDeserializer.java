@@ -23,7 +23,7 @@ import com.google.gson.JsonPrimitive;
 class ClusterConfidenceLevelDeserializer implements JsonDeserializer<ClusterConfidenceLevel> {
 
 	private static final String OVERALL_CONFIDENCE = "overallConfidence";
-	private static final String OCR_CONFIDENCW = "ocrConfidence";
+	private static final String OCR_CONFIDENCE = "ocrConfidence";
 
 	@Override
 	public ClusterConfidenceLevel deserialize(final JsonElement jsonElement, final Type type,
@@ -33,7 +33,7 @@ class ClusterConfidenceLevelDeserializer implements JsonDeserializer<ClusterConf
 		if (jsonElement instanceof JsonObject) {
 			final JsonObject obj = (JsonObject) jsonElement;
 			overallConfidence = obj.get(OVERALL_CONFIDENCE).getAsDouble();
-			ocrConfidence = obj.get(OCR_CONFIDENCW).getAsDouble();
+			ocrConfidence = obj.get(OCR_CONFIDENCE).getAsDouble();
 		} else {
 			final JsonPrimitive obj = (JsonPrimitive) jsonElement;
 			overallConfidence = obj.getAsDouble();
