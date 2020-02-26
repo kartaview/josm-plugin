@@ -408,8 +408,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         public void mouseDragged(final MouseEvent e) {
             if (image != null) {
                 final Point endPoint = getPointOnImage(e.getPoint());
-                moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
-                repaint();
+                if (startPoint != null && endPoint != null) {
+                    moveCurrentView(startPoint.x - endPoint.x, startPoint.y - endPoint.y);
+                    repaint();
+                }
             }
         }
 
