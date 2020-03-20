@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.argument;
 
-import com.grab.josm.common.argument.BoundingBox;
+        import com.grab.josm.common.argument.BoundingBox;
 
 
 /**
@@ -11,10 +11,10 @@ import com.grab.josm.common.argument.BoundingBox;
 public class SearchDetectionsAreaFilter {
 
     private final BoundingBox boundingBox;
-    private final SearchDetectionsFilterBuilder searchDetectionsFilter;
+    private final SearchDetectionsFilter searchDetectionsFilter;
 
     public SearchDetectionsAreaFilter(final BoundingBox boundingBox,
-            final SearchDetectionsFilterBuilder searchDetectionsFilter) {
+            final SearchDetectionsFilter searchDetectionsFilter) {
         this.boundingBox = boundingBox;
         this.searchDetectionsFilter = searchDetectionsFilter;
     }
@@ -23,7 +23,7 @@ public class SearchDetectionsAreaFilter {
         return boundingBox;
     }
 
-    public SearchDetectionsFilterBuilder getSearchDetectionsFilter() {
+    public SearchDetectionsFilter getSearchDetectionsFilter() {
         return searchDetectionsFilter;
     }
 }

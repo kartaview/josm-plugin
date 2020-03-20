@@ -13,8 +13,8 @@ import java.util.List;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersAreaFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersFilterBuilder;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsFilterBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsAreaFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
@@ -54,20 +54,23 @@ public class ApolloService extends BaseService {
 	public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
 			final DetectionFilter detectionFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
-		SearchDetectionsFilterBuilder searchFilterBuilder = null;
-		if (detectionFilter != null) {
-			searchFilterBuilder =
-					new SearchDetectionsFilterBuilder().date(date).editStatuses(detectionFilter.getEditStatuses())
-							.detectionModes(detectionFilter.getModes())
-							.osmComparisons(detectionFilter.getOsmComparisons())
-							.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
-									detectionFilter.getSpecificSigns()).author(new Author(getOsmUserId())).build();
-		}
-		final SearchDetectionsAreaFilter searchFilter = new SearchDetectionsAreaFilter(area, searchFilterBuilder);
+		final SearchDetectionsAreaFilter searchFilter = createDetectionsAreaFilter(area, detectionFilter, date);
 		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
 		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
+	}
+
+	private SearchDetectionsAreaFilter createDetectionsAreaFilter(final BoundingBox area,
+			final DetectionFilter detectionFilter, final Date date) {
+		SearchDetectionsFilter filter = null;
+		if (detectionFilter != null) {
+			filter = new SearchDetectionsFilter.Builder().date(date).editStatuses(detectionFilter.getEditStatuses())
+					.detectionModes(detectionFilter.getModes()).osmComparisons(detectionFilter.getOsmComparisons())
+					.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
+							detectionFilter.getSpecificSigns()).author(new Author(getOsmUserId())).build();
+		}
+		return new SearchDetectionsAreaFilter(area, filter);
 	}
 
 	public static String getOsmUserId() {
@@ -82,9 +85,9 @@ public class ApolloService extends BaseService {
 		final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
 				area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
 		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
-		SearchClustersFilterBuilder searchFilterBuilder = null;
+		SearchClustersFilter searchFilterBuilder = null;
 		if (detectionFilter != null) {
-			searchFilterBuilder = new SearchClustersFilterBuilder().date(date)
+			searchFilterBuilder = new SearchClustersFilter.Builder().date(date)
 					.minConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
 					.maxConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
 					.osmComparisons(detectionFilter.getOsmComparisons()).
