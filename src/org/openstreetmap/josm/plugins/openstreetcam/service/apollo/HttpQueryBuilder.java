@@ -46,42 +46,18 @@ class HttpQueryBuilder {
         return build();
     }
 
-    String buildSearchDetectionsQuery(final BoundingBox area, final Date date, final Long osmUserId,
-            final DetectionFilter filter) {
+    String buildSearchDetectionsQuery() {
         query.append(RequestConstants.SEARCH_DETECTIONS);
         query.append(QUESTIONM);
-        appendCommonSearchFilters(area, date, osmUserId);
-        if (filter != null) {
-            appendOsmComparisonFilter(filter.getOsmComparisons());
-            appendEditStatusFilter(filter.getEditStatuses());
-            appendSignTypeFilter(filter.getSignTypes());
-            appendSignInternalNameFilter(filter.getSignInternalNames());
-            appendSignRegionFilter(filter.getRegion());
-            appendDetectionModeFilter(filter.getModes());
-        }
-        appendExcludedSignTypeFitler();
+        appendFormatFilter(query);
         return build();
     }
 
-    String buildSearchClustersQuery(final BoundingBox area, final Date date, final DetectionFilter filter) {
+    String buildSearchClustersQuery() {
         query.append(RequestConstants.SEARCH_CLUSTERS);
         query.append(QUESTIONM);
-        appendCommonSearchFilters(area, date, null);
-        if (filter != null) {
-            appendOsmComparisonFilter(filter.getOsmComparisons());
-            appendSignTypeFilter(filter.getSignTypes());
-            appendSignInternalNameFilter(filter.getSignInternalNames());
-            appendSignRegionFilter(filter.getRegion());
-            appendConfidenceLevelFilter(filter.getConfidenceLevelFilter());
-        }
-        return build();
-    }
-
-    private void appendCommonSearchFilters(final BoundingBox area, final Date date, final Long osmUserId) {
         appendFormatFilter(query);
-        appendBoundingBoxFilter(query, area);
-        appendDateFilter(date);
-        appendUserFilter(osmUserId);
+        return build();
     }
 
     String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {

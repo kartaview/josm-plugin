@@ -7,8 +7,11 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
@@ -25,7 +28,7 @@ import com.grab.josm.common.entity.EntityUtil;
 public class DetectionFilter {
 
     public static final DetectionFilter DEFAULT =
-            new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, "", null);
+            new DetectionFilter(null, Arrays.asList(EditStatus.OPEN), null, null, null, "", null, null, null);
 
     private final List<OsmComparison> osmComparisons;
     private final List<EditStatus> editStatuses;
@@ -34,11 +37,13 @@ public class DetectionFilter {
     private final List<DetectionMode> modes;
     private final String region;
     private final ConfidenceLevelFilter confidenceLevelFilter;
+    private final Date date;
+    private final Author author;
 
 
     public DetectionFilter(final List<OsmComparison> osmComparisons, final List<EditStatus> editStatuses,
             final List<String> signTypes, final List<Sign> specificSigns, final List<DetectionMode> modes,
-            final String region, final ConfidenceLevelFilter confidenceLevelFilter) {
+            final String region, final ConfidenceLevelFilter confidenceLevelFilter, final Date date, final Author author) {
         this.osmComparisons = osmComparisons;
         this.editStatuses = editStatuses;
         this.signTypes = signTypes;
@@ -46,6 +51,8 @@ public class DetectionFilter {
         this.modes = modes;
         this.region = region;
         this.confidenceLevelFilter = confidenceLevelFilter;
+        this.date = date;
+        this.author = author;
     }
 
 
@@ -80,6 +87,14 @@ public class DetectionFilter {
 
     public ConfidenceLevelFilter getConfidenceLevelFilter() {
         return confidenceLevelFilter;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public Author getAuthor() {
+        return author;
     }
 
     public boolean containsEditStatus(final EditStatus editStatus) {

@@ -9,7 +9,14 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersFilterBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsFilterBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
@@ -46,18 +53,47 @@ public class ApolloService extends BaseService {
 
 	public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
 			final DetectionFilter detectionFilter) throws ServiceException {
-		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery(area, date, osmUserId, detectionFilter);
-		final Response response = executeGet(url, Response.class);
+		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
+		SearchDetectionsFilterBuilder searchFilterBuilder = null;
+		if (detectionFilter != null) {
+			searchFilterBuilder =
+					new SearchDetectionsFilterBuilder().date(date).editStatuses(detectionFilter.getEditStatuses())
+							.detectionModes(detectionFilter.getModes())
+							.osmComparisons(detectionFilter.getOsmComparisons())
+							.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
+									detectionFilter.getSpecificSigns()).author(new Author(getOsmUserId())).build();
+		}
+		final SearchDetectionsAreaFilter searchFilter = new SearchDetectionsAreaFilter(area, searchFilterBuilder);
+		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
+		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
 	}
 
-	public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
-			throws ServiceException {
+	public static String getOsmUserId() {
+		final Long id =  UserIdentityManager.getInstance().isFullyIdentified()
+				&& UserIdentityManager.getInstance().asUser().getId() > 0
+				? UserIdentityManager.getInstance().asUser().getId() : null;
+		return id != null ? id.toString() : null;
+	}
+
+	public List<Cluster> searchClusters(final BoundingBox area, final Date date,
+			final DetectionFilter detectionFilter) throws ServiceException {
 		final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
 				area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
-		final String url = new HttpQueryBuilder().buildSearchClustersQuery(extendedArea, date, detectionFilter);
-		final Response response = executeGet(url, Response.class);
+		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
+		SearchClustersFilterBuilder searchFilterBuilder = null;
+		if (detectionFilter != null) {
+			searchFilterBuilder = new SearchClustersFilterBuilder().date(date)
+					.minConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
+					.maxConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
+					.osmComparisons(detectionFilter.getOsmComparisons()).
+							signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
+									detectionFilter.getSpecificSigns()).build();
+		}
+		final SearchClustersAreaFilter searchFilter = new SearchClustersAreaFilter(extendedArea, searchFilterBuilder);
+		final String content = buildRequest(searchFilter, SearchClustersAreaFilter.class);
+		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getClusters() != null ? response.getClusters() : new ArrayList<>();
 	}

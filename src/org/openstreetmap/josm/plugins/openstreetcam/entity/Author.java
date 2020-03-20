@@ -26,6 +26,11 @@ public class Author {
         this.type = "OSM";
     }
 
+    public Author(final String externalId){
+        this.externalId = externalId;
+        this.userName = null;
+        this.type = "OSM";
+    }
 
     public String getExternalId() {
         return externalId;
