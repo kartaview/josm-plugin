@@ -1,6 +1,6 @@
-package org.openstreetmap.josm.plugins.openstreetcam.argument;
+package org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity;
 
-        import com.grab.josm.common.argument.BoundingBox;
+import com.grab.josm.common.argument.BoundingBox;
 
 
 /**

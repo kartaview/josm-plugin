@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,16 +16,23 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JOptionPane;
+
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.ApolloService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersFilterBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsFilterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.OpenStreetCamService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.Paging;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -39,6 +47,8 @@ import com.grab.josm.common.argument.BoundingBox;
  * @version $Revision$
  */
 class SearchServiceHandler {
+
+    private static final double AREA_EXTEND = 0.004;
 
     protected final OpenStreetCamService openStreetCamService;
     protected final ApolloService apolloService;
@@ -183,7 +193,8 @@ class SearchServiceHandler {
         }
         List<Detection> result = null;
         try {
-            result = apolloService.searchDetections(area, date, osmUserId, detectionFilter);
+            final SearchDetectionsAreaFilter searchAreaFilter= createDetectionsAreaFilter(area, detectionFilter, date, osmUserId);
+            result = apolloService.searchDetections(searchAreaFilter);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadDetectionsSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
@@ -191,6 +202,27 @@ class SearchServiceHandler {
             }
         }
         return result;
+    }
+
+    private SearchDetectionsAreaFilter createDetectionsAreaFilter(final BoundingBox area,
+            final DetectionFilter detectionFilter, final Date date, final Long osmUserId) {
+        final SearchDetectionsFilterBuilder builder = new SearchDetectionsFilterBuilder();
+        if (detectionFilter != null) {
+            builder.date(date);
+            builder.editStatuses(detectionFilter.getEditStatuses());
+            builder.detectionModes(detectionFilter.getModes());
+            builder.osmComparisons(detectionFilter.getOsmComparisons());
+            Collection<String> includedNames = null;
+            if (detectionFilter.getSpecificSigns() != null) {
+                includedNames = detectionFilter.getSpecificSigns().stream().map(Sign::getInternalName)
+                        .collect(Collectors.toList());
+            }
+            builder.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(), includedNames);
+            if (osmUserId != null) {
+                builder.author(new Author(osmUserId.toString()));
+            }
+        }
+        return new SearchDetectionsAreaFilter(area, builder.build());
     }
 
     public List<Cluster> searchClusters(final BoundingBox area, final SearchFilter filter) {
@@ -202,7 +234,8 @@ class SearchServiceHandler {
         }
         List<Cluster> result = null;
         try {
-            result = apolloService.searchClusters(area, date, detectionFilter);
+            final SearchClustersAreaFilter searchFilter = createClustersAreaFilter(area, date, detectionFilter);
+            result = apolloService.searchClusters(searchFilter);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadClustersSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
@@ -211,6 +244,28 @@ class SearchServiceHandler {
         }
         return result;
 
+    }
+
+    public SearchClustersAreaFilter createClustersAreaFilter(final BoundingBox area, final Date date,
+            final DetectionFilter detectionFilter) {
+        final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
+                area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
+        final SearchClustersFilterBuilder builder = new SearchClustersFilterBuilder();
+        if (detectionFilter != null) {
+            builder.date(date);
+            if (detectionFilter.getConfidenceLevelFilter() != null) {
+                builder.maxConfidenceLevel(detectionFilter.getConfidenceLevelFilter().getMaxConfidenceLevel());
+                builder.minConfidenceLevel(detectionFilter.getConfidenceLevelFilter().getMinConfidenceLevel());
+            }
+            builder.osmComparisons(detectionFilter.getOsmComparisons());
+            Collection<String> includedNames = null;
+            if (detectionFilter.getSpecificSigns() != null) {
+                includedNames = detectionFilter.getSpecificSigns().stream().map(Sign::getInternalName)
+                        .collect(Collectors.toList());
+            }
+            builder.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(), includedNames);
+        }
+        return new SearchClustersAreaFilter(extendedArea, builder.build());
     }
 
     boolean handleException(final String message) {

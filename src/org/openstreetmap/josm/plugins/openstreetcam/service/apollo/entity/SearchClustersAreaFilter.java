@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openstreetcam.argument;
+package org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity;
 
 import com.grab.josm.common.argument.BoundingBox;
 
@@ -13,8 +13,7 @@ public class SearchClustersAreaFilter {
     private final BoundingBox boundingBox;
     private final SearchClustersFilter searchClustersFilter;
 
-    public SearchClustersAreaFilter(final BoundingBox boundingBox,
-            final SearchClustersFilter searchClustersFilter) {
+    public SearchClustersAreaFilter(final BoundingBox boundingBox, final SearchClustersFilter searchClustersFilter) {
         this.boundingBox = boundingBox;
         this.searchClustersFilter = searchClustersFilter;
     }

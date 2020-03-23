@@ -7,16 +7,11 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersAreaFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchClustersFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchDetectionsAreaFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsAreaFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
@@ -30,7 +25,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Reques
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.grab.josm.common.argument.BoundingBox;
 
 /**
  * Executes the operations of the ApolloService components.
@@ -39,8 +33,6 @@ import com.grab.josm.common.argument.BoundingBox;
  * @version $Revision$
  */
 public class ApolloService extends BaseService {
-
-	private static final double AREA_EXTEND = 0.004;
 
 	@Override
 	public Gson createGson() {
@@ -51,50 +43,16 @@ public class ApolloService extends BaseService {
 		return builder.create();
 	}
 
-	public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
-			final DetectionFilter detectionFilter) throws ServiceException {
+	public List<Detection> searchDetections(final SearchDetectionsAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
-		final SearchDetectionsAreaFilter searchFilter = createDetectionsAreaFilter(area, detectionFilter, date);
 		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
 		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
 	}
 
-	private SearchDetectionsAreaFilter createDetectionsAreaFilter(final BoundingBox area,
-			final DetectionFilter detectionFilter, final Date date) {
-		SearchDetectionsFilter filter = null;
-		if (detectionFilter != null) {
-			filter = new SearchDetectionsFilter.Builder().date(date).editStatuses(detectionFilter.getEditStatuses())
-					.detectionModes(detectionFilter.getModes()).osmComparisons(detectionFilter.getOsmComparisons())
-					.signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
-							detectionFilter.getSpecificSigns()).author(new Author(getOsmUserId())).build();
-		}
-		return new SearchDetectionsAreaFilter(area, filter);
-	}
-
-	public static String getOsmUserId() {
-		final Long id =  UserIdentityManager.getInstance().isFullyIdentified()
-				&& UserIdentityManager.getInstance().asUser().getId() > 0
-				? UserIdentityManager.getInstance().asUser().getId() : null;
-		return id != null ? id.toString() : null;
-	}
-
-	public List<Cluster> searchClusters(final BoundingBox area, final Date date,
-			final DetectionFilter detectionFilter) throws ServiceException {
-		final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
-				area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
+	public List<Cluster> searchClusters(final SearchClustersAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
-		SearchClustersFilter searchFilterBuilder = null;
-		if (detectionFilter != null) {
-			searchFilterBuilder = new SearchClustersFilter.Builder().date(date)
-					.minConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
-					.maxConfidenceLevel(detectionFilter.getConfidenceLevelFilter())
-					.osmComparisons(detectionFilter.getOsmComparisons()).
-							signFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
-									detectionFilter.getSpecificSigns()).build();
-		}
-		final SearchClustersAreaFilter searchFilter = new SearchClustersAreaFilter(extendedArea, searchFilterBuilder);
 		final String content = buildRequest(searchFilter, SearchClustersAreaFilter.class);
 		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
