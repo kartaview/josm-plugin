@@ -37,31 +37,31 @@ class SearchDetectionsFilter {
         this.signFilter = builder.getSignFilter();
     }
 
-    public Author getAuthor() {
+    Author getAuthor() {
         return author;
     }
 
-    public Date getDate() {
+    Date getDate() {
         return date;
     }
 
-    public Collection<EditStatus> getEditStatuses() {
+    Collection<EditStatus> getEditStatuses() {
         return editStatuses;
     }
 
-    public Collection<ValidationStatus> getValidationStatuses() {
+    Collection<ValidationStatus> getValidationStatuses() {
         return validationStatuses;
     }
 
-    public Collection<OsmComparison> getOsmComparisons() {
+    Collection<OsmComparison> getOsmComparisons() {
         return osmComparisons;
     }
 
-    public Collection<DetectionMode> getDetectionModes() {
+    Collection<DetectionMode> getDetectionModes() {
         return detectionModes;
     }
 
-    public SignFilter getSignFilter() {
+    SignFilter getSignFilter() {
         return signFilter;
     }
 }

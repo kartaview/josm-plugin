@@ -29,23 +29,23 @@ class SearchClustersFilter {
         this.signFilter = builder.getSignFilter();
     }
 
-    public Date getDate() {
+    Date getDate() {
         return date;
     }
 
-    public Double getMinConfidenceLvl() {
+    Double getMinConfidenceLvl() {
         return minConfidenceLvl;
     }
 
-    public Double getMaxConfidenceLvl() {
+    Double getMaxConfidenceLvl() {
         return maxConfidenceLvl;
     }
 
-    public Collection<OsmComparison> getOsmComparisons() {
+    Collection<OsmComparison> getOsmComparisons() {
         return osmComparisons;
     }
 
-    public SignFilter getSignFilter() {
+    SignFilter getSignFilter() {
         return signFilter;
     }
 }

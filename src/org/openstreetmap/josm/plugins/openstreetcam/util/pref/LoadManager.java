@@ -75,6 +75,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
@@ -162,9 +163,7 @@ final class LoadManager {
     }
 
     public static String getOsmUserId() {
-        final Long id =  UserIdentityManager.getInstance().isFullyIdentified()
-                && UserIdentityManager.getInstance().asUser().getId() > 0
-                ? UserIdentityManager.getInstance().asUser().getId() : null;
+        final Long id =  Util.getOsmUserId();
         return id != null ? id.toString() : null;
     }
 

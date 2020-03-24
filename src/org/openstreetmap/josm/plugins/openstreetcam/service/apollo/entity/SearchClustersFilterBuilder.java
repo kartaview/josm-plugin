@@ -26,7 +26,7 @@ public class SearchClustersFilterBuilder {
 
     public SearchClustersFilterBuilder(final SearchClustersFilter filter) {
         date(filter.getDate());
-        minConfidenceLevel(filter.getMaxConfidenceLvl());
+        minConfidenceLevel(filter.getMinConfidenceLvl());
         maxConfidenceLevel(filter.getMaxConfidenceLvl());
         osmComparisons(filter.getOsmComparisons());
         signFilter(filter.getSignFilter().getSignRegion(), filter.getSignFilter().getIncludedSignTypes(),
