@@ -24,7 +24,7 @@ class SearchDetectionsFilter {
     private final Collection<EditStatus> editStatuses;
     private final Collection<ValidationStatus> validationStatuses;
     private final Collection<OsmComparison> osmComparisons;
-    private final Collection<DetectionMode> detectionsModes;
+    private final Collection<DetectionMode> detectionModes;
     private final SignFilter signFilter;
 
     SearchDetectionsFilter(final SearchDetectionsFilterBuilder builder) {
@@ -33,7 +33,7 @@ class SearchDetectionsFilter {
         this.editStatuses = builder.getEditStatuses();
         this.validationStatuses = builder.getValidationStatuses();
         this.osmComparisons = builder.getOsmComparisons();
-        this.detectionsModes = builder.getDetectionsModes();
+        this.detectionModes = builder.getDetectionModes();
         this.signFilter = builder.getSignFilter();
     }
 
@@ -57,8 +57,8 @@ class SearchDetectionsFilter {
         return osmComparisons;
     }
 
-    public Collection<DetectionMode> getDetectionsModes() {
-        return detectionsModes;
+    public Collection<DetectionMode> getDetectionModes() {
+        return detectionModes;
     }
 
     public SignFilter getSignFilter() {

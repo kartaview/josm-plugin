@@ -23,7 +23,7 @@ public class SearchDetectionsFilterBuilder {
     private Collection<EditStatus> editStatuses;
     private Collection<ValidationStatus> validationStatuses;
     private Collection<OsmComparison> osmComparisons;
-    private Collection<DetectionMode> detectionsModes;
+    private Collection<DetectionMode> detectionModes;
     private SignFilter signFilter;
 
     public SearchDetectionsFilterBuilder() {
@@ -35,9 +35,9 @@ public class SearchDetectionsFilterBuilder {
         editStatuses(filter.getEditStatuses());
         validationStatuses(filter.getValidationStatuses());
         osmComparisons(filter.getOsmComparisons());
-        detectionModes(filter.getDetectionsModes());
-        signFilter(filter.getSignFilter().getRegion(), filter.getSignFilter().getIncludedTypes(),
-                filter.getSignFilter().getInternalNames());
+        detectionModes(filter.getDetectionModes());
+        signFilter(filter.getSignFilter().getSignRegion(), filter.getSignFilter().getIncludedSignTypes(),
+                filter.getSignFilter().getSignInternalNames());
     }
 
     public void author(final Author author) {
@@ -61,7 +61,7 @@ public class SearchDetectionsFilterBuilder {
     }
 
     public void detectionModes(final Collection<DetectionMode> detectionsModes) {
-        this.detectionsModes = detectionsModes;
+        this.detectionModes = detectionsModes;
     }
 
     public void signFilter(final String region, final Collection<String> includedTypes,
@@ -89,8 +89,8 @@ public class SearchDetectionsFilterBuilder {
         return osmComparisons;
     }
 
-    Collection<DetectionMode> getDetectionsModes() {
-        return detectionsModes;
+    Collection<DetectionMode> getDetectionModes() {
+        return detectionModes;
     }
 
     SignFilter getSignFilter() {

@@ -16,8 +16,8 @@ import java.util.Date;
 public class SearchClustersFilterBuilder {
 
     private Date date;
-    private Double minConfidenceLvl;
-    private Double maxConfidenceLvl;
+    private Double minConfidenceLevel;
+    private Double maxConfidenceLevel;
     private Collection<OsmComparison> osmComparisons;
     private SignFilter signFilter;
 
@@ -29,8 +29,8 @@ public class SearchClustersFilterBuilder {
         minConfidenceLevel(filter.getMaxConfidenceLvl());
         maxConfidenceLevel(filter.getMaxConfidenceLvl());
         osmComparisons(filter.getOsmComparisons());
-        signFilter(filter.getSignFilter().getRegion(), filter.getSignFilter().getIncludedTypes(),
-                filter.getSignFilter().getInternalNames());
+        signFilter(filter.getSignFilter().getSignRegion(), filter.getSignFilter().getIncludedSignTypes(),
+                filter.getSignFilter().getSignInternalNames());
     }
 
     public void date(final Date date) {
@@ -38,11 +38,11 @@ public class SearchClustersFilterBuilder {
     }
 
     public void minConfidenceLevel(final Double minConfidenceLvl) {
-        this.minConfidenceLvl = minConfidenceLvl;
+        this.minConfidenceLevel = minConfidenceLvl;
     }
 
     public void maxConfidenceLevel(final Double maxConfidenceLvl) {
-        this.maxConfidenceLvl = maxConfidenceLvl;
+        this.maxConfidenceLevel = maxConfidenceLvl;
     }
 
     public void osmComparisons(final Collection<OsmComparison> osmComparisons) {
@@ -58,12 +58,12 @@ public class SearchClustersFilterBuilder {
         return date;
     }
 
-    Double getMinConfidenceLvl() {
-        return minConfidenceLvl;
+    Double getMinConfidenceLevel() {
+        return minConfidenceLevel;
     }
 
-    Double getMaxConfidenceLvl() {
-        return maxConfidenceLvl;
+    Double getMaxConfidenceLevel() {
+        return maxConfidenceLevel;
     }
 
     Collection<OsmComparison> getOsmComparisons() {

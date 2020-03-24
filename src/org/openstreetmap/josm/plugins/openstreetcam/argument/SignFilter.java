@@ -16,32 +16,32 @@ import java.util.Collections;
  */
 public class SignFilter {
 
-    private final String region;
-    private final Collection<String> includedTypes;
-    private final Collection<String> excludedTypes;
-    private final Collection<String> internalNames;
+    private final String signRegion;
+    private final Collection<String> includedSignTypes;
+    private final Collection<String> excludedSignTypes;
+    private final Collection<String> signInternalNames;
 
-    public SignFilter(final String region, final Collection<String> includedTypes,
-            final Collection<String> internalNames) {
-        this.region = region;
-        this.includedTypes = includedTypes;
-        this.excludedTypes = new ArrayList(Collections.singleton(HttpUtil.utf8Encode(RequestConstants.BLURRING_TYPE)));
-        this.internalNames = internalNames;
+    public SignFilter(final String signRegion, final Collection<String> includedSignTypes,
+            final Collection<String> signInternalNames) {
+        this.signRegion = signRegion;
+        this.includedSignTypes = includedSignTypes;
+        this.excludedSignTypes = new ArrayList(Collections.singleton(HttpUtil.utf8Encode(RequestConstants.BLURRING_TYPE)));
+        this.signInternalNames = signInternalNames;
     }
 
-    public String getRegion() {
-        return region;
+    public String getSignRegion() {
+        return signRegion;
     }
 
-    public Collection<String> getIncludedTypes() {
-        return includedTypes;
+    public Collection<String> getIncludedSignTypes() {
+        return includedSignTypes;
     }
 
-    public Collection<String> getExcludedTypes() {
-        return excludedTypes;
+    public Collection<String> getExcludedSignTypes() {
+        return excludedSignTypes;
     }
 
-    public Collection<String> getInternalNames() {
-        return internalNames;
+    public Collection<String> getSignInternalNames() {
+        return signInternalNames;
     }
 }

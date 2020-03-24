@@ -23,8 +23,8 @@ class SearchClustersFilter {
 
     SearchClustersFilter(final SearchClustersFilterBuilder builder) {
         this.date = builder.getDate();
-        this.minConfidenceLvl = builder.getMinConfidenceLvl();
-        this.maxConfidenceLvl = builder.getMaxConfidenceLvl();
+        this.minConfidenceLvl = builder.getMinConfidenceLevel();
+        this.maxConfidenceLvl = builder.getMaxConfidenceLevel();
         this.osmComparisons = builder.getOsmComparisons();
         this.signFilter = builder.getSignFilter();
     }
