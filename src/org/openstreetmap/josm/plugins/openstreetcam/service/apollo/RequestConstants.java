@@ -12,7 +12,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
  * @author beataj
  * @version $Revision$
  */
-final class RequestConstants {
+public final class RequestConstants {
 
     static final String SEARCH_DETECTIONS = "searchDetections";
     static final String UPDATE_DETECTION = "updateDetection";
@@ -54,7 +54,7 @@ final class RequestConstants {
     static final String MIN_CONFIDENCE_LEVEL = "minConfidenceLevel";
     static final String MAX_CONFIDENCE_LEVEL = "maxConfidenceLevel";
 
-    static final String BLURRING_TYPE = "BLURRING";
+    public static final String BLURRING_TYPE = "BLURRING";
 
-    private RequestConstants() {}
+    public RequestConstants() {}
 }

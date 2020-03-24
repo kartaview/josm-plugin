@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
+import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
@@ -67,12 +68,14 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Author;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ConfidenceLevelFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.CacheConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.entity.DetectionModeEntry;
@@ -156,7 +159,12 @@ final class LoadManager {
         final ConfidenceLevelFilter confidenceLevelFilter = loadConfidenceLevelFilter();
         return new SearchFilter(date, onlyUserFlag, dataType,
                 new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes, region,
-                        confidenceLevelFilter));
+                        confidenceLevelFilter, date, new Author(getOsmUserId())));
+    }
+
+    public static String getOsmUserId() {
+        final Long id =  Util.getOsmUserId();
+        return id != null ? id.toString() : null;
     }
 
     private List<DataType> loadDataTypeFilter() {

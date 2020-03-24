@@ -365,7 +365,7 @@ class FilterPanel extends JPanel {
             final ConfidenceLevelFilter confidenceLevelFilter = selectedConfidenceLevel();
             searchFilter = new SearchFilter(date, cbbUser.isSelected(), dataTypes,
                     new DetectionFilter(selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes,
-                            region, confidenceLevelFilter));
+                            region, confidenceLevelFilter, null, null));
         } else {
             searchFilter = new SearchFilter(date, cbbUser.isSelected());
         }

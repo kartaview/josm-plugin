@@ -7,9 +7,11 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsAreaFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
@@ -23,7 +25,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Reques
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.grab.josm.common.argument.BoundingBox;
 
 /**
  * Executes the operations of the ApolloService components.
@@ -32,8 +33,6 @@ import com.grab.josm.common.argument.BoundingBox;
  * @version $Revision$
  */
 public class ApolloService extends BaseService {
-
-	private static final double AREA_EXTEND = 0.004;
 
 	@Override
 	public Gson createGson() {
@@ -44,20 +43,18 @@ public class ApolloService extends BaseService {
 		return builder.create();
 	}
 
-	public List<Detection> searchDetections(final BoundingBox area, final Date date, final Long osmUserId,
-			final DetectionFilter detectionFilter) throws ServiceException {
-		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery(area, date, osmUserId, detectionFilter);
-		final Response response = executeGet(url, Response.class);
+	public List<Detection> searchDetections(final SearchDetectionsAreaFilter searchFilter) throws ServiceException {
+		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
+		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
+		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
 	}
 
-	public List<Cluster> searchClusters(final BoundingBox area, final Date date, final DetectionFilter detectionFilter)
-			throws ServiceException {
-		final BoundingBox extendedArea = new BoundingBox(area.getNorth() + AREA_EXTEND, area.getSouth() - AREA_EXTEND,
-				area.getEast() + AREA_EXTEND, area.getWest() - AREA_EXTEND);
-		final String url = new HttpQueryBuilder().buildSearchClustersQuery(extendedArea, date, detectionFilter);
-		final Response response = executeGet(url, Response.class);
+	public List<Cluster> searchClusters(final SearchClustersAreaFilter searchFilter) throws ServiceException {
+		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
+		final String content = buildRequest(searchFilter, SearchClustersAreaFilter.class);
+		final Response response = executePost(url, content, Response.class);
 		verifyResponseStatus(response);
 		return response.getClusters() != null ? response.getClusters() : new ArrayList<>();
 	}

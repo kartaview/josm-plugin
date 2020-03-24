@@ -17,15 +17,18 @@ public class Author {
 
     private final String externalId;
     private final String userName;
-    private final String type;
+    private final String type = "OSM";
 
 
     public Author(final String externalId, final String userName) {
         this.externalId = externalId;
         this.userName = userName;
-        this.type = "OSM";
     }
 
+    public Author(final String externalId){
+        this.externalId = externalId;
+        this.userName = null;
+    }
 
     public String getExternalId() {
         return externalId;
