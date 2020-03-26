@@ -16,15 +16,15 @@ import java.util.Date;
 class SearchClustersFilter {
 
     private final Date date;
-    private final Double minConfidenceLvl;
-    private final Double maxConfidenceLvl;
+    private final Double minConfidenceLevel;
+    private final Double maxConfidenceLevel;
     private final Collection<OsmComparison> osmComparisons;
     private final SignFilter signFilter;
 
     SearchClustersFilter(final SearchClustersFilterBuilder builder) {
         this.date = builder.getDate();
-        this.minConfidenceLvl = builder.getMinConfidenceLevel();
-        this.maxConfidenceLvl = builder.getMaxConfidenceLevel();
+        this.minConfidenceLevel = builder.getMinConfidenceLevel();
+        this.maxConfidenceLevel = builder.getMaxConfidenceLevel();
         this.osmComparisons = builder.getOsmComparisons();
         this.signFilter = builder.getSignFilter();
     }
@@ -33,12 +33,12 @@ class SearchClustersFilter {
         return date;
     }
 
-    Double getMinConfidenceLvl() {
-        return minConfidenceLvl;
+    Double getMinConfidenceLevel() {
+        return minConfidenceLevel;
     }
 
-    Double getMaxConfidenceLvl() {
-        return maxConfidenceLvl;
+    Double getMaxConfidenceLevel() {
+        return maxConfidenceLevel;
     }
 
     Collection<OsmComparison> getOsmComparisons() {
