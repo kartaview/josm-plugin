@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.StructUtils;
-import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.ClusterSettings;
