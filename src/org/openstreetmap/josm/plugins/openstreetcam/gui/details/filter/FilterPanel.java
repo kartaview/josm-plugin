@@ -112,7 +112,7 @@ class FilterPanel extends JPanel {
         final SearchFilter filter = PreferenceManager.getInstance().loadSearchFilter();
         if (isHighZoomLevel) {
             addDataTypeFilter(filter.getDataTypes());
-            addUserFilter(filter.isOlnyUserData());
+            addUserFilter(filter.isOlnyUserData(), filter.getDataTypes());
             addDateFilter(filter.getDate());
             add(new JSeparator(JSeparator.HORIZONTAL), Constraints.SEPARATOR);
             add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionLbl(), Font.BOLD),
@@ -165,6 +165,13 @@ class FilterPanel extends JPanel {
         }
         cbbUser = CheckBoxBuilder.build(Font.PLAIN, isSelected, enabled);
         add(cbbUser, Constraints.getCbbUser(isHighZoomLevel));
+    }
+
+    private void addUserFilter(final boolean isSelected, final List<DataType> dataTypes) {
+        addUserFilter(isSelected);
+        if (dataTypes != null && dataTypes.size() == 1 && dataTypes.get(0).equals(DataType.CLUSTER)) {
+            cbbUser.setEnabled(false);
+        }
     }
 
     private void addDateFilter(final Date date) {
@@ -299,11 +306,13 @@ class FilterPanel extends JPanel {
         boolean enableDetectionFilters = false;
         boolean enableClusterFilters = false;
         boolean enableRegionFilter = false;
+        boolean enableUserFilter = false;
         if (dataTypes != null) {
             enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
             enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
             enableClusterFilters = dataTypes.contains(DataType.CLUSTER);
             enableRegionFilter = !(dataTypes.contains(DataType.PHOTO) && (dataTypes.size() == 1));
+            enableUserFilter = !(dataTypes.contains(DataType.CLUSTER) && (dataTypes.size() == 1));
         }
 
         // common filters
@@ -314,6 +323,7 @@ class FilterPanel extends JPanel {
         detectionTypeList.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
+        cbbUser.setEnabled(enableUserFilter);
 
         // detection only filters
         cbbAutomaticMode.setEnabled(enableDetectionFilters);
