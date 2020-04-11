@@ -35,20 +35,19 @@ public class DetectionTypeContent {
         return INSTANCE;
     }
 
-    private static void generateSigns() {
-        final List<Sign> signs = ServiceHandler.getInstance().listSigns();
-        if (signs != null) {
-            allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
-            allSigns.remove(BLURRING_TYPE);
-            //add all icons to hash so they do not cause delay on request while the plugin is running
-            signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
+    public static void generateSigns() {
+        if (allSigns == null || allSigns.isEmpty()) {
+            final List<Sign> signs = ServiceHandler.getInstance().listSigns();
+            if (signs != null) {
+                allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
+                allSigns.remove(BLURRING_TYPE);
+                //add all icons to hash so they do not cause delay on request while the plugin is running
+                signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
+            }
         }
     }
 
     Map<String, List<Sign>> getContent() {
-        if (allSigns == null || allSigns.isEmpty()) {
-            generateSigns();
-        }
         return allSigns;
     }
 }
