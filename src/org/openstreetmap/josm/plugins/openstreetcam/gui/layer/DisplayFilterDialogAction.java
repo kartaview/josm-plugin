@@ -56,7 +56,7 @@ class DisplayFilterDialogAction extends JosmAction {
         private PleaseWaitRunnable currentTask;
 
         public GenerateSigns() {
-            super("Retrieving sign types. This might take a few moments.");
+            super(GuiConfig.getInstance().getDlgFilterTitle());
         }
 
         @Override
@@ -72,6 +72,7 @@ class DisplayFilterDialogAction extends JosmAction {
 
         @Override
         protected void realRun() {
+            progressMonitor.setCustomText("Retrieving sign types. This might take a moment.");
             DetectionTypeContent.generateSigns();
             currentTask = null;
             progressMonitor.finishTask();
