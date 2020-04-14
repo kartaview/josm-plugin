@@ -264,7 +264,7 @@ class FilterPanel extends JPanel {
     private void addRegionFilter(final String region) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataRegionLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_REGION);
-        List<String> regions = ServiceHandler.getInstance().listRegions();
+        List<String> regions = DetectionTypeContent.getInstance().getRegions();
         if (regions == null) {
             regions = new ArrayList<>();
         }
