@@ -265,9 +265,6 @@ class FilterPanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataRegionLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_REGION);
         List<String> regions = DetectionTypeContent.getInstance().getRegions();
-        if (regions == null) {
-            regions = new ArrayList<>();
-        }
         regions.add(0, "");
         detectionRegion = new JComboBox<>(regions.toArray(new String[0]));
         if (region != null) {

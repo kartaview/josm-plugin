@@ -10,6 +10,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +60,6 @@ public class DetectionTypeContent {
     }
 
     List<String> getRegions() {
-        return regions;
+        return regions == null ? new ArrayList<>() : new ArrayList<>(regions);
     }
 }
