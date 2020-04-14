@@ -7,11 +7,18 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.layer;
 
 import java.awt.event.ActionEvent;
+
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.gui.PleaseWaitRunnable;
+import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter.DetectionTypeContent;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.filter.FilterDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
+
+import javax.swing.SwingUtilities;
 
 
 /**
@@ -33,7 +40,55 @@ class DisplayFilterDialogAction extends JosmAction {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        final FilterDialog filterDialog = new FilterDialog(IconConfig.getInstance().getFilterIcon());
-        filterDialog.setVisible(true);
+        MainApplication.worker.execute(new GenerateSigns());
+    }
+
+    private static class GenerateSigns extends PleaseWaitRunnable {
+
+        /**
+         * Flag indicating that the user asked to cancel this task
+         */
+        private boolean canceled;
+
+        /**
+         * Reference to the task currently running
+         */
+        private PleaseWaitRunnable currentTask;
+
+        public GenerateSigns() {
+            super(GuiConfig.getInstance().getDlgFilterTitle());
+        }
+
+        @Override
+        protected void cancel() {
+            synchronized (this) {
+                canceled = true;
+                if (currentTask != null) {
+                    currentTask.operationCanceled();
+                }
+                ((PleaseWaitProgressMonitor) progressMonitor).close();
+            }
+        }
+
+        @Override
+        protected void realRun() {
+            progressMonitor.setCustomText("Retrieving sign types. This might take a moment.");
+            DetectionTypeContent.generateSigns();
+            currentTask = null;
+            progressMonitor.finishTask();
+        }
+
+        @Override
+        protected void finish() {
+            synchronized (this) {
+                if (canceled) {
+                    return;
+                }
+            }
+            SwingUtilities.invokeLater(() -> {
+                final FilterDialog filterDialog = new FilterDialog(IconConfig.getInstance().getFilterIcon());
+                filterDialog.setVisible(true);
+            });
+        }
     }
 }

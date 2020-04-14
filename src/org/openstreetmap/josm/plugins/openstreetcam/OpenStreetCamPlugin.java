@@ -79,7 +79,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
         super(pluginInfo);
 
         // initialize detection signs
-        ThreadPool.getInstance().execute(() -> DetectionTypeContent.getInstance());
+        ThreadPool.getInstance().execute(DetectionTypeContent::getInstance);
 
         this.selectionHandler = new SelectionHandler();
         this.preferenceChangedHandler = new PreferenceChangedHandler();
