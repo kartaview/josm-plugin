@@ -72,8 +72,9 @@ class DisplayFilterDialogAction extends JosmAction {
 
         @Override
         protected void realRun() {
-            progressMonitor.setCustomText("Retrieving sign types. This might take a moment.");
+            progressMonitor.indeterminateSubTask("Retrieving sign types and regions. This might take a moment.");
             DetectionTypeContent.generateSigns();
+            DetectionTypeContent.generateRegions();
             currentTask = null;
             progressMonitor.finishTask();
         }

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class DetectionTypeContent {
 
     private static Map<String, List<Sign>> allSigns;
+    private static List<String> regions;
     private static final String BLURRING_TYPE = "BLURRING";
     private final static DetectionTypeContent INSTANCE = new DetectionTypeContent();
 
@@ -47,7 +48,17 @@ public class DetectionTypeContent {
         }
     }
 
+    public static void generateRegions() {
+        if(regions == null || regions.isEmpty()){
+            regions = ServiceHandler.getInstance().listRegions();
+        }
+    }
+
     Map<String, List<Sign>> getContent() {
         return allSigns;
+    }
+
+    List<String> getRegions() {
+        return regions;
     }
 }
