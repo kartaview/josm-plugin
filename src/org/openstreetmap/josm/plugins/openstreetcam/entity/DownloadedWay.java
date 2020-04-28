@@ -89,6 +89,7 @@ public class DownloadedWay extends OsmElement {
             for (int i = 0; i < angles.size() - 2; i++) {
                 if (Math.abs(angles.get(i) - angles.get(i + 1)) > 2) {
                     straight = false;
+                    break;
                 }
             }
         }

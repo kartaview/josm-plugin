@@ -177,7 +177,14 @@ final class MatchedDataAction extends JosmAction {
                             "Way " + element.getOsmId() + " was not found in the map.",
                             GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
                 }
-            } else {
+            } else if(!downloadedWay.containsNode(fromPrimitive) || !downloadedWay.containsNode(toPrimitive)) {
+                if (handleError) {
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
+                            "One of the nodes +(" + element.getFromId() + "," + element.getToId()
+                                    + ") is not part of the assigned way " + element.getOsmId(),
+                            GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE));
+                }
+            }else {
                 downloadedData.add(new DownloadedWay(element, fromPrimitive, toPrimitive, downloadedWay));
             }
         }
