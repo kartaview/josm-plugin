@@ -426,8 +426,9 @@ class PaintHandler {
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);
         } else {
             final List<Point> geometry = new ArrayList<>();
-            for (int i = way.getDownloadedNodes().indexOf(way.getMatchedFromNode()); i <= way.getDownloadedNodes()
-                    .indexOf(way.getMatchedToNode()); i++) {
+            final int startIndex = way.getDownloadedNodes().indexOf(way.getMatchedFromNode());
+            final int endIndex = way.getDownloadedNodes().indexOf(way.getMatchedToNode());
+            for (int i = Math.min(startIndex, endIndex); i <= Math.max(startIndex, endIndex); i++) {
                 geometry.add(mapView.getPoint(way.getDownloadedNodes().get(i)));
             }
             PaintManager.drawSegment(graphics, geometry, color, SEQUENCE_LINE);

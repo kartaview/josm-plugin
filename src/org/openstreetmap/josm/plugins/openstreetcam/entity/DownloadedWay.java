@@ -79,8 +79,11 @@ public class DownloadedWay extends OsmElement {
 
     private boolean determineWayStraightness(final Way way, final Node fromNode, final Node toNode) {
         boolean straight = true;
-        final List<Node> waySection = new ArrayList<>(way.getNodes().subList( way.getNodes().indexOf(fromNode), way.getNodes().indexOf(toNode)));
-        if(waySection.size() > SIZE_OF_TWO_POINT_LIST) {
+        final int startIndex = way.getNodes().indexOf(fromNode);
+        final int endIndex = way.getNodes().indexOf(toNode);
+        final List<Node> waySection =
+                new ArrayList<>(way.getNodes().subList(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex)));
+        if (waySection.size() > SIZE_OF_TWO_POINT_LIST) {
             final List<Double> angles = new ArrayList<>();
             for (int i = 1; i < waySection.size() - 1; i++) {
                 angles.add(Geometry.getNormalizedAngleInDegrees(
