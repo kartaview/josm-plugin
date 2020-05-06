@@ -137,13 +137,15 @@ final class SaveManager {
         Preferences.main().put(FILTER_CHANGED, Boolean.toString(changed));
     }
 
-    void saveSearchFilter(final SearchFilter filter) {
+    void saveSearchFilter(final SearchFilter filter, final boolean isHighZoomLevel) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Preferences.main().put(FILTER_DATE, dateStr);
             Preferences.main().putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
-            saveDataTypeFilter(filter.getDataTypes());
-            saveDetectionFilter(filter.getDetectionFilter());
+            if (isHighZoomLevel) {
+                saveDataTypeFilter(filter.getDataTypes());
+                saveDetectionFilter(filter.getDetectionFilter());
+            }
         }
     }
 

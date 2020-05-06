@@ -187,9 +187,10 @@ public final class PreferenceManager {
      * Saves the list filter to the preference file.
      *
      * @param filter a {@code ListFilter} represents the current filter settings
+     * @param isHighZoomLevel a boolean representing the zoom state of the filter
      */
-    public void saveListFilter(final SearchFilter filter) {
-        saveManager.saveSearchFilter(filter);
+    public void saveListFilter(final SearchFilter filter, final boolean isHighZoomLevel) {
+        saveManager.saveSearchFilter(filter, isHighZoomLevel);
     }
 
     /**

@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.util.Objects;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -89,8 +90,8 @@ public class FilterDialog extends ModalDialog {
             if (result != null) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
                 final SearchFilter oldFilter = prefManager.loadSearchFilter();
-                if (!result.equals(oldFilter)) {
-                    prefManager.saveListFilter(result);
+                if (checkFilterChanged(result, oldFilter, isHighLevelZoom)) {
+                    prefManager.saveListFilter(result, isHighLevelZoom);
                     prefManager.saveFiltersChangedFlag(true);
 
                 } else {
@@ -99,6 +100,13 @@ public class FilterDialog extends ModalDialog {
                 dispose();
             }
         }
+    }
+
+    private boolean checkFilterChanged(final SearchFilter newFilter, final SearchFilter oldFilter,
+            final boolean isHighLevelZoom) {
+        return (isHighLevelZoom && !newFilter.equals(oldFilter)) || (!isHighLevelZoom && (
+                newFilter.isOlnyUserData() != oldFilter.isOlnyUserData() || !Objects
+                        .equals(newFilter.getDate(), oldFilter.getDate())));
     }
 
 
