@@ -43,7 +43,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionMode;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
@@ -94,7 +93,7 @@ class FilterPanel extends JPanel {
     private JCheckBox cbbSameOsmComparison;
     private JCheckBox cbbImpliedOsmComparison;
 
-    /* confidence filter*/
+    /* confidence filter */
     private JTextField minConfidenceLvl;
     private JTextField maxConfidenceLvl;
 
@@ -139,13 +138,11 @@ class FilterPanel extends JPanel {
     private void addDataTypeFilter(final List<DataType> types) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeLbl(), Font.BOLD),
                 Constraints.LBL_DATA_TYPE);
-        cbbPhotos = CheckBoxBuilder
-                .build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(), new DataTypeSelectionListener(),
-                        Font.PLAIN, null, types != null && types.contains(DataType.PHOTO));
+        cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(),
+                new DataTypeSelectionListener(), Font.PLAIN, null, types != null && types.contains(DataType.PHOTO));
         add(cbbPhotos, Constraints.CBB_PHOTOS);
-        cbbDetections = CheckBoxBuilder
-                .build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(), new DataTypeSelectionListener(),
-                        Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
+        cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(),
+                new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
         add(cbbDetections, Constraints.CBB_DETECTIONS);
         cbbCluster = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(),
                 new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.CLUSTER), true);
@@ -187,7 +184,7 @@ class FilterPanel extends JPanel {
 
     private void addModeFilter(final List<DetectionMode> modes) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterModeLbl(), Font.BOLD), Constraints.LBL_MODE);
-        JPanel modePanel = new JPanel(new GridLayout(0, 4));
+        final JPanel modePanel = new JPanel(new GridLayout(0, 4));
         cbbAutomaticMode = CheckBoxBuilder.build(DetectionMode.AUTOMATIC.toString(), Font.PLAIN, null,
                 modes != null && modes.contains(DetectionMode.AUTOMATIC));
         modePanel.add(cbbAutomaticMode);
@@ -200,7 +197,7 @@ class FilterPanel extends JPanel {
     private void addEditStatusFilter(final List<EditStatus> editStatuses) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterEditStatusLbl(), Font.BOLD),
                 Constraints.LBL_EDIT_STATUS);
-        JPanel editStatusPanel = new JPanel(new GridLayout(1, 4));
+        final JPanel editStatusPanel = new JPanel(new GridLayout(1, 4));
         cbbOpenEditStatus = CheckBoxBuilder.build(EditStatus.OPEN.toString(), Font.PLAIN, null,
                 editStatuses != null && editStatuses.contains(EditStatus.OPEN));
         editStatusPanel.add(cbbOpenEditStatus);
@@ -219,7 +216,7 @@ class FilterPanel extends JPanel {
     private void addOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterOsmComparisonLbl(), Font.BOLD),
                 Constraints.LBL_OSM_COMPARISON);
-        JPanel osmComparisonPanel = new JPanel(new GridLayout(0, 4));
+        final JPanel osmComparisonPanel = new JPanel(new GridLayout(0, 4));
         cbbNewOsmComparison = CheckBoxBuilder.build(OsmComparison.NEW.toString(), Font.PLAIN, null,
                 osmComparisons != null && osmComparisons.contains(OsmComparison.NEW));
         osmComparisonPanel.add(cbbNewOsmComparison);
@@ -241,20 +238,19 @@ class FilterPanel extends JPanel {
     private void addConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceLbl(), Font.BOLD),
                 Constraints.LBL_CONFIDENCE_LEVEL);
-        JPanel confidencePanel = new JPanel(new GridBagLayout());
-        confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
+        final JPanel confidencePanel = new JPanel(new GridBagLayout());
+        confidencePanel.add(
+                LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMinLbl(), Font.PLAIN, Color.RED),
                 Constraints.LBL_MIN_CONFIDENCE_LEVEL);
-        final String min =
-                confidenceLevelFilter.getMinConfidenceLevel() != null ? confidenceLevelFilter.getMinConfidenceLevel().toString() :
-                        "";
+        final String min = confidenceLevelFilter.getMinConfidenceLevel() != null
+                ? confidenceLevelFilter.getMinConfidenceLevel().toString() : "";
         minConfidenceLvl = TextComponentBuilder.buildTextField(min, Font.PLAIN, Color.WHITE);
         minConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(minConfidenceLvl));
         confidencePanel.add(minConfidenceLvl, Constraints.TXT_MIN_CONFIDENCE_LEVEL);
         confidencePanel.add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterConfidenceMaxLbl(), Font.PLAIN),
                 Constraints.LBL_MAX_CONFIDENCE_LEVEL);
-        final String max =
-                confidenceLevelFilter.getMaxConfidenceLevel() != null ? confidenceLevelFilter.getMaxConfidenceLevel().toString() :
-                        "";
+        final String max = confidenceLevelFilter.getMaxConfidenceLevel() != null
+                ? confidenceLevelFilter.getMaxConfidenceLevel().toString() : "";
         maxConfidenceLvl = TextComponentBuilder.buildTextField(max, Font.PLAIN, Color.WHITE);
         maxConfidenceLvl.getDocument().addDocumentListener(new ConfidenceTextFieldListener(maxConfidenceLvl));
         confidencePanel.add(maxConfidenceLvl, Constraints.TXT_MAX_CONFIDENCE_LEVEL);
@@ -264,7 +260,7 @@ class FilterPanel extends JPanel {
     private void addRegionFilter(final String region) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataRegionLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_REGION);
-        List<String> regions = DetectionTypeContent.getInstance().getRegions();
+        final List<String> regions = DetectionTypeContent.getInstance().getRegions();
         regions.add(0, "");
         detectionRegion = new JComboBox<>(regions.toArray(new String[0]));
         if (region != null) {
@@ -284,7 +280,8 @@ class FilterPanel extends JPanel {
         add(searchDataTextField, Constraints.TXT_SEARCH_SIGN);
     }
 
-    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns, final String region, final String inputText) {
+    private void addDetectionTypeFilter(final List<String> signTypes, final List<Sign> specificSigns,
+            final String region, final String inputText) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDetectionTypeLbl(), Font.BOLD),
                 Constraints.LBL_SIGN_TYPE);
         detectionTypeList = new DetectionTypeList();
