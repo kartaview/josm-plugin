@@ -6,9 +6,10 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
-import java.util.Collection;
-import org.openstreetmap.josm.data.coor.LatLon;
 import com.grab.josm.common.entity.EntityUtil;
+import org.openstreetmap.josm.data.coor.LatLon;
+
+import java.util.Collection;
 
 
 /**
@@ -40,6 +41,8 @@ public class Detection implements Comparable<Detection> {
     private Float angleFromCenter;
     private Float orientation;
     private DetectionConfidenceLevel confidenceLevel;
+    private OcrValue ocrValue;
+    private DetectionShape shapeOnPhoto;
     private String trackingId;
     private String automaticOcrValue;
     private String manualOcrValue;
@@ -139,6 +142,14 @@ public class Detection implements Comparable<Detection> {
 
     public String getManualOcrValue() {
         return manualOcrValue;
+    }
+
+    public OcrValue getOcrValue() {
+        return ocrValue;
+    }
+
+    public DetectionShape getShapeOnPhoto() {
+        return shapeOnPhoto;
     }
 
     @Override

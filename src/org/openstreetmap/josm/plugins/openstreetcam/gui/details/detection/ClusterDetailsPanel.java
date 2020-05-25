@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import javax.swing.ListSelectionModel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OcrValue;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.grab.josm.common.formatter.DateFormatter;
@@ -73,7 +74,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
         }
         addInformation(GuiConfig.getInstance().getClusterOcrValueLbl(), cluster.getOcrValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
-
+        addOcrValue(cluster.getOcrValue(), widthLbl);
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
             addClusterTable(cluster);
@@ -82,6 +83,22 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
 
         final int pnlHeight = getPnlY() + SPACE_Y;
         setPreferredSize(new Dimension(getPnlWidth(), pnlHeight));
+    }
+
+    private void addOcrValue(final OcrValue ocrValue, final int widthLbl) {
+        if (ocrValue != null && ocrValue.isNotNull()) {
+            if (ocrValue.getValue() != null && !ocrValue.getValue().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), ocrValue.getValue(), widthLbl);
+            }
+            if (ocrValue.getLanguage() != null && !ocrValue.getLanguage().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueLanguageLbl(), ocrValue.getLanguage(),
+                        widthLbl);
+            }
+            if (ocrValue.getCharacterSet() != null && !ocrValue.getCharacterSet().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueCharacterSetLbl(),
+                        ocrValue.getCharacterSet(), widthLbl);
+            }
+        }
     }
 
     void addClusterTable(final Cluster cluster) {
