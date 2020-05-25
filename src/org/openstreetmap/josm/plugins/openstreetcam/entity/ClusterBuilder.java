@@ -47,7 +47,6 @@ public class ClusterBuilder {
         detectionIds(cluster.getDetectionIds());
         osmComparison(cluster.getOsmComparison());
         osmElements(cluster.getOsmElements());
-       // componentValue(cluster.getOcrValue());
         laneCount(cluster.getLaneCount());
         ocrValue(cluster.getOcrValue());
     }
@@ -94,10 +93,6 @@ public class ClusterBuilder {
 
     public void photos(final List<Photo> photos) {
         this.photos = photos;
-    }
-
-    public void componentValue(final String componentValue) {
-        this.componentValue = componentValue;
     }
 
     public void laneCount(final Short laneCount) {
