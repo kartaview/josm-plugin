@@ -201,11 +201,9 @@ public class DataUpdateHandler {
             DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
             if (DataSet.getInstance().getSelectedDetection() != null && !shouldFilterDetection(searchFilter,
                     DataSet.getInstance().getSelectedDetection())) {
-                System.out.println("AICI  ");
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 if(shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())){
                     DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-                    System.out.println("AICI  ********");
                 }
 
             }
