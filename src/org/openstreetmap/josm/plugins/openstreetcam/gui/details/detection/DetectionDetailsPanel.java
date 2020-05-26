@@ -11,10 +11,8 @@ import com.grab.josm.common.formatter.DecimalPattern;
 import com.grab.josm.common.formatter.EntityFormatter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.DetectionConfidenceLevel;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.OcrValue;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.OsmComparison;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -107,22 +105,6 @@ class DetectionDetailsPanel extends BaseDetailsPanel<Detection> {
                 addInformation(GuiConfig.getInstance().getOcrConfidenceLbl(),
                         EntityFormatter.formatDouble(confidenceLevel.getOcrConfidence(), false, DecimalPattern.MEDIUM),
                         widthLbl);
-            }
-        }
-    }
-
-    private void addOcrValue(final OcrValue ocrValue, final int widthLbl) {
-        if (ocrValue != null && ocrValue.isNotNull()) {
-            if (ocrValue.getValue() != null && !ocrValue.getValue().isEmpty()) {
-                addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), ocrValue.getValue(), widthLbl);
-            }
-            if (ocrValue.getLanguage() != null && !ocrValue.getLanguage().isEmpty()) {
-                addInformation(GuiConfig.getInstance().getDetectionOcrValueLanguageLbl(), ocrValue.getLanguage(),
-                        widthLbl);
-            }
-            if (ocrValue.getCharacterSet() != null && !ocrValue.getCharacterSet().isEmpty()) {
-                addInformation(GuiConfig.getInstance().getDetectionOcrValueCharacterSetLbl(),
-                        ocrValue.getCharacterSet(), widthLbl);
             }
         }
     }
