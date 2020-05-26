@@ -199,7 +199,7 @@ public class DataUpdateHandler {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
             DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
-            if (DataSet.getInstance().getSelectedDetection() != null && !shouldFilterDetection(searchFilter,
+            if (DataSet.getInstance().getSelectedDetection() != null && shouldFilterDetection(searchFilter,
                     DataSet.getInstance().getSelectedDetection())) {
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 if(shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())){
