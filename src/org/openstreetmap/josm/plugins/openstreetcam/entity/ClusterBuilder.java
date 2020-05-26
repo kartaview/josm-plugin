@@ -31,7 +31,6 @@ public class ClusterBuilder {
     private Collection<OsmElement> osmElements;
     private List<Detection> detections;
     private List<Photo> photos;
-    private String componentValue;
     private OcrValue ocrValue;
     private Short laneCount;
 
@@ -145,10 +144,6 @@ public class ClusterBuilder {
 
     List<Photo> getPhotos() {
         return photos;
-    }
-
-    String getComponentValue() {
-        return componentValue;
     }
 
     public OcrValue getOcrValue() {
