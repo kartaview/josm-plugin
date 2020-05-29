@@ -97,7 +97,7 @@
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
 				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
 				<attribute name="Plugin-Version" value="${build-label}" />
-				<attribute name="Plugin-Mainversion" value="14178" />
+				<attribute name="Plugin-Mainversion" value="16398" />
 				<attribute name="15492_Plugin-Url" value="275;https://grab.community.improve-osm.org/plugins/openstreetcam/1.0/OpenStreetCam.jar" />
 				<attribute name="15509_Plugin-Url" value="${build-label};https://grab.community.improve-osm.org/plugins/openstreetcam/2.0/OpenStreetCam.jar" />
 			</manifest>
