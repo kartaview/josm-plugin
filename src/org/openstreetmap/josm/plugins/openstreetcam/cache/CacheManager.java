@@ -8,10 +8,10 @@ package org.openstreetmap.josm.plugins.openstreetcam.cache;
 
 import java.io.File;
 import java.util.Set;
-import org.apache.commons.jcs.access.CacheAccess;
-import org.apache.commons.jcs.engine.CompositeCacheAttributes;
-import org.apache.commons.jcs.engine.behavior.ICompositeCacheAttributes.DiskUsagePattern;
-import org.apache.commons.jcs.engine.control.CompositeCacheManager;
+import org.apache.commons.jcs3.access.CacheAccess;
+import org.apache.commons.jcs3.engine.CompositeCacheAttributes;
+import org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes.DiskUsagePattern;
+import org.apache.commons.jcs3.engine.control.CompositeCacheManager;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.cache.JCSCacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
@@ -29,7 +29,7 @@ public final class CacheManager {
 
     private static final String CACHE_NAME = "openstreetcam";
     private static final String CACHE_LOCATION = "/cache/";
-    private static final String MEMORY_MANAGER = "org.apache.commons.jcs.engine.memory.fifo.FIFOMemoryCache";
+    private static final String MEMORY_MANAGER = "org.apache.commons.jcs3.engine.memory.fifo.FIFOMemoryCache";
     private final CacheAccess<Key, CacheEntry> cache;
 
     private static final CacheManager INSTANCE = new CacheManager();
@@ -38,7 +38,7 @@ public final class CacheManager {
     private CacheManager() {
         final String pluginLocation =
                 new File(Preferences.main().getPluginsDirectory(), GuiConfig.getInstance().getPluginShortName())
-                .getPath();
+                        .getPath();
         final CacheSettings settings = PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
 
         this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),
