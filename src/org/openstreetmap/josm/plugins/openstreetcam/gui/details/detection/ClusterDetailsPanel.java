@@ -70,7 +70,6 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                         widthLbl);
             }
         }
-        addInformation(GuiConfig.getInstance().getClusterOcrValueLbl(), cluster.getOcrValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
         addOcrValue(cluster.getOcrValue(), widthLbl);
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {

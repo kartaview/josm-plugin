@@ -6,25 +6,25 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersAreaFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsAreaFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterConfidenceLevel;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Contribution;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OcrValue;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.BaseService;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Request;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.Response;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchClustersAreaFilter;
+import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.entity.SearchDetectionsAreaFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Executes the operations of the ApolloService components.
@@ -40,6 +40,7 @@ public class ApolloService extends BaseService {
 		builder.registerTypeAdapter(EditStatus.class, new EditStatusTypeAdapter());
 		builder.registerTypeAdapter(LatLon.class, new LatLonDeserializer());
 		builder.registerTypeAdapter(ClusterConfidenceLevel.class, new ClusterConfidenceLevelDeserializer());
+		builder.registerTypeAdapter(OcrValue.class, new OcrValueDeserializer());
 		return builder.create();
 	}
 
