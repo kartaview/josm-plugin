@@ -23,32 +23,35 @@ import java.lang.reflect.Type;
  */
 public class OcrValueDeserializer implements JsonDeserializer<OcrValue> {
 
-    private static final String VALUE = "value";
+    private static final String TEXT = "text";
     private static final String LANGUAGE = "language";
     private static final String CHARACTER_SET = "characterSet";
+    private static final String NAME = "name";
 
     @Override
     public OcrValue deserialize(final JsonElement jsonElement, final Type type,
             final JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        final String value;
+        final String text;
         String language = null;
         String characterSet = null;
 
         if (jsonElement instanceof JsonObject) {
             final JsonObject obj = (JsonObject) jsonElement;
-            value = obj.get(VALUE).getAsString();
+            text = obj.get(TEXT).getAsString();
             if (obj.has(LANGUAGE)) {
-                language = obj.get(LANGUAGE).getAsString();
+                final JsonObject languageObj = (JsonObject) obj.get(LANGUAGE);
+                language = languageObj.get(NAME).getAsString();
             }
             if (obj.has(CHARACTER_SET)) {
-                characterSet = obj.get(CHARACTER_SET).getAsString();
+                final JsonObject characterSetObj = (JsonObject) obj.get(CHARACTER_SET);
+                characterSet = characterSetObj.get(NAME).getAsString();
             }
         } else {
             final JsonPrimitive obj = (JsonPrimitive) jsonElement;
-            value = obj.getAsString();
+            text = obj.getAsString();
 
         }
-        return value != null || language != null || characterSet != null ? new OcrValue(value, language, characterSet) :
+        return text != null || language != null || characterSet != null ? new OcrValue(text, language, characterSet) :
                 null;
     }
 }

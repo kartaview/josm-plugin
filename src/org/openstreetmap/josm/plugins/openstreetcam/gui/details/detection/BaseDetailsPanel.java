@@ -67,8 +67,8 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
 
     void addOcrValue(final OcrValue ocrValue, final int widthLbl) {
         if (ocrValue != null && ocrValue.isNotNull()) {
-            if (ocrValue.getValue() != null && !ocrValue.getValue().isEmpty()) {
-                addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), ocrValue.getValue(), widthLbl);
+            if (ocrValue.getText() != null && !ocrValue.getText().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), ocrValue.getText(), widthLbl);
             }
             if (ocrValue.getLanguage() != null && !ocrValue.getLanguage().isEmpty()) {
                 addInformation(GuiConfig.getInstance().getDetectionOcrValueLanguageLbl(), ocrValue.getLanguage(),

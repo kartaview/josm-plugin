@@ -11,18 +11,18 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public class OcrValue {
 
-    private final String value;
+    private final String text;
     private final String language;
     private final String characterSet;
 
-    public OcrValue(final String value, final String language, final String characterSet) {
-        this.value = value;
+    public OcrValue(final String text, final String language, final String characterSet) {
+        this.text = text;
         this.language = language;
         this.characterSet = characterSet;
     }
 
-    public String getValue() {
-        return value;
+    public String getText() {
+        return text;
     }
 
     public String getLanguage() {
@@ -34,6 +34,6 @@ public class OcrValue {
     }
 
     public boolean isNotNull() {
-        return value != null || language != null || characterSet != null;
+        return text != null || language != null || characterSet != null;
     }
 }
