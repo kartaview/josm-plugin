@@ -6,10 +6,11 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import com.grab.josm.common.entity.EntityUtil;
+import org.openstreetmap.josm.data.coor.LatLon;
+
 import java.util.Collection;
 import java.util.List;
-import org.openstreetmap.josm.data.coor.LatLon;
-import com.grab.josm.common.entity.EntityUtil;
 
 
 /**
@@ -30,7 +31,7 @@ public class Cluster {
     private final Collection<OsmElement> osmElements;
     private final List<Detection> detections;
     private final List<Photo> photos;
-    private final String ocrValue;
+    private final OcrValue ocrValue;
     private final Short laneCount;
 
 
@@ -46,7 +47,7 @@ public class Cluster {
         this.osmElements = builder.getOsmElements();
         this.detections = builder.getDetections();
         this.photos = builder.getPhotos();
-        this.ocrValue = builder.getComponentValue();
+        this.ocrValue = builder.getOcrValue();
         this.laneCount = builder.getLaneCount();
     }
 
@@ -95,7 +96,7 @@ public class Cluster {
         return photos;
     }
 
-    public String getOcrValue() {
+    public OcrValue getOcrValue() {
         return ocrValue;
     }
 

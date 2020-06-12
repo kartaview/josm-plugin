@@ -190,6 +190,9 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterOcrValueLbl;
     private final String detectionIdLbl;
     private final String detectionConfidenceLbl;
+    private final String detectionOcrValueLbl;
+    private final String detectionOcrValueLanguageLbl;
+    private final String detectionOcrValueCharacterSetLbl;
     private final String facingConfidenceLbl;
     private final String positioningConfidenceLbl;
     private final String keypointsConfidenceLbl;
@@ -378,6 +381,9 @@ public final class GuiConfig extends BaseConfig {
         detectionIdLbl = readProperty("detection.id");
         detectionTrackingIdLbl = readProperty("detection.tracking.id");
         detectionConfidenceLbl = readProperty("detection.confidence.detection");
+        detectionOcrValueLbl = readProperty("detection.ocr.value");
+        detectionOcrValueLanguageLbl = readProperty("detection.ocr.value.language");
+        detectionOcrValueCharacterSetLbl = readProperty("detection.ocr.value.character.set");
         detectionAutomaticOcrValueLbl = readProperty("detection.automaticOcrValue.lbl");
         detectionManualOcrValueLbl = readProperty("detection.manualOcrValue.lbl");
         facingConfidenceLbl = readProperty("detection.confidence.facing");
@@ -1008,6 +1014,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionConfidenceLbl() {
         return detectionConfidenceLbl;
+    }
+
+    public String getDetectionOcrValueLbl() {
+        return detectionOcrValueLbl;
+    }
+
+    public String getDetectionOcrValueLanguageLbl() {
+        return detectionOcrValueLanguageLbl;
+    }
+
+    public String getDetectionOcrValueCharacterSetLbl() {
+        return detectionOcrValueCharacterSetLbl;
     }
 
     public String getFacingConfidenceLbl() {

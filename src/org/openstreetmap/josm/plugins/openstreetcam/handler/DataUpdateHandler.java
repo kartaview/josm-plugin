@@ -202,6 +202,10 @@ public class DataUpdateHandler {
             if (DataSet.getInstance().getSelectedDetection() != null && shouldFilterDetection(searchFilter,
                     DataSet.getInstance().getSelectedDetection())) {
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
+                if(shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())){
+                    DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
+                }
+
             }
         } else {
             if (checkSelection) {

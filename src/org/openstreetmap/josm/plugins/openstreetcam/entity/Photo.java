@@ -35,6 +35,10 @@ public class Photo {
     private String shotDate;
     private List<Detection> detections;
     private Matching matching;
+    private PhotoSize size;
+    private PhotoSize realSize;
+    private Float horizontalFieldOfView;
+    private UprightOrientation uprightOrientation;
 
 
     Photo(final PhotoBuilder builder) {
@@ -50,6 +54,10 @@ public class Photo {
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
         this.shotDate = builder.getShotDate();
+        this.size = builder.getSize();
+        this.realSize = builder.getRealSize();
+        this.horizontalFieldOfView = builder.getHorizontalFieldOfView();
+        this.uprightOrientation = builder.getUprightOrientation();
     }
 
     public Long getId() {
@@ -134,6 +142,14 @@ public class Photo {
 
     public void setMatching(final Matching matching) {
         this.matching = matching;
+    }
+
+    public PhotoSize getSize() {
+        return size;
+    }
+
+    public void setSize(final PhotoSize size) {
+        this.size = size;
     }
 
     @Override

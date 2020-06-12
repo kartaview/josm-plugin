@@ -6,17 +6,16 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Rectangle;
-import javax.swing.ListSelectionModel;
+import com.grab.josm.common.formatter.DateFormatter;
+import com.grab.josm.common.formatter.DecimalPattern;
+import com.grab.josm.common.formatter.EntityFormatter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
-import com.grab.josm.common.formatter.DateFormatter;
-import com.grab.josm.common.formatter.DecimalPattern;
-import com.grab.josm.common.formatter.EntityFormatter;
+import javax.swing.ListSelectionModel;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 
 
 /**
@@ -46,7 +45,7 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
     @Override
     protected void createComponents(final Cluster cluster) {
         this.cluster = cluster;
-        final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(Font.BOLD)),
+        final int widthLbl = getMaxWidth(getFontMetrics(getFont().deriveFont(java.awt.Font.BOLD)),
                 GuiConfig.getInstance().getDetectedDetectionText(), GuiConfig.getInstance().getDetectionOnOsmText(),
                 GuiConfig.getInstance().getDetectionCreatedDate(), GuiConfig.getInstance().getClusterDetectionsLbl(),
                 GuiConfig.getInstance().getDetectionIdLbl(), GuiConfig.getInstance().getClusterConfidenceLevelText(),
@@ -71,9 +70,8 @@ class ClusterDetailsPanel extends BaseDetailsPanel<Cluster> {
                         widthLbl);
             }
         }
-        addInformation(GuiConfig.getInstance().getClusterOcrValueLbl(), cluster.getOcrValue(), widthLbl);
         addInformation(GuiConfig.getInstance().getClusterLaneCountText(), cluster.getLaneCount(), widthLbl);
-
+        addOcrValue(cluster.getOcrValue(), widthLbl);
         if (cluster.getDetections() != null && !cluster.getDetections().isEmpty()) {
             addInformation(GuiConfig.getInstance().getClusterDetectionsLbl(), EMPTY_STRING, widthLbl);
             addClusterTable(cluster);

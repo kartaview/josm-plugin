@@ -30,6 +30,10 @@ public class PhotoBuilder {
     private String username;
     private Long wayId;
     private String shotDate;
+    private PhotoSize size;
+    private PhotoSize realSize;
+    private Float horizontalFieldOfView;
+    private UprightOrientation uprightOrientation;
 
 
     public PhotoBuilder() {}
@@ -90,6 +94,10 @@ public class PhotoBuilder {
         this.oriName = oriName;
     }
 
+    public void size(final PhotoSize size) {
+        this.size = size;
+    }
+
     Long getId() {
         return id;
     }
@@ -140,6 +148,22 @@ public class PhotoBuilder {
 
     String getOriName() {
         return oriName;
+    }
+
+    public PhotoSize getSize() {
+        return size;
+    }
+
+    public PhotoSize getRealSize() {
+        return realSize;
+    }
+
+    public Float getHorizontalFieldOfView() {
+        return horizontalFieldOfView;
+    }
+
+    public UprightOrientation getUprightOrientation() {
+        return uprightOrientation;
     }
 
     public Photo build() {

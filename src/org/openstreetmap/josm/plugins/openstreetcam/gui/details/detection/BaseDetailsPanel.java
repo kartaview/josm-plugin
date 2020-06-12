@@ -6,18 +6,20 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection;
 
+import com.grab.josm.common.gui.BasicInfoPanel;
+import com.grab.josm.common.gui.builder.LabelBuilder;
+import com.grab.josm.common.gui.builder.TextComponentBuilder;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.OcrValue;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import org.openstreetmap.josm.tools.Platform;
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.Rectangle;
-import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
-import org.openstreetmap.josm.plugins.openstreetcam.gui.DetectionIconFactory;
-import org.openstreetmap.josm.tools.Platform;
-import com.grab.josm.common.gui.BasicInfoPanel;
-import com.grab.josm.common.gui.builder.LabelBuilder;
-import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
 
 /**
@@ -60,6 +62,22 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
                     new Rectangle(widthLbl, yVal, widthVal, LINE_HEIGHT)));
             setPnlWidth(widthLbl + widthVal);
             incrementPnlY();
+        }
+    }
+
+    void addOcrValue(final OcrValue ocrValue, final int widthLbl) {
+        if (ocrValue != null && ocrValue.isNotNull()) {
+            if (ocrValue.getText() != null && !ocrValue.getText().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), ocrValue.getText(), widthLbl);
+            }
+            if (ocrValue.getLanguage() != null && !ocrValue.getLanguage().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueLanguageLbl(), ocrValue.getLanguage(),
+                        widthLbl);
+            }
+            if (ocrValue.getCharacterSet() != null && !ocrValue.getCharacterSet().isEmpty()) {
+                addInformation(GuiConfig.getInstance().getDetectionOcrValueCharacterSetLbl(),
+                        ocrValue.getCharacterSet(), widthLbl);
+            }
         }
     }
 }
