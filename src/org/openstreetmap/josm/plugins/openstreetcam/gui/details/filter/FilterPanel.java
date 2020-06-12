@@ -299,13 +299,11 @@ class FilterPanel extends JPanel {
         boolean enableCommonFilters = false;
         boolean enableDetectionFilters = false;
         boolean enableClusterFilters = false;
-        boolean enableRegionFilter = false;
         boolean enableUserFilter = false;
         if (dataTypes != null) {
             enableCommonFilters = dataTypes.contains(DataType.CLUSTER) || dataTypes.contains(DataType.DETECTION);
             enableDetectionFilters = dataTypes.contains(DataType.DETECTION);
             enableClusterFilters = dataTypes.contains(DataType.CLUSTER);
-            enableRegionFilter = !(dataTypes.contains(DataType.PHOTO) && (dataTypes.size() == 1));
             enableUserFilter = !(dataTypes.contains(DataType.CLUSTER) && (dataTypes.size() == 1));
         }
 
@@ -314,9 +312,14 @@ class FilterPanel extends JPanel {
         cbbChangedOsmComparison.setEnabled(enableCommonFilters);
         cbbUnknownOsmComparison.setEnabled(enableCommonFilters);
         cbbSameOsmComparison.setEnabled(enableCommonFilters);
+        cbbImpliedOsmComparison.setEnabled(enableCommonFilters);
         detectionTypeList.setEnabled(enableCommonFilters);
         btnSelectSignTypes.setEnabled(enableCommonFilters);
         btnClearSignTypes.setEnabled(enableCommonFilters);
+        detectionRegion.setEnabled(enableCommonFilters);
+        searchDataTextField.setEnabled(enableCommonFilters);
+
+        //user filter
         cbbUser.setEnabled(enableUserFilter);
 
         // detection only filters
@@ -330,9 +333,6 @@ class FilterPanel extends JPanel {
         // cluster only filters
         minConfidenceLvl.setEnabled(enableClusterFilters);
         maxConfidenceLvl.setEnabled(enableClusterFilters);
-
-        // region filter
-        detectionRegion.setEnabled(enableRegionFilter);
     }
 
 
