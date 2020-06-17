@@ -11,19 +11,19 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  */
 public class PixelPoint {
 
-    private final Long x;
-    private final Long y;
+    private final double x;
+    private final double y;
 
-    public PixelPoint(final Long x, final Long y) {
+    public PixelPoint(final double x, final double y) {
         this.x = x;
         this.y = y;
     }
 
-    public Long getX() {
+    public double getX() {
         return x;
     }
 
-    public Long getY() {
+    public double getY() {
         return y;
     }
 }
