@@ -394,7 +394,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
                 final Detection selectedDetection = detections.stream()
-                        .filter(detection -> detection.getLocationOnPhoto().contains(translatedPoint))
+                        .filter(detection -> detection.getLocationOnPhoto() != null && detection.getLocationOnPhoto()
+                                .contains(translatedPoint))
                         .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
                         .orElse(null);
                 notifyDetectionSelectionObserver(selectedDetection);
