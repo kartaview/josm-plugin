@@ -243,8 +243,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             modifiedFirstRef = modifiedFirstRef - maxCoord + secondRef;
             modifiedSecondRef = secondRef;
         }
-        modifiedFirstRef = modifiedFirstRef < firstRef ? firstRef : modifiedFirstRef;
-        modifiedSecondRef = (modifiedSecondRef > secondRef) ? secondRef : modifiedSecondRef;
+        modifiedFirstRef = Math.max(modifiedFirstRef, firstRef);
+        modifiedSecondRef = Math.min(modifiedSecondRef, secondRef);
         return new Pair<>(modifiedFirstRef, modifiedSecondRef);
     }
 
@@ -284,26 +284,28 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         if (detections != null && !detections.isEmpty()) {
             final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
             for (final Detection detection : detections) {
-                final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
-                        * frame.getWidth() / currentView.getWidth();
-                final double y = frame.y + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y)
-                        * frame.getHeight() / currentView.getHeight();
+                if(detection.getLocationOnPhoto() != null) {
+                    final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
+                            * frame.getWidth() / currentView.getWidth();
+                    final double y = frame.y + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y)
+                            * frame.getHeight() / currentView.getHeight();
 
-                final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth()
-                        / currentView.getWidth();
-                final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
-                        / currentView.getHeight();
+                    final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth()
+                            / currentView.getWidth();
+                    final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
+                            / currentView.getHeight();
 
-                if (detection.equals(selectedDetection)) {
-                    graphics.setColor(SELECTED_SIGN_COLOR);
-                    final Stroke oldStroke = graphics.getStroke();
-                    graphics.setStroke(new BasicStroke(BORDER_SIZE));
-                    graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
-                            height + 2 * BORDER_SIZE));
-                    graphics.setStroke(oldStroke);
-                } else {
-                    graphics.setColor(UNSELECTED_SIGN_COLOR);
-                    graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                    if (detection.equals(selectedDetection)) {
+                        graphics.setColor(SELECTED_SIGN_COLOR);
+                        final Stroke oldStroke = graphics.getStroke();
+                        graphics.setStroke(new BasicStroke(BORDER_SIZE));
+                        graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
+                                height + 2 * BORDER_SIZE));
+                        graphics.setStroke(oldStroke);
+                    } else {
+                        graphics.setColor(UNSELECTED_SIGN_COLOR);
+                        graphics.draw(new Rectangle2D.Double(x, y, width, height));
+                    }
                 }
             }
         }
