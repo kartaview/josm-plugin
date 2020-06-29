@@ -44,7 +44,8 @@ public class DetectionTypeContent {
                 allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
                 allSigns.remove(BLURRING_TYPE);
                 //add all icons to hash so they do not cause delay on request while the plugin is running
-                signs.forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
+                signs.stream().filter(sign -> !sign.getType().equals(BLURRING_TYPE))
+                        .forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
             }
         }
     }
