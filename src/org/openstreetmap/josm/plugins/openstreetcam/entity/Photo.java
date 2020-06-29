@@ -12,8 +12,8 @@ import com.grab.josm.common.entity.EntityUtil;
 
 
 /**
- * Defines the photo business entity. The field names originated from the OSC API and should be kept in order
- * to avoid transformation between notions.
+ * Defines the photo business entity. The field names originated from the OSC API and should be kept in order to avoid
+ * transformation between notions.
  *
  * @author Beata
  * @version $Revision$
@@ -36,9 +36,9 @@ public class Photo {
     private List<Detection> detections;
     private Matching matching;
     private PhotoSize size;
-    private PhotoSize realSize;
-    private Float horizontalFieldOfView;
-    private UprightOrientation uprightOrientation;
+    private final PhotoSize realSize;
+    private final Double horizontalFieldOfView;
+    private final UprightOrientation uprightOrientation;
 
 
     Photo(final PhotoBuilder builder) {

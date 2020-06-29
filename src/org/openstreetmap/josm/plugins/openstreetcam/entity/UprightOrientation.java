@@ -10,31 +10,32 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
  * @author nicoleta.viregan
  */
 public class UprightOrientation {
-    private final Long x;
-    private final Long y;
-    private final Long z;
-    private final Long w;
 
-    public UprightOrientation(final Long x, final Long y, final Long z, final Long w) {
+    private final Double x;
+    private final Double y;
+    private final Double z;
+    private final Double w;
+
+    public UprightOrientation(final Double x, final Double y, final Double z, final Double w) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    public Long getX() {
+    public Double getX() {
         return x;
     }
 
-    public Long getY() {
+    public Double getY() {
         return y;
     }
 
-    public Long getZ() {
+    public Double getZ() {
         return z;
     }
 
-    public Long getW() {
+    public Double getW() {
         return w;
     }
 }

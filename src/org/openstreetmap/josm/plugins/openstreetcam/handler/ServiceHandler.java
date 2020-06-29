@@ -118,7 +118,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             clusterBuilder = new ClusterBuilder(clusterFuture.get());
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
@@ -126,7 +126,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             clusterBuilder.photos(photosFuture.get());
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
@@ -138,7 +138,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             clusterBuilder.detections(detections);
         } catch (final Exception ex) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
-                final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
@@ -213,7 +213,7 @@ public final class ServiceHandler extends SearchServiceHandler {
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
                             () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
-                            futures.add(executor.submit(callable));
+                    futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();

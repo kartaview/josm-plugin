@@ -32,7 +32,7 @@ public class PhotoBuilder {
     private String shotDate;
     private PhotoSize size;
     private PhotoSize realSize;
-    private Float horizontalFieldOfView;
+    private Double horizontalFieldOfView;
     private UprightOrientation uprightOrientation;
 
 
@@ -158,7 +158,7 @@ public class PhotoBuilder {
         return realSize;
     }
 
-    public Float getHorizontalFieldOfView() {
+    public Double getHorizontalFieldOfView() {
         return horizontalFieldOfView;
     }
 
