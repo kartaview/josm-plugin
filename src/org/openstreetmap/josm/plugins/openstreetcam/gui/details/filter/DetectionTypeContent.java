@@ -27,6 +27,7 @@ public class DetectionTypeContent {
     private static Map<String, List<Sign>> allSigns;
     private static List<String> regions;
     private static final String BLURRING_TYPE = "BLURRING";
+    private static final String PHOTO_QUALITY_TYPE = "PHOTO_QUALITY";
     private final static DetectionTypeContent INSTANCE = new DetectionTypeContent();
 
     private DetectionTypeContent() {
@@ -43,9 +44,10 @@ public class DetectionTypeContent {
             if (signs != null) {
                 allSigns = signs.stream().collect(Collectors.groupingBy(Sign::getType));
                 allSigns.remove(BLURRING_TYPE);
+                allSigns.remove(PHOTO_QUALITY_TYPE);
                 //add all icons to hash so they do not cause delay on request while the plugin is running
-                signs.stream().filter(sign -> !sign.getType().equals(BLURRING_TYPE))
-                        .forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
+                signs.stream().filter(sign -> !sign.getType().equals(BLURRING_TYPE) && !sign.getType()
+                        .equals(PHOTO_QUALITY_TYPE)).forEach(sign -> DetectionIconFactory.INSTANCE.getIcon(sign, false));
             }
         }
     }
