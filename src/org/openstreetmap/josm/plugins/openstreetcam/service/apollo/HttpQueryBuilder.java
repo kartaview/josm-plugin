@@ -6,8 +6,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.service.apollo;
 
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 import com.grab.josm.common.http.HttpUtil;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ApolloServiceConfig;
 
 
 /**
@@ -20,6 +20,7 @@ class HttpQueryBuilder {
     private static final char QUESTIONM = '?';
     private static final char EQ = '=';
     private static final char AND = '&';
+    private static final char COMMA = ',';
 
     private final StringBuilder query;
 
@@ -53,7 +54,7 @@ class HttpQueryBuilder {
         query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
-        appendExcludedSignTypeFitler();
+        appendExcludedSignTypeFilter();
         return build();
     }
 
@@ -61,7 +62,7 @@ class HttpQueryBuilder {
         query.append(RequestConstants.RETRIEVE_PHOTO_DETECTIONS);
         query.append(QUESTIONM);
         appendPhotoIdFilter(sequenceId, sequenceIndex);
-        appendExcludedSignTypeFitler();
+        appendExcludedSignTypeFilter();
         return build();
     }
 
@@ -111,9 +112,10 @@ class HttpQueryBuilder {
         return build();
     }
 
-    private void appendExcludedSignTypeFitler() {
+    private void appendExcludedSignTypeFilter() {
         query.append(AND).append(RequestConstants.EXCLUDED_SIGN_TYPES);
         query.append(EQ).append(HttpUtil.utf8Encode(RequestConstants.BLURRING_TYPE));
+        query.append(COMMA).append(HttpUtil.utf8Encode(RequestConstants.PHOTO_QUALITY_TYPE));
     }
 
     private void appendFormatFilter(final StringBuilder query) {

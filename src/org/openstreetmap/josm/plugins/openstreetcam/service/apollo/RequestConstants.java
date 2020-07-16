@@ -55,6 +55,7 @@ public final class RequestConstants {
     static final String MAX_CONFIDENCE_LEVEL = "maxConfidenceLevel";
 
     public static final String BLURRING_TYPE = "BLURRING";
+    public static final String PHOTO_QUALITY_TYPE = "PHOTO_QUALITY";
 
     public RequestConstants() {}
 }
