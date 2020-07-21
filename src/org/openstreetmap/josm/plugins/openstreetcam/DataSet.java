@@ -392,9 +392,15 @@ public final class DataSet {
      * returns empty
      */
     public Optional<Photo> clusterPhoto(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
-        return cluster != null && cluster.getPhotos() != null ? cluster.getPhotos().stream()
-                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                .findFirst() : Optional.empty();
+        Optional<Photo> clusterPhoto = Optional.empty();
+        if (cluster != null) {
+            final List<Photo> clusterPhotos =
+                    cluster.getPhotos() != null ? new ArrayList<>(cluster.getPhotos()) : new ArrayList<>();
+            clusterPhoto = clusterPhotos.stream()
+                    .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
+                    .findFirst();
+        }
+        return clusterPhoto;
     }
 
     /**
