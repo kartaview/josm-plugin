@@ -138,15 +138,17 @@ class FilterPanel extends JPanel {
     private void addDataTypeFilter(final List<DataType> types) {
         add(LabelBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeLbl(), Font.BOLD),
                 Constraints.LBL_DATA_TYPE);
+        final JPanel dataTypePanel = new JPanel(new GridLayout(1, 3));
         cbbPhotos = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeImageTxt(),
                 new DataTypeSelectionListener(), Font.PLAIN, null, types != null && types.contains(DataType.PHOTO));
-        add(cbbPhotos, Constraints.CBB_PHOTOS);
+        dataTypePanel.add(cbbPhotos);
         cbbDetections = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeDetectionsTxt(),
                 new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.DETECTION), true);
-        add(cbbDetections, Constraints.CBB_DETECTIONS);
+        dataTypePanel.add(cbbDetections);
         cbbCluster = CheckBoxBuilder.build(GuiConfig.getInstance().getDlgFilterDataTypeAggregatedDetectionsTxt(),
                 new DataTypeSelectionListener(), Font.PLAIN, types != null && types.contains(DataType.CLUSTER), true);
-        add(cbbCluster, Constraints.CBB_AGGREGATED_DETECTIONS);
+        dataTypePanel.add(cbbCluster);
+        add(dataTypePanel, Constraints.DATA_TYPE_PANEL);
     }
 
     private void addUserFilter(final boolean isSelected) {

@@ -34,14 +34,8 @@ final class Constraints {
     static final GridBagConstraints LBL_DATA_TYPE = new GridBagConstraints(0, 0, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
 
-    static final GridBagConstraints CBB_PHOTOS = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.PAGE_START,
+    static final GridBagConstraints DATA_TYPE_PANEL = new GridBagConstraints(1, 0, 4, 1, 0, 0, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(2, 3, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_DETECTIONS = new GridBagConstraints(2, 0, 1, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(2, 0, 3, 0), 0, 0);
-
-    static final GridBagConstraints CBB_AGGREGATED_DETECTIONS = new GridBagConstraints(3, 0, 3, 1, 0, 0,
-            GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(2, 0, 3, 10), 0, 0);
 
     private static final GridBagConstraints HIGH_ZOOM_LBL_USER = new GridBagConstraints(0, 1, 1, 1, 1, 1,
             GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 3, 5), 0, 0);
