@@ -53,7 +53,6 @@ class SearchServiceHandler {
     protected final OpenStreetCamService openStreetCamService;
     protected final ApolloService apolloService;
 
-
     SearchServiceHandler() {
         openStreetCamService = new OpenStreetCamService();
         apolloService = new ApolloService();
