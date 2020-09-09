@@ -146,7 +146,7 @@ public abstract class BaseService {
         PluginInformation pluginInfo = null;
         try {
             pluginInfo = PluginInformation.findPlugin(GuiConfig.getInstance().getPluginShortName());
-        } catch (PluginException e) {
+        } catch (final PluginException e) {
             e.printStackTrace();
         }
         return pluginInfo != null ? pluginInfo.version : null;
