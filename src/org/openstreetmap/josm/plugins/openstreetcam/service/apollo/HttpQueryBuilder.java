@@ -116,6 +116,7 @@ class HttpQueryBuilder {
         query.append(AND).append(RequestConstants.EXCLUDED_SIGN_TYPES);
         query.append(EQ).append(HttpUtil.utf8Encode(RequestConstants.BLURRING_TYPE));
         query.append(COMMA).append(HttpUtil.utf8Encode(RequestConstants.PHOTO_QUALITY_TYPE));
+        query.append(COMMA).append(HttpUtil.utf8Encode(RequestConstants.POI));
     }
 
     private void appendFormatFilter(final StringBuilder query) {

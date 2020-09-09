@@ -56,6 +56,7 @@ public final class RequestConstants {
 
     public static final String BLURRING_TYPE = "BLURRING";
     public static final String PHOTO_QUALITY_TYPE = "PHOTO_QUALITY";
+    public static final String POI = "POI";
 
     public RequestConstants() {}
 }
