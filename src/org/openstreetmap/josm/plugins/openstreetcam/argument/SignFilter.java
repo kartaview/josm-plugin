@@ -16,7 +16,7 @@ public class SignFilter {
     private final String signRegion;
     private final Collection<String> includedSignTypes;
     private final Collection<String> excludedSignTypes =
-            Arrays.asList(RequestConstants.BLURRING_TYPE, RequestConstants.POI);
+            Arrays.asList(RequestConstants.BLURRING_TYPE, RequestConstants.POI, RequestConstants.PHOTO_QUALITY_TYPE);
     private final Collection<String> signInternalNames;
 
     public SignFilter(final String signRegion, final Collection<String> includedSignTypes,
