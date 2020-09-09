@@ -138,8 +138,9 @@ public abstract class BaseService {
     protected Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put(USER_AGENT, new UserAgent().toString());
-        if (this.getPluginVersion() != null) {
-            headers.put(PLUGIN_VERSION, this.getPluginVersion());
+        final String version = this.getPluginVersion();
+        if (version != null && !version.isEmpty()) {
+            headers.put(PLUGIN_VERSION, version);
         }
         return headers;
     }
