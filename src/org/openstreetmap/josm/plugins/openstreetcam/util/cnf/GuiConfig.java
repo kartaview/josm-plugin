@@ -112,6 +112,7 @@ public final class GuiConfig extends BaseConfig {
     private final String errorPhotoPageText;
     private final String errorUserPageText;
     private final String errorFeedbackPageText;
+    private final String errorPluginVersionText;
     private final String incorrectDateFilterText;
     private final String unacceptedDateFilterText;
     private final String errorSequenceSaveText;
@@ -311,6 +312,7 @@ public final class GuiConfig extends BaseConfig {
         errorListRegionsText = readProperty("error.sign.region.list");
         errorDownloadOsmData = readProperty("error.osmData.download");
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
+        errorPluginVersionText= readProperty("error.plugin.version");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
         incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
         unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
@@ -694,6 +696,10 @@ public final class GuiConfig extends BaseConfig {
 
     public String getErrorListRegionsText() {
         return errorListRegionsText;
+    }
+
+    public String getErrorPluginVersionText() {
+        return errorPluginVersionText;
     }
 
     public String getIncorrectDateFilterText() {

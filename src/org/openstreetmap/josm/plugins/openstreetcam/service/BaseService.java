@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.PluginException;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
@@ -25,6 +26,7 @@ import com.grab.josm.common.http.ContentType;
 import com.grab.josm.common.http.HttpConnector;
 import com.grab.josm.common.http.HttpConnectorException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -147,7 +149,9 @@ public abstract class BaseService {
         try {
             pluginInfo = PluginInformation.findPlugin(GuiConfig.getInstance().getPluginShortName());
         } catch (final PluginException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
+                    GuiConfig.getInstance().getErrorPluginVersionText(), GuiConfig.getInstance().getErrorTitle(),
+                    JOptionPane.ERROR_MESSAGE);
         }
         return pluginInfo != null ? pluginInfo.version : null;
     }
