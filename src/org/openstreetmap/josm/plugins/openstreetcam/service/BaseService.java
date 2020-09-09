@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.openstreetmap.josm.plugins.PluginException;
+import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.UserAgent;
 import org.openstreetmap.josm.plugins.openstreetcam.service.entity.BaseResponse;
 import org.openstreetmap.josm.plugins.openstreetcam.service.photo.entity.ListResponse;
@@ -22,6 +24,7 @@ import com.google.gson.JsonSyntaxException;
 import com.grab.josm.common.http.ContentType;
 import com.grab.josm.common.http.HttpConnector;
 import com.grab.josm.common.http.HttpConnectorException;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 
 
 /**
@@ -33,6 +36,7 @@ import com.grab.josm.common.http.HttpConnectorException;
 public abstract class BaseService {
 
     private static final String USER_AGENT = "User-Agent";
+    private static final String PLUGIN_VERSION = "Plugin-Version";
 
     private final Gson gson;
 
@@ -132,7 +136,20 @@ public abstract class BaseService {
     protected Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put(USER_AGENT, new UserAgent().toString());
+        if (this.getPluginVersion() != null) {
+            headers.put(PLUGIN_VERSION, this.getPluginVersion());
+        }
         return headers;
+    }
+
+    private String getPluginVersion() {
+        PluginInformation pluginInfo = null;
+        try {
+            pluginInfo = PluginInformation.findPlugin(GuiConfig.getInstance().getPluginShortName());
+        } catch (PluginException e) {
+            e.printStackTrace();
+        }
+        return pluginInfo != null ? pluginInfo.version : null;
     }
 
     protected <T> String buildRequest(final T request, final Class<T> requestType) {
