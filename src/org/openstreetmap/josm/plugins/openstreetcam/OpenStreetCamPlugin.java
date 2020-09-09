@@ -62,7 +62,7 @@ import com.grab.josm.common.thread.ThreadPool;
 public class OpenStreetCamPlugin extends Plugin implements MapViewTypeChangeObserver, LayerChangeListener,
 LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
-    private static final int SEARCH_DELAY = 500;
+    private static final int SEARCH_DELAY = 1000;
 
     private JMenuItem layerActivatorMenuItem;
     private final SelectionHandler selectionHandler;
