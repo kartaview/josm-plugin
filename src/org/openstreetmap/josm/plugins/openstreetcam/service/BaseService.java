@@ -39,6 +39,7 @@ public abstract class BaseService {
 
     private static final String USER_AGENT = "User-Agent";
     private static final String PLUGIN_VERSION = "Plugin-Version";
+    private static final ClientLogger logger = new ClientLogger("error");
 
     private final Gson gson;
 
@@ -65,6 +66,7 @@ public abstract class BaseService {
             final HttpConnector connector = new HttpConnector(url, getHeaders());
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
         } catch (final HttpConnectorException e) {
+            logger.log("Error calling " + url, e);
             throw new ServiceException(e);
         }
         return parseResponse(response, responseType);
@@ -76,6 +78,7 @@ public abstract class BaseService {
         try {
             response = new HttpConnector(url).post(content, ContentType.JSON);
         } catch (final HttpConnectorException e) {
+            logger.log("Error calling " + url, e);
             throw new ServiceException(e);
         }
         return parseResponse(response, responseType);
@@ -86,6 +89,7 @@ public abstract class BaseService {
         try {
             response = new HttpConnector(url, getHeaders()).get();
         } catch (final HttpConnectorException e) {
+            logger.log("Error calling " + url, e);
             throw new ServiceException(e);
         }
         return parseResponse(response, responseType);
@@ -97,6 +101,7 @@ public abstract class BaseService {
             try {
                 root = gson.fromJson(response, responseType);
             } catch (final JsonSyntaxException e) {
+                logger.log("Error parsing json for" + responseType.getTypeName(), e);
                 throw new ServiceException(e);
             }
         }
@@ -129,6 +134,7 @@ public abstract class BaseService {
             try {
                 result.addAll(future.get().getCurrentPageItems());
             } catch (InterruptedException | ExecutionException e) {
+                logger.log("Error reading result (readResult).", e);
                 throw new ServiceException(e);
             }
         }
