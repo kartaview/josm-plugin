@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import org.openstreetmap.josm.data.Preferences;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.Config;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.tools.Logging;
 
@@ -27,25 +28,29 @@ public class ClientLogger {
     private Logger logger = null;
 
     public ClientLogger(final String componentName) {
-        try {
-            final File logDir = new File(
-                    Preferences.main().getPluginsDirectory() + "/" + GuiConfig.getInstance().getPluginShortName()
-                            + LOGS);
-            if (!logDir.exists() && !logDir.mkdirs()) {
-                throw new IOException();
-            } else {
-                final FileHandler fileHandler = new FileHandler(
-                        logDir.getPath() + OPENSTREETVIEW_PLUGIN + "-" + componentName + LocalDate.now().toString()
-                                + LOG_EXTENSION, true);
-                fileHandler.setFormatter(new SimpleFormatter());
-                logger = Logger.getLogger(ClientLogger.class.getName() + componentName);
-                logger.setUseParentHandlers(false);
-                logger.addHandler(fileHandler);
-                logger.setLevel(Level.INFO);
+        if (Config.getInstance().isDebugLoggingEnabled()) {
+            try {
+                final File logDir = new File(
+                        Preferences.main().getPluginsDirectory() + "/" + GuiConfig.getInstance().getPluginShortName()
+                                + LOGS);
+                if (!logDir.exists() && !logDir.mkdirs()) {
+                    throw new IOException();
+                } else {
+                    final FileHandler fileHandler = new FileHandler(
+                            logDir.getPath() + OPENSTREETVIEW_PLUGIN + "-" + componentName + LocalDate.now().toString()
+                                    + LOG_EXTENSION, true);
+                    fileHandler.setFormatter(new SimpleFormatter());
+                    logger = Logger.getLogger(ClientLogger.class.getName() + componentName);
+                    logger.setUseParentHandlers(false);
+                    logger.addHandler(fileHandler);
+                    logger.setLevel(Level.INFO);
+                }
+
+            } catch (SecurityException | IOException e) {
+                Logging.info(
+                        "Failed to initialize client logger for openstreetview plugin with component: " + componentName,
+                        e);
             }
-        } catch (SecurityException | IOException e) {
-            Logging.info(
-                    "Failed to initialize client logger for openstreetview plugin with component: " + componentName, e);
         }
     }
 

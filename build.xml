@@ -76,6 +76,7 @@
 		<replaceregexp if:set="osc_details_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="service.details.url=.*" replace="${osc_details_url}" />
 		<replaceregexp if:set="osc_user_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="service.user.url=.*" replace="${osc_user_url}" />
 		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/openstreetcam_apollo_service.properties" match="${url.key}" replace="${apollo_service_url}" />
+		<replaceregexp if:set="debug_log_enabled" file="${plugin.build.dir}/openstreetcam.properties" match="debug.log.enabled=.*" replace="${debug_log_enabled}" />
 
 		<copy todir="${plugin.build.dir}/images">
 			<fileset dir="images" />

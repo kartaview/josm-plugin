@@ -43,6 +43,7 @@ public final class Config extends BaseConfig {
     private final int autoplayMaxDelay;
     private final double clusterFacingThreshold;
     private final double clusterDistanceThreshold;
+    private final boolean debugLoggingEnabled;
 
 
     private Config() {
@@ -60,6 +61,8 @@ public final class Config extends BaseConfig {
 
         clusterFacingThreshold = readDoubleProperty("cluster.facing.threshold", FACING_THRESHOLD);
         clusterDistanceThreshold = readDoubleProperty("cluster.distance.threshold", DISTANCE_THRESHOLD);
+
+        debugLoggingEnabled = Boolean.parseBoolean(readProperty("debug.log.enabled"));
     }
 
 
@@ -110,5 +113,9 @@ public final class Config extends BaseConfig {
 
     public double getClusterDistanceThreshold() {
         return clusterDistanceThreshold;
+    }
+
+    public boolean isDebugLoggingEnabled() {
+        return debugLoggingEnabled;
     }
 }
