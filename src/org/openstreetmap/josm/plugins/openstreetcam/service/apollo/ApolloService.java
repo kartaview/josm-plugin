@@ -53,7 +53,7 @@ public class ApolloService extends BaseService {
 	public List<Detection> searchDetections(final SearchDetectionsAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
 		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
-        final Response response = executePost(url, content, Response.class, logger, "searchDetections ");
+		final Response response = executePost(url, content, Response.class, logger, "searchDetections ");
 		verifyResponseStatus(response);
 		logResponseSize(logger, "searchDetections ", response.getDetections());
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
@@ -62,9 +62,9 @@ public class ApolloService extends BaseService {
 	public List<Cluster> searchClusters(final SearchClustersAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
 		final String content = buildRequest(searchFilter, SearchClustersAreaFilter.class);
-        final Response response = executePost(url, content, Response.class, logger, "searchClusters ");
+		final Response response = executePost(url, content, Response.class, logger, "searchClusters ");
 		verifyResponseStatus(response);
-        logResponseSize(logger, "searchClusters ", response.getClusters());
+		logResponseSize(logger, "searchClusters ", response.getClusters());
 		return response.getClusters() != null ? response.getClusters() : new ArrayList<>();
 	}
 
@@ -72,74 +72,74 @@ public class ApolloService extends BaseService {
 		final String url = new HttpQueryBuilder().buildCommentQuery();
 		final Request request = new Request(detection, contribution);
 		final String content = buildRequest(request, Request.class);
-        final Response root = executePost(url, content, Response.class, logger, "updateDetection ");
+		final Response root = executePost(url, content, Response.class, logger, "updateDetection ");
 		verifyResponseStatus(root);
 	}
 
 	public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
-        final Response response = executeGet(url, Response.class, logger, "retrieveSequenceDetections ");
+		final Response response = executeGet(url, Response.class, logger, "retrieveSequenceDetections ");
 		verifyResponseStatus(response);
-        logResponseSize(logger, "retrieveSequenceDetections ", response.getDetections());
+		logResponseSize(logger, "retrieveSequenceDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public List<Detection> retrievePhotoDetections(final Long sequenceId, final Integer sequenceIndex)
 			throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoDetectionsQuery(sequenceId, sequenceIndex);
-        final Response response = executeGet(url, Response.class, logger, "retrievePhotoDetections ");
+		final Response response = executeGet(url, Response.class, logger, "retrievePhotoDetections ");
 		verifyResponseStatus(response);
-        logResponseSize(logger, "retrievePhotoDetections ", response.getDetections());
+		logResponseSize(logger, "retrievePhotoDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public Detection retrieveDetection(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveDetectionQuery(id);
-        final Response response = executeGet(url, Response.class, logger, "retrieveDetection ");
+		final Response response = executeGet(url, Response.class, logger, "retrieveDetection ");
 		verifyResponseStatus(response);
 		return response.getDetection();
 	}
 
 	public Cluster retrieveCluster(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterQuery(id);
-        final Response response = executeGet(url, Response.class, logger, "retrieveCluster ");
+		final Response response = executeGet(url, Response.class, logger, "retrieveCluster ");
 		verifyResponseStatus(response);
 		return response.getCluster();
 	}
 
 	public List<Detection> retrieveClusterDetections(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterDetectionsQuery(id);
-        final Response response = executeGet(url, Response.class, logger, "retrieveClusterDetections ");
+		final Response response = executeGet(url, Response.class, logger, "retrieveClusterDetections ");
 		verifyResponseStatus(response);
-        logResponseSize(logger, "retrieveClusterDetections ", response.getDetections());
+		logResponseSize(logger, "retrieveClusterDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public List<Photo> retrieveClusterPhotos(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterPhotosQuery(id);
-        final Response response = executeGet(url, Response.class, logger, "retrieveClusterPhotos ");
+		final Response response = executeGet(url, Response.class, logger, "retrieveClusterPhotos ");
 		verifyResponseStatus(response);
-        logResponseSize(logger, "retrieveClusterPhotos ", response.getPhotos());
+		logResponseSize(logger, "retrieveClusterPhotos ", response.getPhotos());
 		return response.getPhotos();
 	}
 
 	public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoQuery(sequenceId, sequenceIndex);
-        final Response response = executeGet(url, Response.class, logger, "retrievePhoto ");
+		final Response response = executeGet(url, Response.class, logger, "retrievePhoto ");
 		verifyResponseStatus(response);
 		return response.getPhoto();
 	}
 
 	public List<Sign> listSigns() throws ServiceException {
 		final String url = new HttpQueryBuilder().buildListSignsQuery();
-        final Response response = executeGet(url, Response.class, logger, "listSigns ");
+		final Response response = executeGet(url, Response.class, logger, "listSigns ");
 		verifyResponseStatus(response);
 		return response.getSigns();
 	}
 
 	public List<String> listRegions() throws ServiceException {
 		final String url = new HttpQueryBuilder().buildListRegionsQuery();
-        final Response response = executeGet(url, Response.class, logger, "listRegions ");
+		final Response response = executeGet(url, Response.class, logger, "listRegions ");
 		verifyResponseStatus(response);
 		return response.getRegions();
 	}
