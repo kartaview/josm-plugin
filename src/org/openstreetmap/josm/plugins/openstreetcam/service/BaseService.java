@@ -42,6 +42,7 @@ public abstract class BaseService {
     private static final String USER_AGENT = "User-Agent";
     private static final String PLUGIN_VERSION = "Plugin-Version";
     private static final ClientLogger logger = new ClientLogger("error");
+    private static final String SPACE = " ";
 
     private final Gson gson;
 
@@ -70,8 +71,9 @@ public abstract class BaseService {
             final Instant startTime = Instant.now();
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
             final Instant endTime = Instant.now();
-            serviceLogger.log(componentName + url + " with arguments: " + arguments + " responded in " + Duration
-                    .between(startTime, endTime).toMillis() + "ms", null);
+            serviceLogger
+                    .log(componentName + SPACE + url + " with arguments: " + arguments + " responded in " + Duration
+                            .between(startTime, endTime).toMillis() + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
             throw new ServiceException(e);
@@ -87,7 +89,7 @@ public abstract class BaseService {
             final Instant startTime = Instant.now();
             response = new HttpConnector(url).post(content, ContentType.JSON);
             final Instant endTime = Instant.now();
-            serviceLogger.log(componentName + url + " with content: " + content + " responded in " + Duration
+            serviceLogger.log(componentName + SPACE + url + " with content: " + content + " responded in " + Duration
                     .between(startTime, endTime).toMillis() + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
@@ -103,8 +105,8 @@ public abstract class BaseService {
             final Instant startTime = Instant.now();
             response = new HttpConnector(url, getHeaders()).get();
             final Instant endTime = Instant.now();
-            serviceLogger.log(componentName + url + " responded in " + Duration.between(startTime, endTime).toMillis()
-                    + "ms", null);
+            serviceLogger.log(componentName + SPACE + url + " responded in " + Duration.between(startTime, endTime)
+                    .toMillis() + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
             throw new ServiceException(e);

@@ -79,9 +79,9 @@ public class OpenStreetCamService extends BaseService {
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.LIST_NEARBY_PHOTOS);
         final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
-                new TypeToken<ListResponse<Photo>>() {}.getType(), logger, "listNearbyPhotos ");
+                new TypeToken<ListResponse<Photo>>() {}.getType(), logger, RequestConstants.LIST_NEARBY_PHOTOS);
         verifyResponseStatus(listPhotoResponse);
-        logResponseSize(logger, "listNearbyPhotos ", listPhotoResponse.getTotalItems());
+        logResponseSize(logger, RequestConstants.LIST_NEARBY_PHOTOS, listPhotoResponse.getTotalItems());
         return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
                 listPhotoResponse.getTotalItems()) : new PhotoDataSet();
     }
@@ -98,7 +98,7 @@ public class OpenStreetCamService extends BaseService {
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.SEQUENCE_PHOTO_LIST);
         final SequencePhotoListResponse detailsResponse =
-                executePost(url, arguments, SequencePhotoListResponse.class, logger, "retrieveSequence ");
+                executePost(url, arguments, SequencePhotoListResponse.class, logger, RequestConstants.SEQUENCE_PHOTO_LIST);
         verifyResponseStatus(detailsResponse);
 
         Sequence sequence = null;
@@ -181,9 +181,9 @@ public class OpenStreetCamService extends BaseService {
                 .concat(RequestConstants.LIST_MATCHED_TRACKS);
         final ListResponse<Segment> listSegmentResponse =
                 executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType(),
-                        logger, "listMatchedTacks ");
+                        logger, RequestConstants.LIST_MATCHED_TRACKS);
         verifyResponseStatus(listSegmentResponse);
-        logResponseSize(logger, "listMatchedTacks ", listSegmentResponse.getTotalItems());
+        logResponseSize(logger, RequestConstants.LIST_MATCHED_TRACKS, listSegmentResponse.getTotalItems());
         return listSegmentResponse;
     }
 
@@ -192,7 +192,7 @@ public class OpenStreetCamService extends BaseService {
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
         final PhotoDetailsResponse result =
-                executePost(url, arguments, PhotoDetailsResponse.class, logger, "retrievePhotoDetails ");
+                executePost(url, arguments, PhotoDetailsResponse.class, logger, RequestConstants.PHOTO_DETAILS);
         verifyResponseStatus(result);
         return result != null && result.getOsv() != null ? result.getOsv().getPhotoObject() : null;
     }
