@@ -8,11 +8,15 @@ import org.openstreetmap.josm.tools.Logging;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 /**
@@ -22,23 +26,26 @@ import java.util.logging.SimpleFormatter;
  */
 public class ClientLogger {
 
-    private static final String LOGS = "/logs";
-    private static final String OPENSTREETVIEW_PLUGIN = "/openstreetview-plugin";
+    public static final String SLASH = "/";
+    private static final String LOG_DIRECTORY_PATH =
+            Preferences.main().getPluginsDirectory() + SLASH + GuiConfig.getInstance().getPluginShortName() + "/logs";
+    private static final String OPENSTREETVIEW_PLUGIN = "openstreetview_plugin";
     public static final String LOG_EXTENSION = ".log";
+    public static final String UNDERSCORE = "_";
+    public static final int DATE_INDEX = 3;
     private Logger logger = null;
 
     public ClientLogger(final String componentName) {
         if (Config.getInstance().isDebugLoggingEnabled()) {
             try {
-                final File logDir = new File(
-                        Preferences.main().getPluginsDirectory() + "/" + GuiConfig.getInstance().getPluginShortName()
-                                + LOGS);
+                final File logDir = new File(LOG_DIRECTORY_PATH);
                 if (!logDir.exists() && !logDir.mkdirs()) {
                     throw new IOException();
                 } else {
+                    cleanupOldLogs(logDir);
                     final FileHandler fileHandler = new FileHandler(
-                            logDir.getPath() + OPENSTREETVIEW_PLUGIN + "-" + componentName + LocalDate.now().toString()
-                                    + LOG_EXTENSION, true);
+                            logDir.getPath() + SLASH + OPENSTREETVIEW_PLUGIN + UNDERSCORE + componentName + UNDERSCORE
+                                    + LocalDate.now().toString() + LOG_EXTENSION, true);
                     fileHandler.setFormatter(new SimpleFormatter());
                     logger = Logger.getLogger(ClientLogger.class.getName() + componentName);
                     logger.setUseParentHandlers(false);
@@ -52,6 +59,21 @@ public class ClientLogger {
                         e);
             }
         }
+    }
+
+    private void cleanupOldLogs(final File directory) {
+        Arrays.stream(Objects.requireNonNull(directory.listFiles()))
+                .filter(file -> DAYS.between(extractDate(file.getName()).orElse(LocalDate.now()), LocalDate.now()) > 7)
+                .forEach(File::delete);
+    }
+
+    private Optional<LocalDate> extractDate(final String fileName) {
+        if (fileName.matches(OPENSTREETVIEW_PLUGIN + ".*" + LOG_EXTENSION)) {
+            final String[] nameComponents = fileName.split(UNDERSCORE);
+            final String logDate = nameComponents[DATE_INDEX].replace(LOG_EXTENSION, "");
+            return Optional.of(LocalDate.parse(logDate));
+        }
+        return Optional.empty();
     }
 
     public void log(final String message, final Throwable e) {

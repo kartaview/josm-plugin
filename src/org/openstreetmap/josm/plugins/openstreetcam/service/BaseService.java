@@ -7,6 +7,8 @@
 package org.openstreetmap.josm.plugins.openstreetcam.service;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,12 +61,17 @@ public abstract class BaseService {
      * @return a {@code T} object
      * @throws ServiceException if the operation failed
      */
-    protected <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType)
+    protected <T> T executePost(final String url, final Map<String, String> arguments, final Type responseType,
+            final ClientLogger serviceLogger, final String componentName)
             throws ServiceException {
         final String response;
         try {
             final HttpConnector connector = new HttpConnector(url, getHeaders());
+            final Instant startTime = Instant.now();
             response = connector.post(arguments, ContentType.X_WWW_FORM_URLENCODED);
+            final Instant endTime = Instant.now();
+            serviceLogger.log(componentName + url + " with arguments: " + arguments + " responded in " + Duration
+                    .between(startTime, endTime).toMillis() + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
             throw new ServiceException(e);
@@ -72,11 +79,16 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
-    protected <T> T executePost(final String url, final String content, final Class<T> responseType)
+    protected <T> T executePost(final String url, final String content, final Class<T> responseType,
+            final ClientLogger serviceLogger, final String componentName)
             throws ServiceException {
         String response;
         try {
+            final Instant startTime = Instant.now();
             response = new HttpConnector(url).post(content, ContentType.JSON);
+            final Instant endTime = Instant.now();
+            serviceLogger.log(componentName + url + " with content: " + content + " responded in " + Duration
+                    .between(startTime, endTime).toMillis() + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
             throw new ServiceException(e);
@@ -84,10 +96,15 @@ public abstract class BaseService {
         return parseResponse(response, responseType);
     }
 
-    protected <T> T executeGet(final String url, final Class<T> responseType) throws ServiceException {
+    protected <T> T executeGet(final String url, final Class<T> responseType, final ClientLogger serviceLogger,
+            final String componentName) throws ServiceException {
         String response;
         try {
+            final Instant startTime = Instant.now();
             response = new HttpConnector(url, getHeaders()).get();
+            final Instant endTime = Instant.now();
+            serviceLogger.log(componentName + url + " responded in " + Duration.between(startTime, endTime).toMillis()
+                    + "ms", null);
         } catch (final HttpConnectorException e) {
             logger.log("Error calling " + url, e);
             throw new ServiceException(e);
@@ -165,5 +182,14 @@ public abstract class BaseService {
 
     protected <T> String buildRequest(final T request, final Class<T> requestType) {
         return gson.toJson(request, requestType);
+    }
+
+    protected void logResponseSize(final ClientLogger logger, final String componentName, final List<?> response) {
+        final int size = response != null ? response.size() : -1;
+        logger.log(componentName + " returned:  " + size + " elements.", null);
+    }
+
+    protected void logResponseSize(final ClientLogger logger, final String componentName, final int size) {
+        logger.log(componentName + " returned:  " + size + " elements.", null);
     }
 }

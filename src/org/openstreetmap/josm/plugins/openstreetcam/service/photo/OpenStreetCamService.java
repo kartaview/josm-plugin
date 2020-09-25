@@ -49,7 +49,7 @@ import com.grab.josm.common.http.HttpConnectorException;
 public class OpenStreetCamService extends BaseService {
 
     private static final int SECOND_PAGE = 2;
-    private static final ClientLogger logger = new ClientLogger("osc-api");
+    private static final ClientLogger logger = new ClientLogger("oscApi");
 
     @Override
     public Gson createGson() {
@@ -78,14 +78,10 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.LIST_NEARBY_PHOTOS);
-        final Instant startTime = Instant.now();
-        final ListResponse<Photo> listPhotoResponse =
-                executePost(url, arguments, new TypeToken<ListResponse<Photo>>() {}.getType());
-        final Instant endTime = Instant.now();
-        logger.log("listNearbyPhotos " + url + " with content: " + arguments + " responded in " + Duration
-                .between(startTime, endTime).toMillis() + "ms", null);
+        final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
+                new TypeToken<ListResponse<Photo>>() {}.getType(), logger, "listNearbyPhotos ");
         verifyResponseStatus(listPhotoResponse);
-        logger.log("listNearbyPhotos returned:  " + listPhotoResponse.getTotalItems() + " photos.", null);
+        logResponseSize(logger, "listNearbyPhotos ", listPhotoResponse.getTotalItems());
         return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
                 listPhotoResponse.getTotalItems()) : new PhotoDataSet();
     }
@@ -101,11 +97,8 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.SEQUENCE_PHOTO_LIST);
-        final Instant startTime = Instant.now();
-        final SequencePhotoListResponse detailsResponse = executePost(url, arguments, SequencePhotoListResponse.class);
-        final Instant endTime = Instant.now();
-        logger.log("retrieveSequence " + url + " with content: " + arguments + " responded in " + Duration
-                .between(startTime, endTime).toMillis() + "ms", null);
+        final SequencePhotoListResponse detailsResponse =
+                executePost(url, arguments, SequencePhotoListResponse.class, logger, "retrieveSequence ");
         verifyResponseStatus(detailsResponse);
 
         Sequence sequence = null;
@@ -186,14 +179,11 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
         final String url = OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl()
                 .concat(RequestConstants.LIST_MATCHED_TRACKS);
-        final Instant startTime = Instant.now();
         final ListResponse<Segment> listSegmentResponse =
-                executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType());
-        final Instant endTime = Instant.now();
-        logger.log("listMatchedTacks " + url + " with content: " + arguments + " responded in " + Duration
-                .between(startTime, endTime).toMillis() + "ms", null);
+                executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType(),
+                        logger, "listMatchedTacks ");
         verifyResponseStatus(listSegmentResponse);
-        logger.log("listMatchedTacks returned:  " + listSegmentResponse.getTotalItems() + " photos.", null);
+        logResponseSize(logger, "listMatchedTacks ", listSegmentResponse.getTotalItems());
         return listSegmentResponse;
     }
 
@@ -201,11 +191,8 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
-        final Instant startTime = Instant.now();
-        final PhotoDetailsResponse result = executePost(url, arguments, PhotoDetailsResponse.class);
-        final Instant endTime = Instant.now();
-        logger.log("retrievePhotoDetails " + url + " with content: " + arguments + " responded in " + Duration
-                .between(startTime, endTime).toMillis() + "ms", null);
+        final PhotoDetailsResponse result =
+                executePost(url, arguments, PhotoDetailsResponse.class, logger, "retrievePhotoDetails ");
         verifyResponseStatus(result);
         return result != null && result.getOsv() != null ? result.getOsv().getPhotoObject() : null;
     }

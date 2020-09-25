@@ -53,28 +53,18 @@ public class ApolloService extends BaseService {
 	public List<Detection> searchDetections(final SearchDetectionsAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchDetectionsQuery();
 		final String content = buildRequest(searchFilter, SearchDetectionsAreaFilter.class);
-		final Instant startTime = Instant.now();
-		final Response response = executePost(url, content, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("searchDetections " + url + " with content: " + content + " responded in " + Duration
-				.between(startTime, endTime).toMillis() + "ms", null);
+        final Response response = executePost(url, content, Response.class, logger, "searchDetections ");
 		verifyResponseStatus(response);
-		final int responseSize = response.getDetections() != null ? response.getDetections().size() : 0;
-		logger.log("searchDetections returned:  " + responseSize + " detections.", null);
+		logResponseSize(logger, "searchDetections ", response.getDetections());
 		return response.getDetections() != null ? response.getDetections() : new ArrayList<>();
 	}
 
 	public List<Cluster> searchClusters(final SearchClustersAreaFilter searchFilter) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildSearchClustersQuery();
 		final String content = buildRequest(searchFilter, SearchClustersAreaFilter.class);
-		final Instant startTime = Instant.now();
-		final Response response = executePost(url, content, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("searchClusters " + url + " with content: " + content + " responded in " + Duration
-				.between(startTime, endTime).toMillis() + "ms", null);
-		final int responseSize = response.getClusters() != null ? response.getClusters().size() : 0;
-		logger.log("searchClusters returned:  " + responseSize + " clusters.", null);
+        final Response response = executePost(url, content, Response.class, logger, "searchClusters ");
 		verifyResponseStatus(response);
+        logResponseSize(logger, "searchClusters ", response.getClusters());
 		return response.getClusters() != null ? response.getClusters() : new ArrayList<>();
 	}
 
@@ -82,118 +72,74 @@ public class ApolloService extends BaseService {
 		final String url = new HttpQueryBuilder().buildCommentQuery();
 		final Request request = new Request(detection, contribution);
 		final String content = buildRequest(request, Request.class);
-		final Instant startTime = Instant.now();
-		final Response root = executePost(url, content, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("updateDetection " + url + " with content: " + content + " responded in " + Duration
-				.between(startTime, endTime).toMillis() + "ms", null);
+        final Response root = executePost(url, content, Response.class, logger, "updateDetection ");
 		verifyResponseStatus(root);
 	}
 
 	public List<Detection> retrieveSequenceDetections(final Long sequenceId) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveSequenceDetectionsQuery(sequenceId);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
+        final Response response = executeGet(url, Response.class, logger, "retrieveSequenceDetections ");
 		verifyResponseStatus(response);
-		logger.log(
-				"retrieveSequenceDetections " + url + " responded in " + Duration.between(startTime, endTime).toMillis()
-						+ "ms", null);
-		final int responseSize = response.getDetections() != null ? response.getDetections().size() : 0;
-		logger.log("retrieveSequenceDetections returned:  " + responseSize + " detections.", null);
+        logResponseSize(logger, "retrieveSequenceDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public List<Detection> retrievePhotoDetections(final Long sequenceId, final Integer sequenceIndex)
 			throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoDetectionsQuery(sequenceId, sequenceIndex);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrievePhotoDetections " + url + " responded in " + Duration.between(startTime, endTime).toMillis()
-				+ "ms", null);
+        final Response response = executeGet(url, Response.class, logger, "retrievePhotoDetections ");
 		verifyResponseStatus(response);
-		final int responseSize = response.getDetections() != null ? response.getDetections().size() : 0;
-		logger.log("retrievePhotoDetections returned:  " + responseSize + " detections.", null);
+        logResponseSize(logger, "retrievePhotoDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public Detection retrieveDetection(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveDetectionQuery(id);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrieveDetection " + url + " responded in " + Duration.between(startTime, endTime).toMillis() + "ms",
-				null);
+        final Response response = executeGet(url, Response.class, logger, "retrieveDetection ");
 		verifyResponseStatus(response);
 		return response.getDetection();
 	}
 
 	public Cluster retrieveCluster(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterQuery(id);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrieveCluster " + url + " responded in " + Duration.between(startTime, endTime).toMillis() + "ms",
-				null);
+        final Response response = executeGet(url, Response.class, logger, "retrieveCluster ");
 		verifyResponseStatus(response);
 		return response.getCluster();
 	}
 
 	public List<Detection> retrieveClusterDetections(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterDetectionsQuery(id);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrieveClusterDetections " + url + " responded in " + Duration.between(startTime, endTime).toMillis()
-				+ "ms", null);
+        final Response response = executeGet(url, Response.class, logger, "retrieveClusterDetections ");
 		verifyResponseStatus(response);
-		final int responseSize = response.getDetections() != null ? response.getDetections().size() : 0;
-		logger.log("retrieveClusterDetections returned:  " + responseSize + " detections.", null);
+        logResponseSize(logger, "retrieveClusterDetections ", response.getDetections());
 		return response.getDetections();
 	}
 
 	public List<Photo> retrieveClusterPhotos(final Long id) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrieveClusterPhotosQuery(id);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrieveClusterPhotos " + url + " responded in " + Duration.between(startTime, endTime).toMillis()
-				+ "ms", null);
+        final Response response = executeGet(url, Response.class, logger, "retrieveClusterPhotos ");
 		verifyResponseStatus(response);
-		final int responseSize = response.getPhotos() != null ? response.getPhotos().size() : 0;
-		logger.log("retrieveClusterPhotos returned:  " + responseSize + " photos.", null);
+        logResponseSize(logger, "retrieveClusterPhotos ", response.getPhotos());
 		return response.getPhotos();
 	}
 
 	public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoQuery(sequenceId, sequenceIndex);
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("retrievePhoto " + url + " responded in " + Duration.between(startTime, endTime).toMillis() + "ms",
-				null);
+        final Response response = executeGet(url, Response.class, logger, "retrievePhoto ");
 		verifyResponseStatus(response);
 		return response.getPhoto();
 	}
 
 	public List<Sign> listSigns() throws ServiceException {
 		final String url = new HttpQueryBuilder().buildListSignsQuery();
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("listSigns " + url + " responded in " + Duration.between(startTime, endTime).toMillis() + "ms", null);
+        final Response response = executeGet(url, Response.class, logger, "listSigns ");
 		verifyResponseStatus(response);
 		return response.getSigns();
 	}
 
 	public List<String> listRegions() throws ServiceException {
 		final String url = new HttpQueryBuilder().buildListRegionsQuery();
-		final Instant startTime = Instant.now();
-		final Response response = executeGet(url, Response.class);
-		final Instant endTime = Instant.now();
-		logger.log("listRegions " + url + " responded in " + Duration.between(startTime, endTime).toMillis() + "ms",
-				null);
+        final Response response = executeGet(url, Response.class, logger, "listRegions ");
 		verifyResponseStatus(response);
 		return response.getRegions();
 	}
