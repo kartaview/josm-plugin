@@ -30,9 +30,10 @@ public class ClientLogger {
     private static final String LOG_DIRECTORY_PATH =
             Preferences.main().getPluginsDirectory() + SLASH + GuiConfig.getInstance().getPluginShortName() + "/logs";
     private static final String OPENSTREETVIEW_PLUGIN = "openstreetview_plugin";
-    public static final String LOG_EXTENSION = ".log";
-    public static final String UNDERSCORE = "_";
-    public static final int DATE_INDEX = 3;
+    private static final String LOG_EXTENSION = ".log";
+    private static final String UNDERSCORE = "_";
+    private static final int DATE_INDEX = 3;
+    private static final String ANY_CHARACTERS = ".*";
     private Logger logger = null;
 
     public ClientLogger(final String componentName) {
@@ -68,9 +69,9 @@ public class ClientLogger {
     }
 
     private Optional<LocalDate> extractDate(final String fileName) {
-        if (fileName.matches(OPENSTREETVIEW_PLUGIN + ".*" + LOG_EXTENSION)) {
+        if (fileName.matches(OPENSTREETVIEW_PLUGIN + ANY_CHARACTERS + LOG_EXTENSION + ANY_CHARACTERS)) {
             final String[] nameComponents = fileName.split(UNDERSCORE);
-            final String logDate = nameComponents[DATE_INDEX].replace(LOG_EXTENSION, "");
+            final String logDate = nameComponents[DATE_INDEX].split("\\.")[0];
             return Optional.of(LocalDate.parse(logDate));
         }
         return Optional.empty();
