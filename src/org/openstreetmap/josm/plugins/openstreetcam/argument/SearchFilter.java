@@ -25,7 +25,7 @@ public class SearchFilter {
     public static final SearchFilter DEFAULT =
             new SearchFilter(null, false, Arrays.asList(DataType.PHOTO, DataType.CLUSTER), DetectionFilter.DEFAULT);
 
-    private final Date date;
+    private Date date;
     private final boolean olnyUserData;
     private List<DataType> dataTypes;
     private DetectionFilter detectionFilter;
@@ -34,11 +34,9 @@ public class SearchFilter {
     /**
      * Builds a new filter with the given arguments.
      *
-     * @param date a {@code Date} represents the starting date from which the data is returned
      * @param olnyUserData if true, then only the data contributed by the logged in user is returned
      */
-    public SearchFilter(final Date date, final boolean olnyUserData) {
-        this.date = date;
+    public SearchFilter(final boolean olnyUserData) {
         this.olnyUserData = olnyUserData;
     }
 
@@ -52,7 +50,8 @@ public class SearchFilter {
      */
     public SearchFilter(final Date date, final boolean onlyMineFlag, final List<DataType> dataTypes,
             final DetectionFilter detectionFilter) {
-        this(date, onlyMineFlag);
+        this(onlyMineFlag);
+        this.date = date;
         this.dataTypes = dataTypes;
         this.detectionFilter = detectionFilter;
     }

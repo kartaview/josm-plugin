@@ -127,7 +127,6 @@ class FilterPanel extends JPanel {
             enableDetectionFilters(filter.getDataTypes());
         } else {
             addUserFilter(filter.isOlnyUserData());
-            addDateFilter(filter.getDate());
         }
         if (DataSet.getInstance().getSelectedSequence() != null) {
             pickerDate.setEnabled(false);
@@ -178,9 +177,6 @@ class FilterPanel extends JPanel {
                 Constraints.getLblDate(isHighZoomLevel));
         pickerDate = DatePickerBuilder.build(date, Calendar.getInstance().getTime(), PICKER_SIZE);
         pickerDate.getEditor().addKeyListener(new DateVerifier(pickerDate));
-        if (Util.zoom(MainApplication.getMap().mapView.getRealBounds()) < Config.getInstance().getMapPhotoZoom()) {
-            pickerDate.setEnabled(false);
-        }
         add(pickerDate, Constraints.getPickerDate(isHighZoomLevel));
     }
 
@@ -344,24 +340,24 @@ class FilterPanel extends JPanel {
      * @return a {@code ListFilter} object
      */
     SearchFilter selectedFilters() {
-        final String dateValue = pickerDate.getEditor().getText();
-        Date date;
-        if (dateValue == null || dateValue.trim().isEmpty()) {
-            date = null;
-        } else {
-            date = DateFormatter.parseDay(dateValue.trim());
-            if (date == null) {
-                // date value was invalid
-                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterText(),
-                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-            } else if (date.compareTo(Calendar.getInstance().getTime()) > 0) {
-                // date is to big
-                JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getUnacceptedDateFilterText(),
-                        GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
-            }
-        }
         SearchFilter searchFilter;
         if (isHighZoomLevel) {
+            final String dateValue = pickerDate.getEditor().getText();
+            Date date;
+            if (dateValue == null || dateValue.trim().isEmpty()) {
+                date = null;
+            } else {
+                date = DateFormatter.parseDay(dateValue.trim());
+                if (date == null) {
+                    // date value was invalid
+                    JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getIncorrectDateFilterText(),
+                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                } else if (date.compareTo(Calendar.getInstance().getTime()) > 0) {
+                    // date is to big
+                    JOptionPane.showMessageDialog(this, GuiConfig.getInstance().getUnacceptedDateFilterText(),
+                            GuiConfig.getInstance().getErrorTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
             final List<DataType> dataTypes = selectedDataTypes();
             final List<EditStatus> editStatuses = selectedEditStatuses();
             final List<DetectionMode> detectionModes = selectedModes();
@@ -373,7 +369,7 @@ class FilterPanel extends JPanel {
                     new DetectionFilter(selectedOsmComparisons(), editStatuses, signTypes, signValues, detectionModes,
                             region, confidenceLevelFilter, null, null));
         } else {
-            searchFilter = new SearchFilter(date, cbbUser.isSelected());
+            searchFilter = new SearchFilter(cbbUser.isSelected());
         }
         return searchFilter;
     }
@@ -471,10 +467,10 @@ class FilterPanel extends JPanel {
      * Clears the filters.
      */
     void resetFilters() {
-        pickerDate.getEditor().setText("");
-        pickerDate.setDate(SearchFilter.DEFAULT.getDate());
         cbbUser.setSelected(SearchFilter.DEFAULT.isOlnyUserData());
         if (isHighZoomLevel) {
+            pickerDate.getEditor().setText("");
+            pickerDate.setDate(SearchFilter.DEFAULT.getDate());
             cbbPhotos.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.PHOTO));
             cbbDetections.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.DETECTION));
             cbbCluster.setSelected(SearchFilter.DEFAULT.getDataTypes().contains(DataType.CLUSTER));
