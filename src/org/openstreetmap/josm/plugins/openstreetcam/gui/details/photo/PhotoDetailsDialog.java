@@ -190,7 +190,8 @@ public final class PhotoDetailsDialog extends ToggleDialog {
                     PhotoHandler.getInstance().loadPhoto(photo, finalPhotoType);
             selectedElement = new Pair<>(photo, imageResult.getSecond());
             SwingUtilities.invokeLater(() -> {
-                if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null) {
+                if (imageResult.getFirst() != null && DataSet.getInstance().getSelectedPhoto() != null
+                        && DataSet.getInstance().getSelectedPhoto().equals(photo)) {
                     if (PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                             && !imageResult.getSecond().equals(PhotoSize.HIGH_QUALITY)) {
                         pnlDetails.updateUI(photo, true);
