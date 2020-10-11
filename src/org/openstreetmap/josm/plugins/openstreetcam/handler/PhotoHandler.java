@@ -170,12 +170,10 @@ public final class PhotoHandler {
         }
     }
 
-    private boolean isPhotoInAvailableZone(final LatLon photoCoordinates){
+    private boolean isPhotoInAvailableZone(final LatLon photoCoordinates) {
         final String zone1 = "PH";
         final String zone2 = "SG";
-        final boolean is =  Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone1)) ||
-                Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone2));
-        System.out.println("*****     " + is);
-        return is;
+        return Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone1))
+                || Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone2));
     }
 }

@@ -18,8 +18,8 @@ public class BordersFactory {
     private static final String COMMA = ",";
     private static final String SPACE = " ";
     private static final String COORD_SEPARATOR = ", ";
-    private static final int  LAT_INDEX = 0;
-    private static final int LONG_INDEX = 1;
+    private static final int  LAT_INDEX = 1;
+    private static final int LONG_INDEX = 0;
     private static final String ZONE_1 = "PH";
     private static final String ZONE_2 = "SG";
     private final Map<String, List<Node>> borders;
