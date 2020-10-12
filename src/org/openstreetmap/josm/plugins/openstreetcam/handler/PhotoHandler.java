@@ -14,17 +14,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
-import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoZones;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BordersFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
-import org.openstreetmap.josm.tools.Geometry;
 import org.openstreetmap.josm.tools.Logging;
 import com.grab.josm.common.entity.Pair;
 
@@ -68,7 +64,7 @@ public final class PhotoHandler {
         Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
-            if (isPhotoInAvailableZone(photo.getPoint())) {
+            if (BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint())) {
                 if (type.equals(PhotoSize.THUMBNAIL)) {
                     result = loadThumbnailPhoto(photo);
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
@@ -139,7 +135,7 @@ public final class PhotoHandler {
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
-        if(isPhotoInAvailableZone(photo.getPoint())) {
+        if (BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint())) {
             if (highQualityFlag) {
                 // retrieve and save high quality image
                 try {
@@ -169,11 +165,5 @@ public final class PhotoHandler {
             final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
             cacheManager.putPhoto(sequenceId, photoName, byteImage, isWarning);
         }
-    }
-
-    private boolean isPhotoInAvailableZone(final LatLon photoCoordinates) {
-        final Node correlatedNode = new Node(photoCoordinates);
-        return Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.PH))
-                || Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.SG));
     }
 }

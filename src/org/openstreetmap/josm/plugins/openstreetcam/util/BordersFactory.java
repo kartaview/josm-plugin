@@ -4,6 +4,7 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoZones;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.ZonesConfig;
+import org.openstreetmap.josm.tools.Geometry;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,5 +46,11 @@ public class BordersFactory {
 
     public List<Node> getBorder(final PhotoZones zone) {
         return borders.get(zone);
+    }
+
+    public boolean isPhotoInAvailableZone(final LatLon photoCoordinates) {
+        final Node correlatedNode = new Node(photoCoordinates);
+        return Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.PH))
+                || Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.SG));
     }
 }
