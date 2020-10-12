@@ -20,6 +20,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoZones;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BordersFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -171,9 +172,8 @@ public final class PhotoHandler {
     }
 
     private boolean isPhotoInAvailableZone(final LatLon photoCoordinates) {
-        final String zone1 = "PH";
-        final String zone2 = "SG";
-        return Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone1))
-                || Geometry.nodeInsidePolygon(new Node(photoCoordinates), BordersFactory.getInstance().getBorder(zone2));
+        final Node correlatedNode = new Node(photoCoordinates);
+        return Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.PH))
+                || Geometry.nodeInsidePolygon(correlatedNode, BordersFactory.getInstance().getBorder(PhotoZones.SG));
     }
 }
