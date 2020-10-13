@@ -126,7 +126,6 @@ class FilterPanel extends JPanel {
             addUserFilter(filter.isOlnyUserData());
         }
         if (DataSet.getInstance().getSelectedSequence() != null) {
-            pickerDate.setEnabled(false);
             cbbUser.setEnabled(false);
         }
     }
