@@ -68,7 +68,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
                         dataSet.getSelectedSequence() != null || dataSet.getSelectedCluster() != null;
                 final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
                 if (dataSet.hasPhotos() && (dataTypes.contains(DataType.PHOTO))) {
-                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotos(),
+                    paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotosToBeDrawn(),
                             dataSet.getSelectedPhoto(), isTransparent);
                 }
 
