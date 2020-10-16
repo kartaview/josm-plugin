@@ -42,7 +42,6 @@ public class PhotoDataSet {
         return photos;
     }
 
-
     public Integer getPage() {
         return page;
     }
@@ -66,6 +65,12 @@ public class PhotoDataSet {
     public void addPhotos(final List<Photo> photos) {
         if (photos != null && !photos.isEmpty()) {
             this.photos.addAll(photos);
+        }
+    }
+
+    public void removePhotos(final List<Photo> photos) {
+        if (photos != null && !photos.isEmpty()) {
+            this.photos.removeAll(photos);
         }
     }
 }

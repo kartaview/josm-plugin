@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
@@ -185,7 +186,7 @@ public final class DataSet {
      */
     public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
             final boolean updateSelection) {
-        this.photoDataSet = photoDataSet;
+        revalidatePhotosToBeDrawn(photoDataSet);
         if (updateSelection && hasSelectedPhoto() && !selectedPhotoBelongsToSelectedCluster()) {
             selectedPhoto = photoDataSet != null ? photoDataSet.getPhotos().stream()
                     .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
@@ -198,6 +199,36 @@ public final class DataSet {
                 .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
             });
         }
+    }
+
+    /**
+     * Eliminates the photos which are not in the active area and adds to the PhotoDataSet the photos which are not
+     * represented in the map.
+     *
+     * @param currentPhotoDataSet - the photos to be added in the map after an action
+     */
+    private void revalidatePhotosToBeDrawn(final PhotoDataSet currentPhotoDataSet) {
+        List<Photo> photosToBeDrawn = new ArrayList<>();
+        if (currentPhotoDataSet != null && currentPhotoDataSet.getPhotos() != null) {
+            for (final Photo photo : currentPhotoDataSet.getPhotos()) {
+                if (!isPhotoDrawn(photo, this.photoDataSet)) {
+                    photosToBeDrawn.add(photo);
+                }
+            }
+        }
+        final List<Photo> photosOutOfArea =
+                this.photoDataSet.getPhotos().stream().filter(photo -> !Util.isPointInActiveArea(photo.getPoint()))
+                        .collect(Collectors.toList());
+        this.photoDataSet.removePhotos(photosOutOfArea);
+        this.photoDataSet.addPhotos(photosToBeDrawn);
+    }
+
+    private boolean isPhotoDrawn(final Photo photo, final PhotoDataSet previousPhotoDataSet) {
+        boolean isDrawn = false;
+        if (photo != null && previousPhotoDataSet != null && previousPhotoDataSet.hasItems()) {
+            isDrawn = previousPhotoDataSet.getPhotos().contains(photo);
+        }
+        return isDrawn;
     }
 
     /**
