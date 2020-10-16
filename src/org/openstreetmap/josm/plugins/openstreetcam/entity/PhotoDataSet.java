@@ -68,4 +68,10 @@ public class PhotoDataSet {
             this.photos.addAll(photos);
         }
     }
+
+    public void removePhotos(final List<Photo> photos) {
+        if (photos != null && !photos.isEmpty()) {
+            this.photos.removeAll(photos);
+        }
+    }
 }
