@@ -19,14 +19,12 @@ import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServic
 public class PhotoDataSet {
 
     private final List<Photo> photos;
-    private List<Photo> photosToBeDrawn;
     private Integer page;
     private Integer totalItems;
 
 
     public PhotoDataSet() {
         this.photos = new ArrayList<>();
-        this.photosToBeDrawn = new ArrayList<>();
     }
 
     public PhotoDataSet(final List<Photo> photos) {
@@ -42,10 +40,6 @@ public class PhotoDataSet {
 
     public List<Photo> getPhotos() {
         return photos;
-    }
-
-    public List<Photo> getPhotosToBeDrawn() {
-        return photosToBeDrawn;
     }
 
     public Integer getPage() {
@@ -74,10 +68,9 @@ public class PhotoDataSet {
         }
     }
 
-    public void revalidatePhotosToBeDrawn(final List<Photo> photos) {
-        this.photosToBeDrawn = new ArrayList<>();
+    public void removePhotos(final List<Photo> photos) {
         if (photos != null && !photos.isEmpty()) {
-            this.photosToBeDrawn.addAll(photos);
+            this.photos.removeAll(photos);
         }
     }
 }
