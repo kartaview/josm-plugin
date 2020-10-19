@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
 import org.openstreetmap.josm.plugins.openstreetcam.util.BordersFactory;
+import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Logging;
 import com.grab.josm.common.entity.Pair;
@@ -64,7 +67,7 @@ public final class PhotoHandler {
         Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
-            if (BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint())) {
+            if (shouldDisplayImage(photo)) {
                 if (type.equals(PhotoSize.THUMBNAIL)) {
                     result = loadThumbnailPhoto(photo);
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
@@ -80,6 +83,19 @@ public final class PhotoHandler {
             throw new PhotoHandlerException("Could not read photo content.", e);
         }
         return result;
+    }
+
+    private boolean shouldDisplayImage(final Photo photo) {
+        boolean display = false;
+        if (photo != null && photo.getUsername() != null && !photo.getUsername().isEmpty()) {
+            display = BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint()) && isVendorAccepted(photo);
+        }
+        return display;
+    }
+
+    private boolean isVendorAccepted(final Photo photo) {
+        final List<String> acceptedVendors = Arrays.asList(OpenStreetCamServiceConfig.getInstance().getVendorsList());
+        return acceptedVendors.contains(photo.getUsername());
     }
 
     private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
@@ -135,7 +151,7 @@ public final class PhotoHandler {
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
-        if (BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint())) {
+        if (shouldDisplayImage(photo)) {
             if (highQualityFlag) {
                 // retrieve and save high quality image
                 try {
