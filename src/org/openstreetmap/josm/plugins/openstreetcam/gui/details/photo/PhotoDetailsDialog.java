@@ -175,17 +175,16 @@ public final class PhotoDetailsDialog extends ToggleDialog {
 
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
-        } else if (photo != null && !Util.shouldDisplayImage(photo)) {
-            pnlDetails.updateUI(null, false);
-            pnlDetails.setToolTipText("");
-            pnlBtn.updateUI(photo);
-            pnlPhoto.displayErrorMessage();
-            repaint();
         } else {
-            pnlDetails.updateUI(null, false);
             pnlDetails.setToolTipText("");
-            pnlPhoto.updateUI(null, null);
-            pnlBtn.updateUI(null);
+            pnlDetails.updateUI(null, false);
+            if (photo != null && !Util.shouldDisplayImage(photo)) {
+                pnlBtn.updateUI(photo);
+                pnlPhoto.displayErrorMessage();
+            } else {
+                pnlPhoto.updateUI(null, null);
+                pnlBtn.updateUI(null);
+            }
             repaint();
         }
     }
