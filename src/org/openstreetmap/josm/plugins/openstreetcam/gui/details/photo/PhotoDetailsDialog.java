@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeOb
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -164,7 +165,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        if (photo != null) {
+        if (photo != null && Util.shouldDisplayImage(photo)) {
             // display loading text
             if (displayLoadingMessage) {
                 pnlPhoto.displayLoadingMessage();
@@ -174,6 +175,12 @@ public final class PhotoDetailsDialog extends ToggleDialog {
 
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
+        } else if (photo != null && !Util.shouldDisplayImage(photo)) {
+            pnlDetails.updateUI(null, false);
+            pnlDetails.setToolTipText("");
+            pnlBtn.updateUI(photo);
+            pnlPhoto.displayErrorMessage();
+            repaint();
         } else {
             pnlDetails.updateUI(null, false);
             pnlDetails.setToolTipText("");
