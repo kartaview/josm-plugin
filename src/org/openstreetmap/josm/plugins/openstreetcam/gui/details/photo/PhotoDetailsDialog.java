@@ -22,6 +22,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
@@ -165,21 +166,24 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        if (photo != null && Util.shouldDisplayImage(photo)) {
+        final Photo detailedPhoto = (photo != null && photo.getUsername() == null) ?
+                ServiceHandler.getInstance().retrievePhotoDetails(photo.getSequenceId(), photo.getSequenceIndex()) :
+                photo;
+        if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
             // display loading text
             if (displayLoadingMessage) {
                 pnlPhoto.displayLoadingMessage();
             }
-            pnlBtn.updateUI(photo);
+            pnlBtn.updateUI(detailedPhoto);
             repaint();
 
             // load image
-            ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
+            ThreadPool.getInstance().execute(() -> loadPhoto(detailedPhoto, photoType));
         } else {
             pnlDetails.setToolTipText("");
             pnlDetails.updateUI(null, false);
-            if (photo != null && !Util.shouldDisplayImage(photo)) {
-                pnlBtn.updateUI(photo);
+            if (detailedPhoto != null && !Util.shouldDisplayImage(detailedPhoto)) {
+                pnlBtn.updateUI(detailedPhoto);
                 pnlPhoto.displayErrorMessage();
             } else {
                 pnlPhoto.updateUI(null, null);
