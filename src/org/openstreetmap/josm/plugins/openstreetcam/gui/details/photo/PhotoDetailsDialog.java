@@ -166,9 +166,8 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        final Photo detailedPhoto = (photo != null && photo.getUsername() == null) ?
-                ServiceHandler.getInstance().retrievePhotoDetails(photo.getSequenceId(), photo.getSequenceIndex()) :
-                photo;
+        final Photo detailedPhoto =
+                (photo != null && photo.getUsername() == null) ? addMissingUsernameInformation(photo) : photo;
         if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
             // display loading text
             if (displayLoadingMessage) {
@@ -191,6 +190,15 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             }
             repaint();
         }
+    }
+
+    private Photo addMissingUsernameInformation(final Photo photo) {
+        final Photo photoWithUsername =
+                ServiceHandler.getInstance().retrievePhotoDetails(photo.getSequenceId(), photo.getSequenceIndex());
+        if (photoWithUsername != null) {
+            photo.setUsername(photoWithUsername.getUsername());
+        }
+        return photo;
     }
 
     private void loadPhoto(final Photo photo, final PhotoSize photoType) {
