@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -187,15 +186,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {
-        List<Detection> photoDetections =
-                ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
-        if (photoDetections != null && DataSet.getInstance().hasDetections()) {
-            photoDetections = photoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
-                    .collect(Collectors.toList());
-        }
-        return photoDetections;
+        return ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
     }
-
 
     @Override
     public void mouseMoved(final MouseEvent e) {
