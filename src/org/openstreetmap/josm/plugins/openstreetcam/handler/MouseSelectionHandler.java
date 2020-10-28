@@ -152,18 +152,15 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     void enhancePhoto(final Photo photo) {
         if (photo != null) {
-            ThreadPool.getInstance().execute(() -> {
-                if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
-                    final List<Detection> detections = loadPhotoDetections(photo);
-                    photo.setDetections(detections);
-                }
-                final Photo photoWithMatching =
-                        ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
-                if (photoWithMatching != null) {
-                    photo.setMatching(photoWithMatching.getMatching());
-                }
-            });
-
+            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                final List<Detection> detections = loadPhotoDetections(photo);
+                photo.setDetections(detections);
+            }
+            final Photo photoWithMatching =
+                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+            if (photoWithMatching != null) {
+                photo.setMatching(photoWithMatching.getMatching());
+            }
         }
     }
 
