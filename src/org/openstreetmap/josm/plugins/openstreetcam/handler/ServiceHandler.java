@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -163,6 +164,11 @@ public final class ServiceHandler extends SearchServiceHandler {
         List<Detection> result = null;
         try {
             result = apolloService.retrieveSequenceDetections(id);
+            if (result != null) {
+                result = result.stream().filter(detection -> Util
+                        .shouldFilterDetection(PreferenceManager.getInstance().loadSearchFilter(), detection))
+                        .collect(Collectors.toList());
+            }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
@@ -183,6 +189,11 @@ public final class ServiceHandler extends SearchServiceHandler {
         List<Detection> result = null;
         try {
             result = apolloService.retrievePhotoDetections(sequenceId, sequenceIndex);
+            if (result != null) {
+                result = result.stream().filter(detection -> Util
+                        .shouldFilterDetection(PreferenceManager.getInstance().loadSearchFilter(), detection))
+                        .collect(Collectors.toList());
+            }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionRetrieveText());
