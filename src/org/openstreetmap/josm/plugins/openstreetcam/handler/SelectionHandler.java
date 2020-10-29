@@ -291,6 +291,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             Detection detection = null;
             Cluster cluster = null;
             if (dataTypes != null) {
+                if (!dataTypes.contains(DataType.DETECTION)) {
+                    photo.setDetections(null);
+                }
                 if (dataTypes.contains(DataType.DETECTION)) {
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);

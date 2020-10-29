@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -25,9 +26,11 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -253,5 +256,39 @@ public final class Util {
     public static boolean isVendorAccepted(final Photo photo) {
         final List<String> acceptedVendors = Arrays.asList(OpenStreetCamServiceConfig.getInstance().getVendorsList());
         return acceptedVendors.contains(photo.getUsername());
+    }
+
+    public static  boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
+        boolean isCorresponding = true;
+
+        if (selectedDetection != null) {
+            if (filter.getDetectionFilter().getEditStatuses() != null && !filter.getDetectionFilter().getEditStatuses()
+                    .isEmpty() && selectedDetection.getEditStatus() != null && !filter.getDetectionFilter()
+                    .getEditStatuses().contains(selectedDetection.getEditStatus())) {
+                isCorresponding = false;
+            } else if (filter.getDetectionFilter().getOsmComparisons() != null
+                    && selectedDetection.getOsmComparison() != null && !filter.getDetectionFilter().getOsmComparisons()
+                    .isEmpty() && !filter.getDetectionFilter().getOsmComparisons()
+                    .contains(selectedDetection.getOsmComparison())) {
+                isCorresponding = false;
+            } else if (filter.getDetectionFilter().getModes() != null && selectedDetection.getMode() != null && !filter
+                    .getDetectionFilter().getModes().isEmpty() && !filter.getDetectionFilter().getModes()
+                    .contains(selectedDetection.getMode())) {
+                isCorresponding = false;
+            } else if (filter.getDetectionFilter().getSignTypes() != null) {
+                final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
+                        filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
+                if (matchedSignNames.size() != 1)
+                    isCorresponding = false;
+            } else if (filter.getDetectionFilter().getSpecificSigns() != null) {
+                final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
+                        filter(s -> s.getName().equals(selectedDetection.getSign().getName()))
+                        .collect(Collectors.toList());
+                if (matchedSignNames.isEmpty())
+                    isCorresponding = false;
+            }
+        }
+
+        return isCorresponding;
     }
 }

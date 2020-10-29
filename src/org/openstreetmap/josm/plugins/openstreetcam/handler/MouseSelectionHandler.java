@@ -155,6 +155,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
                 final List<Detection> detections = loadPhotoDetections(photo);
                 photo.setDetections(detections);
+            } else {
+                photo.setDetections(null);
             }
             final Photo photoWithMatching =
                     ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());

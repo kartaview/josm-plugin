@@ -7,7 +7,6 @@
 package org.openstreetmap.josm.plugins.openstreetcam.handler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
@@ -15,10 +14,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Segment;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.layer.OpenStreetCamLayer;
@@ -199,13 +196,12 @@ public class DataUpdateHandler {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
             DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
-            if (DataSet.getInstance().getSelectedDetection() != null && shouldFilterDetection(searchFilter,
-                    DataSet.getInstance().getSelectedDetection())) {
+            if (DataSet.getInstance().getSelectedDetection() != null && Util
+                    .shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-                if(shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())){
+                if (Util.shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
                     DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 }
-
             }
         } else {
             if (checkSelection) {
@@ -234,46 +230,12 @@ public class DataUpdateHandler {
 
     private void updateDetectionPanelAccordingToFilters() {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        if (!shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
+        if (!Util.shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
             DataSet.getInstance().setSelectedDetection(null);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         } else {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
         }
-    }
-
-    private boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
-        boolean isCorresponding = true;
-
-        if (selectedDetection != null) {
-            if (filter.getDetectionFilter().getEditStatuses() != null && !filter.getDetectionFilter().getEditStatuses()
-                    .isEmpty() && selectedDetection.getEditStatus() != null && !filter.getDetectionFilter()
-                    .getEditStatuses().contains(selectedDetection.getEditStatus())) {
-                isCorresponding = false;
-            } else if (filter.getDetectionFilter().getOsmComparisons() != null
-                    && selectedDetection.getOsmComparison() != null && !filter.getDetectionFilter().getOsmComparisons()
-                    .isEmpty() && !filter.getDetectionFilter().getOsmComparisons()
-                    .contains(selectedDetection.getOsmComparison())) {
-                isCorresponding = false;
-            } else if (filter.getDetectionFilter().getModes() != null && selectedDetection.getMode() != null && !filter
-                    .getDetectionFilter().getModes().isEmpty() && !filter.getDetectionFilter().getModes()
-                    .contains(selectedDetection.getMode())) {
-                isCorresponding = false;
-            } else if (filter.getDetectionFilter().getSignTypes() != null) {
-                final List<String> matchedSignNames = filter.getDetectionFilter().getSignTypes().stream().
-                        filter(s -> s.equals(selectedDetection.getSign().getType())).collect(Collectors.toList());
-                if (matchedSignNames.size() != 1)
-                    isCorresponding = false;
-            } else if (filter.getDetectionFilter().getSpecificSigns() != null) {
-                final List<Sign> matchedSignNames = filter.getDetectionFilter().getSpecificSigns().stream().
-                        filter(s -> s.getName().equals(selectedDetection.getSign().getName()))
-                        .collect(Collectors.toList());
-                if (matchedSignNames.isEmpty())
-                    isCorresponding = false;
-            }
-        }
-
-        return isCorresponding;
     }
 }
