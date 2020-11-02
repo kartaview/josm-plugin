@@ -294,14 +294,17 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 if (dataTypes.contains(DataType.DETECTION)) {
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
-                } else if (DataSet.getInstance().getSelectedCluster() != null) {
-                    // special case we need to display information of the already selected cluster
-                    final Optional<Detection> clusterDetection = DataSet.getInstance()
-                            .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
-                    if (clusterDetection.isPresent()) {
-                        detection = clusterDetection.get();
-                        photo.setDetections(Collections.singletonList(detection));
-                        cluster = DataSet.getInstance().getSelectedCluster();
+                } else {
+                    photo.setDetections(null);
+                    if (DataSet.getInstance().getSelectedCluster() != null) {
+                        // special case we need to display information of the already selected cluster
+                        final Optional<Detection> clusterDetection = DataSet.getInstance()
+                                .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
+                        if (clusterDetection.isPresent()) {
+                            detection = clusterDetection.get();
+                            photo.setDetections(Collections.singletonList(detection));
+                            cluster = DataSet.getInstance().getSelectedCluster();
+                        }
                     }
                 }
             }

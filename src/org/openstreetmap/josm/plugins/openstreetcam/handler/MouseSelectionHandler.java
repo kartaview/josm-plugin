@@ -157,6 +157,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
                     final List<Detection> detections = loadPhotoDetections(photo);
                     photo.setDetections(detections);
+                } else {
+                    photo.setDetections(null);
                 }
                 final Photo photoWithMatching =
                         ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
@@ -187,13 +189,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {
-        List<Detection> photoDetections =
-                ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
-        if (photoDetections != null && DataSet.getInstance().hasDetections()) {
-            photoDetections = photoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
-                    .collect(Collectors.toList());
-        }
-        return photoDetections;
+        return ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
     }
 
 
