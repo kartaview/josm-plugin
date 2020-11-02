@@ -187,13 +187,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     }
 
     private List<Detection> loadPhotoDetections(final Photo photo) {
-        List<Detection> photoDetections =
-                ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
-        if (photoDetections != null && DataSet.getInstance().hasDetections()) {
-            photoDetections = photoDetections.stream().filter(DataSet.getInstance().getDetections()::contains)
-                    .collect(Collectors.toList());
-        }
-        return photoDetections;
+        return ServiceHandler.getInstance().retrievePhotoDetections(photo.getSequenceId(), photo.getSequenceIndex());
     }
 
 
