@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -153,20 +152,17 @@ abstract class MouseSelectionHandler extends MouseAdapter {
 
     void enhancePhoto(final Photo photo) {
         if (photo != null) {
-            ThreadPool.getInstance().execute(() -> {
-                if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
-                    final List<Detection> detections = loadPhotoDetections(photo);
-                    photo.setDetections(detections);
-                } else {
-                    photo.setDetections(null);
-                }
-                final Photo photoWithMatching =
-                        ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
-                if (photoWithMatching != null) {
-                    photo.setMatching(photoWithMatching.getMatching());
-                }
-            });
-
+            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.DETECTION)) {
+                final List<Detection> detections = loadPhotoDetections(photo);
+                photo.setDetections(detections);
+            } else {
+                photo.setDetections(null);
+            }
+            final Photo photoWithMatching =
+                    ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
+            if (photoWithMatching != null) {
+                photo.setMatching(photoWithMatching.getMatching());
+            }
         }
     }
 
