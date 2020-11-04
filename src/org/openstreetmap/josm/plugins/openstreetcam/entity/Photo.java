@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.entity;
 import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import com.grab.josm.common.entity.EntityUtil;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 
 
 /**
@@ -24,7 +25,7 @@ public class Photo {
     private final Long sequenceId;
     private final Integer sequenceIndex;
     private final LatLon point;
-    private final String name;
+    private String name;
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final String oriName;
@@ -39,6 +40,7 @@ public class Photo {
     private final PhotoSize realSize;
     private final Double horizontalFieldOfView;
     private final UprightOrientation uprightOrientation;
+    private final Projection projection;
 
 
     Photo(final PhotoBuilder builder) {
@@ -58,6 +60,7 @@ public class Photo {
         this.realSize = builder.getRealSize();
         this.horizontalFieldOfView = builder.getHorizontalFieldOfView();
         this.uprightOrientation = builder.getUprightOrientation();
+        this.projection = builder.getProjection();
     }
 
     public Long getId() {
@@ -74,6 +77,10 @@ public class Photo {
 
     public LatLon getPoint() {
         return point;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -150,6 +157,10 @@ public class Photo {
 
     public void setSize(final PhotoSize size) {
         this.size = size;
+    }
+
+    public Projection getProjection() {
+        return projection;
     }
 
     @Override

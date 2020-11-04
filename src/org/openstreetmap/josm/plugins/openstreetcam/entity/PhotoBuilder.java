@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 
 
 /**
@@ -34,6 +35,7 @@ public class PhotoBuilder {
     private PhotoSize realSize;
     private Double horizontalFieldOfView;
     private UprightOrientation uprightOrientation;
+    private Projection projection;
 
 
     public PhotoBuilder() {}
@@ -96,6 +98,10 @@ public class PhotoBuilder {
 
     public void size(final PhotoSize size) {
         this.size = size;
+    }
+
+    public void projection(final Projection projection) {
+        this.projection = projection;
     }
 
     Long getId() {
@@ -164,6 +170,10 @@ public class PhotoBuilder {
 
     public UprightOrientation getUprightOrientation() {
         return uprightOrientation;
+    }
+
+    Projection getProjection() {
+        return projection;
     }
 
     public Photo build() {

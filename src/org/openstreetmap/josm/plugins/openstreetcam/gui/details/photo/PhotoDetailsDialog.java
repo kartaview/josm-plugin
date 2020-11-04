@@ -17,6 +17,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
@@ -53,6 +54,10 @@ public final class PhotoDetailsDialog extends ToggleDialog {
 
     /** dialog default height */
     private static final int DLG_HEIGHT = 150;
+
+    /** photo type  */
+    private static final String WRAPPED = "wrapped_proc";
+    private static final String PROC = "proc";
 
     private static PhotoDetailsDialog instance = new PhotoDetailsDialog();
 
@@ -170,6 +175,9 @@ public final class PhotoDetailsDialog extends ToggleDialog {
                 (photo != null && photo.getUsername() == null) ? addMissingUsernameInformation(photo) : photo;
         if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
             // display loading text
+            if (detailedPhoto.getProjection().equals(Projection.SPHERE)) {
+                visualiseWrappedPhoto(detailedPhoto);
+            }
             if (displayLoadingMessage) {
                 pnlPhoto.displayLoadingMessage();
             }
@@ -199,6 +207,11 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             photo.setUsername(photoWithUsername.getUsername());
         }
         return photo;
+    }
+
+    private void visualiseWrappedPhoto(final Photo photo) {
+        final String currentName = photo.getName();
+        photo.setName(currentName.replace(PROC, WRAPPED));
     }
 
     private void loadPhoto(final Photo photo, final PhotoSize photoType) {
