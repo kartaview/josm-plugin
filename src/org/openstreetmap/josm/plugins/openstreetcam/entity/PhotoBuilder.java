@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 
 
 /**
@@ -16,6 +17,10 @@ import org.openstreetmap.josm.data.coor.LatLon;
  * @version $Revision$
  */
 public class PhotoBuilder {
+
+    /** photo type  */
+    private static final String WRAPPED = "wrapped_proc";
+    private static final String PROC = "proc";
 
     private Long id;
     private Long sequenceId;
@@ -34,6 +39,7 @@ public class PhotoBuilder {
     private PhotoSize realSize;
     private Double horizontalFieldOfView;
     private UprightOrientation uprightOrientation;
+    private Projection projection;
 
 
     public PhotoBuilder() {}
@@ -96,6 +102,10 @@ public class PhotoBuilder {
 
     public void size(final PhotoSize size) {
         this.size = size;
+    }
+
+    public void projection(final Projection projection) {
+        this.projection = projection;
     }
 
     Long getId() {
@@ -166,8 +176,20 @@ public class PhotoBuilder {
         return uprightOrientation;
     }
 
+    Projection getProjection() {
+        return projection;
+    }
+
     public Photo build() {
+        if (this.getProjection().equals(Projection.SPHERE)) {
+            visualiseWrappedPhoto(this);
+        }
         // any photo should have a coordinate
         return point != null ? new Photo(this) : null;
+    }
+
+    private void visualiseWrappedPhoto(final PhotoBuilder builder) {
+        final String currentName = builder.getName();
+        builder.name(currentName.replace(PROC, WRAPPED));
     }
 }
