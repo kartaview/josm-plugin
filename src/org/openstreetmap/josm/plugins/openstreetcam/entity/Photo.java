@@ -25,7 +25,7 @@ public class Photo {
     private final Long sequenceId;
     private final Integer sequenceIndex;
     private final LatLon point;
-    private String name;
+    private final String name;
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final String oriName;
@@ -77,10 +77,6 @@ public class Photo {
 
     public LatLon getPoint() {
         return point;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 
     public String getName() {
@@ -157,10 +153,6 @@ public class Photo {
 
     public void setSize(final PhotoSize size) {
         this.size = size;
-    }
-
-    public Projection getProjection() {
-        return projection;
     }
 
     @Override

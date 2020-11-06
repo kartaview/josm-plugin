@@ -18,6 +18,10 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
  */
 public class PhotoBuilder {
 
+    /** photo type  */
+    private static final String WRAPPED = "wrapped_proc";
+    private static final String PROC = "proc";
+
     private Long id;
     private Long sequenceId;
     private Integer sequenceIndex;
@@ -177,7 +181,15 @@ public class PhotoBuilder {
     }
 
     public Photo build() {
+        if (this.getProjection().equals(Projection.SPHERE)) {
+            visualiseWrappedPhoto(this);
+        }
         // any photo should have a coordinate
         return point != null ? new Photo(this) : null;
+    }
+
+    private void visualiseWrappedPhoto(final PhotoBuilder builder) {
+        final String currentName = builder.getName();
+        builder.name(currentName.replace(PROC, WRAPPED));
     }
 }
