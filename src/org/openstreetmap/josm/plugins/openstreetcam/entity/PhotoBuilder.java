@@ -20,7 +20,9 @@ public class PhotoBuilder {
 
     /** photo type  */
     private static final String WRAPPED = "wrapped_proc";
+    private static final String WRAPPED_LARGE = "wrapped_lth";
     private static final String PROC = "proc";
+    private static final String LARGE = "lth";
 
     private Long id;
     private Long sequenceId;
@@ -190,6 +192,8 @@ public class PhotoBuilder {
 
     private void visualiseWrappedPhoto(final PhotoBuilder builder) {
         final String currentName = builder.getName();
+        final String currentLargeThumbnailName = builder.getLargeThumbnailName();
         builder.name(currentName.replace(PROC, WRAPPED));
+        builder.largeThumbnailName(currentLargeThumbnailName.replace(LARGE, WRAPPED_LARGE));
     }
 }
