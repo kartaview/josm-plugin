@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -29,9 +30,13 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PixelPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.grab.josm.common.entity.Pair;
 import com.grab.josm.common.gui.builder.LabelBuilder;
@@ -49,6 +54,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
     private static final float BORDER_SIZE = 3;
+    private static final float UNSELECTED_BORDER_SIZE = 1.5f;
     private static final Color SELECTED_SIGN_COLOR = new Color(0, 191, 255);
     private static final Color UNSELECTED_SIGN_COLOR = new Color(255, 0, 0);
 
@@ -283,29 +289,83 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private void drawDetections(final Graphics2D graphics) {
         if (detections != null && !detections.isEmpty()) {
             final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
+            final Photo displayedPhoto = DataSet.getInstance().getSelectedPhoto();
             for (final Detection detection : detections) {
-                if(detection.getLocationOnPhoto() != null) {
-                    final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
-                            * frame.getWidth() / currentView.getWidth();
-                    final double y = frame.y + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y)
-                            * frame.getHeight() / currentView.getHeight();
+                setRepresentationProperties(graphics, detection.equals(selectedDetection));
+                if (displayedPhoto.getProjection().equals(Projection.PLANE)) {
+                    drawOnFrontFacingImage(graphics, detection, selectedDetection);
+                } else if (displayedPhoto.getProjection().equals(Projection.SPHERE)) {
+                    drawOnWrappedImage(graphics, detection, displayedPhoto);
+                }
+            }
+        }
+    }
 
-                    final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth()
-                            / currentView.getWidth();
-                    final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
-                            / currentView.getHeight();
+    private void setRepresentationProperties(final Graphics2D graphics, final boolean isSelected) {
+        if (isSelected) {
+            graphics.setColor(SELECTED_SIGN_COLOR);
+            graphics.setStroke(new BasicStroke(BORDER_SIZE));
+        } else {
+            graphics.setColor(UNSELECTED_SIGN_COLOR);
+        }
+    }
 
-                    if (detection.equals(selectedDetection)) {
-                        graphics.setColor(SELECTED_SIGN_COLOR);
-                        final Stroke oldStroke = graphics.getStroke();
-                        graphics.setStroke(new BasicStroke(BORDER_SIZE));
-                        graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
-                                height + 2 * BORDER_SIZE));
-                        graphics.setStroke(oldStroke);
-                    } else {
-                        graphics.setColor(UNSELECTED_SIGN_COLOR);
-                        graphics.draw(new Rectangle2D.Double(x, y, width, height));
-                    }
+    private void drawOnFrontFacingImage(final Graphics2D graphics, final Detection detection,
+            final Detection selectedDetection) {
+        if (detection.getLocationOnPhoto() != null) {
+            final double x = frame.x
+                    + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x) * frame.getWidth()
+                    / currentView.getWidth();
+            final double y = frame.y
+                    + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y) * frame.getHeight()
+                    / currentView.getHeight();
+
+            final double width =
+                    detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth() / currentView
+                            .getWidth();
+            final double height =
+                    detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight() / currentView
+                            .getHeight();
+
+            if (detection.equals(selectedDetection)) {
+                //           graphics.setColor(SELECTED_SIGN_COLOR);
+                final Stroke oldStroke = graphics.getStroke();
+                //            graphics.setStroke(new BasicStroke(BORDER_SIZE));
+                graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
+                        height + 2 * BORDER_SIZE));
+                graphics.setStroke(oldStroke);
+            } else {
+                //         graphics.setColor(UNSELECTED_SIGN_COLOR);
+                graphics.draw(new Rectangle2D.Double(x, y, width, height));
+            }
+        }
+    }
+
+    private void drawOnWrappedImage(final Graphics2D graphics, final Detection detection, final Photo displayedPhoto) {
+        if (detection.getShapeOnPhoto() != null && detection.getShapeOnPhoto().getSpherePolygon() != null
+                && displayedPhoto.getRealSize() != null && displayedPhoto.getRealSize().isNotNull()) {
+            List<PixelPoint> equirectangularPolygon =
+                    Util.convertSphereToEquirectangularPolygon(detection.getShapeOnPhoto().getSpherePolygon(),
+                            displayedPhoto.getRealSize());
+            if (!equirectangularPolygon.isEmpty()) {
+                //TODO fix algorithm and remove the this
+                equirectangularPolygon = (List<PixelPoint>) detection.getShapeOnPhoto().getEquirectangularPolygon();
+                for (int i = 0; i < equirectangularPolygon.size() - 1; ++i) {
+                    final PixelPoint point1 = equirectangularPolygon.get(i);
+                    final PixelPoint point2 = equirectangularPolygon.get(i + 1);
+                    final double x1 = frame.x
+                            + (point1.getX() * image.getWidth() - currentView.x) * frame.getWidth() / currentView
+                            .getWidth();
+                    final double y1 = frame.y
+                            + (point1.getY() * image.getHeight() - currentView.y) * frame.getHeight() / currentView
+                            .getHeight();
+                    final double x2 = frame.x
+                            + (point2.getX() * image.getWidth() - currentView.x) * frame.getWidth() / currentView
+                            .getWidth();
+                    final double y2 = frame.y
+                            + (point2.getY() * image.getHeight() - currentView.y) * frame.getHeight() / currentView
+                            .getHeight();
+                    graphics.draw(new Line2D.Double(x1, y1, x2, y2));
                 }
             }
         }

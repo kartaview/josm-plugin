@@ -30,6 +30,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PixelPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -55,6 +57,8 @@ public final class Util {
     private static final int ZOOM_CONST = 2;
     private static final double RADIUS = 0.0003;
     private static final double MAX_DISTANCE = 2.0;
+    private static final double CONVERSION_CONST = 0.5;
+    private static final double TWO = 2;
 
 
     private Util() {}
@@ -258,7 +262,7 @@ public final class Util {
         return acceptedVendors.contains(photo.getUsername());
     }
 
-    public static  boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
+    public static boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
         boolean isCorresponding = true;
 
         if (selectedDetection != null) {
@@ -290,5 +294,19 @@ public final class Util {
         }
 
         return isCorresponding;
+    }
+
+    public static List<PixelPoint> convertSphereToEquirectangularPolygon(
+            final Collection<PixelPoint> spherePolygon, final PhotoSize photoRealSize) {
+        List<PixelPoint> equirectangularPolygon = new ArrayList<>();
+        if (spherePolygon != null && !spherePolygon.isEmpty() && photoRealSize != null && photoRealSize.isNotNull())
+            for (final PixelPoint point : spherePolygon) {
+                final double u = (point.getX() / (TWO * Math.PI) + CONVERSION_CONST) * photoRealSize.getWidth();
+                final double v = (point.getY() / Math.PI + CONVERSION_CONST) * photoRealSize.getHeight();
+                equirectangularPolygon.add(new PixelPoint(u, v));
+            }
+
+        //TODO fix it
+        return equirectangularPolygon;
     }
 }

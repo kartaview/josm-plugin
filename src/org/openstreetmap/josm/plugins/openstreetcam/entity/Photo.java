@@ -37,7 +37,7 @@ public class Photo {
     private List<Detection> detections;
     private Matching matching;
     private PhotoSize size;
-    private final PhotoSize realSize;
+    private PhotoSize realSize;
     private final Double horizontalFieldOfView;
     private final UprightOrientation uprightOrientation;
     private final Projection projection;
@@ -153,6 +153,18 @@ public class Photo {
 
     public void setSize(final PhotoSize size) {
         this.size = size;
+    }
+
+    public PhotoSize getRealSize() {
+        return realSize;
+    }
+
+    public void setRealSize(final PhotoSize realSize) {
+        this.realSize = realSize;
+    }
+
+    public Projection getProjection() {
+        return projection;
     }
 
     @Override
