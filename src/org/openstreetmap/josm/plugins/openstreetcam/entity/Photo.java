@@ -155,6 +155,10 @@ public class Photo {
         this.size = size;
     }
 
+    public Projection getProjection() {
+        return projection;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
