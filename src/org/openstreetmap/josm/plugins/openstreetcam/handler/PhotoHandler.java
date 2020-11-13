@@ -64,6 +64,7 @@ public final class PhotoHandler {
         Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
+            // TODO parametru
             if (Util.shouldDisplayImage(photo)) {
                 if (type.equals(PhotoSize.THUMBNAIL)) {
                     result = loadThumbnailPhoto(photo);
@@ -84,6 +85,7 @@ public final class PhotoHandler {
 
     private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
         // special case, we don't save small thumbnails to cache
+        // TODO parametru
         final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
         return new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
                 PhotoSize.THUMBNAIL);
@@ -91,6 +93,7 @@ public final class PhotoHandler {
 
     private Pair<BufferedImage, PhotoSize> loadHighQualityPhoto(final Photo photo)
             throws ServiceException, IOException {
+        //TODO parametru
         Pair<BufferedImage, PhotoSize> result;
         final String name = photo.getName().contains(STORAGE) ? photo.getName() : photo.getOriName();
         try {

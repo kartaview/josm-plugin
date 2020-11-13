@@ -83,12 +83,14 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
     @Override
     void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
-            final boolean displayLoadingMessage) {
+                    final boolean displayLoadingMessage) {
         if (cluster != null) {
+            //TODO inceput
             selectCluster(cluster, detection);
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
+                //TODO de verificat aici ce se intampla cu clusterul
                 selectDetectionFromTable(detection);
             }
         } else {
@@ -101,13 +103,19 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 final Cluster selectedCluster = DataSet.getInstance().getSelectedCluster();
                 DetectionDetailsDialog.getInstance().updateClusterDetails(selectedCluster, detection);
             }
+            // TODO de aici mai pun un parametru
             selectDetection(detection);
             selectPhoto(photo);
         }
         OpenStreetCamLayer.getInstance().invalidate();
     }
 
+    private boolean hasDetectionEquirectangularInfo(final Detection detection){
+        return detection.getShapeOnPhoto() != null && !detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty();
+    }
+
     private void selectPhoto(final Photo photo) {
+        // TODO bonus parametru daca se afiseaza frontfacing sau nu
         if (photo != null) {
             if (autoplayTimer != null && autoplayTimer.isRunning()) {
                 stopAutoplay();
@@ -182,6 +190,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     @Override
     public synchronized void selectPhoto(final Photo photo, final PhotoSize photoType,
             final boolean displayLoadingMessage) {
+        //TODO BONUS parametru
         if (photo == null) {
             if (DataSet.getInstance().hasSelectedCluster() || DataSet.getInstance().hasSelectedDetection()) {
                 // special case the cluster or detection has no photo
@@ -206,6 +215,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                         && !PhotoDetailsDialog.getInstance().getButton().isSelected()) {
                     PhotoDetailsDialog.getInstance().getButton().doClick();
                 }
+                // TODO Bonus paramtru selected wrapped sau plane
                 PhotoDetailsDialog.getInstance().updateUI(photo, photoType, displayLoadingMessage);
                 if (DataSet.getInstance().hasSelectedSequence() && (autoplayTimer == null)) {
                     PhotoDetailsDialog.getInstance().enableSequenceActions(

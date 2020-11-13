@@ -72,6 +72,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 enhancePhoto(photo);
             }
             detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+            DataSet.getInstance().setShouldDisplayFrontFacing(shouldDisplayFrontFacing(detection));
+
         } else {
             photo = DataSet.getInstance().nearbyPhoto(point);
             if (photo != null) {
@@ -93,6 +95,17 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
     }
 
+    // TODO aici
+    private boolean shouldDisplayFrontFacing(final Detection detection) {
+        boolean displayFrontFacing = false;
+        if (detection != null && detection.getShapeOnPhoto() != null && detection.getLocationOnPhoto() != null) {
+            if (detection.getShapeOnPhoto().getSpherePolygon().isEmpty() && detection.getShapeOnPhoto()
+                    .getEquirectangularPolygon().isEmpty()) {
+                displayFrontFacing = true;
+            }
+        }
+        return displayFrontFacing;
+    }
 
     Photo enhanceClusterPhoto(final Photo clusterPhoto, final Detection detection) {
         // special case we need the complete Photo object and part of it needs to be loaded from OSC

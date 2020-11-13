@@ -301,10 +301,11 @@ public final class Util {
         List<PixelPoint> equirectangularPolygon = new ArrayList<>();
         if (spherePolygon != null && !spherePolygon.isEmpty() && photoRealSize != null && photoRealSize.isNotNull())
             for (final PixelPoint point : spherePolygon) {
-                final double u = (point.getX() / (TWO * Math.PI) + CONVERSION_CONST) * photoRealSize.getWidth();
-                final double v = (point.getY() / Math.PI + CONVERSION_CONST) * photoRealSize.getHeight();
+                final double u = (Math.toRadians(point.getX()) / (TWO * Math.PI)) * photoRealSize.getWidth();
+                final double v = (Math.toRadians(point.getY()) / Math.PI) * photoRealSize.getHeight();
                 equirectangularPolygon.add(new PixelPoint(u, v));
             }
+
 
         //TODO fix it
         return equirectangularPolygon;

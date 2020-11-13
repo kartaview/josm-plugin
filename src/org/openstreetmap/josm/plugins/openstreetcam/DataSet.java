@@ -79,6 +79,9 @@ public final class DataSet {
     /** true if the currently selected elements are a result of a remote selection action */
     private boolean isRemoteSelection;
 
+    /** true if the a detection containing only front facing information is selected from the map */
+    private boolean shouldDisplayFrontFacing;
+
     private DataSet() {}
 
     public static DataSet getInstance() {
@@ -112,6 +115,7 @@ public final class DataSet {
         this.selectedSequence = null;
         this.selectedCluster = null;
         this.matchedData = null;
+        this.shouldDisplayFrontFacing = false;
         setRemoteSelection(false);
     }
 
@@ -916,5 +920,24 @@ public final class DataSet {
      */
     public void setRemoteSelection(final boolean isRemoteSelection) {
         this.isRemoteSelection = isRemoteSelection;
+    }
+
+    /**
+     * Returns the 'shouldDisplayFrontFacing' flag.
+     *
+     * @return a {@code boolean} value
+     */
+    public boolean shouldDisplayFrontFacing() {
+        return shouldDisplayFrontFacing;
+    }
+
+    /**
+     * Sets the 'shouldDisplayFrontFacing' flag. This flag indicates if the front facing version of the image should be
+     * displayed in the photo panel.
+     *
+     * @param shouldDisplayFrontFacing boolean value
+     */
+    public void setShouldDisplayFrontFacing(final boolean shouldDisplayFrontFacing) {
+        this.shouldDisplayFrontFacing = shouldDisplayFrontFacing;
     }
 }

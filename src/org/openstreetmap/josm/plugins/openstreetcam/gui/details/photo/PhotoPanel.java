@@ -90,6 +90,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         removeAll();
         this.image = image;
         this.detections = detections;
+        // field for the type of photo load
         initializeCurrentImageView();
         revalidate();
         repaint();
@@ -350,7 +351,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             if (!equirectangularPolygon.isEmpty()) {
                 //TODO fix algorithm and remove the this
                 equirectangularPolygon = (List<PixelPoint>) detection.getShapeOnPhoto().getEquirectangularPolygon();
-                for (int i = 0; i < equirectangularPolygon.size() - 1; ++i) {
+                for (int i = 0;equirectangularPolygon != null && i < equirectangularPolygon.size() - 1; ++i) {
                     final PixelPoint point1 = equirectangularPolygon.get(i);
                     final PixelPoint point2 = equirectangularPolygon.get(i + 1);
                     final double x1 = frame.x

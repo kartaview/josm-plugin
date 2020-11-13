@@ -101,6 +101,7 @@ public class ApolloService extends BaseService {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoDetectionsQuery(sequenceId, sequenceIndex);
 		final Response response = executeGet(url, Response.class, logger, RETRIEVE_PHOTO_DETECTIONS);
 		verifyResponseStatus(response);
+		System.out.println("url det   " + url);
 		logResponseSize(logger, "retrievePhotoDetections ", response.getDetections());
 		return response.getDetections();
 	}
@@ -138,6 +139,7 @@ public class ApolloService extends BaseService {
 	public Photo retrievePhoto(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
 		final String url = new HttpQueryBuilder().buildRetrievePhotoQuery(sequenceId, sequenceIndex);
 		final Response response = executeGet(url, Response.class, logger, RETRIEVE_PHOTO);
+		System.out.println("url photo   " + url);
 		verifyResponseStatus(response);
 		return response.getPhoto();
 	}

@@ -52,6 +52,7 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
 
 
     void updateUI(final Photo photo, final boolean isWarning) {
+        //TODO parametru ca sa stiu ce caz se afiseaza sa pot numara detectiile
         if (photo != null) {
             this.username = photo.getUsername();
             txtDetails.setText(Formatter.formatPhotoDetails(photo));
