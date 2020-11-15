@@ -28,6 +28,8 @@ public final class IconConfig extends BaseConfig {
     private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
     private static final int SELECTED_ICON_SIZE = 28;
     private static final int UNSELECTED_ICON_SIZE = 14;
+    private static final int SELECTED_WRAPPED_ICON_SIZE = 37;
+    private static final int UNSELECTED_WRAPPED_ICON_SIZE = 20;
 
 
     private final String pluginIconName;
@@ -47,6 +49,10 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoUnselectedIconPurple;
     private final ImageIcon photoNoHeadingSelectedIconPurple;
     private final ImageIcon photoNoHeadingUnselectedIconPurple;
+    private final ImageIcon photoWrappedSelectedIcon;
+    private final ImageIcon photoWrappedUnselectedIcon;
+    private final ImageIcon photoWrappedNoHeadingSelectedIcon;
+    private final ImageIcon photoWrappedNoHeadingUnselectedIcon;
     private final ImageIcon filterIcon;
     private final String filterIconName;
     private final Icon previousIcon;
@@ -111,6 +117,10 @@ public final class IconConfig extends BaseConfig {
         photoUnselectedIconPurple = getUnselectedPhotoIcon("photo.icon.purple");
         photoNoHeadingSelectedIconPurple = getSelectedPhotoIcon("photo.noHeading.icon.purple");
         photoNoHeadingUnselectedIconPurple = getUnselectedPhotoIcon("photo.noHeading.icon.purple");
+        photoWrappedSelectedIcon = getSelectedWrappedPhotoIcon("photo.360.icon");
+        photoWrappedUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.icon");
+        photoWrappedNoHeadingSelectedIcon = getSelectedWrappedPhotoIcon("photo.360.noHeading.icon");
+        photoWrappedNoHeadingUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.noHeading.icon");
         filterIconName = readProperty("filter.icon");
         filterIcon = ImageProvider.get(filterIconName);
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
@@ -177,6 +187,18 @@ public final class IconConfig extends BaseConfig {
     private ImageIcon getSelectedPhotoIcon(final String key) {
         final ImageProvider imageProvider = new ImageProvider(readProperty(key));
         imageProvider.setSize(SELECTED_ICON_SIZE, SELECTED_ICON_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getUnselectedWrappedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(UNSELECTED_WRAPPED_ICON_SIZE, UNSELECTED_WRAPPED_ICON_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getSelectedWrappedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(SELECTED_WRAPPED_ICON_SIZE, SELECTED_WRAPPED_ICON_SIZE);
         return imageProvider.get();
     }
 
@@ -252,6 +274,22 @@ public final class IconConfig extends BaseConfig {
 
     public ImageIcon getPhotoNoHeadingUnselectedIconPurple() {
         return photoNoHeadingUnselectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedSelectedIcon() {
+        return photoWrappedSelectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedUnselectedIcon() {
+        return photoWrappedUnselectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingSelectedIcon() {
+        return photoWrappedNoHeadingSelectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingUnselectedIcon() {
+        return photoWrappedNoHeadingUnselectedIcon;
     }
 
     public ImageIcon getFilterIcon() {
