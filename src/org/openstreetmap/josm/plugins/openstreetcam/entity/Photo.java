@@ -29,6 +29,8 @@ public class Photo {
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final String oriName;
+    private final String wrappedName;
+    private final String largeThumbnailWrappedName;
     private final Long timestamp;
     private Double heading;
     private Double gpsAccuracy;
@@ -52,6 +54,8 @@ public class Photo {
         this.largeThumbnailName = builder.getLargeThumbnailName();
         this.thumbnailName = builder.getThumbnailName();
         this.oriName = builder.getOriName();
+        this.wrappedName = builder.getWrappedName();
+        this.largeThumbnailWrappedName = builder.getLargeThumbnailWrappedName();
         this.timestamp = builder.getTimestamp();
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
@@ -89,6 +93,14 @@ public class Photo {
 
     public String getThumbnailName() {
         return thumbnailName;
+    }
+
+    public String getWrappedName() {
+        return wrappedName;
+    }
+
+    public String getLargeThumbnailWrappedName() {
+        return largeThumbnailWrappedName;
     }
 
     public Long getTimestamp() {
