@@ -105,8 +105,11 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         //                displayFrontFacing = true;
         //            }
         //        }
-        if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
-            displayFrontFacing = true;
+        if (detection != null) {
+            if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon()
+                    .isEmpty()) {
+                displayFrontFacing = true;
+            }
         }
         return displayFrontFacing;
     }

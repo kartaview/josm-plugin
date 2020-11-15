@@ -6,6 +6,8 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 
 
@@ -38,10 +40,22 @@ final class Formatter {
             sb.append(photo.getUsername()).append("</a>");
         }
         if (photo.getDetections() != null && !photo.getDetections().isEmpty()) {
-            final int detectionsNr = photo.getDetections().size();
-            if(detectionsNr == 1) {
-                sb.append(" (1 detection).");
+            int detectionsNr = 0;
+            if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+                detectionsNr = photo.getDetections().size();
             } else {
+                for (Detection detection : photo.getDetections()) {
+                    // TODO change condition to spherePolygon after fixing algorithm
+                    if (detection.getShapeOnPhoto() != null
+                            && detection.getShapeOnPhoto().getEquirectangularPolygon() != null && !detection
+                            .getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
+                        ++detectionsNr;
+                    }
+                }
+            }
+            if (detectionsNr == 1) {
+                sb.append(" (1 detection).");
+            } else if (detectionsNr > 1) {
                 sb.append(" (").append(detectionsNr).append(" detections).");
             }
         }
