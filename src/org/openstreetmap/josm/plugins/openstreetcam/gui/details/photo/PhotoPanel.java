@@ -293,9 +293,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             final Photo displayedPhoto = DataSet.getInstance().getSelectedPhoto();
             for (final Detection detection : detections) {
                 setRepresentationProperties(graphics, detection.equals(selectedDetection));
-                if (displayedPhoto.getProjection().equals(Projection.PLANE)) {
+                if (DataSet.getInstance().shouldDisplayFrontFacing()) {
                     drawOnFrontFacingImage(graphics, detection, selectedDetection);
-                } else if (displayedPhoto.getProjection().equals(Projection.SPHERE)) {
+                } else {
                     drawOnWrappedImage(graphics, detection, displayedPhoto);
                 }
             }

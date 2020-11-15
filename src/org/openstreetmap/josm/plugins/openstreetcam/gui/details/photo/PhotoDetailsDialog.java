@@ -166,7 +166,6 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        // TODO bonus
         final Photo detailedPhoto =
                 (photo != null && photo.getUsername() == null) ? addMissingUsernameInformation(photo) : photo;
         if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {

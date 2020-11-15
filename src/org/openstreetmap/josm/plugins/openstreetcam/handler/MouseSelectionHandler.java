@@ -73,7 +73,6 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             }
             detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
             DataSet.getInstance().setShouldDisplayFrontFacing(shouldDisplayFrontFacing(detection));
-
         } else {
             photo = DataSet.getInstance().nearbyPhoto(point);
             if (photo != null) {
@@ -83,7 +82,9 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                             .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                     photo = enhanceClusterPhoto(photo, detection);
+                    DataSet.getInstance().setShouldDisplayFrontFacing(shouldDisplayFrontFacing(detection));
                 } else {
+                    DataSet.getInstance().setShouldDisplayFrontFacing(false);
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
                 }
@@ -95,14 +96,17 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
     }
 
-    // TODO aici
     private boolean shouldDisplayFrontFacing(final Detection detection) {
         boolean displayFrontFacing = false;
-        if (detection != null && detection.getShapeOnPhoto() != null && detection.getLocationOnPhoto() != null) {
-            if (detection.getShapeOnPhoto().getSpherePolygon().isEmpty() && detection.getShapeOnPhoto()
-                    .getEquirectangularPolygon().isEmpty()) {
-                displayFrontFacing = true;
-            }
+        // TODO change to this version if shape on photo conversion is working
+        //        if (detection != null && detection.getShapeOnPhoto() != null && detection.getLocationOnPhoto() != null) {
+        //            if (detection.getShapeOnPhoto().getSpherePolygon().isEmpty() && detection.getShapeOnPhoto()
+        //                    .getEquirectangularPolygon().isEmpty()) {
+        //                displayFrontFacing = true;
+        //            }
+        //        }
+        if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
+            displayFrontFacing = true;
         }
         return displayFrontFacing;
     }
