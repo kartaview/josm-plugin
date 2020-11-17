@@ -89,6 +89,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
+                DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
                 selectDetectionFromTable(detection);
             }
         } else {
@@ -308,7 +309,13 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     }
                 }
             }
-            DataSet.getInstance().setShouldDisplayFrontFacing(false);
+            if (DataSet.getInstance().getSelectedCluster() != null
+                    && DataSet.getInstance().getSelectedCluster().getPhotos() != null && DataSet.getInstance()
+                    .getSelectedCluster().getPhotos().contains(photo)) {
+                DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
+            } else {
+                DataSet.getInstance().setShouldDisplayFrontFacing(false);
+            }
             handleDataSelection(photo, detection, cluster, true);
         }
     }

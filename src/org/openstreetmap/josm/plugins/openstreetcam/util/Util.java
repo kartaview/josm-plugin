@@ -308,4 +308,22 @@ public final class Util {
             }
         return equirectangularPolygon;
     }
+
+    public static boolean containsOnlyFrontFacingCoord(final Detection detection) {
+        boolean hasOnlyFrontFacingCoords = false;
+        // TODO change to this version if shape on photo conversion is working
+        //        if (detection != null && detection.getShapeOnPhoto() != null && detection.getLocationOnPhoto() != null) {
+        //            if (detection.getShapeOnPhoto().getSpherePolygon().isEmpty() && detection.getShapeOnPhoto()
+        //                    .getEquirectangularPolygon().isEmpty()) {
+        //                displayFrontFacing = true;
+        //            }
+        //        }
+        if (detection != null) {
+            if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon() == null
+                    || detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
+                hasOnlyFrontFacingCoords = true;
+            }
+        }
+        return hasOnlyFrontFacingCoords;
+    }
 }
