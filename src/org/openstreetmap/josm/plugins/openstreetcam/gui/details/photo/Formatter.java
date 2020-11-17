@@ -45,7 +45,6 @@ final class Formatter {
                 detectionsNr = photo.getDetections().size();
             } else {
                 for (Detection detection : photo.getDetections()) {
-                    // TODO change condition to spherePolygon after fixing algorithm
                     if (detection.getShapeOnPhoto() != null
                             && detection.getShapeOnPhoto().getEquirectangularPolygon() != null && !detection
                             .getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {

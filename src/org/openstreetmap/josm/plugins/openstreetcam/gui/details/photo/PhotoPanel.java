@@ -343,15 +343,12 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     }
 
     private void drawOnWrappedImage(final Graphics2D graphics, final Detection detection, final Photo displayedPhoto) {
-        if (detection.getShapeOnPhoto() != null && detection.getShapeOnPhoto().getSpherePolygon() != null
+        if (detection.getShapeOnPhoto() != null && detection.getShapeOnPhoto().getEquirectangularPolygon() != null
                 && displayedPhoto.getRealSize() != null && displayedPhoto.getRealSize().isNotNull()) {
             List<PixelPoint> equirectangularPolygon =
-                    Util.convertSphereToEquirectangularPolygon(detection.getShapeOnPhoto().getSpherePolygon(),
-                            displayedPhoto.getRealSize());
+                    (List<PixelPoint>) detection.getShapeOnPhoto().getEquirectangularPolygon();
             if (!equirectangularPolygon.isEmpty()) {
-                //TODO fix algorithm and remove the this
-                equirectangularPolygon = (List<PixelPoint>) detection.getShapeOnPhoto().getEquirectangularPolygon();
-                for (int i = 0;equirectangularPolygon != null && i < equirectangularPolygon.size() - 1; ++i) {
+                for (int i = 0; equirectangularPolygon != null && i < equirectangularPolygon.size() - 1; ++i) {
                     final PixelPoint point1 = equirectangularPolygon.get(i);
                     final PixelPoint point2 = equirectangularPolygon.get(i + 1);
                     final double x1 = frame.x
