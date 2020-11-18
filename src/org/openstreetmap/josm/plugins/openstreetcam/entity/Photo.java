@@ -42,7 +42,7 @@ public class Photo {
     private PhotoSize realSize;
     private final Double horizontalFieldOfView;
     private final UprightOrientation uprightOrientation;
-    private final Projection projection;
+    private final Projection projectionType;
 
 
     Photo(final PhotoBuilder builder) {
@@ -64,7 +64,7 @@ public class Photo {
         this.realSize = builder.getRealSize();
         this.horizontalFieldOfView = builder.getHorizontalFieldOfView();
         this.uprightOrientation = builder.getUprightOrientation();
-        this.projection = builder.getProjection();
+        this.projectionType = builder.getProjection();
     }
 
     public Long getId() {
@@ -175,8 +175,8 @@ public class Photo {
         this.realSize = realSize;
     }
 
-    public Projection getProjection() {
-        return projection;
+    public Projection getProjectionType() {
+        return projectionType;
     }
 
     @Override

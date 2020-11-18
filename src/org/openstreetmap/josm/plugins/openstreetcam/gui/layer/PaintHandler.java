@@ -271,17 +271,31 @@ class PaintHandler {
             if (DataSet.getInstance().getSelectedCluster() != null
                     && DataSet.getInstance().getSelectedCluster().getPhotos() != null
                     && DataSet.getInstance().getSelectedCluster().getPhotos().contains(photo)) {
-                if (photo.getHeading() != null) {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple()
-                            : IconConfig.getInstance().getPhotoUnselectedIconPurple();
-                    PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+                if (photo.getProjectionType() != null && photo.getProjectionType().equals(Projection.SPHERE)) {
+                    if (photo.getHeading() != null) {
+                        final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoWrappedSelectedIconPurple() :
+                                IconConfig.getInstance().getPhotoWrappedUnselectedIconPurple();
+                        PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+                    } else {
+                        final ImageIcon icon =
+                                isSelected ? IconConfig.getInstance().getPhotoWrappedNoHeadingSelectedIconPurple() :
+                                        IconConfig.getInstance().getPhotoWrappedNoHeadingUnselectedIconPurple();
+                        PaintManager.drawIcon(graphics, icon, point);
+                    }
                 } else {
-                    final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple()
-                            : IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
-                    PaintManager.drawIcon(graphics, icon, point);
+                    if (photo.getHeading() != null) {
+                        final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoSelectedIconPurple() :
+                                IconConfig.getInstance().getPhotoUnselectedIconPurple();
+                        PaintManager.drawIcon(graphics, icon, point, photo.getHeading());
+                    } else {
+                        final ImageIcon icon =
+                                isSelected ? IconConfig.getInstance().getPhotoNoHeadingSelectedIconPurple() :
+                                        IconConfig.getInstance().getPhotoNoHeadingUnselectedIconPurple();
+                        PaintManager.drawIcon(graphics, icon, point);
+                    }
                 }
             } else {
-                if (photo.getProjection() != null && photo.getProjection().equals(Projection.SPHERE)) {
+                if (photo.getProjectionType() != null && photo.getProjectionType().equals(Projection.SPHERE)) {
                     if (photo.getHeading() != null) {
                         final ImageIcon icon = isSelected ? IconConfig.getInstance().getPhotoWrappedSelectedIcon() :
                                 IconConfig.getInstance().getPhotoWrappedUnselectedIcon();
