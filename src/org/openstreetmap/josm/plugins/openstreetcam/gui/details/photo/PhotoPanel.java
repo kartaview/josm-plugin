@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -30,6 +31,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.PixelPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
@@ -283,29 +286,77 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private void drawDetections(final Graphics2D graphics) {
         if (detections != null && !detections.isEmpty()) {
             final Detection selectedDetection = DataSet.getInstance().getSelectedDetection();
+            final Photo displayedPhoto = DataSet.getInstance().getSelectedPhoto();
             for (final Detection detection : detections) {
-                if(detection.getLocationOnPhoto() != null) {
-                    final double x = frame.x + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x)
-                            * frame.getWidth() / currentView.getWidth();
-                    final double y = frame.y + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y)
-                            * frame.getHeight() / currentView.getHeight();
+                setRepresentationProperties(graphics, detection.equals(selectedDetection));
+                if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+                    drawOnFrontFacingImage(graphics, detection, selectedDetection);
+                } else {
+                    drawOnWrappedImage(graphics, detection, displayedPhoto);
+                }
+            }
+        }
+    }
 
-                    final double width = detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth()
-                            / currentView.getWidth();
-                    final double height = detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight()
-                            / currentView.getHeight();
+    private void setRepresentationProperties(final Graphics2D graphics, final boolean isSelected) {
+        if (isSelected) {
+            graphics.setColor(SELECTED_SIGN_COLOR);
+            graphics.setStroke(new BasicStroke(BORDER_SIZE));
+        } else {
+            graphics.setColor(UNSELECTED_SIGN_COLOR);
+        }
+    }
 
-                    if (detection.equals(selectedDetection)) {
-                        graphics.setColor(SELECTED_SIGN_COLOR);
-                        final Stroke oldStroke = graphics.getStroke();
-                        graphics.setStroke(new BasicStroke(BORDER_SIZE));
-                        graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
-                                height + 2 * BORDER_SIZE));
-                        graphics.setStroke(oldStroke);
-                    } else {
-                        graphics.setColor(UNSELECTED_SIGN_COLOR);
-                        graphics.draw(new Rectangle2D.Double(x, y, width, height));
-                    }
+    private void drawOnFrontFacingImage(final Graphics2D graphics, final Detection detection,
+            final Detection selectedDetection) {
+        if (detection.getLocationOnPhoto() != null) {
+            final double x = frame.x
+                    + (detection.getLocationOnPhoto().getX() * image.getWidth() - currentView.x) * frame.getWidth()
+                    / currentView.getWidth();
+            final double y = frame.y
+                    + (detection.getLocationOnPhoto().getY() * image.getHeight() - currentView.y) * frame.getHeight()
+                    / currentView.getHeight();
+
+            final double width =
+                    detection.getLocationOnPhoto().getWidth() * image.getWidth() * frame.getWidth() / currentView
+                            .getWidth();
+            final double height =
+                    detection.getLocationOnPhoto().getHeight() * image.getHeight() * frame.getHeight() / currentView
+                            .getHeight();
+
+            if (detection.equals(selectedDetection)) {
+                final Stroke oldStroke = graphics.getStroke();
+                graphics.draw(new Rectangle2D.Double(x - BORDER_SIZE, y - BORDER_SIZE, width + 2 * BORDER_SIZE,
+                        height + 2 * BORDER_SIZE));
+                graphics.setStroke(oldStroke);
+            } else {
+                graphics.draw(new Rectangle2D.Double(x, y, width, height));
+            }
+        }
+    }
+
+    private void drawOnWrappedImage(final Graphics2D graphics, final Detection detection, final Photo displayedPhoto) {
+        if (detection.getShapeOnPhoto() != null && detection.getShapeOnPhoto().getEquirectangularPolygon() != null
+                && displayedPhoto.getRealSize() != null && displayedPhoto.getRealSize().isNotNull()) {
+            List<PixelPoint> equirectangularPolygon =
+                    (List<PixelPoint>) detection.getShapeOnPhoto().getEquirectangularPolygon();
+            if (!equirectangularPolygon.isEmpty()) {
+                for (int i = 0; equirectangularPolygon != null && i < equirectangularPolygon.size() - 1; ++i) {
+                    final PixelPoint point1 = equirectangularPolygon.get(i);
+                    final PixelPoint point2 = equirectangularPolygon.get(i + 1);
+                    final double x1 = frame.x
+                            + (point1.getX() * image.getWidth() - currentView.x) * frame.getWidth() / currentView
+                            .getWidth();
+                    final double y1 = frame.y
+                            + (point1.getY() * image.getHeight() - currentView.y) * frame.getHeight() / currentView
+                            .getHeight();
+                    final double x2 = frame.x
+                            + (point2.getX() * image.getWidth() - currentView.x) * frame.getWidth() / currentView
+                            .getWidth();
+                    final double y2 = frame.y
+                            + (point2.getY() * image.getHeight() - currentView.y) * frame.getHeight() / currentView
+                            .getHeight();
+                    graphics.draw(new Line2D.Double(x1, y1, x2, y2));
                 }
             }
         }
@@ -393,11 +444,18 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
-                final Detection selectedDetection = detections.stream()
-                        .filter(detection -> detection.getLocationOnPhoto() != null && detection.getLocationOnPhoto()
-                                .contains(translatedPoint))
-                        .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
-                        .orElse(null);
+                final boolean frontFacedIsDisplayed = DataSet.getInstance().shouldDisplayFrontFacing();
+                Detection selectedDetection;
+                if (frontFacedIsDisplayed) {
+                    selectedDetection = detections.stream()
+                            .filter(detection -> detection.getLocationOnPhoto() != null && detection
+                                    .getLocationOnPhoto().contains(translatedPoint))
+                            .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
+                            .orElse(null);
+                } else {
+                    selectedDetection = detections.stream().filter(detection -> detection.getShapeOnPhoto()
+                            .isPointInEquirectangularPolygon(translatedPoint)).findFirst().orElse(null);
+                }
                 notifyDetectionSelectionObserver(selectedDetection);
                 repaint();
             }

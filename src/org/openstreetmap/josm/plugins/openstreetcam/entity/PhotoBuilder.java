@@ -32,6 +32,8 @@ public class PhotoBuilder {
     private String largeThumbnailName;
     private String thumbnailName;
     private String oriName;
+    private String wrappedName;
+    private String largeThumbnailWrappedName;
     private Long timestamp;
     private Double heading;
     private String username;
@@ -76,6 +78,14 @@ public class PhotoBuilder {
 
     public void thumbnailName(final String thumbnailName) {
         this.thumbnailName = thumbnailName;
+    }
+
+    public void  wrappedName(final String wrappedName) {
+        this.wrappedName = wrappedName;
+    }
+
+    public void largeThumbnailWrappedName(final String largeThumbnailWrappedName) {
+        this.largeThumbnailWrappedName = largeThumbnailWrappedName;
     }
 
     public void timestamp(final Long timestamp) {
@@ -138,6 +148,14 @@ public class PhotoBuilder {
         return thumbnailName;
     }
 
+    public String getWrappedName() {
+        return wrappedName;
+    }
+
+    public String getLargeThumbnailWrappedName() {
+        return largeThumbnailWrappedName;
+    }
+
     Long getTimestamp() {
         return timestamp;
     }
@@ -193,7 +211,7 @@ public class PhotoBuilder {
     private void visualiseWrappedPhoto(final PhotoBuilder builder) {
         final String currentName = builder.getName();
         final String currentLargeThumbnailName = builder.getLargeThumbnailName();
-        builder.name(currentName.replace(PROC, WRAPPED));
-        builder.largeThumbnailName(currentLargeThumbnailName.replace(LARGE, WRAPPED_LARGE));
+        builder.wrappedName(currentName.replace(PROC, WRAPPED));
+        builder.largeThumbnailWrappedName(currentLargeThumbnailName.replace(LARGE, WRAPPED_LARGE));
     }
 }

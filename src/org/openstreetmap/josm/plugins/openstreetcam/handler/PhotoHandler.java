@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
@@ -70,8 +71,13 @@ public final class PhotoHandler {
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
                     result = loadHighQualityPhoto(photo);
                 } else {
-                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL,
-                            true);
+                    if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(),
+                                PhotoSize.LARGE_THUMBNAIL, true);
+                    } else {
+                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                                PhotoSize.LARGE_THUMBNAIL, true);
+                    }
                 }
             }
         } catch (final ServiceException e) {
@@ -84,7 +90,13 @@ public final class PhotoHandler {
 
     private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
         // special case, we don't save small thumbnails to cache
-        final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+        byte[] byteImage;
+        if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+            byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+        } else {
+            byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getWrappedName());
+        }
+
         return new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
                 PhotoSize.THUMBNAIL);
     }

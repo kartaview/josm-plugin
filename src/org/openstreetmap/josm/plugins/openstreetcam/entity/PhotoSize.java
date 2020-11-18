@@ -26,4 +26,8 @@ public class PhotoSize {
     public Long getHeight() {
         return height;
     }
+
+    public boolean isNotNull() {
+        return width != null && height != null;
+    }
 }

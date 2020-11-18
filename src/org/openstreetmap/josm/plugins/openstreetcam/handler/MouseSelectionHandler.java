@@ -68,16 +68,23 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         detection = DataSet.getInstance().nearbyDetection(point);
         if (detection != null) {
             photo = loadDetectionPhoto(detection);
+            if (photo != null) {
+                enhancePhoto(photo);
+            }
             detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
+            DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
         } else {
             photo = DataSet.getInstance().nearbyPhoto(point);
             if (photo != null) {
+                enhancePhoto(photo);
                 if (DataSet.getInstance().photoBelongsToSelectedCluster(photo)) {
                     final Optional<Detection> clusterDetection = DataSet.getInstance()
                             .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                     photo = enhanceClusterPhoto(photo, detection);
+                    DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
                 } else {
+                    DataSet.getInstance().setShouldDisplayFrontFacing(false);
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
                 }
@@ -88,7 +95,6 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             handleDataSelection(photo, detection, null, true);
         }
     }
-
 
     Photo enhanceClusterPhoto(final Photo clusterPhoto, final Detection detection) {
         // special case we need the complete Photo object and part of it needs to be loaded from OSC
@@ -158,10 +164,12 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             } else {
                 photo.setDetections(null);
             }
-            final Photo photoWithMatching =
+            final Photo detailedPhoto =
                     ServiceHandler.getInstance().retrievePhoto(photo.getSequenceId(), photo.getSequenceIndex());
-            if (photoWithMatching != null) {
-                photo.setMatching(photoWithMatching.getMatching());
+            if (detailedPhoto != null) {
+                photo.setMatching(detailedPhoto.getMatching());
+                photo.setSize(detailedPhoto.getSize());
+                photo.setRealSize(detailedPhoto.getRealSize());
             }
         }
     }

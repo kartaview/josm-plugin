@@ -29,6 +29,8 @@ public class Photo {
     private final String largeThumbnailName;
     private final String thumbnailName;
     private final String oriName;
+    private final String wrappedName;
+    private final String largeThumbnailWrappedName;
     private final Long timestamp;
     private Double heading;
     private Double gpsAccuracy;
@@ -37,10 +39,10 @@ public class Photo {
     private List<Detection> detections;
     private Matching matching;
     private PhotoSize size;
-    private final PhotoSize realSize;
+    private PhotoSize realSize;
     private final Double horizontalFieldOfView;
     private final UprightOrientation uprightOrientation;
-    private final Projection projection;
+    private final Projection projectionType;
 
 
     Photo(final PhotoBuilder builder) {
@@ -52,6 +54,8 @@ public class Photo {
         this.largeThumbnailName = builder.getLargeThumbnailName();
         this.thumbnailName = builder.getThumbnailName();
         this.oriName = builder.getOriName();
+        this.wrappedName = builder.getWrappedName();
+        this.largeThumbnailWrappedName = builder.getLargeThumbnailWrappedName();
         this.timestamp = builder.getTimestamp();
         this.heading = builder.getHeading();
         this.username = builder.getUsername();
@@ -60,7 +64,7 @@ public class Photo {
         this.realSize = builder.getRealSize();
         this.horizontalFieldOfView = builder.getHorizontalFieldOfView();
         this.uprightOrientation = builder.getUprightOrientation();
-        this.projection = builder.getProjection();
+        this.projectionType = builder.getProjection();
     }
 
     public Long getId() {
@@ -89,6 +93,14 @@ public class Photo {
 
     public String getThumbnailName() {
         return thumbnailName;
+    }
+
+    public String getWrappedName() {
+        return wrappedName;
+    }
+
+    public String getLargeThumbnailWrappedName() {
+        return largeThumbnailWrappedName;
     }
 
     public Long getTimestamp() {
@@ -155,8 +167,16 @@ public class Photo {
         this.size = size;
     }
 
-    public Projection getProjection() {
-        return projection;
+    public PhotoSize getRealSize() {
+        return realSize;
+    }
+
+    public void setRealSize(final PhotoSize realSize) {
+        this.realSize = realSize;
+    }
+
+    public Projection getProjectionType() {
+        return projectionType;
     }
 
     @Override

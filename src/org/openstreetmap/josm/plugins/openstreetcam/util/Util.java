@@ -258,7 +258,7 @@ public final class Util {
         return acceptedVendors.contains(photo.getUsername());
     }
 
-    public static  boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
+    public static boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
         boolean isCorresponding = true;
 
         if (selectedDetection != null) {
@@ -290,5 +290,16 @@ public final class Util {
         }
 
         return isCorresponding;
+    }
+
+    public static boolean containsOnlyFrontFacingCoord(final Detection detection) {
+        boolean hasOnlyFrontFacingCoords = false;
+        if (detection != null) {
+            if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon() == null
+                    || detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
+                hasOnlyFrontFacingCoords = true;
+            }
+        }
+        return hasOnlyFrontFacingCoords;
     }
 }

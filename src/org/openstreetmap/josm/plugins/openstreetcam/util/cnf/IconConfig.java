@@ -53,6 +53,10 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoWrappedUnselectedIcon;
     private final ImageIcon photoWrappedNoHeadingSelectedIcon;
     private final ImageIcon photoWrappedNoHeadingUnselectedIcon;
+    private final ImageIcon photoWrappedSelectedIconPurple;
+    private final ImageIcon photoWrappedUnselectedIconPurple;
+    private final ImageIcon photoWrappedNoHeadingSelectedIconPurple;
+    private final ImageIcon photoWrappedNoHeadingUnselectedIconPurple;
     private final ImageIcon filterIcon;
     private final String filterIconName;
     private final Icon previousIcon;
@@ -121,6 +125,10 @@ public final class IconConfig extends BaseConfig {
         photoWrappedUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.icon");
         photoWrappedNoHeadingSelectedIcon = getSelectedWrappedPhotoIcon("photo.360.noHeading.icon");
         photoWrappedNoHeadingUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.noHeading.icon");
+        photoWrappedSelectedIconPurple = getSelectedWrappedPhotoIcon("photo.360.icon.purple");
+        photoWrappedUnselectedIconPurple = getUnselectedWrappedPhotoIcon("photo.360.icon.purple");
+        photoWrappedNoHeadingSelectedIconPurple = getSelectedWrappedPhotoIcon("photo.360.noHeading.icon.purple");
+        photoWrappedNoHeadingUnselectedIconPurple = getUnselectedWrappedPhotoIcon("photo.360.noHeading.icon.purple");
         filterIconName = readProperty("filter.icon");
         filterIcon = ImageProvider.get(filterIconName);
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
@@ -290,6 +298,22 @@ public final class IconConfig extends BaseConfig {
 
     public ImageIcon getPhotoWrappedNoHeadingUnselectedIcon() {
         return photoWrappedNoHeadingUnselectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedSelectedIconPurple() {
+        return photoWrappedSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedUnselectedIconPurple() {
+        return photoWrappedUnselectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingSelectedIconPurple() {
+        return photoWrappedNoHeadingSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingUnselectedIconPurple() {
+        return photoWrappedNoHeadingUnselectedIconPurple;
     }
 
     public ImageIcon getFilterIcon() {
