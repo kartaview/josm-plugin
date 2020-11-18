@@ -101,7 +101,6 @@ public final class PhotoHandler {
                 PhotoSize.THUMBNAIL);
     }
 
-    // TODO cache case
     private Pair<BufferedImage, PhotoSize> loadHighQualityPhoto(final Photo photo)
             throws ServiceException, IOException {
         Pair<BufferedImage, PhotoSize> result;

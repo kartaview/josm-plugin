@@ -87,7 +87,6 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
         removeAll();
         this.image = image;
         this.detections = detections;
-        // field for the type of photo load
         initializeCurrentImageView();
         revalidate();
         repaint();
