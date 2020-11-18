@@ -30,13 +30,11 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PixelPoint;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.grab.josm.common.entity.Pair;
 import com.grab.josm.common.gui.builder.LabelBuilder;
@@ -54,6 +52,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
     private static final int HALF = 2;
     private static final int MAX_ZOOM = 5;
     private static final float BORDER_SIZE = 3;
+    // TODO remove
     private static final float UNSELECTED_BORDER_SIZE = 1.5f;
     private static final Color SELECTED_SIGN_COLOR = new Color(0, 191, 255);
     private static final Color UNSELECTED_SIGN_COLOR = new Color(255, 0, 0);
@@ -451,11 +450,18 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
-                final Detection selectedDetection = detections.stream()
-                        .filter(detection -> detection.getLocationOnPhoto() != null && detection.getLocationOnPhoto()
-                                .contains(translatedPoint))
-                        .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
-                        .orElse(null);
+                final boolean frontFacedIsDisplayed = DataSet.getInstance().shouldDisplayFrontFacing();
+                Detection selectedDetection;
+                if (frontFacedIsDisplayed) {
+                    selectedDetection = detections.stream()
+                            .filter(detection -> detection.getLocationOnPhoto() != null && detection
+                                    .getLocationOnPhoto().contains(translatedPoint))
+                            .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
+                            .orElse(null);
+                } else {
+                    selectedDetection = detections.stream().filter(detection -> detection.getShapeOnPhoto()
+                            .isPointInEquirectangularPolygon(translatedPoint)).findFirst().orElse(null);
+                }
                 notifyDetectionSelectionObserver(selectedDetection);
                 repaint();
             }
