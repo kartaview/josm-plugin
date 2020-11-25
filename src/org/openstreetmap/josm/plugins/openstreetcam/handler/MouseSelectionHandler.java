@@ -72,7 +72,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                 enhancePhoto(photo);
             }
             detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
-            DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
+            DataSet.getInstance().setShouldDisplayFrontFacing(Util.checkFrontFacingDisplay(detection));
         } else {
             photo = DataSet.getInstance().nearbyPhoto(point);
             if (photo != null) {
@@ -82,7 +82,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                             .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                     photo = enhanceClusterPhoto(photo, detection);
-                    DataSet.getInstance().setShouldDisplayFrontFacing(Util.containsOnlyFrontFacingCoord(detection));
+                    DataSet.getInstance().setShouldDisplayFrontFacing(Util.checkFrontFacingDisplay(detection));
                 } else {
                     DataSet.getInstance().setShouldDisplayFrontFacing(false);
                     enhancePhoto(photo);
@@ -185,9 +185,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                     detection.getSequenceIndex());
         }
         if (photo != null) {
-            final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
-                    ? Collections.singletonList(detection) : loadPhotoDetections(photo);
-                    photo.setDetections(detections);
+            enhancePhoto(photo);
         }
         return photo;
     }
