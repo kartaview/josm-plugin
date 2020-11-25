@@ -176,4 +176,13 @@ public class Detection implements Comparable<Detection> {
     public int compareTo(final Detection detection) {
         return detection.getLocationOnPhoto().surface().compareTo(locationOnPhoto.surface());
     }
+
+    public boolean containsOnlyFrontFacingCoordinates() {
+        boolean hasOnlyFrontFacingCoords = false;
+        if (this.getShapeOnPhoto() == null || this.getShapeOnPhoto().getEquirectangularPolygon() == null || this
+                .getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
+            hasOnlyFrontFacingCoords = true;
+        }
+        return hasOnlyFrontFacingCoords;
+    }
 }

@@ -292,14 +292,13 @@ public final class Util {
         return isCorresponding;
     }
 
-    public static boolean containsOnlyFrontFacingCoord(final Detection detection) {
-        boolean hasOnlyFrontFacingCoords = false;
-        if (detection != null) {
-            if (detection.getShapeOnPhoto() == null || detection.getShapeOnPhoto().getEquirectangularPolygon() == null
-                    || detection.getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) {
-                hasOnlyFrontFacingCoords = true;
-            }
+    public static boolean checkFrontFacingDisplay(final Detection detection) {
+        final boolean display;
+        if (detection == null) {
+            display = true;
+        } else {
+            display = detection.containsOnlyFrontFacingCoordinates();
         }
-        return hasOnlyFrontFacingCoords;
+        return display;
     }
 }
