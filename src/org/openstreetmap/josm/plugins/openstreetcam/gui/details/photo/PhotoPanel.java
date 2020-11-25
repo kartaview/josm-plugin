@@ -453,9 +453,10 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                             .sorted(Comparator.comparingDouble(d -> d.getLocationOnPhoto().surface())).findFirst()
                             .orElse(null);
                 } else {
-                    selectedDetection = detections.stream()
-                            .filter(detection -> detection.getShapeOnPhoto() != null && detection.getShapeOnPhoto()
-                                    .isPointInEquirectangularPolygon(translatedPoint)).findFirst().orElse(null);
+                    selectedDetection = detections.stream().filter(detection -> detection.getShapeOnPhoto() != null
+                            && detection.getShapeOnPhoto().getEquirectangularPolygon() != null && detection
+                            .getShapeOnPhoto().isPointInEquirectangularPolygon(translatedPoint)).findFirst()
+                            .orElse(null);
                 }
                 notifyDetectionSelectionObserver(selectedDetection);
                 repaint();
