@@ -295,7 +295,7 @@ public final class Util {
     public static boolean checkFrontFacingDisplay(final Detection detection) {
         final boolean display;
         if (detection == null) {
-            display = true;
+            display = false;
         } else {
             display = detection.containsOnlyFrontFacingCoordinates();
         }
