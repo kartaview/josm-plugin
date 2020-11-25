@@ -293,12 +293,6 @@ public final class Util {
     }
 
     public static boolean checkFrontFacingDisplay(final Detection detection) {
-        final boolean display;
-        if (detection == null) {
-            display = false;
-        } else {
-            display = detection.containsOnlyFrontFacingCoordinates();
-        }
-        return display;
+        return detection != null && detection.containsOnlyFrontFacingCoordinates();
     }
 }
