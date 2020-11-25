@@ -185,9 +185,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                     detection.getSequenceIndex());
         }
         if (photo != null) {
-            final List<Detection> detections = DataSet.getInstance().detectionBelongsToSelectedCluster(detection)
-                    ? Collections.singletonList(detection) : loadPhotoDetections(photo);
-                    photo.setDetections(detections);
+            enhancePhoto(photo);
         }
         return photo;
     }
