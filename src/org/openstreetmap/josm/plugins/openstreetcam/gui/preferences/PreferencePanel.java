@@ -133,6 +133,7 @@ class PreferencePanel extends JPanel {
                 .build(GuiConfig.getInstance().getPrefWrappedPhotoLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
                         SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_360_IMAGE);
         final boolean displayFrontFacingEnabled = settings.getPhotoSettings().isDisplayFrontFacingFlag();
+        System.out.println("aici      " + displayFrontFacingEnabled);
         rbFrontFacingDisplay = new JRadioButton(GuiConfig.getInstance().getPrefPhotoDisplayFrontFacingLbl(),
                 displayFrontFacingEnabled);
         final JRadioButton rbWrappedDisplay =
