@@ -278,19 +278,22 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             }
             enhancePhoto(photo);
             final Detection detection = photoSelectedDetection(photo);
-            if(PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()){
-                DataSet.getInstance().setFrontFacingDisplayed(true);
-            } else {
-                if(photo.getProjectionType().equals(Projection.SPHERE)){
-                    DataSet.getInstance().setFrontFacingDisplayed(false);
-                } else {
-                    DataSet.getInstance().setFrontFacingDisplayed(true);
-                }
-            }
+            updateImageFormatDisplayed(photo);
             handleDataSelection(photo, detection, null, true);
         }
     }
 
+    private void updateImageFormatDisplayed(final Photo photo) {
+        if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+            DataSet.getInstance().setFrontFacingDisplayed(true);
+        } else {
+            if (photo.getProjectionType().equals(Projection.SPHERE)) {
+                DataSet.getInstance().setFrontFacingDisplayed(false);
+            } else {
+                DataSet.getInstance().setFrontFacingDisplayed(true);
+            }
+        }
+    }
 
     /* implementation of SequenceObserver */
 
@@ -319,16 +322,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     }
                 }
             }
-            if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
-                DataSet.getInstance().setFrontFacingDisplayed(true);
-            } else {
-                if (photo.getProjectionType().equals(Projection.SPHERE)) {
-                    DataSet.getInstance().setFrontFacingDisplayed(false);
-                } else {
-                    DataSet.getInstance().setFrontFacingDisplayed(true);
-                }
-            }
-
+            updateImageFormatDisplayed(photo);
             handleDataSelection(photo, detection, cluster, true);
         }
     }
