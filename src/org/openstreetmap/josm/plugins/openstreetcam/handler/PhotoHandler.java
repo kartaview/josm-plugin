@@ -71,14 +71,12 @@ public final class PhotoHandler {
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
                     result = loadHighQualityPhoto(photo);
                 } else {
-                    if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+                    if (DataSet.getInstance().isFrontFacingDisplayed()) {
                         result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(),
                                 PhotoSize.LARGE_THUMBNAIL, true);
-                        DataSet.getInstance().setFrontFacingDisplayed(false);
                     } else {
                         result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
                                 PhotoSize.LARGE_THUMBNAIL, true);
-                        DataSet.getInstance().setFrontFacingDisplayed(false);
                     }
                 }
             }
@@ -95,10 +93,8 @@ public final class PhotoHandler {
         byte[] byteImage = null;
 
         if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
-            DataSet.getInstance().setFrontFacingDisplayed(true);
             byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
         } else {
-            DataSet.getInstance().setFrontFacingDisplayed(false);
             byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getWrappedName());
         }
 

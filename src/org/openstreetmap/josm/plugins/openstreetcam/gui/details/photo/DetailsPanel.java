@@ -17,10 +17,13 @@ import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.OpenBrowser;
 import com.grab.josm.common.gui.builder.TextComponentBuilder;
 
@@ -56,7 +59,8 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
             this.username = photo.getUsername();
             txtDetails.setText(Formatter.formatPhotoDetails(photo));
             add(txtDetails);
-            if (isWarning) {
+            if (isWarning || (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag() != DataSet
+                    .getInstance().isFrontFacingDisplayed() && photo.getProjectionType().equals(Projection.SPHERE))) {
                 add(lblWarning);
             }
         } else {
