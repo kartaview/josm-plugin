@@ -319,22 +319,16 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     }
                 }
             }
-            // TODO check this for cluster flow
-            if (DataSet.getInstance().getSelectedCluster() != null
-                    && DataSet.getInstance().getSelectedCluster().getPhotos() != null && DataSet.getInstance()
-                    .getSelectedCluster().getPhotos().contains(photo)) {
-                DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+            if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+                DataSet.getInstance().setFrontFacingDisplayed(true);
             } else {
-                if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
-                    DataSet.getInstance().setFrontFacingDisplayed(true);
+                if (photo.getProjectionType().equals(Projection.SPHERE)) {
+                    DataSet.getInstance().setFrontFacingDisplayed(false);
                 } else {
-                    if (photo.getProjectionType().equals(Projection.SPHERE)) {
-                        DataSet.getInstance().setFrontFacingDisplayed(false);
-                    } else {
-                        DataSet.getInstance().setFrontFacingDisplayed(true);
-                    }
+                    DataSet.getInstance().setFrontFacingDisplayed(true);
                 }
             }
+
             handleDataSelection(photo, detection, cluster, true);
         }
     }

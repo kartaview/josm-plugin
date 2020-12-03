@@ -38,7 +38,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionO
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import com.grab.josm.common.entity.Pair;
 import com.grab.josm.common.gui.builder.LabelBuilder;
-import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
 /**
@@ -445,8 +444,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
-               Detection selectedDetection;
-                if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+                Detection selectedDetection;
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
                     selectedDetection = detections.stream()
                             .filter(detection -> detection.getLocationOnPhoto() != null && detection
                                     .getLocationOnPhoto().contains(translatedPoint))
