@@ -19,7 +19,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -280,18 +279,6 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             final Detection detection = photoSelectedDetection(photo);
             updateImageFormatDisplayed(photo);
             handleDataSelection(photo, detection, null, true);
-        }
-    }
-
-    private void updateImageFormatDisplayed(final Photo photo) {
-        if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
-            DataSet.getInstance().setFrontFacingDisplayed(true);
-        } else {
-            if (photo.getProjectionType().equals(Projection.SPHERE)) {
-                DataSet.getInstance().setFrontFacingDisplayed(false);
-            } else {
-                DataSet.getInstance().setFrontFacingDisplayed(true);
-            }
         }
     }
 
