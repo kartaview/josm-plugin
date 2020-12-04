@@ -289,7 +289,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             final Photo displayedPhoto = DataSet.getInstance().getSelectedPhoto();
             for (final Detection detection : detections) {
                 setRepresentationProperties(graphics, detection.equals(selectedDetection));
-                if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
                     drawOnFrontFacingImage(graphics, detection, selectedDetection);
                 } else {
                     drawOnWrappedImage(graphics, detection, displayedPhoto);
@@ -444,9 +444,8 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                 final Point clickedPoint = getPointOnImage(e.getPoint());
                 final Point2D translatedPoint = new Point2D.Double(clickedPoint.getX() / image.getWidth(),
                         clickedPoint.getY() / image.getHeight());
-                final boolean frontFacedIsDisplayed = DataSet.getInstance().shouldDisplayFrontFacing();
                 Detection selectedDetection;
-                if (frontFacedIsDisplayed) {
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
                     selectedDetection = detections.stream()
                             .filter(detection -> detection.getLocationOnPhoto() != null && detection
                                     .getLocationOnPhoto().contains(translatedPoint))

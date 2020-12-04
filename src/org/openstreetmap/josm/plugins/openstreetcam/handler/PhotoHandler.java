@@ -71,7 +71,7 @@ public final class PhotoHandler {
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
                     result = loadHighQualityPhoto(photo);
                 } else {
-                    if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+                    if (DataSet.getInstance().isFrontFacingDisplayed()) {
                         result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(),
                                 PhotoSize.LARGE_THUMBNAIL, true);
                     } else {
@@ -90,8 +90,9 @@ public final class PhotoHandler {
 
     private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
         // special case, we don't save small thumbnails to cache
-        byte[] byteImage;
-        if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+        byte[] byteImage = null;
+
+        if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
             byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
         } else {
             byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getWrappedName());

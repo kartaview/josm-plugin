@@ -14,9 +14,11 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplaySettings;
@@ -51,6 +53,7 @@ class PreferencePanel extends JPanel {
     private JCheckBox cbDataLoad;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox agDisplayDetection;
+    private JRadioButton rbFrontFacingDisplay;
     private JCheckBox cbDisplayTags;
     private JCheckBox cbDisplayColorBased;
     private JCheckBox cbDisplayTrack;
@@ -69,6 +72,7 @@ class PreferencePanel extends JPanel {
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         createMapViewSettings(preferenceSettings.getMapViewSettings());
         createPhotoSettingsComponents(preferenceSettings);
+        createWrappedImageSettingsComponent(preferenceSettings);
         createClusterSettingsComponents(preferenceSettings.getClusterSettings());
         createTrackVisualizationSettings(preferenceSettings);
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
@@ -122,6 +126,23 @@ class PreferencePanel extends JPanel {
                         Config.getInstance().getMouseHoverMinDelay(), Config.getInstance().getMouseHoverMaxDelay(),
                         Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false, enabledMouseHoverFlag);
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
+    }
+
+    private void createWrappedImageSettingsComponent(final PreferenceSettings settings) {
+        add(LabelBuilder
+                .build(GuiConfig.getInstance().getPrefWrappedPhotoLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
+                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_360_IMAGE);
+        final boolean displayFrontFacingEnabled = settings.getPhotoSettings().isDisplayFrontFacingFlag();
+        rbFrontFacingDisplay = new JRadioButton(GuiConfig.getInstance().getPrefPhotoDisplayFrontFacingLbl(),
+                displayFrontFacingEnabled);
+        final JRadioButton rbWrappedDisplay =
+                new JRadioButton(GuiConfig.getInstance().getPrefPhotoDisplayWrappedLbl(), !displayFrontFacingEnabled);
+        ButtonGroup photoOptionsGroup = new ButtonGroup();
+        photoOptionsGroup.add(rbFrontFacingDisplay);
+        photoOptionsGroup.add(rbWrappedDisplay);
+
+        add(rbFrontFacingDisplay, Constraints.RB_FRONT_FACING);
+        add(rbWrappedDisplay, Constraints.RB_WRAPPED);
     }
 
     private void createClusterSettingsComponents(final ClusterSettings settings) {
@@ -214,7 +235,7 @@ class PreferencePanel extends JPanel {
         final MapViewSettings mapViewSettings =
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected(), cbDataLoad.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
-                cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue());
+                cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue(), rbFrontFacingDisplay.isSelected());
         final ClusterSettings aggregatedSettings =
                 new ClusterSettings(agDisplayDetection.isSelected(), cbDisplayTags.isSelected(),
                         cbDisplayColorBased.isSelected());

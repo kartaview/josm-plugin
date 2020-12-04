@@ -36,6 +36,9 @@ public final class GuiConfig extends BaseConfig {
     private final String prefImageHighQualityLbl;
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
+    private final String prefWrappedPhotoLbl;
+    private final String prefPhotoDisplayFrontFacingLbl;
+    private final String prefPhotoDisplayWrappedLbl;
     private final String prefAggregatedLbl;
     private final String prefAggregatedDisplayDetectionLbl;
     private final String prefAggregatedDisplayTagsLbl;
@@ -229,6 +232,9 @@ public final class GuiConfig extends BaseConfig {
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
+        prefWrappedPhotoLbl = readProperty("preferences.wrapped.photo.lbl");
+        prefPhotoDisplayFrontFacingLbl = readProperty("preferences.photo.display.front.facing.lbl");
+        prefPhotoDisplayWrappedLbl = readProperty("preferences.photo.display.wrapped.lbl");
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
@@ -460,6 +466,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefMouseHoverDelayLbl() {
         return prefMouseHoverDelayLbl;
+    }
+
+    public String getPrefWrappedPhotoLbl() {
+        return prefWrappedPhotoLbl;
+    }
+
+    public String getPrefPhotoDisplayFrontFacingLbl() {
+        return prefPhotoDisplayFrontFacingLbl;
+    }
+
+    public String getPrefPhotoDisplayWrappedLbl() {
+        return prefPhotoDisplayWrappedLbl;
     }
 
     public String getPrefAggregatedLbl() {

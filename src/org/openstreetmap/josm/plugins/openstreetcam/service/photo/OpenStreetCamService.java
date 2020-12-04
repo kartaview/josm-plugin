@@ -81,9 +81,15 @@ public class OpenStreetCamService extends BaseService {
         final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
                 new TypeToken<ListResponse<Photo>>() {}.getType(), logger, RequestConstants.LIST_NEARBY_PHOTOS);
         verifyResponseStatus(listPhotoResponse);
-        logResponseSize(logger, RequestConstants.LIST_NEARBY_PHOTOS, listPhotoResponse.getTotalItems());
-        return listPhotoResponse != null ? new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
-                listPhotoResponse.getTotalItems()) : new PhotoDataSet();
+        int size = 0;
+        PhotoDataSet dataSet = new PhotoDataSet();
+        if (listPhotoResponse != null) {
+            size = listPhotoResponse.getTotalItems();
+            dataSet = new PhotoDataSet(listPhotoResponse.getCurrentPageItems(), paging.getPage(),
+                    listPhotoResponse.getTotalItems());
+        }
+        logResponseSize(logger, RequestConstants.LIST_NEARBY_PHOTOS, size);
+        return dataSet;
     }
 
     /**
@@ -97,8 +103,8 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         final String url =
                 OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.SEQUENCE_PHOTO_LIST);
-        final SequencePhotoListResponse detailsResponse =
-                executePost(url, arguments, SequencePhotoListResponse.class, logger, RequestConstants.SEQUENCE_PHOTO_LIST);
+        final SequencePhotoListResponse detailsResponse = executePost(url, arguments, SequencePhotoListResponse.class,
+                logger, RequestConstants.SEQUENCE_PHOTO_LIST);
         verifyResponseStatus(detailsResponse);
 
         Sequence sequence = null;
@@ -156,8 +162,8 @@ public class OpenStreetCamService extends BaseService {
             if (listSegmentResponse.getTotalItems() > OpenStreetCamServiceConfig.getInstance().getTracksMaxItems()) {
                 final int pages = listSegmentResponse.getTotalItems() > OpenStreetCamServiceConfig.getInstance()
                         .getTracksMaxItems()
-                        ? (listSegmentResponse.getTotalItems()
-                                / OpenStreetCamServiceConfig.getInstance().getTracksMaxItems()) + 1
+                                ? (listSegmentResponse.getTotalItems()
+                                        / OpenStreetCamServiceConfig.getInstance().getTracksMaxItems()) + 1
                                 : SECOND_PAGE;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
@@ -165,7 +171,7 @@ public class OpenStreetCamService extends BaseService {
                     final Paging paging = new Paging(i, OpenStreetCamServiceConfig.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
-                            futures.add(executor.submit(callable));
+                    futures.add(executor.submit(callable));
                 }
                 segments.addAll(readResult(futures));
                 executor.shutdown();
@@ -179,9 +185,8 @@ public class OpenStreetCamService extends BaseService {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
         final String url = OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl()
                 .concat(RequestConstants.LIST_MATCHED_TRACKS);
-        final ListResponse<Segment> listSegmentResponse =
-                executePost(url, arguments, new TypeToken<ListResponse<Segment>>() {}.getType(),
-                        logger, RequestConstants.LIST_MATCHED_TRACKS);
+        final ListResponse<Segment> listSegmentResponse = executePost(url, arguments,
+                new TypeToken<ListResponse<Segment>>() {}.getType(), logger, RequestConstants.LIST_MATCHED_TRACKS);
         verifyResponseStatus(listSegmentResponse);
         logResponseSize(logger, RequestConstants.LIST_MATCHED_TRACKS, listSegmentResponse.getTotalItems());
         return listSegmentResponse;

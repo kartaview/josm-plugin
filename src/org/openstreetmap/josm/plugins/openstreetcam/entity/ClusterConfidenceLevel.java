@@ -32,8 +32,4 @@ public class ClusterConfidenceLevel {
     public Double getOcrConfidence() {
         return ocrConfidence;
     }
-
-    public boolean isNotNull() {
-        return ocrConfidence != null || ocrConfidence != null;
-    }
 }
