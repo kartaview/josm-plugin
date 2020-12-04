@@ -278,7 +278,7 @@ final class LoadManager {
         final boolean mouseHoverFlag = Preferences.main().getBoolean(MOUSE_HOVER_FLAG);
         final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(),
                 Config.getInstance().getMouseHoverMaxDelay());
-        final boolean displayFrontFacingFlag = Preferences.main().getBoolean(DISPLAY_FRONT_FACING_FLAG);
+        final boolean displayFrontFacingFlag = Preferences.main().getBoolean(DISPLAY_FRONT_FACING_FLAG, true);
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay, displayFrontFacingFlag);
     }
 
