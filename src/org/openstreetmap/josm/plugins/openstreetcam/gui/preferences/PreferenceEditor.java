@@ -60,7 +60,7 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
     private void updatePhotoPanel() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
         if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
-            SelectionHandler handler = new SelectionHandler();
+            final SelectionHandler handler = new SelectionHandler();
             DataSet.getInstance().setFrontFacingDisplayed(
                     PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
             handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
