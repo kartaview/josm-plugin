@@ -82,7 +82,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     }
 
     @Override
-    void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
+    public void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
                     final boolean displayLoadingMessage) {
         if (cluster != null) {
             selectCluster(cluster, detection);
