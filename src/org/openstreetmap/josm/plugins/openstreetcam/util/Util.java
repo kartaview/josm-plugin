@@ -293,6 +293,18 @@ public final class Util {
     }
 
     public static boolean checkFrontFacingDisplay(final Detection detection) {
-        return detection != null && detection.containsOnlyFrontFacingCoordinates();
+        boolean displayFrontFacingImage = true;
+        if (detection != null) {
+            if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+                if (!detection.containsOnlyFrontFacingCoordinates() && detection.getLocationOnPhoto() == null) {
+                    displayFrontFacingImage = false;
+                }
+            } else {
+                if (!detection.containsOnlyFrontFacingCoordinates()) {
+                    displayFrontFacingImage = false;
+                }
+            }
+        }
+        return displayFrontFacingImage;
     }
 }
