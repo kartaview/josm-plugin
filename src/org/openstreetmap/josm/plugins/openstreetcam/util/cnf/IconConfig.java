@@ -65,6 +65,8 @@ public final class IconConfig extends BaseConfig {
     private final Icon stopIcon;
     private final String feedbackIconName;
     private final Icon locationIcon;
+    private final Icon wrappedImageFormatIcon;
+    private final Icon frontFacingImageFormatIcon;
     private final Icon webPageIcon;
     private final Icon closestImageIcon;
     private final Icon matchedWayIcon;
@@ -136,6 +138,8 @@ public final class IconConfig extends BaseConfig {
         playIcon = ImageProvider.get(readProperty("play.icon"));
         stopIcon = ImageProvider.get(readProperty("stop.icon"));
         locationIcon = ImageProvider.get(readProperty("location.icon"));
+        wrappedImageFormatIcon = ImageProvider.get(readProperty("image.format.wrapped.icon"));
+        frontFacingImageFormatIcon = ImageProvider.get(readProperty("image.format.cropped.icon"));
         feedbackIconName = readProperty("feedback.icon");
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
         closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
@@ -342,6 +346,14 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getLocationIcon() {
         return locationIcon;
+    }
+
+    public Icon getWrappedImageFormatIcon() {
+        return wrappedImageFormatIcon;
+    }
+
+    public Icon getFrontFacingImageFormatIcon() {
+        return frontFacingImageFormatIcon;
     }
 
     public Icon getWebPageIcon() {

@@ -72,6 +72,8 @@ public final class GuiConfig extends BaseConfig {
     private final String btnStopShortcutText;
     private final String btnLocationTlt;
     private final String btnLocationShortcutText;
+    private final String btnSwitchImageFormatToFrontFacingTlt;
+    private final String btnSwitchImageFormatToWrappedTlt;
     private final String btnWebPageTlt;
     private final String btnWebPageShortcutTlt;
     private final String btnDataSwitchImageTlt;
@@ -264,6 +266,8 @@ public final class GuiConfig extends BaseConfig {
         btnStopShortcutText = readProperty("btn.stop.shortcut.text");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnLocationShortcutText = readProperty("btn.location.shortcut.text");
+        btnSwitchImageFormatToFrontFacingTlt = readProperty("btn.switch.image.format.to.cropped.tlt");
+        btnSwitchImageFormatToWrappedTlt = readProperty("btn.switch.image.format.to.wrapped.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnWebPageShortcutTlt = readProperty("btn.webPage.shortcut.text");
         btnClosestTlt = readProperty("btn.closest.tlt");
@@ -810,6 +814,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnLocationShortcutText() {
         return btnLocationShortcutText;
+    }
+
+    public String getBtnSwitchImageFormatToFrontFacingTlt() {
+        return btnSwitchImageFormatToFrontFacingTlt;
+    }
+
+    public String getBtnSwitchImageFormatToWrappedTlt() {
+        return btnSwitchImageFormatToWrappedTlt;
     }
 
     public String getBtnWebPageShortcutTlt() {
