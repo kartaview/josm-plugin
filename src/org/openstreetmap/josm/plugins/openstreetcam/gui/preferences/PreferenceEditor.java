@@ -14,6 +14,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
+import org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -51,20 +52,33 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
         final PreferenceSettings oldPreferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         PreferenceManager.getInstance().savePreferenceSettings(settings);
         if (oldPreferenceSettings.getPhotoSettings().isDisplayFrontFacingFlag() != settings.getPhotoSettings()
-                .isDisplayFrontFacingFlag()) {
+                .isDisplayFrontFacingFlag() && settings.getPhotoSettings().isDisplayFrontFacingFlag() != DataSet
+                .getInstance().isFrontFacingDisplayed()) {
             updatePhotoPanel();
         }
         return !settings.getCacheSettings().equals(oldPreferenceSettings.getCacheSettings());
     }
 
+    /**
+     * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
+     * the preference panel.
+     *
+     * It is called only when the image in the photo panel does not correspond to the preferred format.
+     */
     private void updatePhotoPanel() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+        final boolean preferencePanelValue =
+                PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
         if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
             final SelectionHandler handler = new SelectionHandler();
-            DataSet.getInstance().setFrontFacingDisplayed(
-                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
+            DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
+            PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
             handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
                     DataSet.getInstance().getSelectedCluster(), true);
+        } else if (selectedPhoto != null && !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+            PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, true);
+        } else if (selectedPhoto == null) {
+            PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
         }
     }
 }

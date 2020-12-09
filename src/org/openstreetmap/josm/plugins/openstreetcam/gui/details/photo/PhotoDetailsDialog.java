@@ -293,6 +293,10 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         repaint();
     }
 
+    public void updateSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel){
+        pnlBtn.enableSwitchImageFormatButton(enabled, isCroppedInPanel);
+    }
+
     /**
      * Updates the properties of the data switch button. Null properties are ignored.
      *
