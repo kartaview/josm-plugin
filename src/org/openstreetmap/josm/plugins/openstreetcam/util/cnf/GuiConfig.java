@@ -135,6 +135,8 @@ public final class GuiConfig extends BaseConfig {
     private final String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
+    private final String warningPhotoCanNotBeLoaded;
+    private final String warningDetectionCanNotBeLoaded;
 
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
@@ -327,6 +329,8 @@ public final class GuiConfig extends BaseConfig {
         incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
         unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
+        warningPhotoCanNotBeLoaded = readProperty("warning.photo.can.not.be.loaded");
+        warningDetectionCanNotBeLoaded = readProperty("warning.detection.can.not.be.loaded");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
 
@@ -670,6 +674,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getWarningTitle() {
         return warningTitle;
+    }
+
+    public String getWarningPhotoCanNotBeLoaded() {
+        return warningPhotoCanNotBeLoaded;
+    }
+
+    public String getWarningDetectionCanNotBeLoaded() {
+        return warningDetectionCanNotBeLoaded;
     }
 
     public String getErrorPhotoListText() {

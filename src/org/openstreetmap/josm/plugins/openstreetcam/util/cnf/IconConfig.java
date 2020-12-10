@@ -71,6 +71,7 @@ public final class IconConfig extends BaseConfig {
     private final Icon closestImageIcon;
     private final Icon matchedWayIcon;
     private final Icon warningIcon;
+    private final Icon warningImageFormatIcon;
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
@@ -145,6 +146,7 @@ public final class IconConfig extends BaseConfig {
         closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
         matchedWayIcon = ImageProvider.get(readProperty("matchedWay.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
+        warningImageFormatIcon = ImageProvider.get(readProperty("warning.image.format.icon"));
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
@@ -366,6 +368,10 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWarningIcon() {
         return warningIcon;
+    }
+
+    public Icon getWarningImageFormatIcon() {
+        return warningImageFormatIcon;
     }
 
     public Icon getManualSwitchSegmentIcon() {

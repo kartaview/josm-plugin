@@ -186,4 +186,9 @@ public class Detection implements Comparable<Detection> {
         return (this.getShapeOnPhoto() == null || this.getShapeOnPhoto().getEquirectangularPolygon() == null || this
                 .getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) && this.getLocationOnPhoto() != null;
     }
+
+    public boolean containsEquirectangularPolygonCoordinates() {
+        return this.getShapeOnPhoto() != null && this.getShapeOnPhoto().getEquirectangularPolygon() != null && !this
+                .getShapeOnPhoto().getEquirectangularPolygon().isEmpty();
+    }
 }

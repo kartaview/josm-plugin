@@ -52,8 +52,7 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
         final PreferenceSettings oldPreferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         PreferenceManager.getInstance().savePreferenceSettings(settings);
         if (oldPreferenceSettings.getPhotoSettings().isDisplayFrontFacingFlag() != settings.getPhotoSettings()
-                .isDisplayFrontFacingFlag() && settings.getPhotoSettings().isDisplayFrontFacingFlag() != DataSet
-                .getInstance().isFrontFacingDisplayed()) {
+                .isDisplayFrontFacingFlag()) {
             updatePhotoPanel();
         }
         return !settings.getCacheSettings().equals(oldPreferenceSettings.getCacheSettings());
@@ -63,7 +62,7 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
      * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
      * the preference panel.
      *
-     * It is called only when the image in the photo panel does not correspond to the preferred format.
+     * It has to be called whenever there is a change in order to update the text associated with the image.
      */
     private void updatePhotoPanel() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
