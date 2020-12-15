@@ -90,15 +90,10 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
     }
 
     private boolean isDetectionDrawableInPanel(final Detection selectedDetection) {
-        boolean isDrawable = false;
-        if (selectedDetection != null) {
-            if ((DataSet.getInstance().isFrontFacingDisplayed() && selectedDetection.getLocationOnPhoto() != null) || (
-                    !DataSet.getInstance().isFrontFacingDisplayed() && selectedDetection
-                            .containsEquirectangularPolygonCoordinates())) {
-                isDrawable = true;
-            }
-        }
-        return isDrawable;
+        final boolean isFrontFacingDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
+        return selectedDetection != null && ((isFrontFacingDisplayed && selectedDetection.getLocationOnPhoto() != null)
+                || (!isFrontFacingDisplayed && selectedDetection.containsEquirectangularPolygonCoordinates()));
+
     }
 
     @Override
