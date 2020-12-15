@@ -33,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.grab.josm.common.thread.ThreadPool;
@@ -44,8 +45,9 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+public final class SelectionHandler extends MouseSelectionHandler
+        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver,
+        DetectionSelectionObserver, RowSelectionObserver, SwitchImageFormatObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -464,5 +466,11 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
             });
         }
+    }
+
+    @Override
+    public void switchImageFormat() {
+        handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
+                DataSet.getInstance().getSelectedCluster(), true);
     }
 }

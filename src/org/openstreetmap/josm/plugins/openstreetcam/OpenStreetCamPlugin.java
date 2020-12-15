@@ -131,7 +131,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
     private void initializePhotoDetailsDialog(final MapFrame mapFrame) {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
         detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
-                selectionHandler);
+                selectionHandler, selectionHandler);
         mapFrame.addToggleDialog(detailsDialog, false);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();

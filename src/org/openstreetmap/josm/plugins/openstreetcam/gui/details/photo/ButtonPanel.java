@@ -25,7 +25,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObservable;
@@ -36,6 +35,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObs
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -52,8 +53,9 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable,
-SequenceObservable, SequenceAutoplayObservable {
+class ButtonPanel extends JPanel
+        implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable, SequenceObservable,
+        SequenceAutoplayObservable, SwitchImageFormatObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -79,6 +81,7 @@ SequenceObservable, SequenceAutoplayObservable {
     private transient LocationObserver locationObserver;
     private transient SequenceObserver sequenceObserver;
     private transient SequenceAutoplayObserver sequenceAutoplayObserver;
+    private transient SwitchImageFormatObserver imageFormatObserver;
 
     /* the currently selected photo */
     private transient Photo photo;
@@ -389,6 +392,16 @@ SequenceObservable, SequenceAutoplayObservable {
         sequenceAutoplayObserver.play(action);
     }
 
+    @Override
+    public void notifySwitchImageFormatObserver() {
+        imageFormatObserver.switchImageFormat();
+    }
+
+    @Override
+    public void registerObserver(final SwitchImageFormatObserver switchImageFormatObserver) {
+        this.imageFormatObserver = switchImageFormatObserver;
+    }
+
     boolean isPhotoSelected() {
         return photo != null;
     }
@@ -476,6 +489,9 @@ SequenceObservable, SequenceAutoplayObservable {
     }
 
 
+    /**
+     *  Changes the image load in the panel according to the content of the panel.
+     */
     private final class SwitchImageFormat extends JosmAction {
 
         public SwitchImageFormat() {
@@ -483,15 +499,13 @@ SequenceObservable, SequenceAutoplayObservable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            //TODO add observer
             final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
             updateSwitchImageFormatButton(frontFacingIsDisplayed);
             DataSet.getInstance().setFrontFacingDisplayed(!frontFacingIsDisplayed);
-            SelectionHandler h = new SelectionHandler();
-            h.handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
-                    DataSet.getInstance().getSelectedCluster(), true);
+            notifySwitchImageFormatObserver();
         }
     }
+
     /**
      * Starts/stops to auto-play the currently displayed track.
      *
