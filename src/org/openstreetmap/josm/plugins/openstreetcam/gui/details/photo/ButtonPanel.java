@@ -494,6 +494,8 @@ class ButtonPanel extends JPanel
      */
     private final class SwitchImageFormat extends JosmAction {
 
+        private static final long serialVersionUID = -2907119623783298953L;
+
         @Override
         public void actionPerformed(final ActionEvent e) {
             final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
