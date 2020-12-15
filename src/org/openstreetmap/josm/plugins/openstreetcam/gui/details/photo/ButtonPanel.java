@@ -494,9 +494,6 @@ class ButtonPanel extends JPanel
      */
     private final class SwitchImageFormat extends JosmAction {
 
-        public SwitchImageFormat() {
-        }
-
         @Override
         public void actionPerformed(final ActionEvent e) {
             final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
