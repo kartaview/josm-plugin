@@ -89,8 +89,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
-                DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
-                selectDetectionFromTable(detection);
+                selectDetectionFromTable(detection, false);
             }
         } else {
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
@@ -450,12 +449,13 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
 
     @Override
-    public void selectDetectionFromTable(final Detection detection) {
+    public void selectDetectionFromTable(final Detection detection, final boolean isSelectionMadeInTable) {
         if (detection != null) {
             ThreadPool.getInstance().execute(() -> {
                 final Photo photo = loadDetectionPhoto(detection);
-                // enhance photo with heading and size
-                DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                if (isSelectionMadeInTable) {
+                    DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                }
                 final Optional<Photo> clusterPhoto = DataSet.getInstance()
                         .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
                 if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {

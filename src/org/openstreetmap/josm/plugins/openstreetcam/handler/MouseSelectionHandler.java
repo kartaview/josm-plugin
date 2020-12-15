@@ -134,6 +134,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             if (photo.isPresent()) {
                 clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
             }
+            DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(clusterDetection));
         }
         DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
         handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
