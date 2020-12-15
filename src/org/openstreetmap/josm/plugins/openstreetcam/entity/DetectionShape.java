@@ -53,4 +53,8 @@ public class DetectionShape {
 
         return path.contains(point);
     }
+
+    public boolean containsEquirectangularPolygon() {
+        return this.getEquirectangularPolygon() != null && !this.getEquirectangularPolygon().isEmpty();
+    }
 }
