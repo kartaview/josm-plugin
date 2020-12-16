@@ -85,7 +85,8 @@ public final class SelectionHandler extends MouseSelectionHandler
 
     @Override
     public void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
-                    final boolean displayLoadingMessage) {
+                    final boolean displayLoadingMessage, final boolean isSwitchAction) {
+        DataSet.getInstance().setSwitchPhotoFormatAction(isSwitchAction);
         if (cluster != null) {
             selectCluster(cluster, detection);
             if (detection != null) {
@@ -279,7 +280,7 @@ public final class SelectionHandler extends MouseSelectionHandler
             enhancePhoto(photo);
             final Detection detection = photoSelectedDetection(photo);
             updatePhotoFormatDisplayed(photo);
-            handleDataSelection(photo, detection, null, true);
+            handleDataSelection(photo, detection, null, true, false);
         }
     }
 
@@ -311,7 +312,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                 }
             }
             updatePhotoFormatDisplayed(photo);
-            handleDataSelection(photo, detection, cluster, true);
+            handleDataSelection(photo, detection, cluster, true, false);
         }
     }
 
@@ -457,13 +458,15 @@ public final class SelectionHandler extends MouseSelectionHandler
                 final Photo photo = loadDetectionPhoto(detection);
                 if (isSelectionMadeInTable) {
                     DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                    DataSet.getInstance().setSwitchPhotoFormatAction(false);
                 }
                 final Optional<Photo> clusterPhoto = DataSet.getInstance()
                         .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
                 if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {
                     photo.setHeading(clusterPhoto.get().getHeading());
                 }
-                SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
+                SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true,
+                        DataSet.getInstance().isSwitchPhotoFormatAction()));
             });
         }
     }
@@ -471,6 +474,6 @@ public final class SelectionHandler extends MouseSelectionHandler
     @Override
     public void switchPhotoFormat() {
         handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
-                DataSet.getInstance().getSelectedCluster(), true);
+                DataSet.getInstance().getSelectedCluster(), true, true);
     }
 }

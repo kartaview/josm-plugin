@@ -82,6 +82,9 @@ public final class DataSet {
     /** true if the a detection containing only front facing information is selected from the map */
     private boolean isFrontFacingDisplayed;
 
+    /** true if the changes are triggered by switch photo format button, false otherwise */
+    private boolean isSwitchPhotoFormatAction;
+
     private DataSet() {}
 
     public static DataSet getInstance() {
@@ -939,5 +942,24 @@ public final class DataSet {
      */
     public void setFrontFacingDisplayed(final boolean frontFacingDisplayed) {
         isFrontFacingDisplayed = frontFacingDisplayed;
+    }
+
+    /**
+     * Get the value of the flag.
+     *
+     * @return boolean value
+     */
+    public boolean isSwitchPhotoFormatAction() {
+        return isSwitchPhotoFormatAction;
+    }
+
+    /**
+     * Sets the 'isSwitchPhotoFormatAction' flag. This flag indicates if the switch photo format triggered an update in
+     * the panel.
+     *
+     * @param switchPhotoFormatAction boolean value
+     */
+    public void setSwitchPhotoFormatAction(final boolean switchPhotoFormatAction) {
+        isSwitchPhotoFormatAction = switchPhotoFormatAction;
     }
 }

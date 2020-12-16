@@ -90,7 +90,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
         DataSet.getInstance().selectNearbyPhotos(photo);
         if (photo != null || detection != null) {
-            handleDataSelection(photo, detection, null, true);
+            handleDataSelection(photo, detection, null, true, false);
         }
     }
 
@@ -137,7 +137,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(clusterDetection));
         }
         DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
-        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
+        handleDataSelection(clusterPhoto, clusterDetection, cluster, true, false);
     }
 
     private Cluster enhanceCluster(final Cluster selectedCluster) {
@@ -265,7 +265,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
      * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
      */
     abstract void handleDataSelection(final Photo photo, final Detection detection, Cluster cluster,
-            final boolean displayLoadingMessage);
+            final boolean displayLoadingMessage, final boolean isSwitchAction);
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.
