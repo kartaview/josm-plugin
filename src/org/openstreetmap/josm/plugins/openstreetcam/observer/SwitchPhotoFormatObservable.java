@@ -7,21 +7,21 @@
 package org.openstreetmap.josm.plugins.openstreetcam.observer;
 
 /**
- * Observable interface for SwitchImageFormatObserver object.
+ * Observable interface for SwitchPhotoFormatObserver object.
  *
  * @author nicoleta.viregan
  */
-public interface SwitchImageFormatObservable {
+public interface SwitchPhotoFormatObservable {
 
     /**
      * Register the observer.
      *
-     * @param observer - SwitchImageFormat object
+     * @param observer - SwitchPhotoFormatObserver object
      */
-    void registerObserver(final SwitchImageFormatObserver observer);
+    void registerObserver(final SwitchPhotoFormatObserver observer);
 
     /**
      * Notifies the observer listening.
      */
-    void notifySwitchImageFormatObserver();
+    void notifySwitchPhotoFormatObserver();
 }

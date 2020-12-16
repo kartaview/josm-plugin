@@ -35,8 +35,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObs
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObservable;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -55,7 +55,7 @@ import com.grab.josm.common.thread.ThreadPool;
  */
 class ButtonPanel extends JPanel
         implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable, SequenceObservable,
-        SequenceAutoplayObservable, SwitchImageFormatObservable {
+        SequenceAutoplayObservable, SwitchPhotoFormatObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -81,7 +81,7 @@ class ButtonPanel extends JPanel
     private transient LocationObserver locationObserver;
     private transient SequenceObserver sequenceObserver;
     private transient SequenceAutoplayObserver sequenceAutoplayObserver;
-    private transient SwitchImageFormatObserver imageFormatObserver;
+    private transient SwitchPhotoFormatObserver imageFormatObserver;
 
     /* the currently selected photo */
     private transient Photo photo;
@@ -94,7 +94,7 @@ class ButtonPanel extends JPanel
         addNextButton();
         addAutoplayButton();
         addClosestPhotoButton();
-        addSwitchImageFormatButton();
+        addSwitchPhotoFormatButton();
         addMatchedWayButton();
         addLocationButton();
         addWebPageButton();
@@ -138,14 +138,14 @@ class ButtonPanel extends JPanel
         add(btnClosestPhoto);
     }
 
-    private void addSwitchImageFormatButton() {
+    private void addSwitchPhotoFormatButton() {
         final JosmAction action = new SwitchImageFormat();
         if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
-            final String tooltip = GuiConfig.getInstance().getBtnSwitchImageFormatToWrappedTlt();
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToWrappedTlt();
             btnSwitchImageFormat =
                     ButtonBuilder.build(action, IconConfig.getInstance().getWrappedImageFormatIcon(), tooltip, false);
         } else {
-            final String tooltip = GuiConfig.getInstance().getBtnSwitchImageFormatToFrontFacingTlt();
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToFrontFacingTlt();
             btnSwitchImageFormat = ButtonBuilder
                     .build(action, IconConfig.getInstance().getFrontFacingImageFormatIcon(), tooltip, false);
         }
@@ -313,11 +313,11 @@ class ButtonPanel extends JPanel
     void updateSwitchImageFormatButton(final boolean isFrontFacingDisplayed) {
         if (isFrontFacingDisplayed) {
             btnSwitchImageFormat.setIcon(IconConfig.getInstance().getWrappedImageFormatIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnSwitchImageFormatToWrappedTlt();
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToWrappedTlt();
             btnSwitchImageFormat.setToolTipText(tooltip);
         } else {
             btnSwitchImageFormat.setIcon(IconConfig.getInstance().getFrontFacingImageFormatIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnSwitchImageFormatToFrontFacingTlt();
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToFrontFacingTlt();
             btnSwitchImageFormat.setToolTipText(tooltip);
         }
         revalidate();
@@ -393,13 +393,13 @@ class ButtonPanel extends JPanel
     }
 
     @Override
-    public void notifySwitchImageFormatObserver() {
-        imageFormatObserver.switchImageFormat();
+    public void notifySwitchPhotoFormatObserver() {
+        imageFormatObserver.switchPhotoFormat();
     }
 
     @Override
-    public void registerObserver(final SwitchImageFormatObserver switchImageFormatObserver) {
-        this.imageFormatObserver = switchImageFormatObserver;
+    public void registerObserver(final SwitchPhotoFormatObserver switchPhotoFormatObserver) {
+        this.imageFormatObserver = switchPhotoFormatObserver;
     }
 
     boolean isPhotoSelected() {
@@ -501,7 +501,7 @@ class ButtonPanel extends JPanel
             final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
             updateSwitchImageFormatButton(frontFacingIsDisplayed);
             DataSet.getInstance().setFrontFacingDisplayed(!frontFacingIsDisplayed);
-            notifySwitchImageFormatObserver();
+            notifySwitchPhotoFormatObserver();
         }
     }
 

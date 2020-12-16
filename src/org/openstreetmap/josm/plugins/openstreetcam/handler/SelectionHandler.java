@@ -33,7 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchImageFormatObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.grab.josm.common.thread.ThreadPool;
@@ -47,7 +47,7 @@ import com.grab.josm.common.thread.ThreadPool;
  */
 public final class SelectionHandler extends MouseSelectionHandler
         implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver,
-        DetectionSelectionObserver, RowSelectionObserver, SwitchImageFormatObserver {
+        DetectionSelectionObserver, RowSelectionObserver, SwitchPhotoFormatObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -278,7 +278,7 @@ public final class SelectionHandler extends MouseSelectionHandler
             }
             enhancePhoto(photo);
             final Detection detection = photoSelectedDetection(photo);
-            updateImageFormatDisplayed(photo);
+            updatePhotoFormatDisplayed(photo);
             handleDataSelection(photo, detection, null, true);
         }
     }
@@ -310,7 +310,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                     }
                 }
             }
-            updateImageFormatDisplayed(photo);
+            updatePhotoFormatDisplayed(photo);
             handleDataSelection(photo, detection, cluster, true);
         }
     }
@@ -469,7 +469,7 @@ public final class SelectionHandler extends MouseSelectionHandler
     }
 
     @Override
-    public void switchImageFormat() {
+    public void switchPhotoFormat() {
         handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
                 DataSet.getInstance().getSelectedCluster(), true);
     }

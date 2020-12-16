@@ -7,10 +7,10 @@
 package org.openstreetmap.josm.plugins.openstreetcam.observer;
 
 /**
- * Observes the switch image format click action. I
+ * Observes the switch photo format click action. I
  *
  * @author nicoleta.viregan
  */
-public interface SwitchImageFormatObserver {
-    void switchImageFormat();
+public interface SwitchPhotoFormatObserver {
+    void switchPhotoFormat();
 }
