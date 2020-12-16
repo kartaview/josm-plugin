@@ -183,7 +183,11 @@ public class Detection implements Comparable<Detection> {
      * @return true if the detection contains only information for representation on cropped image; false otherwise
      */
     public boolean containsOnlyFrontFacingCoordinates() {
-        return (this.getShapeOnPhoto() == null || this.getShapeOnPhoto().getEquirectangularPolygon() == null || this
-                .getShapeOnPhoto().getEquirectangularPolygon().isEmpty()) && this.getLocationOnPhoto() != null;
+        return (this.getShapeOnPhoto() == null || !this.getShapeOnPhoto().containsEquirectangularPolygon())
+                && this.getLocationOnPhoto() != null;
+    }
+
+    public boolean containsEquirectangularPolygonCoordinates() {
+        return this.getShapeOnPhoto() != null && this.getShapeOnPhoto().containsEquirectangularPolygon();
     }
 }

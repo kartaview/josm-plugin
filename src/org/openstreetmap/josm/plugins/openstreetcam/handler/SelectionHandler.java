@@ -33,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.grab.josm.common.thread.ThreadPool;
@@ -44,8 +45,9 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+public final class SelectionHandler extends MouseSelectionHandler
+        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver,
+        DetectionSelectionObserver, RowSelectionObserver, SwitchPhotoFormatObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -89,8 +91,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
-                DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
-                selectDetectionFromTable(detection);
+                selectDetectionFromTable(detection, false);
             }
         } else {
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
@@ -277,7 +278,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             }
             enhancePhoto(photo);
             final Detection detection = photoSelectedDetection(photo);
-            updateImageFormatDisplayed(photo);
+            updatePhotoFormatDisplayed(photo);
             handleDataSelection(photo, detection, null, true);
         }
     }
@@ -309,7 +310,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     }
                 }
             }
-            updateImageFormatDisplayed(photo);
+            updatePhotoFormatDisplayed(photo);
             handleDataSelection(photo, detection, cluster, true);
         }
     }
@@ -450,12 +451,13 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
 
     @Override
-    public void selectDetectionFromTable(final Detection detection) {
+    public void selectDetectionFromTable(final Detection detection, final boolean isSelectionMadeInTable) {
         if (detection != null) {
             ThreadPool.getInstance().execute(() -> {
                 final Photo photo = loadDetectionPhoto(detection);
-                // enhance photo with heading and size
-                DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                if (isSelectionMadeInTable) {
+                    DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                }
                 final Optional<Photo> clusterPhoto = DataSet.getInstance()
                         .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
                 if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {
@@ -464,5 +466,11 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
             });
         }
+    }
+
+    @Override
+    public void switchPhotoFormat() {
+        handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
+                DataSet.getInstance().getSelectedCluster(), true);
     }
 }

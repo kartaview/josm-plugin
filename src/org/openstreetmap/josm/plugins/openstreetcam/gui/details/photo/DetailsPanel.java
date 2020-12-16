@@ -19,6 +19,7 @@ import javax.swing.event.HyperlinkListener;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
+import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
@@ -40,8 +41,10 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
 
     private final JEditorPane txtDetails;
     private final JLabel lblWarning;
+    private final JLabel lblLoadingWarning;
     private String username;
 
+    public static final String EMPTY_STRING = "";
 
     DetailsPanel(final Color backgroundColor) {
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -50,6 +53,8 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
         lblWarning = new JLabel();
         lblWarning.setIcon(IconConfig.getInstance().getWarningIcon());
         lblWarning.setBackground(backgroundColor);
+        lblLoadingWarning = new JLabel();
+        lblLoadingWarning.setForeground(Color.RED);
         setBorder(BorderFactory.createEmptyBorder());
     }
 
@@ -59,14 +64,36 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
             this.username = photo.getUsername();
             txtDetails.setText(Formatter.formatPhotoDetails(photo));
             add(txtDetails);
-            if (isWarning || (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag() != DataSet
-                    .getInstance().isFrontFacingDisplayed() && photo.getProjectionType().equals(Projection.SPHERE))) {
+            if (isWarning) {
                 add(lblWarning);
             }
+            String warningText = EMPTY_STRING;
+            if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag() != DataSet.getInstance()
+                    .isFrontFacingDisplayed() && photo.getProjectionType().equals(Projection.SPHERE)) {
+                warningText = GuiConfig.getInstance().getWarningPhotoCanNotBeLoaded();
+            }
+            if (DataSet.getInstance().getSelectedDetection() != null && !isDetectionDrawableInPanel(
+                    DataSet.getInstance().getSelectedDetection())) {
+                warningText = GuiConfig.getInstance().getWarningDetectionCanNotBeLoaded();
+            }
+            if (warningText.equals(EMPTY_STRING)) {
+                lblLoadingWarning.setIcon(null);
+            } else {
+                lblLoadingWarning.setIcon(IconConfig.getInstance().getWarningImageFormatIcon());
+            }
+            lblLoadingWarning.setText(warningText);
+            add(lblLoadingWarning);
         } else {
             removeAll();
         }
         revalidate();
+    }
+
+    private boolean isDetectionDrawableInPanel(final Detection selectedDetection) {
+        final boolean isFrontFacingDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
+        return selectedDetection != null && ((isFrontFacingDisplayed && selectedDetection.getLocationOnPhoto() != null)
+                || (!isFrontFacingDisplayed && selectedDetection.containsEquirectangularPolygonCoordinates()));
+
     }
 
     @Override

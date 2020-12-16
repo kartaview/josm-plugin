@@ -19,6 +19,7 @@ public interface  RowSelectionObserver {
      * Handle the selection of row event.
      *
      * @param detection - the detection from the selected row
+     * @param isSelectionMadeInTable - source of the change
      */
-    void selectDetectionFromTable(final Detection detection);
+    void selectDetectionFromTable(final Detection detection, final boolean isSelectionMadeInTable);
 }

@@ -18,8 +18,10 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveId;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
@@ -33,6 +35,8 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObs
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObservable;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
@@ -49,8 +53,9 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-class ButtonPanel extends JPanel implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable,
-SequenceObservable, SequenceAutoplayObservable {
+class ButtonPanel extends JPanel
+        implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable, SequenceObservable,
+        SequenceAutoplayObservable, SwitchPhotoFormatObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -65,6 +70,7 @@ SequenceObservable, SequenceAutoplayObservable {
     private JButton btnNext;
     private JButton btnAutoplay;
     private JButton btnLocation;
+    private JButton btnSwitchImageFormat;
     private JButton btnWebPage;
     private JButton btnClosestPhoto;
     private JButton btnMatchedWay;
@@ -75,6 +81,7 @@ SequenceObservable, SequenceAutoplayObservable {
     private transient LocationObserver locationObserver;
     private transient SequenceObserver sequenceObserver;
     private transient SequenceAutoplayObserver sequenceAutoplayObserver;
+    private transient SwitchPhotoFormatObserver imageFormatObserver;
 
     /* the currently selected photo */
     private transient Photo photo;
@@ -87,6 +94,7 @@ SequenceObservable, SequenceAutoplayObservable {
         addNextButton();
         addAutoplayButton();
         addClosestPhotoButton();
+        addSwitchPhotoFormatButton();
         addMatchedWayButton();
         addLocationButton();
         addWebPageButton();
@@ -128,6 +136,20 @@ SequenceObservable, SequenceAutoplayObservable {
                 GuiConfig.getInstance().getBtnClosestTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
         btnClosestPhoto = ButtonBuilder.build(action, IconConfig.getInstance().getClosestImageIcon(), tooltip, false);
         add(btnClosestPhoto);
+    }
+
+    private void addSwitchPhotoFormatButton() {
+        final JosmAction action = new SwitchImageFormat();
+        if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToWrappedTlt();
+            btnSwitchImageFormat =
+                    ButtonBuilder.build(action, IconConfig.getInstance().getWrappedImageFormatIcon(), tooltip, false);
+        } else {
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToFrontFacingTlt();
+            btnSwitchImageFormat = ButtonBuilder
+                    .build(action, IconConfig.getInstance().getFrontFacingImageFormatIcon(), tooltip, false);
+        }
+        add(btnSwitchImageFormat);
     }
 
     private void addMatchedWayButton() {
@@ -181,12 +203,20 @@ SequenceObservable, SequenceAutoplayObservable {
             }
             final boolean matchedWayEnabled = photo.getWayId() != null;
             btnMatchedWay.setEnabled(matchedWayEnabled);
+            if (photo.getProjectionType().equals(Projection.SPHERE)) {
+                enableSwitchImageFormatButton(true, DataSet.getInstance().isFrontFacingDisplayed());
+            } else {
+                enableSwitchImageFormatButton(false,
+                        PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
+            }
         } else {
             enableSequenceActions(false, false, null);
             btnWebPage.setEnabled(false);
             btnClosestPhoto.setEnabled(false);
             btnLocation.setEnabled(false);
             btnMatchedWay.setEnabled(false);
+            enableSwitchImageFormatButton(false,
+                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
             if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                 enableDataSwitchButton(true);
             }
@@ -276,6 +306,34 @@ SequenceObservable, SequenceAutoplayObservable {
     }
 
     /**
+     * Updates the switch image format button icon, tool-tip and action command.
+     *
+     * @param isFrontFacingDisplayed  true if in the photo panel is cropped format; false otherwise
+     */
+    void updateSwitchImageFormatButton(final boolean isFrontFacingDisplayed) {
+        if (isFrontFacingDisplayed) {
+            btnSwitchImageFormat.setIcon(IconConfig.getInstance().getWrappedImageFormatIcon());
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToWrappedTlt();
+            btnSwitchImageFormat.setToolTipText(tooltip);
+        } else {
+            btnSwitchImageFormat.setIcon(IconConfig.getInstance().getFrontFacingImageFormatIcon());
+            final String tooltip = GuiConfig.getInstance().getBtnSwitchPhotoFormatToFrontFacingTlt();
+            btnSwitchImageFormat.setToolTipText(tooltip);
+        }
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Enables or disables the switch format image photo button.
+     *
+     * @param enabled if true then the button is enabled; if false then the button is disabled
+     */
+    void enableSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel) {
+        btnSwitchImageFormat.setEnabled(enabled);
+        updateSwitchImageFormatButton(isCroppedInPanel);
+    }
+    /**
      * Enables or disables the closest photo button.
      *
      * @param enabled if true then the button is enabled; if false then the button is disabled
@@ -332,6 +390,16 @@ SequenceObservable, SequenceAutoplayObservable {
     @Override
     public void notifyObserver(final AutoplayAction action) {
         sequenceAutoplayObserver.play(action);
+    }
+
+    @Override
+    public void notifySwitchPhotoFormatObserver() {
+        imageFormatObserver.switchPhotoFormat();
+    }
+
+    @Override
+    public void registerObserver(final SwitchPhotoFormatObserver switchPhotoFormatObserver) {
+        this.imageFormatObserver = switchPhotoFormatObserver;
     }
 
     boolean isPhotoSelected() {
@@ -420,6 +488,22 @@ SequenceObservable, SequenceAutoplayObservable {
         }
     }
 
+
+    /**
+     *  Changes the image load in the panel according to the content of the panel.
+     */
+    private final class SwitchImageFormat extends JosmAction {
+
+        private static final long serialVersionUID = -2907119623783298953L;
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
+            updateSwitchImageFormatButton(frontFacingIsDisplayed);
+            DataSet.getInstance().setFrontFacingDisplayed(!frontFacingIsDisplayed);
+            notifySwitchPhotoFormatObserver();
+        }
+    }
 
     /**
      * Starts/stops to auto-play the currently displayed track.

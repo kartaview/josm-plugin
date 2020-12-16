@@ -10,11 +10,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import org.openstreetmap.josm.gui.preferences.DefaultTabPreferenceSetting;
 import org.openstreetmap.josm.gui.preferences.PreferenceTabbedPane;
-import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
-import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -48,23 +45,9 @@ public class PreferenceEditor extends DefaultTabPreferenceSetting {
     @Override
     public boolean ok() {
         final PreferenceSettings settings = pnlPreference.getSelectedSettings();
-        final PreferenceSettings oldPreferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
+        final CacheSettings oldCacheSettings =
+                PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
         PreferenceManager.getInstance().savePreferenceSettings(settings);
-        if (oldPreferenceSettings.getPhotoSettings().isDisplayFrontFacingFlag() != settings.getPhotoSettings()
-                .isDisplayFrontFacingFlag()) {
-            updatePhotoPanel();
-        }
-        return !settings.getCacheSettings().equals(oldPreferenceSettings.getCacheSettings());
-    }
-
-    private void updatePhotoPanel() {
-        final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
-        if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
-            final SelectionHandler handler = new SelectionHandler();
-            DataSet.getInstance().setFrontFacingDisplayed(
-                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
-            handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
-                    DataSet.getInstance().getSelectedCluster(), true);
-        }
+        return !settings.getCacheSettings().equals(oldCacheSettings);
     }
 }

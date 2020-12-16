@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -131,7 +132,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
     private void initializePhotoDetailsDialog(final MapFrame mapFrame) {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
         detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
-                selectionHandler);
+                selectionHandler, selectionHandler);
         mapFrame.addToggleDialog(detailsDialog, false);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();
@@ -331,6 +332,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                     OpenStreetCamLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 }
+                updatePhotoPanel();
             }
         }
 
@@ -380,6 +382,29 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 detailsDialog.enableSequenceActions(false, false, null);
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
+            }
+        }
+
+        /**
+         * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
+         * the preference panel.
+         *
+         * It has to be called whenever there is a change in order to update the text associated with the image.
+         */
+        private void updatePhotoPanel() {
+            final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+            final boolean preferencePanelValue =
+                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
+            if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+                final SelectionHandler handler = new SelectionHandler();
+                DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
+                handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
+                        DataSet.getInstance().getSelectedCluster(), true);
+            } else if (selectedPhoto != null && !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, true);
+            } else if (selectedPhoto == null) {
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }
         }
     }

@@ -72,7 +72,7 @@ class PreferencePanel extends JPanel {
         final PreferenceSettings preferenceSettings = PreferenceManager.getInstance().loadPreferenceSettings();
         createMapViewSettings(preferenceSettings.getMapViewSettings());
         createPhotoSettingsComponents(preferenceSettings);
-        createWrappedImageSettingsComponent(preferenceSettings);
+        createWrappedPhotoSettingsComponent(preferenceSettings);
         createClusterSettingsComponents(preferenceSettings.getClusterSettings());
         createTrackVisualizationSettings(preferenceSettings);
         createCacheSettingsComponents(preferenceSettings.getCacheSettings());
@@ -128,7 +128,7 @@ class PreferencePanel extends JPanel {
         add(spMouseHoverDelay, Constraints.SP_MOUSE_HOVER_DELAY);
     }
 
-    private void createWrappedImageSettingsComponent(final PreferenceSettings settings) {
+    private void createWrappedPhotoSettingsComponent(final PreferenceSettings settings) {
         add(LabelBuilder
                 .build(GuiConfig.getInstance().getPrefWrappedPhotoLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
                         SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_360_IMAGE);

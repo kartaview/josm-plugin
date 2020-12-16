@@ -208,7 +208,7 @@ public final class DetectionDetailsDialog extends ToggleDialog {
                 }
                 DataSet.getInstance().setSelectedCluster(builder.build());
                 final SelectionHandler selectionHandler = new SelectionHandler();
-                selectionHandler.selectDetectionFromTable(DataSet.getInstance().getSelectedDetection());
+                selectionHandler.selectDetectionFromTable(DataSet.getInstance().getSelectedDetection(), false);
                 cmpInfo.revalidate();
                 revalidate();
                 repaint();
