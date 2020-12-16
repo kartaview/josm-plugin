@@ -68,8 +68,10 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
                 add(lblWarning);
             }
             String warningText = EMPTY_STRING;
+            final boolean switchButtonTriggeredAction = DataSet.getInstance().isSwitchPhotoFormatAction();
             if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag() != DataSet.getInstance()
-                    .isFrontFacingDisplayed() && photo.getProjectionType().equals(Projection.SPHERE)) {
+                    .isFrontFacingDisplayed() && photo.getProjectionType().equals(Projection.SPHERE)
+                    && !switchButtonTriggeredAction) {
                 warningText = GuiConfig.getInstance().getWarningPhotoCanNotBeLoaded();
             }
             if (DataSet.getInstance().getSelectedDetection() != null && !isDetectionDrawableInPanel(

@@ -400,7 +400,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
                 handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
-                        DataSet.getInstance().getSelectedCluster(), true);
+                        DataSet.getInstance().getSelectedCluster(), true, false);
             } else if (selectedPhoto != null && !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, true);
             } else if (selectedPhoto == null) {
