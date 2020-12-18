@@ -401,9 +401,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
                 handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
                         DataSet.getInstance().getSelectedCluster(), true, false);
-            } else if (selectedPhoto != null && !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
-                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, true);
-            } else if (selectedPhoto == null) {
+            } else if (selectedPhoto == null || !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }
         }
