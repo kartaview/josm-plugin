@@ -379,7 +379,7 @@ public final class SelectionHandler extends MouseSelectionHandler
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
         if (DataSet.getInstance().selectedSequenceLastPhoto().equals(photo)) {
-            selectPhoto(photo, photoType, false);
+            selectPhoto(photo, photoType, true);
             if (DataSet.getInstance().hasNearbyPhotos()) {
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
@@ -389,7 +389,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
         } else {
-            selectPhoto(photo, photoType, false);
+            selectPhoto(photo, photoType, true);
         }
     }
 
