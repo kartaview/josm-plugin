@@ -69,7 +69,12 @@ public final class PhotoHandler {
                 if (type.equals(PhotoSize.THUMBNAIL)) {
                     result = loadThumbnailPhoto(photo);
                 } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
-                    result = loadHighQualityPhoto(photo);
+                    if (DataSet.getInstance().isFrontFacingDisplayed()) {
+                        result = loadHighQualityPhoto(photo);
+                    } else {
+                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                                PhotoSize.LARGE_THUMBNAIL, false);
+                    }
                 } else {
                     if (DataSet.getInstance().isFrontFacingDisplayed()) {
                         result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(),
