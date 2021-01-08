@@ -59,7 +59,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
         final DataSet dataSet = DataSet.getInstance();
         if (dataSet.hasItems()) {
             final Composite originalComposite = graphics.getComposite();
-            final Stroke originalStorke = graphics.getStroke();
+            final Stroke originalStroke = graphics.getStroke();
             if (dataSet.hasSegments()) {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else {
@@ -98,7 +98,7 @@ public final class OpenStreetCamLayer extends AbtractLayer {
             }
 
             graphics.setComposite(originalComposite);
-            graphics.setStroke(originalStorke);
+            graphics.setStroke(originalStroke);
         }
     }
 

@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -458,6 +459,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                             .orElse(null);
                 }
                 notifyDetectionSelectionObserver(selectedDetection);
+                MainApplication.getMap().mapView.zoomTo(DataSet.getInstance().getSelectedDetection().getPoint());
                 repaint();
             }
         }
