@@ -459,7 +459,9 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
                             .orElse(null);
                 }
                 notifyDetectionSelectionObserver(selectedDetection);
-                MainApplication.getMap().mapView.zoomTo(DataSet.getInstance().getSelectedDetection().getPoint());
+                if (selectedDetection != null) {
+                    MainApplication.getMap().mapView.zoomTo(selectedDetection.getPoint());
+                }
                 repaint();
             }
         }
