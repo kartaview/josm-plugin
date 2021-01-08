@@ -305,6 +305,7 @@ class PhotoPanel extends JPanel implements MouseWheelListener, DetectionSelectio
             graphics.setStroke(new BasicStroke(BORDER_SIZE));
         } else {
             graphics.setColor(UNSELECTED_SIGN_COLOR);
+            graphics.setStroke(new BasicStroke());
         }
     }
 
