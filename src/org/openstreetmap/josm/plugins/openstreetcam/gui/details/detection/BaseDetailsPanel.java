@@ -35,7 +35,6 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
     private static final int LINE_HEIGHT = 25;
     private static final int EXTRA_Y = 4;
     private static final String NEW_LINE = "\n";
-    private static final String SPACE = " ";
 
     void addSignType(final String label, final Sign sign, final int widthLbl) {
         final ImageIcon icon = DetectionIconFactory.INSTANCE.getIcon(sign, true);
@@ -70,7 +69,8 @@ abstract class BaseDetailsPanel<T> extends BasicInfoPanel<T> {
     void addOcrValue(final OcrValue ocrValue, final int widthLbl) {
         if (ocrValue != null && ocrValue.isNotNull()) {
             if (ocrValue.getText() != null && !ocrValue.getText().isEmpty()) {
-                final String displayedOcrValue = ocrValue.getText().replaceAll(NEW_LINE, SPACE);
+                final String displayedOcrValue =
+                        ocrValue.getText().contains(NEW_LINE) ? ocrValue.formatOCRValueText() : ocrValue.getText();
                 addInformation(GuiConfig.getInstance().getDetectionOcrValueLbl(), displayedOcrValue, widthLbl);
             }
             if (ocrValue.getLanguage() != null && !ocrValue.getLanguage().isEmpty()) {

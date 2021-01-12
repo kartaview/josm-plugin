@@ -6,10 +6,15 @@
  */
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
+import com.drew.lang.StringUtil;
+
+
 /**
  * @author nicoleta.viregan
  */
 public class OcrValue {
+    private static final String NEW_LINE = "\n";
+    private static final String DELIMITER = "\\n";
 
     private final String text;
     private final String language;
@@ -35,5 +40,10 @@ public class OcrValue {
 
     public boolean isNotNull() {
         return text != null || language != null || characterSet != null;
+    }
+
+    public String formatOCRValueText(){
+        String[] textLines = this.getText().split(NEW_LINE);
+        return StringUtil.join(textLines, DELIMITER);
     }
 }
