@@ -42,8 +42,12 @@ public class OcrValue {
         return text != null || language != null || characterSet != null;
     }
 
-    public String formatOCRValueText(){
-        String[] textLines = this.getText().split(NEW_LINE);
-        return StringUtil.join(textLines, DELIMITER);
+    public String formatOCRValueText() {
+        String displayedText = this.getText();
+        if (displayedText.contains(NEW_LINE)) {
+            String[] textLines = displayedText.split(NEW_LINE);
+            displayedText = StringUtil.join(textLines, DELIMITER);
+        }
+        return displayedText;
     }
 }
