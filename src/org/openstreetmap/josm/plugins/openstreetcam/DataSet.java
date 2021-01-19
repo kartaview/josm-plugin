@@ -533,8 +533,14 @@ public final class DataSet {
      * @return a {@code Photo}
      */
     public Photo selectedSequenceLastPhoto() {
-        final int index = selectedSequence.getPhotos().size();
-        return selectedSequence.getPhotos().get(index - 1);
+        final Photo lastPhoto;
+        if (selectedSequence == null || selectedSequence.getPhotos() == null) {
+            lastPhoto = null;
+        } else {
+            final int index = selectedSequence.getPhotos().size();
+            lastPhoto = selectedSequence.getPhotos().get(index - 1);
+        }
+        return lastPhoto;
     }
 
     /**
