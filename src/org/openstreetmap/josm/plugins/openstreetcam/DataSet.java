@@ -534,7 +534,7 @@ public final class DataSet {
      */
     public Photo selectedSequenceLastPhoto() {
         final Photo lastPhoto;
-        if (selectedSequence == null || selectedSequence.getPhotos() == null || !selectedSequence.getPhotos()
+        if (selectedSequence == null || selectedSequence.getPhotos() == null || selectedSequence.getPhotos()
                 .isEmpty()) {
             lastPhoto = null;
         } else {
