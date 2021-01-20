@@ -36,6 +36,9 @@ public final class GuiConfig extends BaseConfig {
     private final String prefImageHighQualityLbl;
     private final String prefMouseHoverLbl;
     private final String prefMouseHoverDelayLbl;
+    private final String prefWrappedPhotoLbl;
+    private final String prefPhotoDisplayFrontFacingLbl;
+    private final String prefPhotoDisplayWrappedLbl;
     private final String prefAggregatedLbl;
     private final String prefAggregatedDisplayDetectionLbl;
     private final String prefAggregatedDisplayTagsLbl;
@@ -69,6 +72,8 @@ public final class GuiConfig extends BaseConfig {
     private final String btnStopShortcutText;
     private final String btnLocationTlt;
     private final String btnLocationShortcutText;
+    private final String btnSwitchPhotoFormatToFrontFacingTlt;
+    private final String btnSwitchPhotoFormatToWrappedTlt;
     private final String btnWebPageTlt;
     private final String btnWebPageShortcutTlt;
     private final String btnDataSwitchImageTlt;
@@ -130,6 +135,8 @@ public final class GuiConfig extends BaseConfig {
     private final String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
+    private final String warningPhotoCanNotBeLoaded;
+    private final String warningDetectionCanNotBeLoaded;
 
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
@@ -229,6 +236,9 @@ public final class GuiConfig extends BaseConfig {
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
         prefMouseHoverLbl = readProperty("preference.photo.mouseHover.lbl");
         prefMouseHoverDelayLbl = readProperty("preference.photo.mouseHover.delay.lbl");
+        prefWrappedPhotoLbl = readProperty("preferences.wrapped.photo.lbl");
+        prefPhotoDisplayFrontFacingLbl = readProperty("preferences.photo.display.front.facing.lbl");
+        prefPhotoDisplayWrappedLbl = readProperty("preferences.photo.display.wrapped.lbl");
         prefAggregatedLbl = readProperty("preference.aggregated.lbl");
         prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
         prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
@@ -258,6 +268,8 @@ public final class GuiConfig extends BaseConfig {
         btnStopShortcutText = readProperty("btn.stop.shortcut.text");
         btnLocationTlt = readProperty("btn.location.tlt");
         btnLocationShortcutText = readProperty("btn.location.shortcut.text");
+        btnSwitchPhotoFormatToFrontFacingTlt = readProperty("btn.switch.photo.format.to.cropped.tlt");
+        btnSwitchPhotoFormatToWrappedTlt = readProperty("btn.switch.photo.format.to.wrapped.tlt");
         btnWebPageTlt = readProperty("btn.webPage.tlt");
         btnWebPageShortcutTlt = readProperty("btn.webPage.shortcut.text");
         btnClosestTlt = readProperty("btn.closest.tlt");
@@ -317,6 +329,8 @@ public final class GuiConfig extends BaseConfig {
         incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
         unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
+        warningPhotoCanNotBeLoaded = readProperty("warning.photo.can.not.be.loaded");
+        warningDetectionCanNotBeLoaded = readProperty("warning.detection.can.not.be.loaded");
         warningHighQualityPhoto = readProperty("warning.photo.highQuality");
         warningLoadingPhoto = readProperty("warning.photo.loading");
 
@@ -460,6 +474,18 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPrefMouseHoverDelayLbl() {
         return prefMouseHoverDelayLbl;
+    }
+
+    public String getPrefWrappedPhotoLbl() {
+        return prefWrappedPhotoLbl;
+    }
+
+    public String getPrefPhotoDisplayFrontFacingLbl() {
+        return prefPhotoDisplayFrontFacingLbl;
+    }
+
+    public String getPrefPhotoDisplayWrappedLbl() {
+        return prefPhotoDisplayWrappedLbl;
     }
 
     public String getPrefAggregatedLbl() {
@@ -650,6 +676,14 @@ public final class GuiConfig extends BaseConfig {
         return warningTitle;
     }
 
+    public String getWarningPhotoCanNotBeLoaded() {
+        return warningPhotoCanNotBeLoaded;
+    }
+
+    public String getWarningDetectionCanNotBeLoaded() {
+        return warningDetectionCanNotBeLoaded;
+    }
+
     public String getErrorPhotoListText() {
         return errorPhotoListText;
     }
@@ -792,6 +826,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnLocationShortcutText() {
         return btnLocationShortcutText;
+    }
+
+    public String getBtnSwitchPhotoFormatToFrontFacingTlt() {
+        return btnSwitchPhotoFormatToFrontFacingTlt;
+    }
+
+    public String getBtnSwitchPhotoFormatToWrappedTlt() {
+        return btnSwitchPhotoFormatToWrappedTlt;
     }
 
     public String getBtnWebPageShortcutTlt() {

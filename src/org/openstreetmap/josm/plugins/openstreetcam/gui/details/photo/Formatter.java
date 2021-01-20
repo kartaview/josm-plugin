@@ -41,7 +41,7 @@ final class Formatter {
         }
         if (photo.getDetections() != null && !photo.getDetections().isEmpty()) {
             int detectionsNr = 0;
-            if (DataSet.getInstance().shouldDisplayFrontFacing()) {
+            if (DataSet.getInstance().isFrontFacingDisplayed()) {
                 detectionsNr = photo.getDetections().size();
             } else {
                 for (Detection detection : photo.getDetections()) {

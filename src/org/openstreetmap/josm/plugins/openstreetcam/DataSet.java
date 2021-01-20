@@ -80,7 +80,10 @@ public final class DataSet {
     private boolean isRemoteSelection;
 
     /** true if the a detection containing only front facing information is selected from the map */
-    private boolean shouldDisplayFrontFacing;
+    private boolean isFrontFacingDisplayed;
+
+    /** true if the changes are triggered by switch photo format button, false otherwise */
+    private boolean isSwitchPhotoFormatAction;
 
     private DataSet() {}
 
@@ -115,7 +118,7 @@ public final class DataSet {
         this.selectedSequence = null;
         this.selectedCluster = null;
         this.matchedData = null;
-        this.shouldDisplayFrontFacing = false;
+        this.isFrontFacingDisplayed = false;
         setRemoteSelection(false);
     }
 
@@ -530,8 +533,15 @@ public final class DataSet {
      * @return a {@code Photo}
      */
     public Photo selectedSequenceLastPhoto() {
-        final int index = selectedSequence.getPhotos().size();
-        return selectedSequence.getPhotos().get(index - 1);
+        final Photo lastPhoto;
+        if (selectedSequence == null || selectedSequence.getPhotos() == null || selectedSequence.getPhotos()
+                .isEmpty()) {
+            lastPhoto = null;
+        } else {
+            final int index = selectedSequence.getPhotos().size();
+            lastPhoto = selectedSequence.getPhotos().get(index - 1);
+        }
+        return lastPhoto;
     }
 
     /**
@@ -923,21 +933,40 @@ public final class DataSet {
     }
 
     /**
-     * Returns the 'shouldDisplayFrontFacing' flag.
+     * Returns the 'isFrontFacingDisplayed' flag.
      *
      * @return a {@code boolean} value
      */
-    public boolean shouldDisplayFrontFacing() {
-        return shouldDisplayFrontFacing;
+    public boolean isFrontFacingDisplayed() {
+        return isFrontFacingDisplayed;
     }
 
     /**
-     * Sets the 'shouldDisplayFrontFacing' flag. This flag indicates if the front facing version of the image should be
+     * Sets the 'isFrontFacingDisplayed' flag. This flag indicates if the front facing version of the image is
      * displayed in the photo panel.
      *
-     * @param shouldDisplayFrontFacing boolean value
+     * @param frontFacingDisplayed boolean value
      */
-    public void setShouldDisplayFrontFacing(final boolean shouldDisplayFrontFacing) {
-        this.shouldDisplayFrontFacing = shouldDisplayFrontFacing;
+    public void setFrontFacingDisplayed(final boolean frontFacingDisplayed) {
+        isFrontFacingDisplayed = frontFacingDisplayed;
+    }
+
+    /**
+     * Get the value of the flag.
+     *
+     * @return boolean value
+     */
+    public boolean isSwitchPhotoFormatAction() {
+        return isSwitchPhotoFormatAction;
+    }
+
+    /**
+     * Sets the 'isSwitchPhotoFormatAction' flag. This flag indicates if the switch photo format triggered an update in
+     * the panel.
+     *
+     * @param switchPhotoFormatAction boolean value
+     */
+    public void setSwitchPhotoFormatAction(final boolean switchPhotoFormatAction) {
+        isSwitchPhotoFormatAction = switchPhotoFormatAction;
     }
 }

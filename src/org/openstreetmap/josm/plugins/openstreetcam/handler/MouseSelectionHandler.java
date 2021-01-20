@@ -18,6 +18,7 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Cluster;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
@@ -68,11 +69,8 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         detection = DataSet.getInstance().nearbyDetection(point);
         if (detection != null) {
             photo = loadDetectionPhoto(detection);
-            if (photo != null) {
-                enhancePhoto(photo);
-            }
             detection = ServiceHandler.getInstance().retrieveDetection(detection.getId());
-            DataSet.getInstance().setShouldDisplayFrontFacing(Util.checkFrontFacingDisplay(detection));
+            DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
         } else {
             photo = DataSet.getInstance().nearbyPhoto(point);
             if (photo != null) {
@@ -82,9 +80,9 @@ abstract class MouseSelectionHandler extends MouseAdapter {
                             .selectedClusterDetection(photo.getSequenceId(), photo.getSequenceIndex());
                     detection = clusterDetection.isPresent() ? clusterDetection.get() : null;
                     photo = enhanceClusterPhoto(photo, detection);
-                    DataSet.getInstance().setShouldDisplayFrontFacing(Util.checkFrontFacingDisplay(detection));
+                    DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
                 } else {
-                    DataSet.getInstance().setShouldDisplayFrontFacing(false);
+                    updatePhotoFormatDisplayed(photo);
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
                 }
@@ -92,7 +90,16 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
         DataSet.getInstance().selectNearbyPhotos(photo);
         if (photo != null || detection != null) {
-            handleDataSelection(photo, detection, null, true);
+            handleDataSelection(photo, detection, null, true, false);
+        }
+    }
+
+    protected void updatePhotoFormatDisplayed(final Photo photo) {
+        if (photo.getProjectionType().equals(Projection.SPHERE)) {
+            DataSet.getInstance().setFrontFacingDisplayed(
+                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
+        } else {
+            DataSet.getInstance().setFrontFacingDisplayed(true);
         }
     }
 
@@ -127,9 +134,10 @@ abstract class MouseSelectionHandler extends MouseAdapter {
             if (photo.isPresent()) {
                 clusterPhoto = enhanceClusterPhoto(photo.get(), clusterDetection);
             }
+            DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(clusterDetection));
         }
         DataSet.getInstance().selectNearbyPhotos(clusterPhoto);
-        handleDataSelection(clusterPhoto, clusterDetection, cluster, true);
+        handleDataSelection(clusterPhoto, clusterDetection, cluster, true, false);
     }
 
     private Cluster enhanceCluster(final Cluster selectedCluster) {
@@ -257,7 +265,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
      * @param displayLoadingMessage specifies if a default loading message is displayed or not while the photo is loaded
      */
     abstract void handleDataSelection(final Photo photo, final Detection detection, Cluster cluster,
-            final boolean displayLoadingMessage);
+            final boolean displayLoadingMessage, final boolean isSwitchAction);
 
     /**
      * Highlights the given photo on the map and displays in the left side panel.

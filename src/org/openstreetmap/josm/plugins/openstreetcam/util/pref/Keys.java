@@ -61,6 +61,7 @@ final class Keys {
     static final String HIGH_QUALITY_PHOTO_FLAG = "openstreetcam.preferences.highQuality";
     static final String MOUSE_HOVER_FLAG = "openstreetcam.preferences.mouseHover";
     static final String MOUSE_HOVER_DELAY = "openstreetcam.preferences.mouseHover.delay";
+    static final String DISPLAY_FRONT_FACING_FLAG = "openstreetcam.preferences.display.front.facing";
 
     /* aggregated detections user preference settings */
     static final String DISPLAY_DETECTION_LOCATIONS = "openstreetcam.preferences.aggregated.displayDetectionLoc";
