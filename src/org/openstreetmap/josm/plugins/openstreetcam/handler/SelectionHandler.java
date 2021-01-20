@@ -85,7 +85,7 @@ public final class SelectionHandler extends MouseSelectionHandler
 
     @Override
     public void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
-                    final boolean displayLoadingMessage, final boolean isSwitchAction) {
+            final boolean displayLoadingMessage, final boolean isSwitchAction) {
         DataSet.getInstance().setSwitchPhotoFormatAction(isSwitchAction);
         if (cluster != null) {
             selectCluster(cluster, detection);
@@ -274,13 +274,16 @@ public final class SelectionHandler extends MouseSelectionHandler
     public void selectNearbyPhoto() {
         final Photo photo = DataSet.getInstance().nearbyPhoto();
         if (photo != null) {
-            if (shouldLoadSequence(photo)) {
-                loadSequence(photo);
-            }
-            enhancePhoto(photo);
-            final Detection detection = photoSelectedDetection(photo);
-            updatePhotoFormatDisplayed(photo);
-            handleDataSelection(photo, detection, null, true, false);
+            ThreadPool.getInstance().execute(() -> {
+                if (shouldLoadSequence(photo)) {
+                    loadSequence(photo);
+                }
+                enhancePhoto(photo);
+                final Detection detection = photoSelectedDetection(photo);
+                updatePhotoFormatDisplayed(photo);
+                handleDataSelection(photo, detection, null, true, false);
+
+            });
         }
     }
 
@@ -465,6 +468,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                 if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {
                     photo.setHeading(clusterPhoto.get().getHeading());
                 }
+                photo.setDetections(Collections.singletonList(detection));
                 SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true,
                         DataSet.getInstance().isSwitchPhotoFormatAction()));
             });
