@@ -323,27 +323,29 @@ public final class SelectionHandler extends MouseSelectionHandler
     /* implementation of SequenceAutoplayObserver */
     @Override
     public void play(final AutoplayAction action) {
-        if (AutoplayAction.START.equals(action)) {
-            PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
+        ThreadPool.getInstance().execute(() -> {
+            if (AutoplayAction.START.equals(action)) {
+                PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
 
-            // start autoplay
-            if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                autoplayTimer.stop();
-            } else if (autoplayTimer == null) {
-                final AutoplaySettings autoplaySettings =
-                        PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
-                autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
-                autoplayTimer.setDelay(autoplaySettings.getDelay());
-                autoplayTimer.start();
+                // start autoplay
+                if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                    autoplayTimer.stop();
+                } else if (autoplayTimer == null) {
+                    final AutoplaySettings autoplaySettings =
+                            PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
+                    autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
+                    autoplayTimer.setDelay(autoplaySettings.getDelay());
+                    autoplayTimer.start();
+                } else {
+                    autoplayTimer.restart();
+                }
             } else {
-                autoplayTimer.restart();
+                stopAutoplay();
+                if (DataSet.getInstance().hasNearbyPhotos()) {
+                    PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                }
             }
-        } else {
-            stopAutoplay();
-            if (DataSet.getInstance().hasNearbyPhotos()) {
-                PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
-            }
-        }
+        });
     }
 
     private void handleTrackAutoplay() {
