@@ -49,13 +49,13 @@ final class Constraints {
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
 
     static final GridBagConstraints LBL_360_IMAGE = new GridBagConstraints(0, 9, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
-            GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
+            GridBagConstraints.HORIZONTAL, new Insets(10, 9, 3, 0), 0, 0);
 
     static final GridBagConstraints RB_FRONT_FACING = new GridBagConstraints(0, 10, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
-            GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
+            GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
     static final GridBagConstraints RB_WRAPPED = new GridBagConstraints(0, 11, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
-            GridBagConstraints.HORIZONTAL, new Insets(2, 0, 3, 0), 0, 0);
+            GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
     static final GridBagConstraints LBL_AGGREGATED = new GridBagConstraints(0, 12, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
