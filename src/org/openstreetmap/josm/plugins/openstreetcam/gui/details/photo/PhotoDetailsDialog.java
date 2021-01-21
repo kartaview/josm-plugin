@@ -172,6 +172,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
             // display loading text
             if (displayLoadingMessage) {
+                pnlDetails.updateUI(null, false);
                 pnlPhoto.displayLoadingMessage();
             }
             pnlBtn.updateUI(detailedPhoto);

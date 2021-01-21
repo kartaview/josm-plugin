@@ -7,9 +7,9 @@
 package org.openstreetmap.josm.plugins.openstreetcam.gui.details.photo;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.net.URI;
-import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -55,11 +55,11 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
         lblWarning.setBackground(backgroundColor);
         lblLoadingWarning = new JLabel();
         lblLoadingWarning.setForeground(Color.RED);
-        setBorder(BorderFactory.createEmptyBorder());
     }
 
 
     void updateUI(final Photo photo, final boolean isWarning) {
+        removeAll();
         if (photo != null) {
             this.username = photo.getUsername();
             txtDetails.setText(Formatter.formatPhotoDetails(photo));
@@ -78,15 +78,13 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
                     DataSet.getInstance().getSelectedDetection())) {
                 warningText = GuiConfig.getInstance().getWarningDetectionCanNotBeLoaded();
             }
-            if (warningText.equals(EMPTY_STRING)) {
-                lblLoadingWarning.setIcon(null);
-            } else {
+            if (!warningText.isEmpty()) {
                 lblLoadingWarning.setIcon(IconConfig.getInstance().getWarningImageFormatIcon());
+                lblLoadingWarning
+                        .setPreferredSize(new Dimension(getWidth(), lblLoadingWarning.getIcon().getIconHeight() * 2));
+                lblLoadingWarning.setText(warningText);
+                add(lblLoadingWarning);
             }
-            lblLoadingWarning.setText(warningText);
-            add(lblLoadingWarning);
-        } else {
-            removeAll();
         }
         revalidate();
     }
