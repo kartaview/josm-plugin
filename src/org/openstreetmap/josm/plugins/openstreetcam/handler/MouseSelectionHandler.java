@@ -228,6 +228,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
     private void handleMouseHover(final MouseEvent event) {
         final Photo photo = DataSet.getInstance().nearbyPhoto(event.getPoint());
         if (photo != null && !photo.equals(DataSet.getInstance().getSelectedPhoto())) {
+            updatePhotoFormatDisplayed(photo);
             selectPhoto(photo, PhotoSize.THUMBNAIL, true);
             DataSet.getInstance().selectNearbyPhotos(photo);
             if (DataSet.getInstance().hasNearbyPhotos()) {
