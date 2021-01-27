@@ -26,6 +26,7 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
@@ -392,16 +393,27 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
          * It has to be called whenever there is a change in order to update the text associated with the image.
          */
         private void updatePhotoPanel() {
-            final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+            final Photo selectedPhoto;
+            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.PHOTO)) {
+                selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+            } else {
+                selectedPhoto = null;
+                DataSet.getInstance().setSelectedPhoto(null);
+            }
             final boolean preferencePanelValue =
                     PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
-            if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+            if (selectedPhoto == null) {
+                final SelectionHandler handler = new SelectionHandler();
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
+                handler.handleDataSelection(null, DataSet.getInstance().getSelectedDetection(),
+                        DataSet.getInstance().getSelectedCluster(), true, false);
+            } else if (selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 final SelectionHandler handler = new SelectionHandler();
                 DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
                 handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
                         DataSet.getInstance().getSelectedCluster(), true, false);
-            } else if (selectedPhoto == null || !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+            } else if (!selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }
         }
