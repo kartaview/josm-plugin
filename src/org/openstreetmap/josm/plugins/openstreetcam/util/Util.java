@@ -258,9 +258,8 @@ public final class Util {
         return acceptedVendors.contains(photo.getUsername());
     }
 
-    public static boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
+    public static boolean isDetectionMatchingFilters(final SearchFilter filter, final Detection selectedDetection) {
         boolean isCorresponding = true;
-
         if (selectedDetection != null) {
             if (filter.getDetectionFilter().getEditStatuses() != null && !filter.getDetectionFilter().getEditStatuses()
                     .isEmpty() && selectedDetection.getEditStatus() != null && !filter.getDetectionFilter()
