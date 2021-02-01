@@ -26,7 +26,6 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.openstreetcam.argument.DataType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
@@ -332,8 +331,9 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 } else if (prefManager.isDisplayDetectionLocationFlag(event.getKey())) {
                     OpenStreetCamLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
+                } else if (prefManager.hasPhotoFormatFlagChanged(event.getKey())) {
+                    updatePhotoPanel();
                 }
-                updatePhotoPanel();
             }
         }
 
@@ -388,32 +388,26 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
         /**
          * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
-         * the preference panel.
+         * the preference panel. In case the photo filter is excluded, the selectPhoto value changes according to the
+         * corresponding selected detection.
          *
-         * It has to be called whenever there is a change in order to update the text associated with the image.
+         * It has to be called whenever there is a format change in order to update the text associated with the image.
          */
         private void updatePhotoPanel() {
-            final Photo selectedPhoto;
-            if (PreferenceManager.getInstance().loadSearchFilter().getDataTypes().contains(DataType.PHOTO)) {
-                selectedPhoto = DataSet.getInstance().getSelectedPhoto();
-            } else {
-                selectedPhoto = null;
-                DataSet.getInstance().setSelectedPhoto(null);
+            Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+            if (DataSet.getInstance().getSelectedDetection() != null && selectedPhoto == null) {
+                SelectionHandler handler = new SelectionHandler();
+                selectedPhoto = handler.loadDetectionPhoto(DataSet.getInstance().getSelectedDetection());
             }
             final boolean preferencePanelValue =
                     PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
-            if (selectedPhoto == null) {
-                final SelectionHandler handler = new SelectionHandler();
-                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
-                handler.handleDataSelection(null, DataSet.getInstance().getSelectedDetection(),
-                        DataSet.getInstance().getSelectedCluster(), true, false);
-            } else if (selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+            if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 final SelectionHandler handler = new SelectionHandler();
                 DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
                 handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
                         DataSet.getInstance().getSelectedCluster(), true, false);
-            } else if (!selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+            } else if (selectedPhoto == null || !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }
         }

@@ -182,7 +182,7 @@ abstract class MouseSelectionHandler extends MouseAdapter {
         }
     }
 
-    Photo loadDetectionPhoto(final Detection detection) {
+    public Photo loadDetectionPhoto(final Detection detection) {
         final Optional<Photo> dataSetPhoto =
                 DataSet.getInstance().detectionPhoto(detection.getSequenceId(), detection.getSequenceIndex());
         Photo photo;

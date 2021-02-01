@@ -196,10 +196,10 @@ public class DataUpdateHandler {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
         if (!DataSet.getInstance().hasSelectedPhoto() && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
             DetectionDetailsDialog.getInstance().changeClusterDetailsDialog(isClusterInfoInPanel);
-            if (DataSet.getInstance().getSelectedDetection() != null && Util
-                    .shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
+            if (DataSet.getInstance().getSelectedDetection() != null && !Util
+                    .isDetectionMatchingFilters(searchFilter, DataSet.getInstance().getSelectedDetection())) {
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-                if (Util.shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
+                if (!Util.isDetectionMatchingFilters(searchFilter, DataSet.getInstance().getSelectedDetection())) {
                     DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
                 }
             }
@@ -230,7 +230,7 @@ public class DataUpdateHandler {
 
     private void updateDetectionPanelAccordingToFilters() {
         final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
-        if (!Util.shouldFilterDetection(searchFilter, DataSet.getInstance().getSelectedDetection())) {
+        if (!Util.isDetectionMatchingFilters(searchFilter, DataSet.getInstance().getSelectedDetection())) {
             DataSet.getInstance().setSelectedDetection(null);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
