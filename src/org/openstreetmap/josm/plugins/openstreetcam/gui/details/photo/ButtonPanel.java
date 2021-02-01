@@ -25,6 +25,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.details.common.DownloadMatchedOsmElement;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.SelectionHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObservable;
@@ -501,6 +502,12 @@ class ButtonPanel extends JPanel
             final boolean frontFacingIsDisplayed = DataSet.getInstance().isFrontFacingDisplayed();
             updateSwitchImageFormatButton(frontFacingIsDisplayed);
             DataSet.getInstance().setFrontFacingDisplayed(!frontFacingIsDisplayed);
+            if (DataSet.getInstance().getSelectedDetection() != null
+                    && DataSet.getInstance().getSelectedPhoto() == null) {
+                SelectionHandler handler = new SelectionHandler();
+                DataSet.getInstance()
+                        .setSelectedPhoto(handler.loadDetectionPhoto(DataSet.getInstance().getSelectedDetection()));
+            }
             notifySwitchPhotoFormatObserver();
         }
     }
