@@ -158,16 +158,6 @@ public final class DataSet {
                     detections.stream().filter(detection -> detection.equals(selectedDetection)).findFirst()
                     .orElse(null) : null;
         }
-
-        if (updateSelection && selectedDetection != null && selectedCluster == null) {
-            if (clusters != null) {
-                for (final Cluster cluster : clusters) {
-                    if (cluster.getDetectionIds().contains(selectedDetection.getId())) {
-                        DataSet.getInstance().setSelectedCluster(cluster);
-                    }
-                }
-            }
-        }
     }
 
     /**
