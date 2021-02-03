@@ -343,7 +343,9 @@ public final class DataSet {
                 if (elem.getSequenceIndex().equals(index)) {
                     photo = elem;
                     // API issue: does not return username for sequence photos
-                    photo.setUsername(selectedPhoto.getUsername());
+                    if (selectedPhoto != null) {
+                        photo.setUsername(selectedPhoto.getUsername());
+                    }
                     break;
                 }
             }
