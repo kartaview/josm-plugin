@@ -348,7 +348,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             final boolean manualSwitchFlag = Boolean.parseBoolean(newValue);
             SwingUtilities.invokeLater(() -> {
                 PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
-                DataSet.getInstance().updateHighZoomLevelPhotoData(null, false);
+                DataSet.getInstance().updateHighZoomLevelPhotoData(null);
                 DataSet.getInstance().updateHighZoomLevelDetectionData(null, false);
                 if (DataSet.getInstance().getSelectedPhoto() == null) {
                     PhotoDetailsDialog.getInstance().updateUI(null, null, false);

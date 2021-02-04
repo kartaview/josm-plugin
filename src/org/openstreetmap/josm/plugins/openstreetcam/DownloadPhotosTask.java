@@ -82,7 +82,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
         synchronized (this) {
             if (!canceled && photoDataSet != null && !photoDataSet.getPhotos().isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
-                    DataSet.getInstance().updateHighZoomLevelPhotoData(photoDataSet, true);
+                    DataSet.getInstance().updateHighZoomLevelPhotoData(photoDataSet);
                     if (!DataSet.getInstance().hasSelectedPhoto()
                             && PhotoDetailsDialog.getInstance().isPhotoSelected()) {
                         PhotoDetailsDialog.getInstance().updateUI(null, null, false);
