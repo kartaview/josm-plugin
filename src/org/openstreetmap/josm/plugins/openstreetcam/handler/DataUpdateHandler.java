@@ -179,7 +179,7 @@ public class DataUpdateHandler {
             GuiHelper.runInEDT(() -> {
                 DataSet.getInstance().updateHighZoomLevelClusterData(resultSet.getClusters(), checkSelection);
                 DataSet.getInstance().updateHighZoomLevelDetectionData(resultSet.getDetections(), checkSelection);
-                DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet(), checkSelection);
+                DataSet.getInstance().updateHighZoomLevelPhotoData(resultSet.getPhotoDataSet());
                 updateSelection(checkSelection, isClusterInfoInPanel);
                 if (DataSet.getInstance().hasNearbyPhotos()
                         && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
@@ -233,7 +233,6 @@ public class DataUpdateHandler {
         if (!Util.isDetectionMatchingFilters(searchFilter, DataSet.getInstance().getSelectedDetection())) {
             DataSet.getInstance().setSelectedDetection(null);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-            PhotoDetailsDialog.getInstance().updateUI(null, null, false);
         } else {
             DetectionDetailsDialog.getInstance().updateDetectionDetails(DataSet.getInstance().getSelectedDetection());
         }

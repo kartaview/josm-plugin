@@ -179,15 +179,9 @@ public final class DataSet {
      * Updates the photo location data with a new list of photos.
      *
      * @param photoDataSet a {@code PhotoDataSet} containing a new list of {@code Photo}s
-     * @param updateSelection if true - then the currently selected photo is removed if not present in the new data set
      */
-    public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet,
-            final boolean updateSelection) {
+    public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet) {
         revalidatePhotosToBeDrawn(photoDataSet);
-        if (updateSelection && hasSelectedPhoto() && !selectedPhotoBelongsToSelectedCluster()) {
-            selectedPhoto = photoDataSet != null ? photoDataSet.getPhotos().stream()
-                    .filter(photo -> photo.equals(selectedPhoto)).findFirst().orElse(null) : null;
-        }
         if (hasSelectedPhoto() && hasNearbyPhotos()) {
             selectNearbyPhotos(getSelectedPhoto());
             ThreadPool.getInstance().execute(() -> {
