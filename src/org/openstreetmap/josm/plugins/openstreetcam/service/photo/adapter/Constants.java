@@ -29,6 +29,7 @@ final class Constants {
     static final String PHOTO_HEADING = "heading";
     static final String PHOTO_USERNAME = "username";
     static final String PHOTO_SHOT_DATE = "shot_date";
+    static final String PROJECTION = "projection";
 
     /* segment object fields */
     static final String SEGMENT_ID = "element_id";

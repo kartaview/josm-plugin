@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_COLOR_CODED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_DATE;
@@ -277,7 +278,8 @@ final class LoadManager {
         final boolean mouseHoverFlag = Preferences.main().getBoolean(MOUSE_HOVER_FLAG);
         final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(),
                 Config.getInstance().getMouseHoverMaxDelay());
-        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay);
+        final boolean displayFrontFacingFlag = Preferences.main().getBoolean(DISPLAY_FRONT_FACING_FLAG, true);
+        return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay, displayFrontFacingFlag);
     }
 
     ClusterSettings loadClusterSettings() {

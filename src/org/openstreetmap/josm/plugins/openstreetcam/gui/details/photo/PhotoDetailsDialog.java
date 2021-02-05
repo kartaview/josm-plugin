@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeOb
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -167,6 +168,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         if (photo != null) {
             // display loading text
             if (displayLoadingMessage) {
+                pnlDetails.updateUI(null, false);
                 pnlPhoto.displayLoadingMessage();
             }
             pnlBtn.updateUI(photo);
@@ -175,8 +177,8 @@ public final class PhotoDetailsDialog extends ToggleDialog {
             // load image
             ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
-            pnlDetails.updateUI(null, false);
             pnlDetails.setToolTipText("");
+            pnlDetails.updateUI(null, false);
             pnlPhoto.updateUI(null, null);
             pnlBtn.updateUI(null);
             repaint();
@@ -237,17 +239,20 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
+     * @param switchPhotoFormatObserver the {@code SwitchPhotoFormatObserver} listens for switch image format button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
     public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
             final MapViewTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
             final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
+            final SwitchPhotoFormatObserver switchPhotoFormatObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(trackAutoplayObserver);
+        pnlBtn.registerObserver(switchPhotoFormatObserver);
         pnlPhoto.registerObserver(detectionSelectionObserver);
     }
 
@@ -273,6 +278,10 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         pnlBtn.enableClosestPhotoButton(enabled);
         pnlBtn.revalidate();
         repaint();
+    }
+
+    public void updateSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel){
+        pnlBtn.enableSwitchImageFormatButton(enabled, isCroppedInPanel);
     }
 
     /**

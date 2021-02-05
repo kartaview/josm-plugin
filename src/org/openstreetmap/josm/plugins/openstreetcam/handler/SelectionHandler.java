@@ -33,6 +33,7 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver
 import org.openstreetmap.josm.plugins.openstreetcam.observer.RowSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import com.grab.josm.common.thread.ThreadPool;
@@ -44,8 +45,9 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author beataj
  * @version $Revision$
  */
-public final class SelectionHandler extends MouseSelectionHandler implements NearbyPhotoObserver, SequenceObserver,
-        SequenceAutoplayObserver, ClusterObserver, DetectionSelectionObserver, RowSelectionObserver {
+public final class SelectionHandler extends MouseSelectionHandler
+        implements NearbyPhotoObserver, SequenceObserver, SequenceAutoplayObserver, ClusterObserver,
+        DetectionSelectionObserver, RowSelectionObserver, SwitchPhotoFormatObserver {
 
     /** timer used for track auto-play events */
     private Timer autoplayTimer;
@@ -82,14 +84,15 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     }
 
     @Override
-    void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
-            final boolean displayLoadingMessage) {
+    public void handleDataSelection(final Photo photo, final Detection detection, final Cluster cluster,
+            final boolean displayLoadingMessage, final boolean isSwitchAction) {
+        DataSet.getInstance().setSwitchPhotoFormatAction(isSwitchAction);
         if (cluster != null) {
             selectCluster(cluster, detection);
             if (detection != null) {
                 // special case
                 DataSet.getInstance().setSelectedDetection(detection);
-                selectDetectionFromTable(detection);
+                selectDetectionFromTable(detection, false);
             }
         } else {
             if (!DataSet.getInstance().detectionBelongsToSelectedCluster(detection)) {
@@ -271,15 +274,18 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     public void selectNearbyPhoto() {
         final Photo photo = DataSet.getInstance().nearbyPhoto();
         if (photo != null) {
-            if (shouldLoadSequence(photo)) {
-                loadSequence(photo);
-            }
-            enhancePhoto(photo);
-            final Detection detection = photoSelectedDetection(photo);
-            handleDataSelection(photo, detection, null, true);
+            ThreadPool.getInstance().execute(() -> {
+                if (shouldLoadSequence(photo)) {
+                    loadSequence(photo);
+                }
+                enhancePhoto(photo);
+                final Detection detection = photoSelectedDetection(photo);
+                updatePhotoFormatDisplayed(photo);
+                handleDataSelection(photo, detection, null, true, false);
+
+            });
         }
     }
-
 
     /* implementation of SequenceObserver */
 
@@ -291,6 +297,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
             Detection detection = null;
             Cluster cluster = null;
             if (dataTypes != null) {
+                if (!dataTypes.contains(DataType.DETECTION)) {
+                    photo.setDetections(null);
+                }
                 if (dataTypes.contains(DataType.DETECTION)) {
                     enhancePhoto(photo);
                     detection = photoSelectedDetection(photo);
@@ -308,7 +317,8 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                     }
                 }
             }
-            handleDataSelection(photo, detection, cluster, true);
+            updatePhotoFormatDisplayed(photo);
+            handleDataSelection(photo, detection, cluster, true, false);
         }
     }
 
@@ -316,27 +326,29 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
     /* implementation of SequenceAutoplayObserver */
     @Override
     public void play(final AutoplayAction action) {
-        if (AutoplayAction.START.equals(action)) {
-            PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
+        ThreadPool.getInstance().execute(() -> {
+            if (AutoplayAction.START.equals(action)) {
+                PreferenceManager.getInstance().saveAutoplayStartedFlag(true);
 
-            // start autoplay
-            if (autoplayTimer != null && autoplayTimer.isRunning()) {
-                autoplayTimer.stop();
-            } else if (autoplayTimer == null) {
-                final AutoplaySettings autoplaySettings =
-                        PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
-                autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
-                autoplayTimer.setDelay(autoplaySettings.getDelay());
-                autoplayTimer.start();
+                // start autoplay
+                if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                    autoplayTimer.stop();
+                } else if (autoplayTimer == null) {
+                    final AutoplaySettings autoplaySettings =
+                            PreferenceManager.getInstance().loadTrackSettings().getAutoplaySettings();
+                    autoplayTimer = new Timer(0, event -> handleTrackAutoplay());
+                    autoplayTimer.setDelay(autoplaySettings.getDelay());
+                    autoplayTimer.start();
+                } else {
+                    autoplayTimer.restart();
+                }
             } else {
-                autoplayTimer.restart();
+                stopAutoplay();
+                if (DataSet.getInstance().hasNearbyPhotos()) {
+                    PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
+                }
             }
-        } else {
-            stopAutoplay();
-            if (DataSet.getInstance().hasNearbyPhotos()) {
-                PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
-            }
-        }
+        });
     }
 
     private void handleTrackAutoplay() {
@@ -374,8 +386,9 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
         }
         final PhotoSize photoType = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag()
                 ? PhotoSize.HIGH_QUALITY : PhotoSize.LARGE_THUMBNAIL;
-        if (DataSet.getInstance().selectedSequenceLastPhoto().equals(photo)) {
-            selectPhoto(photo, photoType, false);
+        if (DataSet.getInstance().selectedSequenceLastPhoto() != null && DataSet.getInstance()
+                .selectedSequenceLastPhoto().equals(photo)) {
+            selectPhoto(photo, photoType, true);
             if (DataSet.getInstance().hasNearbyPhotos()) {
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
@@ -385,7 +398,7 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
                 PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
             }
         } else {
-            selectPhoto(photo, photoType, false);
+            selectPhoto(photo, photoType, true);
         }
     }
 
@@ -448,18 +461,29 @@ public final class SelectionHandler extends MouseSelectionHandler implements Nea
 
 
     @Override
-    public void selectDetectionFromTable(final Detection detection) {
+    public void selectDetectionFromTable(final Detection detection, final boolean isSelectionMadeInTable) {
         if (detection != null) {
             ThreadPool.getInstance().execute(() -> {
                 final Photo photo = loadDetectionPhoto(detection);
-                // enhance photo with heading
+                if (isSelectionMadeInTable) {
+                    DataSet.getInstance().setFrontFacingDisplayed(Util.checkFrontFacingDisplay(detection));
+                    DataSet.getInstance().setSwitchPhotoFormatAction(false);
+                }
                 final Optional<Photo> clusterPhoto = DataSet.getInstance()
                         .selectedClusterPhoto(detection.getSequenceId(), detection.getSequenceIndex());
                 if (clusterPhoto.isPresent() && photo != null && clusterPhoto.get().getHeading() != null) {
                     photo.setHeading(clusterPhoto.get().getHeading());
                 }
-                SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true));
+                photo.setDetections(Collections.singletonList(detection));
+                SwingUtilities.invokeLater(() -> handleDataSelection(photo, detection, null, true,
+                        DataSet.getInstance().isSwitchPhotoFormatAction()));
             });
         }
+    }
+
+    @Override
+    public void switchPhotoFormat() {
+        handleDataSelection(DataSet.getInstance().getSelectedPhoto(), DataSet.getInstance().getSelectedDetection(),
+                DataSet.getInstance().getSelectedCluster(), true, true);
     }
 }

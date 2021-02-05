@@ -243,9 +243,8 @@ public final class Util {
         return filteredDetections;
     }
 
-    public static boolean shouldFilterDetection(final SearchFilter filter, final Detection selectedDetection) {
+    public static boolean isDetectionMatchingFilters(final SearchFilter filter, final Detection selectedDetection) {
         boolean isCorresponding = true;
-
         if (selectedDetection != null) {
             if (filter.getDetectionFilter().getEditStatuses() != null && !filter.getDetectionFilter().getEditStatuses()
                     .isEmpty() && selectedDetection.getEditStatus() != null && !filter.getDetectionFilter()
@@ -275,5 +274,21 @@ public final class Util {
         }
 
         return isCorresponding;
+    }
+
+    public static boolean checkFrontFacingDisplay(final Detection detection) {
+        boolean displayFrontFacingPhotoFormat = true;
+        if (detection != null) {
+            if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+                if (!detection.containsOnlyFrontFacingCoordinates() && detection.getLocationOnPhoto() == null) {
+                    displayFrontFacingPhotoFormat = false;
+                }
+            } else {
+                if (!detection.containsOnlyFrontFacingCoordinates()) {
+                    displayFrontFacingPhotoFormat = false;
+                }
+            }
+        }
+        return displayFrontFacingPhotoFormat;
     }
 }

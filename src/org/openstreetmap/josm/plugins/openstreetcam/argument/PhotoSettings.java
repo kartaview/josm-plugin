@@ -18,6 +18,7 @@ public class PhotoSettings {
     private final boolean highQualityFlag;
     private final boolean mouseHoverFlag;
     private final int mouseHoverDelay;
+    private final boolean displayFrontFacingFlag;
 
 
     /**
@@ -27,10 +28,12 @@ public class PhotoSettings {
      * @param mouseHoverFlag specifies if photos should be loaded on mouse hover event
      * @param mouseHoverDelay specifies the delay between selecting a photo on mouse hover event
      */
-    public PhotoSettings(final boolean highQualityFlag, final boolean mouseHoverFlag, final int mouseHoverDelay) {
+    public PhotoSettings(final boolean highQualityFlag, final boolean mouseHoverFlag, final int mouseHoverDelay,
+            final boolean displayFrontFacingFlag) {
         this.highQualityFlag = highQualityFlag;
         this.mouseHoverFlag = mouseHoverFlag;
         this.mouseHoverDelay = mouseHoverDelay;
+        this.displayFrontFacingFlag = displayFrontFacingFlag;
     }
 
 
@@ -44,5 +47,9 @@ public class PhotoSettings {
 
     public int getMouseHoverDelay() {
         return mouseHoverDelay;
+    }
+
+    public boolean isDisplayFrontFacingFlag() {
+        return displayFrontFacingFlag;
     }
 }

@@ -28,6 +28,8 @@ public final class IconConfig extends BaseConfig {
     private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
     private static final int SELECTED_ICON_SIZE = 28;
     private static final int UNSELECTED_ICON_SIZE = 14;
+    private static final int SELECTED_WRAPPED_ICON_SIZE = 37;
+    private static final int UNSELECTED_WRAPPED_ICON_SIZE = 20;
 
 
     private final String pluginIconName;
@@ -47,6 +49,14 @@ public final class IconConfig extends BaseConfig {
     private final ImageIcon photoUnselectedIconPurple;
     private final ImageIcon photoNoHeadingSelectedIconPurple;
     private final ImageIcon photoNoHeadingUnselectedIconPurple;
+    private final ImageIcon photoWrappedSelectedIcon;
+    private final ImageIcon photoWrappedUnselectedIcon;
+    private final ImageIcon photoWrappedNoHeadingSelectedIcon;
+    private final ImageIcon photoWrappedNoHeadingUnselectedIcon;
+    private final ImageIcon photoWrappedSelectedIconPurple;
+    private final ImageIcon photoWrappedUnselectedIconPurple;
+    private final ImageIcon photoWrappedNoHeadingSelectedIconPurple;
+    private final ImageIcon photoWrappedNoHeadingUnselectedIconPurple;
     private final ImageIcon filterIcon;
     private final String filterIconName;
     private final Icon previousIcon;
@@ -55,10 +65,13 @@ public final class IconConfig extends BaseConfig {
     private final Icon stopIcon;
     private final String feedbackIconName;
     private final Icon locationIcon;
+    private final Icon wrappedImageFormatIcon;
+    private final Icon frontFacingImageFormatIcon;
     private final Icon webPageIcon;
     private final Icon closestImageIcon;
     private final Icon matchedWayIcon;
     private final Icon warningIcon;
+    private final Icon warningImageFormatIcon;
     private final Icon manualSwitchSegmentIcon;
     private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
@@ -111,6 +124,14 @@ public final class IconConfig extends BaseConfig {
         photoUnselectedIconPurple = getUnselectedPhotoIcon("photo.icon.purple");
         photoNoHeadingSelectedIconPurple = getSelectedPhotoIcon("photo.noHeading.icon.purple");
         photoNoHeadingUnselectedIconPurple = getUnselectedPhotoIcon("photo.noHeading.icon.purple");
+        photoWrappedSelectedIcon = getSelectedWrappedPhotoIcon("photo.360.icon");
+        photoWrappedUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.icon");
+        photoWrappedNoHeadingSelectedIcon = getSelectedWrappedPhotoIcon("photo.360.noHeading.icon");
+        photoWrappedNoHeadingUnselectedIcon = getUnselectedWrappedPhotoIcon("photo.360.noHeading.icon");
+        photoWrappedSelectedIconPurple = getSelectedWrappedPhotoIcon("photo.360.icon.purple");
+        photoWrappedUnselectedIconPurple = getUnselectedWrappedPhotoIcon("photo.360.icon.purple");
+        photoWrappedNoHeadingSelectedIconPurple = getSelectedWrappedPhotoIcon("photo.360.noHeading.icon.purple");
+        photoWrappedNoHeadingUnselectedIconPurple = getUnselectedWrappedPhotoIcon("photo.360.noHeading.icon.purple");
         filterIconName = readProperty("filter.icon");
         filterIcon = ImageProvider.get(filterIconName);
         previousIcon = ImageProvider.get(readProperty("previous.icon"));
@@ -118,11 +139,14 @@ public final class IconConfig extends BaseConfig {
         playIcon = ImageProvider.get(readProperty("play.icon"));
         stopIcon = ImageProvider.get(readProperty("stop.icon"));
         locationIcon = ImageProvider.get(readProperty("location.icon"));
+        wrappedImageFormatIcon = ImageProvider.get(readProperty("image.format.wrapped.icon"));
+        frontFacingImageFormatIcon = ImageProvider.get(readProperty("image.format.cropped.icon"));
         feedbackIconName = readProperty("feedback.icon");
         webPageIcon = ImageProvider.get(readProperty("webPage.icon"));
         closestImageIcon = ImageProvider.get(readProperty("closestImage.icon"));
         matchedWayIcon = ImageProvider.get(readProperty("matchedWay.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
+        warningImageFormatIcon = ImageProvider.get(readProperty("warning.image.format.icon"));
         manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
         manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
@@ -177,6 +201,18 @@ public final class IconConfig extends BaseConfig {
     private ImageIcon getSelectedPhotoIcon(final String key) {
         final ImageProvider imageProvider = new ImageProvider(readProperty(key));
         imageProvider.setSize(SELECTED_ICON_SIZE, SELECTED_ICON_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getUnselectedWrappedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(UNSELECTED_WRAPPED_ICON_SIZE, UNSELECTED_WRAPPED_ICON_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getSelectedWrappedPhotoIcon(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(SELECTED_WRAPPED_ICON_SIZE, SELECTED_WRAPPED_ICON_SIZE);
         return imageProvider.get();
     }
 
@@ -254,6 +290,38 @@ public final class IconConfig extends BaseConfig {
         return photoNoHeadingUnselectedIconPurple;
     }
 
+    public ImageIcon getPhotoWrappedSelectedIcon() {
+        return photoWrappedSelectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedUnselectedIcon() {
+        return photoWrappedUnselectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingSelectedIcon() {
+        return photoWrappedNoHeadingSelectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingUnselectedIcon() {
+        return photoWrappedNoHeadingUnselectedIcon;
+    }
+
+    public ImageIcon getPhotoWrappedSelectedIconPurple() {
+        return photoWrappedSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedUnselectedIconPurple() {
+        return photoWrappedUnselectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingSelectedIconPurple() {
+        return photoWrappedNoHeadingSelectedIconPurple;
+    }
+
+    public ImageIcon getPhotoWrappedNoHeadingUnselectedIconPurple() {
+        return photoWrappedNoHeadingUnselectedIconPurple;
+    }
+
     public ImageIcon getFilterIcon() {
         return filterIcon;
     }
@@ -282,6 +350,14 @@ public final class IconConfig extends BaseConfig {
         return locationIcon;
     }
 
+    public Icon getWrappedImageFormatIcon() {
+        return wrappedImageFormatIcon;
+    }
+
+    public Icon getFrontFacingImageFormatIcon() {
+        return frontFacingImageFormatIcon;
+    }
+
     public Icon getWebPageIcon() {
         return webPageIcon;
     }
@@ -292,6 +368,10 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWarningIcon() {
         return warningIcon;
+    }
+
+    public Icon getWarningImageFormatIcon() {
+        return warningImageFormatIcon;
     }
 
     public Icon getManualSwitchSegmentIcon() {

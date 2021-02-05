@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.openstreetcam.entity;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 
 
 /**
@@ -17,6 +18,12 @@ import org.openstreetmap.josm.data.coor.LatLon;
  */
 public class PhotoBuilder {
 
+    /** photo type  */
+    private static final String WRAPPED = "wrapped_proc";
+    private static final String WRAPPED_LARGE = "wrapped_lth";
+    private static final String PROC = "proc";
+    private static final String LARGE = "lth";
+
     private Long id;
     private Long sequenceId;
     private Integer sequenceIndex;
@@ -25,6 +32,8 @@ public class PhotoBuilder {
     private String largeThumbnailName;
     private String thumbnailName;
     private String oriName;
+    private String wrappedName;
+    private String largeThumbnailWrappedName;
     private Long timestamp;
     private Double heading;
     private String username;
@@ -34,6 +43,7 @@ public class PhotoBuilder {
     private PhotoSize realSize;
     private Double horizontalFieldOfView;
     private UprightOrientation uprightOrientation;
+    private Projection projection;
 
 
     public PhotoBuilder() {}
@@ -70,6 +80,14 @@ public class PhotoBuilder {
         this.thumbnailName = thumbnailName;
     }
 
+    public void  wrappedName(final String wrappedName) {
+        this.wrappedName = wrappedName;
+    }
+
+    public void largeThumbnailWrappedName(final String largeThumbnailWrappedName) {
+        this.largeThumbnailWrappedName = largeThumbnailWrappedName;
+    }
+
     public void timestamp(final Long timestamp) {
         this.timestamp = timestamp;
     }
@@ -98,6 +116,10 @@ public class PhotoBuilder {
         this.size = size;
     }
 
+    public void projection(final Projection projection) {
+        this.projection = projection;
+    }
+
     Long getId() {
         return id;
     }
@@ -124,6 +146,14 @@ public class PhotoBuilder {
 
     String getThumbnailName() {
         return thumbnailName;
+    }
+
+    public String getWrappedName() {
+        return wrappedName;
+    }
+
+    public String getLargeThumbnailWrappedName() {
+        return largeThumbnailWrappedName;
     }
 
     Long getTimestamp() {
@@ -166,8 +196,22 @@ public class PhotoBuilder {
         return uprightOrientation;
     }
 
+    Projection getProjection() {
+        return projection;
+    }
+
     public Photo build() {
+        if (this.getProjection().equals(Projection.SPHERE)) {
+            visualiseWrappedPhoto(this);
+        }
         // any photo should have a coordinate
         return point != null ? new Photo(this) : null;
+    }
+
+    private void visualiseWrappedPhoto(final PhotoBuilder builder) {
+        final String currentName = builder.getName();
+        final String currentLargeThumbnailName = builder.getLargeThumbnailName();
+        builder.wrappedName(currentName.replace(PROC, WRAPPED));
+        builder.largeThumbnailWrappedName(currentLargeThumbnailName.replace(LARGE, WRAPPED_LARGE));
     }
 }

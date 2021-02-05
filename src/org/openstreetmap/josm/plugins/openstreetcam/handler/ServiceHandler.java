@@ -166,7 +166,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             result = apolloService.retrieveSequenceDetections(id);
             if (result != null) {
                 result = result.stream().filter(detection -> Util
-                        .shouldFilterDetection(PreferenceManager.getInstance().loadSearchFilter(), detection))
+                        .isDetectionMatchingFilters(PreferenceManager.getInstance().loadSearchFilter(), detection))
                         .collect(Collectors.toList());
             }
         } catch (final ServiceException e) {
@@ -191,7 +191,7 @@ public final class ServiceHandler extends SearchServiceHandler {
             result = apolloService.retrievePhotoDetections(sequenceId, sequenceIndex);
             if (result != null) {
                 result = result.stream().filter(detection -> Util
-                        .shouldFilterDetection(PreferenceManager.getInstance().loadSearchFilter(), detection))
+                        .isDetectionMatchingFilters(PreferenceManager.getInstance().loadSearchFilter(), detection))
                         .collect(Collectors.toList());
             }
         } catch (final ServiceException e) {

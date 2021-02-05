@@ -139,7 +139,7 @@ class DetectionTable extends JTable implements RowSelectionObservable {
 
     @Override
     public void notifyRowSelectionObserver(final Detection detection) {
-        observer.selectDetectionFromTable(detection);
+        observer.selectDetectionFromTable(detection, true);
     }
 
     private class SelectRowAction extends AbstractAction {

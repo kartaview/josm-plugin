@@ -28,6 +28,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.AutoplayAction;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.MapViewType;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.EditStatus;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
@@ -131,7 +132,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
     private void initializePhotoDetailsDialog(final MapFrame mapFrame) {
         final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
         detailsDialog.registerObservers(selectionHandler, this, this, selectionHandler, selectionHandler,
-                selectionHandler);
+                selectionHandler, selectionHandler);
         mapFrame.addToggleDialog(detailsDialog, false);
         if (PreferenceManager.getInstance().loadPhotoPanelOpenedFlag()) {
             detailsDialog.showDialog();
@@ -330,6 +331,8 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 } else if (prefManager.isDisplayDetectionLocationFlag(event.getKey())) {
                     OpenStreetCamLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
+                } else if (prefManager.hasPhotoFormatFlagChanged(event.getKey())) {
+                    updatePhotoPanel();
                 }
             }
         }
@@ -345,7 +348,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             final boolean manualSwitchFlag = Boolean.parseBoolean(newValue);
             SwingUtilities.invokeLater(() -> {
                 PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
-                DataSet.getInstance().updateHighZoomLevelPhotoData(null, false);
+                DataSet.getInstance().updateHighZoomLevelPhotoData(null);
                 DataSet.getInstance().updateHighZoomLevelDetectionData(null, false);
                 if (DataSet.getInstance().getSelectedPhoto() == null) {
                     PhotoDetailsDialog.getInstance().updateUI(null, null, false);
@@ -380,6 +383,32 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 detailsDialog.enableSequenceActions(false, false, null);
                 OpenStreetCamLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
+            }
+        }
+
+        /**
+         * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
+         * the preference panel. In case the photo filter is excluded, the selectPhoto value changes according to the
+         * corresponding selected detection.
+         *
+         * It has to be called whenever there is a format change in order to update the text associated with the image.
+         */
+        private void updatePhotoPanel() {
+            Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
+            if (DataSet.getInstance().getSelectedDetection() != null && selectedPhoto == null) {
+                SelectionHandler handler = new SelectionHandler();
+                selectedPhoto = handler.loadDetectionPhoto(DataSet.getInstance().getSelectedDetection());
+            }
+            final boolean preferencePanelValue =
+                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
+            if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+                final SelectionHandler handler = new SelectionHandler();
+                DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
+                handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
+                        DataSet.getInstance().getSelectedCluster(), true, false);
+            } else if (selectedPhoto == null || !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
+                PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }
         }
     }

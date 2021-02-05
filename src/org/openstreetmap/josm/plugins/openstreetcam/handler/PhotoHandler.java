@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
+import org.openstreetmap.josm.plugins.openstreetcam.DataSet;
 import org.openstreetmap.josm.plugins.openstreetcam.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
@@ -58,18 +59,28 @@ public final class PhotoHandler {
      * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be
      * read
      */
-    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type)
-            throws PhotoHandlerException {
-        Pair<BufferedImage, PhotoSize> result;
+    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type) throws
+            PhotoHandlerException {
+        Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
             if (type.equals(PhotoSize.THUMBNAIL)) {
                 result = loadThumbnailPhoto(photo);
             } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
-                result = loadHighQualityPhoto(photo);
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
+                    result = loadHighQualityPhoto(photo);
+                } else {
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                            PhotoSize.LARGE_THUMBNAIL, false);
+                }
             } else {
-                result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL,
-                        true);
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL,
+                            true);
+                } else {
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                            PhotoSize.LARGE_THUMBNAIL, true);
+                }
             }
         } catch (final ServiceException e) {
             throw new PhotoHandlerException("Could not load photo from server.", e);
@@ -81,7 +92,14 @@ public final class PhotoHandler {
 
     private Pair<BufferedImage, PhotoSize> loadThumbnailPhoto(final Photo photo) throws ServiceException, IOException {
         // special case, we don't save small thumbnails to cache
-        final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+        byte[] byteImage = null;
+
+        if (PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag()) {
+            byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getThumbnailName());
+        } else {
+            byteImage = ServiceHandler.getInstance().retrievePhoto(photo.getWrappedName());
+        }
+
         return new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
                 PhotoSize.THUMBNAIL);
     }
@@ -132,26 +150,26 @@ public final class PhotoHandler {
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
-        if (highQualityFlag) {
-            // retrieve and save high quality image
-            try {
-                loadPhotoToCache(photo.getSequenceId(), photo.getName(), false);
-            } catch (final Exception e) {
-                // try to load large thumbnail
+            if (highQualityFlag) {
+                // retrieve and save high quality image
                 try {
-                    loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), true);
+                    loadPhotoToCache(photo.getSequenceId(), photo.getName(), false);
+                } catch (final Exception e) {
+                    // try to load large thumbnail
+                    try {
+                        loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), true);
+                    } catch (final Exception e2) {
+                        Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
+                    }
+                }
+            } else {
+                // retrieve and save large thumbnail
+                try {
+                    loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), false);
                 } catch (final Exception e2) {
                     Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
                 }
             }
-        } else {
-            // retrieve and save large thumbnail
-            try {
-                loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), false);
-            } catch (final Exception e2) {
-                Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
-            }
-        }
     }
 
     private void loadPhotoToCache(final Long sequenceId, final String photoName, final boolean isWarning)
