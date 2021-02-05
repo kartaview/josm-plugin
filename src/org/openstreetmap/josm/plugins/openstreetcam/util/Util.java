@@ -9,7 +9,6 @@ package org.openstreetmap.josm.plugins.openstreetcam.util;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Detection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Sign;
 import org.openstreetmap.josm.plugins.openstreetcam.service.apollo.DetectionFilter;
-import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.OpenStreetCamServiceConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 
 
@@ -243,19 +241,6 @@ public final class Util {
             }
         }
         return filteredDetections;
-    }
-
-    public static boolean shouldDisplayImage(final Photo photo) {
-        boolean display = false;
-        if (photo != null && photo.getUsername() != null && !photo.getUsername().isEmpty()) {
-            display = BordersFactory.getInstance().isPhotoInAvailableZone(photo.getPoint()) && isVendorAccepted(photo);
-        }
-        return display;
-    }
-
-    public static boolean isVendorAccepted(final Photo photo) {
-        final List<String> acceptedVendors = Arrays.asList(OpenStreetCamServiceConfig.getInstance().getVendorsList());
-        return acceptedVendors.contains(photo.getUsername());
     }
 
     public static boolean isDetectionMatchingFilters(final SearchFilter filter, final Detection selectedDetection) {

@@ -22,7 +22,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
-import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
@@ -30,7 +29,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -167,40 +165,24 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        final Photo detailedPhoto =
-                (photo != null && photo.getUsername() == null) ? addMissingUsernameInformation(photo) : photo;
-        if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
+        if (photo != null) {
             // display loading text
             if (displayLoadingMessage) {
                 pnlDetails.updateUI(null, false);
                 pnlPhoto.displayLoadingMessage();
             }
-            pnlBtn.updateUI(detailedPhoto);
+            pnlBtn.updateUI(photo);
             repaint();
 
             // load image
-            ThreadPool.getInstance().execute(() -> loadPhoto(detailedPhoto, photoType));
+            ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
         } else {
             pnlDetails.setToolTipText("");
             pnlDetails.updateUI(null, false);
-            if (detailedPhoto != null && !Util.shouldDisplayImage(detailedPhoto)) {
-                pnlBtn.updateUI(detailedPhoto);
-                pnlPhoto.displayErrorMessage();
-            } else {
-                pnlPhoto.updateUI(null, null);
-                pnlBtn.updateUI(null);
-            }
+            pnlPhoto.updateUI(null, null);
+            pnlBtn.updateUI(null);
             repaint();
         }
-    }
-
-    private Photo addMissingUsernameInformation(final Photo photo) {
-        final Photo photoWithUsername =
-                ServiceHandler.getInstance().retrievePhotoDetails(photo.getSequenceId(), photo.getSequenceIndex());
-        if (photoWithUsername != null) {
-            photo.setUsername(photoWithUsername.getUsername());
-        }
-        return photo;
     }
 
     private void loadPhoto(final Photo photo, final PhotoSize photoType) {

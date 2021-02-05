@@ -28,7 +28,6 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
     private final String feedbackUrl;
     private final int nearbyPhotosMaxItems;
     private final int tracksMaxItems;
-    private final String[] vendorsList;
 
 
     private OpenStreetCamServiceConfig() {
@@ -41,7 +40,6 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
         feedbackUrl = readProperty("feedback.url");
         nearbyPhotosMaxItems = readIntegerProperty("nearbyPhotos.maxItems", MAX_ITEMS);
         tracksMaxItems = readIntegerProperty("tracks.maxItems", MAX_ITEMS);
-        vendorsList = readPropertiesArray("list.of.vendors");
     }
 
 
@@ -75,9 +73,5 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
 
     public int getTracksMaxItems() {
         return tracksMaxItems;
-    }
-
-    public String[] getVendorsList() {
-        return vendorsList;
     }
 }

@@ -20,7 +20,6 @@ import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.openstreetcam.cache.CacheManager;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.service.ServiceException;
-import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Logging;
 import com.grab.josm.common.entity.Pair;
@@ -60,29 +59,27 @@ public final class PhotoHandler {
      * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be
      * read
      */
-    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type)
-            throws PhotoHandlerException {
+    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type) throws
+            PhotoHandlerException {
         Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
-            if (Util.shouldDisplayImage(photo)) {
-                if (type.equals(PhotoSize.THUMBNAIL)) {
-                    result = loadThumbnailPhoto(photo);
-                } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
-                    if (DataSet.getInstance().isFrontFacingDisplayed()) {
-                        result = loadHighQualityPhoto(photo);
-                    } else {
-                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
-                                PhotoSize.LARGE_THUMBNAIL, false);
-                    }
+            if (type.equals(PhotoSize.THUMBNAIL)) {
+                result = loadThumbnailPhoto(photo);
+            } else if (type.equals(PhotoSize.HIGH_QUALITY)) {
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
+                    result = loadHighQualityPhoto(photo);
                 } else {
-                    if (DataSet.getInstance().isFrontFacingDisplayed()) {
-                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(),
-                                PhotoSize.LARGE_THUMBNAIL, true);
-                    } else {
-                        result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
-                                PhotoSize.LARGE_THUMBNAIL, true);
-                    }
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                            PhotoSize.LARGE_THUMBNAIL, false);
+                }
+            } else {
+                if (DataSet.getInstance().isFrontFacingDisplayed()) {
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL,
+                            true);
+                } else {
+                    result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailWrappedName(),
+                            PhotoSize.LARGE_THUMBNAIL, true);
                 }
             }
         } catch (final ServiceException e) {
@@ -153,7 +150,6 @@ public final class PhotoHandler {
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
-        if (Util.shouldDisplayImage(photo)) {
             if (highQualityFlag) {
                 // retrieve and save high quality image
                 try {
@@ -174,7 +170,6 @@ public final class PhotoHandler {
                     Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
                 }
             }
-        }
     }
 
     private void loadPhotoToCache(final Long sequenceId, final String photoName, final boolean isWarning)
