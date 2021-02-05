@@ -22,12 +22,15 @@ import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.openstreetcam.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.openstreetcam.handler.PhotoHandler;
+import org.openstreetmap.josm.plugins.openstreetcam.handler.ServiceHandler;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.LocationObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.openstreetcam.observer.SequenceObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.observer.SwitchPhotoFormatObserver;
+import org.openstreetmap.josm.plugins.openstreetcam.util.Util;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.openstreetcam.util.pref.PreferenceManager;
@@ -164,23 +167,40 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * displayed until the photo is loaded.
      */
     public void updateUI(final Photo photo, final PhotoSize photoType, final boolean displayLoadingMessage) {
-        if (photo != null) {
+        final Photo detailedPhoto =
+                (photo != null && photo.getUsername() == null) ? addMissingUsernameInformation(photo) : photo;
+        if (detailedPhoto != null && Util.shouldDisplayImage(detailedPhoto)) {
             // display loading text
             if (displayLoadingMessage) {
+                pnlDetails.updateUI(null, false);
                 pnlPhoto.displayLoadingMessage();
             }
-            pnlBtn.updateUI(photo);
+            pnlBtn.updateUI(detailedPhoto);
             repaint();
 
             // load image
-            ThreadPool.getInstance().execute(() -> loadPhoto(photo, photoType));
+            ThreadPool.getInstance().execute(() -> loadPhoto(detailedPhoto, photoType));
         } else {
-            pnlDetails.updateUI(null, false);
             pnlDetails.setToolTipText("");
-            pnlPhoto.updateUI(null, null);
-            pnlBtn.updateUI(null);
+            pnlDetails.updateUI(null, false);
+            if (detailedPhoto != null && !Util.shouldDisplayImage(detailedPhoto)) {
+                pnlBtn.updateUI(detailedPhoto);
+                pnlPhoto.displayErrorMessage();
+            } else {
+                pnlPhoto.updateUI(null, null);
+                pnlBtn.updateUI(null);
+            }
             repaint();
         }
+    }
+
+    private Photo addMissingUsernameInformation(final Photo photo) {
+        final Photo photoWithUsername =
+                ServiceHandler.getInstance().retrievePhotoDetails(photo.getSequenceId(), photo.getSequenceIndex());
+        if (photoWithUsername != null) {
+            photo.setUsername(photoWithUsername.getUsername());
+        }
+        return photo;
     }
 
     private void loadPhoto(final Photo photo, final PhotoSize photoType) {
@@ -237,17 +257,20 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
+     * @param switchPhotoFormatObserver the {@code SwitchPhotoFormatObserver} listens for switch image format button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
     public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
             final MapViewTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
             final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
+            final SwitchPhotoFormatObserver switchPhotoFormatObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
         pnlBtn.registerObserver(dataTypeChangeObserver);
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(trackAutoplayObserver);
+        pnlBtn.registerObserver(switchPhotoFormatObserver);
         pnlPhoto.registerObserver(detectionSelectionObserver);
     }
 
@@ -273,6 +296,10 @@ public final class PhotoDetailsDialog extends ToggleDialog {
         pnlBtn.enableClosestPhotoButton(enabled);
         pnlBtn.revalidate();
         repaint();
+    }
+
+    public void updateSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel){
+        pnlBtn.enableSwitchImageFormatButton(enabled, isCroppedInPanel);
     }
 
     /**

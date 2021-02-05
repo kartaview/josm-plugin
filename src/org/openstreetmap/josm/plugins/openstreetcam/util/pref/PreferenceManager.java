@@ -9,6 +9,7 @@ package org.openstreetmap.josm.plugins.openstreetcam.util.pref;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_ICON_VISIBILITY;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
@@ -358,6 +359,16 @@ public final class PreferenceManager {
      */
     public boolean hasHighQualityPhotoFlagChanged(final String key, final String newValue) {
         return HIGH_QUALITY_PHOTO_FLAG.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    /**
+     * Verifies if the photo format  flag from preference settings has been changed or not.
+     *
+     * @param key a {@code String} represents the key associated with the photo format.
+     * @return true if the flag has been selected, false otherwise
+     */
+    public boolean hasPhotoFormatFlagChanged(final String key) {
+        return DISPLAY_FRONT_FACING_FLAG.equals(key);
     }
 
     /**

@@ -313,7 +313,7 @@ class FilterPanel extends JPanel {
         detectionRegion.setEnabled(enableCommonFilters);
         searchDataTextField.setEnabled(enableCommonFilters);
 
-        //user filter
+        // user filter
         cbbUser.setEnabled(enableUserFilter);
 
         // detection only filters

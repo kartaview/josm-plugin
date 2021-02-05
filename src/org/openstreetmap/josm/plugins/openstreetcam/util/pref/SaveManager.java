@@ -16,6 +16,7 @@ import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.CACHE_
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DETECTION_PANEL_OPENED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_COLOR_CODED;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
+import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.DISPLAY_TRACK_FLAG;
 import static org.openstreetmap.josm.plugins.openstreetcam.util.pref.Keys.FILTER_CHANGED;
@@ -258,7 +259,9 @@ final class SaveManager {
         Preferences.main().putBoolean(HIGH_QUALITY_PHOTO_FLAG, photoSettings.isHighQualityFlag());
         Preferences.main().putBoolean(MOUSE_HOVER_FLAG, photoSettings.isMouseHoverFlag());
         Preferences.main().putInt(MOUSE_HOVER_DELAY, photoSettings.getMouseHoverDelay());
+        Preferences.main().putBoolean(DISPLAY_FRONT_FACING_FLAG, photoSettings.isDisplayFrontFacingFlag());
     }
+
 
     void saveClusterSettings(final ClusterSettings aggregatedSettings) {
         Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());

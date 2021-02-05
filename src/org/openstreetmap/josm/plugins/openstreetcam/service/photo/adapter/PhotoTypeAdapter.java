@@ -19,8 +19,10 @@ import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_TH_NAME;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_TIMESTAMP;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PHOTO_USERNAME;
+import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.PROJECTION;
 import static org.openstreetmap.josm.plugins.openstreetcam.service.photo.adapter.Constants.WAY_ID;
 import java.io.IOException;
+import org.openstreetmap.josm.plugins.openstreetcam.argument.Projection;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.Photo;
 import org.openstreetmap.josm.plugins.openstreetcam.entity.PhotoBuilder;
 import com.google.gson.TypeAdapter;
@@ -89,6 +91,10 @@ public class PhotoTypeAdapter extends TypeAdapter<Photo> {
                     break;
                 case PHOTO_SHOT_DATE:
                     builder.shotDate(ReaderUtil.readString(reader));
+                    break;
+                case PROJECTION:
+                    final String projection = ReaderUtil.readString(reader);
+                    builder.projection(Projection.valueOf(projection));
                     break;
                 default:
                     reader.skipValue();
