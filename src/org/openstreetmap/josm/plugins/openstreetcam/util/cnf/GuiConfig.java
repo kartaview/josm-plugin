@@ -17,7 +17,7 @@ import com.grab.josm.common.cnf.BaseConfig;
  */
 public final class GuiConfig extends BaseConfig {
 
-    private static final String CONFIG_FILE = "openstreetcam_gui.properties";
+    private static final String CONFIG_FILE = "kartaview_gui.properties";
     private static final GuiConfig INSTANCE = new GuiConfig();
 
     private final String pluginShortName;
