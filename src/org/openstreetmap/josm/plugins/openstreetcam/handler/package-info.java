@@ -1,1 +1,0 @@
-package org.openstreetmap.josm.plugins.openstreetcam.handler;
