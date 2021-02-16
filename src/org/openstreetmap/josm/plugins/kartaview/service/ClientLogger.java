@@ -29,7 +29,7 @@ public class ClientLogger {
     public static final String SLASH = "/";
     private static final String LOG_DIRECTORY_PATH =
             Preferences.main().getPluginsDirectory() + SLASH + GuiConfig.getInstance().getPluginShortName() + "/logs";
-    private static final String OPENSTREETVIEW_PLUGIN = "openstreetview_plugin";
+    private static final String KARTAVIEW_PLUGIN = "kartaview_plugin";
     private static final String LOG_EXTENSION = ".log";
     private static final String UNDERSCORE = "_";
     private static final int DATE_INDEX = 3;
@@ -45,7 +45,7 @@ public class ClientLogger {
                 } else {
                     cleanupOldLogs(logDir);
                     final FileHandler fileHandler = new FileHandler(
-                            logDir.getPath() + SLASH + OPENSTREETVIEW_PLUGIN + UNDERSCORE + componentName + UNDERSCORE
+                            logDir.getPath() + SLASH + KARTAVIEW_PLUGIN + UNDERSCORE + componentName + UNDERSCORE
                                     + LocalDate.now().toString() + LOG_EXTENSION, true);
                     fileHandler.setFormatter(new SimpleFormatter());
                     logger = Logger.getLogger(ClientLogger.class.getName() + componentName);
@@ -69,7 +69,7 @@ public class ClientLogger {
     }
 
     private Optional<LocalDate> extractDate(final String fileName) {
-        if (fileName.matches(OPENSTREETVIEW_PLUGIN + ANY_CHARACTERS + LOG_EXTENSION + ANY_CHARACTERS)) {
+        if (fileName.matches(KARTAVIEW_PLUGIN + ANY_CHARACTERS + LOG_EXTENSION + ANY_CHARACTERS)) {
             final String[] nameComponents = fileName.split(UNDERSCORE);
             final String logDate = nameComponents[DATE_INDEX].split("\\.")[0];
             return Optional.of(LocalDate.parse(logDate));

@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
  */
 public final class CacheManager {
 
-    private static final String CACHE_NAME = "openstreetcam";
+    private static final String CACHE_NAME = "kartaview";
     private static final String CACHE_LOCATION = "/cache/";
     private static final String MEMORY_MANAGER = "org.apache.commons.jcs3.engine.memory.fifo.FIFOMemoryCache";
     private final CacheAccess<Key, CacheEntry> cache;
