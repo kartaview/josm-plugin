@@ -17,7 +17,7 @@ import com.grab.josm.common.cnf.BaseConfig;
  */
 public final class Config extends BaseConfig {
 
-    private static final String CONFIG_FILE = "openstreetcam.properties";
+    private static final String CONFIG_FILE = "kartaview.properties";
     private static final Config INSTANCE = new Config();
 
     private static final int MAX_CLOSEST_ITEMS = 10;

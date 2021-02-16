@@ -17,7 +17,7 @@ import com.grab.josm.common.cnf.BaseConfig;
  */
 public final class CacheConfig extends BaseConfig {
 
-    private static final String CONFIG_FILE = "openstreetcam_cache.properties";
+    private static final String CONFIG_FILE = "kartaview_cache.properties";
     private static final int DEFAULT_MEMORY_COUNT = 50;
     private static final int DEFAULT_DISK_COUNT = 5000;
     private static final int DEFAULT_PREV_NEXT_COUNT = 5;

@@ -23,7 +23,7 @@ import com.grab.josm.common.cnf.BaseConfig;
 public final class IconConfig extends BaseConfig {
 
     private static final IconConfig INSTANCE = new IconConfig();
-    private static final String CONFIG_FILE = "openstreetcam_icon.properties";
+    private static final String CONFIG_FILE = "kartaview_icon.properties";
     private static final int CLUSTER_BACKGROUND_SIZE = 49;
     private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
     private static final int SELECTED_ICON_SIZE = 28;

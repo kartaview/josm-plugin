@@ -16,7 +16,7 @@ import com.grab.josm.common.cnf.BaseConfig;
  */
 public final class KartaViewServiceConfig extends BaseConfig {
 
-    private static final String CONFIG_FILE = "openstreetcam_service.properties";
+    private static final String CONFIG_FILE = "kartaview_service.properties";
     private static final KartaViewServiceConfig INSTANCE = new KartaViewServiceConfig();
 
     private static final int MAX_ITEMS = 5000;

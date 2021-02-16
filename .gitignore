@@ -6,4 +6,5 @@ dist/
 .settings/
 /build-sonar.xml
 /openstreetview-plugin.iml
+/kartaviewview-plugin.iml
 /.DS_Store

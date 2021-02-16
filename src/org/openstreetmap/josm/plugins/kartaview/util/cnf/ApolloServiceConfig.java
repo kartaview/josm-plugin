@@ -16,7 +16,7 @@ import com.grab.josm.common.cnf.BaseConfig;
  */
 public final class ApolloServiceConfig extends BaseConfig {
 
-    private static final String CONFIG_FILE = "openstreetcam_apollo_service.properties";
+    private static final String CONFIG_FILE = "kartaview_apollo_service.properties";
     private static final ApolloServiceConfig INSTANCE = new ApolloServiceConfig();
 
     private final String serviceUrl;
