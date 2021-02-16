@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.kartaview.service.apollo.ApolloService;
 import org.openstreetmap.josm.plugins.kartaview.service.apollo.DetectionFilter;
 import org.openstreetmap.josm.plugins.kartaview.service.apollo.entity.SearchClustersAreaFilter;
 import org.openstreetmap.josm.plugins.kartaview.service.apollo.entity.SearchDetectionsAreaFilter;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.OpenStreetCamService;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.KartaViewService;
 import org.openstreetmap.josm.plugins.kartaview.service.photo.Paging;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
@@ -50,11 +50,11 @@ class SearchServiceHandler {
 
     private static final double AREA_EXTEND = 0.004;
 
-    protected final OpenStreetCamService openStreetCamService;
+    protected final KartaViewService kartaViewService;
     protected final ApolloService apolloService;
 
     SearchServiceHandler() {
-        openStreetCamService = new OpenStreetCamService();
+        kartaViewService = new KartaViewService();
         apolloService = new ApolloService();
     }
 
@@ -171,7 +171,7 @@ class SearchServiceHandler {
         }
         PhotoDataSet result = new PhotoDataSet();
         try {
-            result = openStreetCamService.listNearbyPhotos(area, date, osmUserId, paging);
+            result = kartaViewService.listNearbyPhotos(area, date, osmUserId, paging);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosSearchErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoListText());

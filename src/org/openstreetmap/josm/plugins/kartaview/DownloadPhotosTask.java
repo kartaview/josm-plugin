@@ -9,12 +9,12 @@ package org.openstreetmap.josm.plugins.kartaview;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.kartaview.util.Util;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
@@ -91,7 +91,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
                             && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
                         PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
+                    KartaViewLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 });
             }
@@ -117,7 +117,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
                         final SearchFilter listFilter = PreferenceManager.getInstance().loadSearchFilter();
                         final BoundingBox bbox = BoundingBoxUtil.currentBoundingBox();
                         photoDataSet = ServiceHandler.getInstance().listNearbyPhotos(bbox, listFilter,
-                                new Paging(page, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems()));
+                                new Paging(page, KartaViewServiceConfig.getInstance().getNearbyPhotosMaxItems()));
                     }
                 });
                 downloadThread.start();

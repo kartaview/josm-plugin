@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.common.DownloadMatchedOsmElement;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
@@ -47,7 +47,7 @@ import com.grab.josm.common.thread.ThreadPool;
 
 
 /**
- * Defines the {@code OpenStreetCamDetailsDialog} action panel. The user can perform the following actions: filter, jump
+ * Defines the {@code KartaViewDetailsDialog} action panel. The user can perform the following actions: filter, jump
  * to photo location and open photo web page.
  *
  * @author Beata
@@ -269,7 +269,7 @@ class ButtonPanel extends JPanel
     }
 
     /**
-     * Enables or disables the "OpenStreetCam Sequence" related action buttons based on the given arguments. The play
+     * Enables or disables the "KartaView Sequence" related action buttons based on the given arguments. The play
      * button is disabled if the last photo of the track was selected (isNext is false).
      *
      * @param isPrevious if true then the "Previous" button is enabled; if false then the button is disabled
@@ -588,7 +588,7 @@ class ButtonPanel extends JPanel
         public void actionPerformed(final ActionEvent event) {
             if (photo != null) {
                 final StringBuilder link =
-                        new StringBuilder(OpenStreetCamServiceConfig.getInstance().getPhotoDetailsUrl());
+                        new StringBuilder(KartaViewServiceConfig.getInstance().getPhotoDetailsUrl());
                 link.append(photo.getSequenceId()).append("/").append(photo.getSequenceIndex());
                 try {
                     OpenBrowser.displayUrl(new URI(link.toString()));

@@ -38,7 +38,7 @@ import com.grab.josm.common.thread.ThreadPool;
 
 
 /**
- * Defines the logic of the left side "OpenStreetCamDetails" panel.
+ * Defines the logic of the left side "KartaViewDetails" panel.
  *
  * @author Beata
  * @version $Revision$
@@ -87,7 +87,7 @@ public final class PhotoDetailsDialog extends ToggleDialog {
     /**
      * Returns the unique instance of the details dialog window.
      *
-     * @return a {@code OpenStreetCamDetailsDialog}
+     * @return a {@code KartaViewDetailsDialog}
      */
     public static synchronized PhotoDetailsDialog getInstance() {
         if (instance == null) {

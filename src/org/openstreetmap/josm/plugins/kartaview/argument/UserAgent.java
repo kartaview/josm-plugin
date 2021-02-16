@@ -21,13 +21,13 @@ import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 public class UserAgent {
 
     private final String josmVersion;
-    private final String openStreetCamVersion;
+    private final String kartaViewVersion;
     private final String osmUserInfo;
 
 
     public UserAgent() {
         josmVersion = Version.getInstance().getVersionString();
-        openStreetCamVersion = PreferenceManager.getInstance().loadPluginLocalVersion();
+        kartaViewVersion = PreferenceManager.getInstance().loadPluginLocalVersion();
         final User user = UserIdentityManager.getInstance().asUser();
         osmUserInfo = user.getId() > 0 ? Long.toString(user.getId()) : user.getName();
     }
@@ -37,8 +37,8 @@ public class UserAgent {
         return josmVersion;
     }
 
-    public String getOpenStreetCamVersion() {
-        return openStreetCamVersion;
+    public String getKartaViewVersion() {
+        return kartaViewVersion;
     }
 
     public String getOsmUserInfo() {
@@ -47,6 +47,6 @@ public class UserAgent {
 
     @Override
     public String toString() {
-        return "JOSM/" + josmVersion + ", OpenStreetCam/" + openStreetCamVersion + ", User Info/" + osmUserInfo;
+        return "JOSM/" + josmVersion + ", KartaView/" + kartaViewVersion + ", User Info/" + osmUserInfo;
     }
 }

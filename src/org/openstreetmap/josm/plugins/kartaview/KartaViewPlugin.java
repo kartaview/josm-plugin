@@ -14,7 +14,7 @@ import javax.swing.Timer;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.filter.DetectionTypeContent;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
@@ -55,7 +55,7 @@ import com.grab.josm.common.thread.ThreadPool;
 
 
 /**
- * Defines the main functionality of the OpenStreetCam plugin.
+ * Defines the main functionality of the KartaView plugin.
  *
  * @author Beata
  * @version $Revision$
@@ -120,7 +120,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             oldMapFrame.removeToggleDialog(PhotoDetailsDialog.getInstance());
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
-            OpenStreetCamLayer.destroyInstance();
+            KartaViewLayer.destroyInstance();
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
@@ -160,7 +160,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
         MainApplication.getMap().mapView.addMouseMotionListener(selectionHandler);
 
         // add layer
-        MainApplication.getMap().mapView.getLayerManager().addLayer(OpenStreetCamLayer.getInstance());
+        MainApplication.getMap().mapView.getLayerManager().addLayer(KartaViewLayer.getInstance());
     }
 
 
@@ -177,7 +177,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     @Override
     public void layerAdded(final LayerAddEvent event) {
-        if (event.getAddedLayer() instanceof OpenStreetCamLayer) {
+        if (event.getAddedLayer() instanceof KartaViewLayer) {
             PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             zoomChanged();
         }
@@ -190,14 +190,14 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
     @Override
     public void layerRemoving(final LayerRemoveEvent event) {
-        if (event.getRemovedLayer() instanceof OpenStreetCamLayer) {
+        if (event.getRemovedLayer() instanceof KartaViewLayer) {
             NavigatableComponent.removeZoomChangeListener(this);
             MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
             MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
             MainApplication.getLayerManager().removeLayerChangeListener(this);
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
             DetectionDetailsDialog.getInstance().clearDetailsDialog();
-            OpenStreetCamLayer.destroyInstance();
+            KartaViewLayer.destroyInstance();
             DataSet.getInstance().clear(true);
         }
     }
@@ -212,7 +212,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getPoint())) {
             SwingUtilities.invokeLater(() -> {
                 MainApplication.getMap().mapView.zoomTo(selectedPhoto.getPoint());
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
         }
@@ -256,7 +256,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             // remove detection
             DataSet.getInstance().removeDetection(detection);
             PhotoDetailsDialog.getInstance().removePhotoDetection(detection);
-            OpenStreetCamLayer.getInstance().invalidate();
+            KartaViewLayer.getInstance().invalidate();
             MainApplication.getMap().repaint();
             DataSet.getInstance().updateSelectedDetection(null);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
@@ -264,7 +264,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             // update detection
             DataSet.getInstance().updateSelectedDetection(detection);
             DetectionDetailsDialog.getInstance().updateDetectionDetails(detection);
-            OpenStreetCamLayer.getInstance().invalidate();
+            KartaViewLayer.getInstance().invalidate();
             MainApplication.getMap().repaint();
         }
     }
@@ -288,7 +288,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            if (!MainApplication.getMap().mapView.getLayerManager().containsLayer(OpenStreetCamLayer.getInstance())) {
+            if (!MainApplication.getMap().mapView.getLayerManager().containsLayer(KartaViewLayer.getInstance())) {
                 addLayer();
                 PreferenceManager.getInstance().saveLayerOpenedFlag(true);
             }
@@ -329,7 +329,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 } else if (prefManager.isAutoplayDelayKey(event.getKey())) {
                     selectionHandler.changeAutoplayTimerDelay();
                 } else if (prefManager.isDisplayDetectionLocationFlag(event.getKey())) {
-                    OpenStreetCamLayer.getInstance().invalidate();
+                    KartaViewLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 } else if (prefManager.hasPhotoFormatFlagChanged(event.getKey())) {
                     updatePhotoPanel();
@@ -353,7 +353,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 if (DataSet.getInstance().getSelectedPhoto() == null) {
                     PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 }
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
             ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
@@ -381,7 +381,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
                 detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false, null);
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             }
         }

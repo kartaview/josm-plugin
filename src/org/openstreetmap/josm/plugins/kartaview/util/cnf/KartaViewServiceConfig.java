@@ -14,10 +14,10 @@ import com.grab.josm.common.cnf.BaseConfig;
  * @author beataj
  * @version $Revision$
  */
-public final class OpenStreetCamServiceConfig extends BaseConfig {
+public final class KartaViewServiceConfig extends BaseConfig {
 
     private static final String CONFIG_FILE = "openstreetcam_service.properties";
-    private static final OpenStreetCamServiceConfig INSTANCE = new OpenStreetCamServiceConfig();
+    private static final KartaViewServiceConfig INSTANCE = new KartaViewServiceConfig();
 
     private static final int MAX_ITEMS = 5000;
 
@@ -30,7 +30,7 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
     private final int tracksMaxItems;
 
 
-    private OpenStreetCamServiceConfig() {
+    private KartaViewServiceConfig() {
         super(CONFIG_FILE);
 
         serviceBaseUrl = readProperty("service.url");
@@ -43,7 +43,7 @@ public final class OpenStreetCamServiceConfig extends BaseConfig {
     }
 
 
-    public static OpenStreetCamServiceConfig getInstance() {
+    public static KartaViewServiceConfig getInstance() {
         return INSTANCE;
     }
 

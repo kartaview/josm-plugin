@@ -16,7 +16,7 @@ import org.openstreetmap.josm.gui.preferences.PreferenceDialog;
 
 
 /**
- * Opens the preference settings dialog and selects the OpenStreetCam plugin related settings tab.
+ * Opens the preference settings dialog and selects the KartaView plugin related settings tab.
  *
  * @author beataj
  * @version $Revision$

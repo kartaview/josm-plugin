@@ -29,7 +29,7 @@ import com.grab.josm.common.gui.builder.ContainerBuilder;
 
 
 /**
- * Dialog window that displays the {@code ListFilter}s that can be applied to the OpenStreetCam layer.
+ * Dialog window that displays the {@code ListFilter}s that can be applied to the KartaView layer.
  *
  * @author Beata
  * @version $Revision$

@@ -56,7 +56,7 @@ public class ClientLogger {
 
             } catch (SecurityException | IOException e) {
                 Logging.info(
-                        "Failed to initialize client logger for openstreetview plugin with component: " + componentName,
+                        "Failed to initialize client logger for KartaView plugin with component: " + componentName,
                         e);
             }
         }

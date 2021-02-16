@@ -18,7 +18,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
@@ -99,7 +99,7 @@ class DetailsPanel extends JPanel implements HyperlinkListener {
     @Override
     public void hyperlinkUpdate(final HyperlinkEvent event) {
         if (txtDetails.getText() != null && event.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-            final StringBuilder link = new StringBuilder(OpenStreetCamServiceConfig.getInstance().getUserPageUrl());
+            final StringBuilder link = new StringBuilder(KartaViewServiceConfig.getInstance().getUserPageUrl());
             link.append(username);
             try {
                 OpenBrowser.displayUrl(new URI(link.toString()));

@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.kartaview.argument;
 
 /**
- * Defines the projection types supported by OpenStreetCam.
+ * Defines the projection types supported by KartaView.
  *
  * @author nicoleta.viregan
  */

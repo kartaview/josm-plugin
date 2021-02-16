@@ -550,7 +550,7 @@ public final class DataSet {
         this.selectedPhoto = selectedPhoto;
 
         // workaround for the case when the cluster photo is selected and object is not complete
-        // (avoiding to load more than once the same photo from OpenStreetCam API
+        // (avoiding to load more than once the same photo from KartaView API
         if (selectedPhoto != null && selectedCluster != null && selectedCluster.getPhotos() != null
                 && selectedCluster.getPhotos().contains(selectedPhoto)) {
             selectedCluster.getPhotos().remove(selectedPhoto);

@@ -6,7 +6,7 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.service.photo;
 
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 
 
 /**
@@ -19,11 +19,11 @@ public class Paging {
 
     /** default paging used for the list/nearby-photos method */
     public static final Paging NEARBY_PHOTOS_DEAFULT =
-            new Paging(1, OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems());
+            new Paging(1, KartaViewServiceConfig.getInstance().getNearbyPhotosMaxItems());
 
     /** default paging used for the tracks method */
     public static final Paging TRACKS_DEFAULT =
-            new Paging(1, OpenStreetCamServiceConfig.getInstance().getTracksMaxItems());
+            new Paging(1, KartaViewServiceConfig.getInstance().getTracksMaxItems());
 
     private final int page;
     private final int itemsPerPage;

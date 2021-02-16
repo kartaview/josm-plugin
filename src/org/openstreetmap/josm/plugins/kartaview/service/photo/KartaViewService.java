@@ -25,7 +25,7 @@ import org.openstreetmap.josm.plugins.kartaview.service.photo.adapter.SegmentTyp
 import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.ListResponse;
 import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.PhotoDetailsResponse;
 import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.SequencePhotoListResponse;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
 import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
@@ -41,12 +41,12 @@ import com.grab.josm.common.http.HttpConnectorException;
 
 
 /**
- * Executes the operations of the OpenStreetCam service.
+ * Executes the operations of the KartaView service.
  *
  * @author Beata
  * @version $Revision$
  */
-public class OpenStreetCamService extends BaseService {
+public class KartaViewService extends BaseService {
 
     private static final int SECOND_PAGE = 2;
     private static final ClientLogger logger = new ClientLogger("oscApi");
@@ -62,7 +62,7 @@ public class OpenStreetCamService extends BaseService {
 
 
     /**
-     * Retrieves OpenStreetCam photos from the given area based on the specified filters.
+     * Retrieves KartaView photos from the given area based on the specified filters.
      *
      * @param area a {@code BoundingBox} defines the searching area
      * @param date a {@code Date} if not null, then the method returns the photos that were uploaded after the specified
@@ -77,7 +77,7 @@ public class OpenStreetCamService extends BaseService {
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
         final String url =
-                OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.LIST_NEARBY_PHOTOS);
+                KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.LIST_NEARBY_PHOTOS);
         final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
                 new TypeToken<ListResponse<Photo>>() {}.getType(), logger, RequestConstants.LIST_NEARBY_PHOTOS);
         verifyResponseStatus(listPhotoResponse);
@@ -102,7 +102,7 @@ public class OpenStreetCamService extends BaseService {
     public Sequence retrieveSequence(final Long id) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(id).getContent();
         final String url =
-                OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.SEQUENCE_PHOTO_LIST);
+                KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.SEQUENCE_PHOTO_LIST);
         final SequencePhotoListResponse detailsResponse = executePost(url, arguments, SequencePhotoListResponse.class,
                 logger, RequestConstants.SEQUENCE_PHOTO_LIST);
         verifyResponseStatus(detailsResponse);
@@ -125,7 +125,7 @@ public class OpenStreetCamService extends BaseService {
      * @throws ServiceException if the operation failed
      */
     public byte[] retrievePhoto(final String photoName) throws ServiceException {
-        final String url = OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl().concat(photoName);
+        final String url = KartaViewServiceConfig.getInstance().getServiceBaseUrl().concat(photoName);
         byte[] image;
         try {
             final HttpConnector connector = new HttpConnector(url, getHeaders());
@@ -143,7 +143,7 @@ public class OpenStreetCamService extends BaseService {
     }
 
     /**
-     * Returns a list of segments that has OpenStreetCam coverage from the given area.
+     * Returns a list of segments that has KartaView coverage from the given area.
      *
      * @param area a {@code BoundingBox} represents the current area
      * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
@@ -159,16 +159,16 @@ public class OpenStreetCamService extends BaseService {
         final Set<Segment> segments = new HashSet<>();
         if (listSegmentResponse != null) {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
-            if (listSegmentResponse.getTotalItems() > OpenStreetCamServiceConfig.getInstance().getTracksMaxItems()) {
-                final int pages = listSegmentResponse.getTotalItems() > OpenStreetCamServiceConfig.getInstance()
+            if (listSegmentResponse.getTotalItems() > KartaViewServiceConfig.getInstance().getTracksMaxItems()) {
+                final int pages = listSegmentResponse.getTotalItems() > KartaViewServiceConfig.getInstance()
                         .getTracksMaxItems()
                                 ? (listSegmentResponse.getTotalItems()
-                                        / OpenStreetCamServiceConfig.getInstance().getTracksMaxItems()) + 1
+                                        / KartaViewServiceConfig.getInstance().getTracksMaxItems()) + 1
                                 : SECOND_PAGE;
                 final ExecutorService executor = Executors.newFixedThreadPool(pages);
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
                 for (int i = SECOND_PAGE; i <= pages; i++) {
-                    final Paging paging = new Paging(i, OpenStreetCamServiceConfig.getInstance().getTracksMaxItems());
+                    final Paging paging = new Paging(i, KartaViewServiceConfig.getInstance().getTracksMaxItems());
                     final Callable<ListResponse<Segment>> callable =
                             () -> listMatchedTacks(area, osmUserId, zoom, paging);
                     futures.add(executor.submit(callable));
@@ -183,7 +183,7 @@ public class OpenStreetCamService extends BaseService {
     private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
             final Paging paging) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final String url = OpenStreetCamServiceConfig.getInstance().getServiceBaseUrl()
+        final String url = KartaViewServiceConfig.getInstance().getServiceBaseUrl()
                 .concat(RequestConstants.LIST_MATCHED_TRACKS);
         final ListResponse<Segment> listSegmentResponse = executePost(url, arguments,
                 new TypeToken<ListResponse<Segment>>() {}.getType(), logger, RequestConstants.LIST_MATCHED_TRACKS);
@@ -195,7 +195,7 @@ public class OpenStreetCamService extends BaseService {
     public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
         final String url =
-                OpenStreetCamServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
+                KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
         final PhotoDetailsResponse result =
                 executePost(url, arguments, PhotoDetailsResponse.class, logger, RequestConstants.PHOTO_DETAILS);
         verifyResponseStatus(result);

@@ -15,7 +15,7 @@ import javax.swing.Timer;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.observer.ClusterObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.NearbyPhotoObserver;
@@ -40,7 +40,7 @@ import com.grab.josm.common.thread.ThreadPool;
 
 
 /**
- * Handles operations associated with OpenStreetCam data selection.
+ * Handles operations associated with KartaView data selection.
  *
  * @author beataj
  * @version $Revision$
@@ -70,7 +70,7 @@ public final class SelectionHandler extends MouseSelectionHandler
         }
         DataSet.getInstance().clearSelection();
         DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-        OpenStreetCamLayer.getInstance().invalidate();
+        KartaViewLayer.getInstance().invalidate();
         MainApplication.getMap().repaint();
     }
 
@@ -107,7 +107,7 @@ public final class SelectionHandler extends MouseSelectionHandler
             selectDetection(detection);
             selectPhoto(photo);
         }
-        OpenStreetCamLayer.getInstance().invalidate();
+        KartaViewLayer.getInstance().invalidate();
     }
 
     private void selectPhoto(final Photo photo) {
@@ -203,7 +203,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                     MainApplication.getMap().mapView.zoomTo(photo.getPoint());
                 }
 
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
                 if (PhotoDetailsDialog.getInstance().getButton() != null
                         && !PhotoDetailsDialog.getInstance().getButton().isSelected()) {
@@ -246,7 +246,7 @@ public final class SelectionHandler extends MouseSelectionHandler
                     if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
                         PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
                     }
-                    OpenStreetCamLayer.getInstance().invalidate();
+                    KartaViewLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 });
             }
@@ -261,7 +261,7 @@ public final class SelectionHandler extends MouseSelectionHandler
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().setSelectedSequence(null);
                 PhotoDetailsDialog.getInstance().enableSequenceActions(false, false, null);
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
         }

@@ -29,7 +29,7 @@ import org.openstreetmap.josm.plugins.kartaview.entity.DownloadedWay;
 import org.openstreetmap.josm.plugins.kartaview.entity.OsmElement;
 import org.openstreetmap.josm.plugins.kartaview.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.kartaview.gui.ShortcutFactory;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.handler.OsmDataHandler;
 
 
@@ -77,7 +77,7 @@ final class MatchedDataAction extends JosmAction {
 
                         if (!downloadedData.isEmpty()) {
                             DataSet.getInstance().setMatchedData(downloadedData);
-                            OpenStreetCamLayer.getInstance().invalidate();
+                            KartaViewLayer.getInstance().invalidate();
                         }
                     }
         }

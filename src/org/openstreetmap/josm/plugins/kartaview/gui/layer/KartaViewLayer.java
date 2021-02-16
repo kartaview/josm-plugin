@@ -19,28 +19,28 @@ import static org.openstreetmap.josm.plugins.kartaview.gui.layer.Constants.RENDE
 
 
 /**
- * Defines the OpenStreetCam layer functionality.
+ * Defines the KartaView layer functionality.
  *
  * @author Beata
  * @version $Revision$
  */
-public final class OpenStreetCamLayer extends AbtractLayer {
+public final class KartaViewLayer extends AbtractLayer {
 
     private final PaintHandler paintHandler = new PaintHandler();
-    private static OpenStreetCamLayer instance;
+    private static KartaViewLayer instance;
 
-    private OpenStreetCamLayer() {
+    private KartaViewLayer() {
         super();
     }
 
     /**
      * Returns the unique instance of the layer.
      *
-     * @return a {@code OpenStreetCamLayer} object
+     * @return a {@code KartaViewLayer} object
      */
-    public static OpenStreetCamLayer getInstance() {
+    public static KartaViewLayer getInstance() {
         if (instance == null) {
-            instance = new OpenStreetCamLayer();
+            instance = new KartaViewLayer();
         }
         return instance;
     }

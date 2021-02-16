@@ -196,7 +196,7 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the user's OpenStreetCam plugin related preference settings from the preference file.
+     * Loads the user's KartaView plugin related preference settings from the preference file.
      *
      * @return a {@code PreferenceSettings} object
      */

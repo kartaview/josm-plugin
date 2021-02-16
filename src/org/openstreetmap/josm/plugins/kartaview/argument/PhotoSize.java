@@ -8,7 +8,7 @@ package org.openstreetmap.josm.plugins.kartaview.argument;
 
 
 /**
- * Defines the photo types supported by OpenStreetCam.
+ * Defines the photo types supported by KartaView.
  *
  * @author beataj
  * @version $Revision$

@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.detection.DetectionDetailsDialog;
 import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.OpenStreetCamLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.kartaview.util.Util;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
@@ -23,7 +23,6 @@ import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
-import org.openstreetmap.josm.plugins.kartaview.handler.ServiceHandler;
 import com.grab.josm.common.argument.BoundingBox;
 
 
@@ -37,7 +36,7 @@ public class DataUpdateHandler {
 
     /**
      * Updates the current map view with new data. The data type displayed depends on the current zoom level. Segments
-     * that have OpenStreetCam coverage are displayed in the following cases:
+     * that have KartaView coverage are displayed in the following cases:
      * <ul>
      * <li>current zoom level grater or equals to the minimum map data zoom (~10) and current zoom level less than the
      * default photo location zoom</li>
@@ -129,8 +128,8 @@ public class DataUpdateHandler {
                 if (mapViewSettings.isManualSwitchFlag()) {
                     PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.COVERAGE, null, null);
                 }
-                OpenStreetCamLayer.getInstance().enablePhotoDataSetDownloadActions();
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().enablePhotoDataSetDownloadActions();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
         }
@@ -143,7 +142,7 @@ public class DataUpdateHandler {
                     && (MainApplication.getMap() != null && MainApplication.getMap().mapView != null)) {
                 SwingUtilities.invokeLater(() -> {
                     DataSet.getInstance().updateLowZoomLevelData(segments);
-                    OpenStreetCamLayer.getInstance().invalidate();
+                    KartaViewLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 });
             }
@@ -158,7 +157,7 @@ public class DataUpdateHandler {
                 if (mapViewSettings.isManualSwitchFlag()) {
                     PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.ELEMENT, null, null);
                 }
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
         }
@@ -186,8 +185,8 @@ public class DataUpdateHandler {
                         && !PreferenceManager.getInstance().loadAutoplayStartedFlag()) {
                     PhotoDetailsDialog.getInstance().enableClosestPhotoButton(true);
                 }
-                OpenStreetCamLayer.getInstance().enablePhotoDataSetDownloadActions();
-                OpenStreetCamLayer.getInstance().invalidate();
+                KartaViewLayer.getInstance().enablePhotoDataSetDownloadActions();
+                KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });
         }

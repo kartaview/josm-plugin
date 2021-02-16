@@ -17,17 +17,17 @@ import org.openstreetmap.josm.plugins.kartaview.gui.ShortcutFactory;
 
 
 /**
- * Deletes the OpenStreetCam layer.
+ * Deletes the KartaView layer.
  *
  * @author ioanao
  * @version $Revision$
  */
-final class OpenStreetCamDeleteLayerAction extends JosmAction {
+final class KartaViewDeleteLayerAction extends JosmAction {
 
     private static final long serialVersionUID = 1569467764140753112L;
     private final DeleteLayerAction deleteAction = LayerListDialog.getInstance().createDeleteLayerAction();
 
-    OpenStreetCamDeleteLayerAction() {
+    KartaViewDeleteLayerAction() {
         super(GuiConfig.getInstance().getLayerDeleteMenuItemLbl(), IconConfig.getInstance().getDeleteIconName(),
                 GuiConfig.getInstance().getLayerDeleteMenuItemTlt(),
                 ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getLayerDeleteMenuItemLbl()), true);

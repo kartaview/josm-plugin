@@ -41,7 +41,7 @@ abstract class AbtractLayer extends Layer {
         super(GuiConfig.getInstance().getPluginShortName());
         displayFilterAction = new DisplayFilterDialogAction();
         openFeedbackAction = new OpenFeedbackPageAction();
-        deleteLayerAction = new OpenStreetCamDeleteLayerAction();
+        deleteLayerAction = new KartaViewDeleteLayerAction();
         downloadPreviousPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerPreviousMenuItemLbl(),
                 GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle(), false);
         downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),

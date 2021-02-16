@@ -6,7 +6,7 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.entity;
 
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.OpenStreetCamServiceConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class PhotoDataSet {
     }
 
     public boolean hasNextItems() {
-        return page != null && totalItems > page * OpenStreetCamServiceConfig.getInstance().getNearbyPhotosMaxItems();
+        return page != null && totalItems > page * KartaViewServiceConfig.getInstance().getNearbyPhotosMaxItems();
     }
 
     public boolean hasItems() {

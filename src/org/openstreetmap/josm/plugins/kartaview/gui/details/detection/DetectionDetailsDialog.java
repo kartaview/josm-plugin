@@ -29,7 +29,7 @@ import com.grab.josm.common.gui.builder.ContainerBuilder;
 
 
 /**
- * Defines the logic of the left side "OpenStreetCam Detection Details" panel. The panel displays either the information
+ * Defines the logic of the left side "KartaView Detection Details" panel. The panel displays either the information
  * and corresponding actions of a selected detection or cluster (detection aggregation).
  *
  * @author ioanao

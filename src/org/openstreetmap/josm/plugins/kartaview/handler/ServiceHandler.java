@@ -150,7 +150,7 @@ public final class ServiceHandler extends SearchServiceHandler {
     private Sequence retrieveSequencePhotos(final Long id) {
         Sequence sequence = null;
         try {
-            sequence = openStreetCamService.retrieveSequence(id);
+            sequence = kartaViewService.retrieveSequence(id);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
@@ -204,7 +204,7 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     /**
-     * Lists the segments that have OpenStreetCam coverage from the given area(s) corresponding to the specified zoom
+     * Lists the segments that have KartaView coverage from the given area(s) corresponding to the specified zoom
      * level.
      *
      * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
@@ -223,13 +223,13 @@ public final class ServiceHandler extends SearchServiceHandler {
                 final List<Future<List<Segment>>> futures = new ArrayList<>();
                 for (final BoundingBox bbox : areas) {
                     final Callable<List<Segment>> callable =
-                            () -> openStreetCamService.listMatchedTracks(bbox, osmUserId, zoom);
+                            () -> kartaViewService.listMatchedTracks(bbox, osmUserId, zoom);
                     futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
             } else {
-                finalResult = openStreetCamService.listMatchedTracks(areas.get(0), osmUserId, zoom);
+                finalResult = kartaViewService.listMatchedTracks(areas.get(0), osmUserId, zoom);
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
@@ -248,7 +248,7 @@ public final class ServiceHandler extends SearchServiceHandler {
      * @throws ServiceException if the download operation fails
      */
     byte[] retrievePhoto(final String photoName) throws ServiceException {
-        return openStreetCamService.retrievePhoto(photoName);
+        return kartaViewService.retrievePhoto(photoName);
     }
 
     /**
@@ -261,7 +261,7 @@ public final class ServiceHandler extends SearchServiceHandler {
     public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) {
         Photo result = null;
         try {
-            result = openStreetCamService.retrievePhotoDetails(sequenceId, sequenceIndex);
+            result = kartaViewService.retrievePhotoDetails(sequenceId, sequenceIndex);
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadPhotosErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorPhotoLoadingText());
