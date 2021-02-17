@@ -1,0 +1,121 @@
+/*
+ * Copyright 2019 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ *
+ */
+package org.openstreetmap.josm.plugins.kartaview.gui.layer;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.Action;
+import javax.swing.Icon;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
+import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
+import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
+
+
+/**
+ * Defines JOSM layer related functionality.
+ *
+ * @author Beata
+ * @version $Revision$
+ */
+abstract class AbtractLayer extends Layer {
+
+    private final JosmAction displayFilterAction;
+    private final JosmAction openFeedbackAction;
+    private final JosmAction deleteLayerAction;
+    private final JosmAction downloadPreviousPhotosAction;
+    private final JosmAction downloadNextPhotosAction;
+    private final JosmAction openPreferencesAction;
+    private final JosmAction saveSequenceAction;
+
+    AbtractLayer() {
+        super(GuiConfig.getInstance().getPluginShortName());
+        displayFilterAction = new DisplayFilterDialogAction();
+        openFeedbackAction = new OpenFeedbackPageAction();
+        deleteLayerAction = new KartaViewDeleteLayerAction();
+        downloadPreviousPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerPreviousMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle(), false);
+        downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadNextPhotosTitle(), true);
+        openPreferencesAction = new OpenPreferenceDialogAction();
+        saveSequenceAction = new SaveTrackAction();
+    }
+
+
+    @Override
+    public Icon getIcon() {
+        return SearchFilter.DEFAULT.equals(PreferenceManager.getInstance().loadSearchFilter())
+                ? IconConfig.getInstance().getLayerIcon() : IconConfig.getInstance().getLayerIconFiltered();
+    }
+
+    @Override
+    public Object getInfoComponent() {
+        return GuiConfig.getInstance().getPluginTlt();
+    }
+
+    @Override
+    public Action[] getMenuEntries() {
+        final LayerListDialog layerListDialog = LayerListDialog.getInstance();
+        final List<Action> actions = new ArrayList<>();
+        actions.add(layerListDialog.createActivateLayerAction(this));
+        actions.add(layerListDialog.createShowHideLayerAction());
+        actions.add(deleteLayerAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+        if (addSequenceMenuItem()) {
+            actions.add(saveSequenceAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
+        actions.add(displayFilterAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+        if (addPhotoDataSetMenuItems()) {
+            actions.add(downloadPreviousPhotosAction);
+            actions.add(downloadNextPhotosAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
+        actions.add(openFeedbackAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+
+        actions.add(openPreferencesAction);
+        actions.add(SeparatorLayerAction.INSTANCE);
+        actions.add(new LayerListPopup.InfoAction(this));
+        return actions.toArray(new Action[0]);
+    }
+
+    abstract boolean addPhotoDataSetMenuItems();
+
+    abstract boolean addSequenceMenuItem();
+
+    @Override
+    public String getToolTipText() {
+        return GuiConfig.getInstance().getPluginLongName();
+    }
+
+    @Override
+    public boolean isMergable(final Layer layer) {
+        return false;
+    }
+
+    @Override
+    public void mergeFrom(final Layer layer) {
+        // this operation is not supported
+    }
+
+    @Override
+    public void visitBoundingBox(final BoundingXYVisitor visitor) {
+        // no logic to add here
+    }
+
+    void enablePhotoDataSetDownloadActions(final boolean downloadPrevious, final boolean downloadNext) {
+        downloadPreviousPhotosAction.setEnabled(downloadPrevious);
+        downloadNextPhotosAction.setEnabled(downloadNext);
+    }
+}

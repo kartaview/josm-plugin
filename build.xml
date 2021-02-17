@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="openstreetview-plugin" xmlns:if="ant:if" xmlns:unless="ant:unless" default="dist" basedir=".">
+<project name="kartaview-plugin" xmlns:if="ant:if" xmlns:unless="ant:unless" default="dist" basedir=".">
 
 	<property name="plugin.build.dir" value="${basedir}/build/classes" />
 	<property name="plugin.apidoc.dir" value="${basedir}/build/doc" />
@@ -7,7 +7,7 @@
 	<property name="plugin.dist.dir" value="${basedir}/dist" />
 	<property name="plugin.lib.dir" value="${basedir}/lib" />
 	<property name="plugin.images.dir" value="${basedir}/images" />
-	<property name="plugin.name" value="OpenStreetCam.jar" />
+	<property name="plugin.name" value="KartaView.jar" />
 	<property name="JOSM_lib" value="josm-tested.jar" />
 
 	<tstamp>
@@ -49,7 +49,7 @@
 			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-latest.jar" />
 			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
 		</path>
-		<javadoc destdir="${plugin.apidoc.dir}" source="1.8" classpathref="classpath" windowtitle="OpenStreetView plugin API">
+		<javadoc destdir="${plugin.apidoc.dir}" source="1.8" classpathref="classpath" windowtitle="KartaView plugin API">
 			<link href="http://docs.oracle.com/javase/8/docs/api/" />
 			<packageset dir="${plugin.src.dir}">
 			</packageset>
@@ -72,11 +72,11 @@
 		<copy todir="${plugin.build.dir}">
 			<fileset dir="resources" />
 		</copy>
-		<replaceregexp if:set="osc_service_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="service.url=.*" replace="${osc_service_url}" />
-		<replaceregexp if:set="osc_details_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="service.details.url=.*" replace="${osc_details_url}" />
-		<replaceregexp if:set="osc_user_url" file="${plugin.build.dir}/openstreetcam_service.properties" match="service.user.url=.*" replace="${osc_user_url}" />
-		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/openstreetcam_apollo_service.properties" match="${url.key}" replace="${apollo_service_url}" />
-		<replaceregexp if:set="debug_log_enabled" file="${plugin.build.dir}/openstreetcam.properties" match="debug.log.enabled=.*" replace="${debug_log_enabled}" />
+		<replaceregexp if:set="osc_service_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.url=.*" replace="${osc_service_url}" />
+		<replaceregexp if:set="osc_details_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.details.url=.*" replace="${osc_details_url}" />
+		<replaceregexp if:set="osc_user_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.user.url=.*" replace="${osc_user_url}" />
+		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/kartaview_apollo_service.properties" match="${url.key}" replace="${apollo_service_url}" />
+		<replaceregexp if:set="debug_log_enabled" file="${plugin.build.dir}/kartaview.properties" match="debug.log.enabled=.*" replace="${debug_log_enabled}" />
 
 		<copy todir="${plugin.build.dir}/images">
 			<fileset dir="images" />
@@ -92,11 +92,11 @@
 			<zipfileset src="${plugin.lib.dir}/josm-common-3.6.jar" />
 			<manifest>
 				<attribute name="Author" value="Grab" />
-				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openstreetcam.OpenStreetCamPlugin" />
+				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.kartaview.KartaViewPlugin" />
 				<attribute name="Plugin-Date" value="${TODAY}" />
-				<attribute name="Plugin-Description" value="Lets you map from OpenStreetCam street level imagery." />
+				<attribute name="Plugin-Description" value="Lets you map from KartaView street level imagery." />
 				<attribute name="Plugin-Link" value="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/OpenStreetCam" />
-				<attribute name="Plugin-Icon" value="images/openstreetcam_logo_50x50.png" />
+				<attribute name="Plugin-Icon" value="images/kartaview_logo_50x50.svg" />
 				<attribute name="Plugin-Version" value="${build-label}" />
 				<attribute name="Plugin-Mainversion" value="16731" />
 				<attribute name="15509_Plugin-Url" value="316;https://grab.community.improve-osm.org/plugins/openstreetcam/1.0/OpenStreetCam.jar" />
