@@ -45,7 +45,7 @@ final class Constants {
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";
 
 
-    static final Color SEGMENT_COLOR = new Color(179, 0, 223);
+    static final Color SEGMENT_COLOR = new Color(99, 91, 255);
     static final Stroke SEGMENT_STROKE = new BasicStroke(4F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     static final float[] SEGMENT_TRANSPARENCY = { 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.9f, 0.95f, 1f };
     static final Float OPAQUE_ALPHA = 1.0f;
