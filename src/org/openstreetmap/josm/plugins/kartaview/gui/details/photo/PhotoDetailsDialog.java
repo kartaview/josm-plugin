@@ -26,7 +26,6 @@ import org.openstreetmap.josm.plugins.kartaview.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.kartaview.handler.PhotoHandler;
 import org.openstreetmap.josm.plugins.kartaview.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.kartaview.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.SequenceObserver;
@@ -234,20 +233,17 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * Registers the observers to the panels.
      *
      * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
-     * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
      * @param switchPhotoFormatObserver the {@code SwitchPhotoFormatObserver} listens for switch image format button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
-    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
-            final MapViewTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
+    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver, final LocationObserver locationObserver,
             final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
             final SwitchPhotoFormatObserver switchPhotoFormatObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
-        pnlBtn.registerObserver(dataTypeChangeObserver);
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(trackAutoplayObserver);

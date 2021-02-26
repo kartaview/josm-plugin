@@ -25,14 +25,11 @@ import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.Projection;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
 import org.openstreetmap.josm.plugins.kartaview.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.kartaview.observer.LocationObservable;
 import org.openstreetmap.josm.plugins.kartaview.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.kartaview.observer.MapViewTypeChangeObservable;
-import org.openstreetmap.josm.plugins.kartaview.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.NearbyPhotoObservable;
 import org.openstreetmap.josm.plugins.kartaview.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.SequenceAutoplayObservable;
@@ -54,8 +51,8 @@ import com.grab.josm.common.thread.ThreadPool;
  * @version $Revision$
  */
 class ButtonPanel extends JPanel
-        implements NearbyPhotoObservable, MapViewTypeChangeObservable, LocationObservable, SequenceObservable,
-        SequenceAutoplayObservable, SwitchPhotoFormatObservable {
+        implements NearbyPhotoObservable, LocationObservable, SequenceObservable, SequenceAutoplayObservable,
+        SwitchPhotoFormatObservable {
 
     private static final long serialVersionUID = -2909078640977666884L;
 
@@ -76,7 +73,6 @@ class ButtonPanel extends JPanel
 
     /* notifies the plugin main class */
     private transient NearbyPhotoObserver nearbyPhotoObserver;
-    private transient MapViewTypeChangeObserver dataUpdateObserver;
     private transient LocationObserver locationObserver;
     private transient SequenceObserver sequenceObserver;
     private transient SequenceAutoplayObserver sequenceAutoplayObserver;
@@ -308,16 +304,6 @@ class ButtonPanel extends JPanel
     @Override
     public void notifyNearbyPhotoObserver() {
         nearbyPhotoObserver.selectNearbyPhoto();
-    }
-
-    @Override
-    public void registerObserver(final MapViewTypeChangeObserver dataUpdateObserver) {
-        this.dataUpdateObserver = dataUpdateObserver;
-    }
-
-    @Override
-    public void notifyDataUpdateObserver(final MapViewType dataType) {
-        dataUpdateObserver.update(dataType);
     }
 
     @Override

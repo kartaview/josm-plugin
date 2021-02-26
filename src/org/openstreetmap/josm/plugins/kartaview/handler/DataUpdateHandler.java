@@ -19,7 +19,6 @@ import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
@@ -66,18 +65,9 @@ public class DataUpdateHandler {
     }
 
     private void normalFlow(final MapViewSettings mapViewSettings, final int zoom, final boolean checkSelection) {
-        final MapViewType dataType = PreferenceManager.getInstance().loadMapViewType();
         if (zoom < mapViewSettings.getPhotoZoom() && !DataSet.getInstance().hasActiveSelection()) {
-            if (dataType == null || dataType == MapViewType.ELEMENT) {
-                // user zoomed out to segment view
-                PreferenceManager.getInstance().saveMapViewType(MapViewType.COVERAGE);
-            }
             updateLowZoomLevelData(mapViewSettings, zoom);
         } else if (zoom >= mapViewSettings.getPhotoZoom()) {
-            if (dataType == null || dataType == MapViewType.COVERAGE) {
-                // user zoomed in to photo view
-                PreferenceManager.getInstance().saveMapViewType(MapViewType.ELEMENT);
-            }
             updateHighZoomLevelData(mapViewSettings, checkSelection);
         }
     }
@@ -99,8 +89,7 @@ public class DataUpdateHandler {
         if (!areas.isEmpty()) {
             final SearchFilter searchFilter = PreferenceManager.getInstance().loadSearchFilter();
             final List<Segment> segments = ServiceHandler.getInstance().listMatchedTracks(areas, searchFilter, zoom);
-            if (MapViewType.COVERAGE.equals(PreferenceManager.getInstance().loadMapViewType())
-                    && (MainApplication.getMap() != null && MainApplication.getMap().mapView != null)) {
+            if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
                 SwingUtilities.invokeLater(() -> {
                     DataSet.getInstance().updateLowZoomLevelData(segments);
                     KartaViewLayer.getInstance().invalidate();
@@ -125,9 +114,7 @@ public class DataUpdateHandler {
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
         if (!areas.isEmpty() && zoom >= mapViewSettings.getPhotoZoom()) {
             final HighZoomResultSet resultSet = ServiceHandler.getInstance().searchHighZoomData(areas, searchFilter);
-            if (MapViewType.ELEMENT.equals(PreferenceManager.getInstance().loadMapViewType())) {
-                updateUI(resultSet, checkSelection);
-            }
+            updateUI(resultSet, checkSelection);
         }
     }
 

@@ -11,7 +11,6 @@ import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
@@ -390,24 +389,6 @@ public final class PreferenceManager {
      */
     public boolean isDisplayTrackFlag(final String key) {
         return DISPLAY_TRACK_FLAG.equals(key);
-    }
-
-    /**
-     * Saves the selected map view type to the preference file.
-     *
-     * @param mapViewType the currently selected {@code MapViewType}
-     */
-    public void saveMapViewType(final MapViewType mapViewType) {
-        saveManager.saveMapViewType(mapViewType);
-    }
-
-    /**
-     * Loads the map view type.
-     *
-     * @return a {@code MapViewType} object
-     */
-    public MapViewType loadMapViewType() {
-        return loadManager.loadMapViewType();
     }
 
     /**

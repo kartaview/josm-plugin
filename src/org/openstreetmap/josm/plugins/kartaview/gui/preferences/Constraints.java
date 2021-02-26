@@ -27,6 +27,7 @@ final class Constraints {
     static final GridBagConstraints SP_PHOTO_ZOOM = new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,
             GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
 
+    //TODO reorganise
     static final GridBagConstraints CB_MANUAL_SWITCH = new GridBagConstraints(0, 2, 4, 1, 1, 1,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
 
