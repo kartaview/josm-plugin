@@ -65,7 +65,6 @@ class ButtonPanel extends JPanel
     private static final int COLS = 5;
 
     /* the panel's components */
-    private JButton btnDataSwitch;
     private JButton btnPrevious;
     private JButton btnNext;
     private JButton btnAutoplay;
@@ -89,7 +88,6 @@ class ButtonPanel extends JPanel
 
     ButtonPanel() {
         super(new GridLayout(ROWS, COLS));
-        addDataSwitchButton();
         addPreviousButton();
         addNextButton();
         addAutoplayButton();
@@ -99,18 +97,6 @@ class ButtonPanel extends JPanel
         addLocationButton();
         addWebPageButton();
         setPreferredSize(DIM);
-    }
-
-    private void addDataSwitchButton() {
-        final JosmAction action = new ManualDataSwitchAction();
-        final String tooltip =
-                GuiConfig.getInstance().getBtnDataSwitchImageTlt().replace(SHORTCUT, action.getShortcut().getKeyText());
-        btnDataSwitch =
-                ButtonBuilder.build(action, IconConfig.getInstance().getManualSwitchImageIcon(), tooltip, false);
-        btnDataSwitch.setActionCommand(MapViewType.ELEMENT.toString());
-        if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-            add(btnDataSwitch);
-        }
     }
 
     private void addPreviousButton() {
@@ -217,55 +203,7 @@ class ButtonPanel extends JPanel
             btnMatchedWay.setEnabled(false);
             enableSwitchImageFormatButton(false,
                     PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag());
-            if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                enableDataSwitchButton(true);
-            }
         }
-    }
-
-    /**
-     * Enables or disables the manual data switch button.
-     *
-     * @param enabled is true/false
-     */
-    void enableDataSwitchButton(final boolean enabled) {
-        btnDataSwitch.setEnabled(enabled);
-    }
-
-    /**
-     * Sets the data switch button visibility.
-     *
-     * @param isVisible if true/false the button is added to the button panel/removed from the button panel
-     */
-    void setDataSwitchButtonVisibiliy(final boolean isVisible) {
-        if (isVisible) {
-            add(btnDataSwitch, 0);
-        } else {
-            remove(btnDataSwitch);
-        }
-    }
-
-    /**
-     * Updates the data switch button icon, tool-tip and action command.
-     *
-     * @param dataType a {@code DataType} specifies the currently displayed data type
-     */
-    void updateDataSwitchButton(final MapViewType dataType) {
-        if (dataType.equals(MapViewType.ELEMENT)) {
-            btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchSegmentIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchSegmentTlt().replaceAll(SHORTCUT,
-                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
-            btnDataSwitch.setToolTipText(tooltip);
-            btnDataSwitch.setActionCommand(MapViewType.COVERAGE.toString());
-        } else {
-            btnDataSwitch.setIcon(IconConfig.getInstance().getManualSwitchImageIcon());
-            final String tooltip = GuiConfig.getInstance().getBtnDataSwitchImageTlt().replaceAll(SHORTCUT,
-                    ((JosmAction) btnDataSwitch.getAction()).getShortcut().getKeyText());
-            btnDataSwitch.setToolTipText(tooltip);
-            btnDataSwitch.setActionCommand(MapViewType.ELEMENT.toString());
-        }
-        revalidate();
-        repaint();
     }
 
     /**
@@ -404,34 +342,6 @@ class ButtonPanel extends JPanel
 
     boolean isPhotoSelected() {
         return photo != null;
-    }
-
-
-    /**
-     * Defines the functionality of the manual data switch button.
-     *
-     * @author beataj
-     * @version $Revision$
-     */
-    private final class ManualDataSwitchAction extends JosmAction {
-
-        private static final long serialVersionUID = -6266140137863469921L;
-
-
-        private ManualDataSwitchAction() {
-            super(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(), null,
-                    GuiConfig.getInstance().getBtnDataSwitchShortcutTlt(),
-                    ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnDataSwitchShortcutTlt()),
-                    true);
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent event) {
-            MapViewType dataType = MapViewType.getDataType(event.getActionCommand());
-            dataType = dataType == null ? MapViewType.getDataType(btnDataSwitch.getActionCommand()) : dataType;
-            notifyDataUpdateObserver(dataType);
-            updateDataSwitchButton(dataType);
-        }
     }
 
 

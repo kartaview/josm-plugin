@@ -19,7 +19,6 @@ import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
@@ -282,27 +281,6 @@ public final class PhotoDetailsDialog extends ToggleDialog {
 
     public void updateSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel){
         pnlBtn.enableSwitchImageFormatButton(enabled, isCroppedInPanel);
-    }
-
-    /**
-     * Updates the properties of the data switch button. Null properties are ignored.
-     *
-     * @param dataType a {@code DataType} specifies the currently displayed data type
-     * @param isEnabled enables/disables the data switch button
-     * @param isVisible specifies the button visibility
-     */
-    public void updateDataSwitchButton(final MapViewType dataType, final Boolean isEnabled, final Boolean isVisible) {
-        if (dataType != null) {
-            pnlBtn.updateDataSwitchButton(dataType);
-        }
-        if (isEnabled != null) {
-            pnlBtn.enableDataSwitchButton(isEnabled);
-        }
-        if (isVisible != null) {
-            pnlBtn.setDataSwitchButtonVisibiliy(isVisible);
-        }
-        pnlBtn.revalidate();
-        repaint();
     }
 
     /**

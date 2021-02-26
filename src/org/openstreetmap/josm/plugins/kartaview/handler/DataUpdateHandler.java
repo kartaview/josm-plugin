@@ -40,16 +40,9 @@ public class DataUpdateHandler {
      * <ul>
      * <li>current zoom level grater or equals to the minimum map data zoom (~10) and current zoom level less than the
      * default photo location zoom</li>
-     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
-     * and zoom level less or equals than the minimum photo location zoom</li>
-     * <li>current zoom level grater or equals to the minimum map data zoom (~10) and user enabled manual data switch
-     * and had switched to segment view</li>
-     * </ul>
      * Photo locations and/or detections are displayed in the following cases:
      * <ul>
      * <li>current zoom level grater or equals to the default photo zoom level</li>
-     * <li>current zoom level grater or equals to the default photo zoom level and user had enabled manual data switch
-     * and had switched to photo location view</li>
      * <li>a track is displayed (we displayed photo and detection locations near the a track)</li>
      * </ul>
      * A previously selected photo/detection location should be removed if the user changed the data filters and
@@ -66,37 +59,8 @@ public class DataUpdateHandler {
                 // special case, we load always photos
                 updateHighZoomLevelData(mapViewSettings, checkSelection);
             } else {
-                if (mapViewSettings.isManualSwitchFlag()) {
-                    // change data type only if user changed manually
-                    manualSwitchFlow(mapViewSettings, zoom, checkSelection);
-                } else {
-                    // change data type if zoom >= mapViewSettings.photoZoom
-                    normalFlow(mapViewSettings, zoom, checkSelection);
-                }
-            }
-        }
-    }
-
-    private void manualSwitchFlow(final MapViewSettings mapViewSettings, final int zoom, final boolean checkSelection) {
-        final MapViewType dataType = PreferenceManager.getInstance().loadMapViewType();
-
-        // enable switch button based on zoom level
-        SwingUtilities.invokeLater(() -> {
-            final boolean dataSwitchButtonEnabled = zoom >= Config.getInstance().getMapPhotoZoom();
-            PhotoDetailsDialog.getInstance().updateDataSwitchButton(dataType, dataSwitchButtonEnabled, null);
-        });
-
-        if (zoom < Config.getInstance().getMapPhotoZoom()) {
-            if (dataType == MapViewType.ELEMENT) {
-                // user zoomed out to segment view
-                PreferenceManager.getInstance().saveMapViewType(MapViewType.COVERAGE);
-            }
-            updateLowZoomLevelData(mapViewSettings, zoom);
-        } else {
-            if (dataType == MapViewType.ELEMENT) {
-                updateHighZoomLevelData(mapViewSettings, checkSelection);
-            } else {
-                updateLowZoomLevelData(mapViewSettings, zoom);
+                // change data type if zoom >= mapViewSettings.photoZoom
+                normalFlow(mapViewSettings, zoom, checkSelection);
             }
         }
     }
@@ -125,9 +89,6 @@ public class DataUpdateHandler {
                 DataSet.getInstance().clear(false);
                 PhotoDetailsDialog.getInstance().updateUI(null, null, false);
                 DetectionDetailsDialog.getInstance().updateDetectionDetails(null);
-                if (mapViewSettings.isManualSwitchFlag()) {
-                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.COVERAGE, null, null);
-                }
                 KartaViewLayer.getInstance().enablePhotoDataSetDownloadActions();
                 KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
@@ -154,9 +115,6 @@ public class DataUpdateHandler {
         if (DataSet.getInstance().hasSegments()) {
             SwingUtilities.invokeLater(() -> {
                 DataSet.getInstance().clear(false);
-                if (mapViewSettings.isManualSwitchFlag()) {
-                    PhotoDetailsDialog.getInstance().updateDataSwitchButton(MapViewType.ELEMENT, null, null);
-                }
                 KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();
             });

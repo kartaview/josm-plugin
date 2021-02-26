@@ -310,9 +310,7 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
                 final String newValue = event.getNewValue().getValue().toString();
-                if (prefManager.hasManualSwitchDataTypeChanged(event.getKey(), newValue)) {
-                    handleManualDataSwitch(newValue);
-                } else if (prefManager.dataDownloadPreferencesChanged(event.getKey(), newValue)) {
+                if (prefManager.dataDownloadPreferencesChanged(event.getKey(), newValue)) {
                     handleDataDownload();
                 } else if (prefManager.hasHighQualityPhotoFlagChanged(event.getKey(), newValue)) {
                     handleHighQualityPhotoSelection();
@@ -344,21 +342,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
             }
         }
 
-        private void handleManualDataSwitch(final String newValue) {
-            final boolean manualSwitchFlag = Boolean.parseBoolean(newValue);
-            SwingUtilities.invokeLater(() -> {
-                PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, null, manualSwitchFlag);
-                DataSet.getInstance().updateHighZoomLevelPhotoData(null);
-                DataSet.getInstance().updateHighZoomLevelDetectionData(null, false);
-                if (DataSet.getInstance().getSelectedPhoto() == null) {
-                    PhotoDetailsDialog.getInstance().updateUI(null, null, false);
-                }
-                KartaViewLayer.getInstance().invalidate();
-                MainApplication.getMap().repaint();
-            });
-            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
-        }
-
         private void handleDataDownload() {
             ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
         }
@@ -379,7 +362,6 @@ LocationObserver, ZoomChangeListener, DetectionChangeObserver {
                 dataSet.setSelectedSequence(null);
                 selectionHandler.play(AutoplayAction.STOP);
                 final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
-                detailsDialog.updateDataSwitchButton(null, false, null);
                 detailsDialog.enableSequenceActions(false, false, null);
                 KartaViewLayer.getInstance().invalidate();
                 MainApplication.getMap().repaint();

@@ -12,7 +12,6 @@ import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDi
 import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.kartaview.util.Util;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
@@ -21,7 +20,6 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.swing.PleaseWaitProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.kartaview.handler.ServiceHandler;
@@ -133,8 +131,6 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
      * download is allowed in the following cases:
      * <ul>
      * <li>current zoom >=photo zoom and no track is displayed</li>
-     * <li>user has manual data switch enabled and photo locations are displayed on
-     * the map</li>
      * </ul>
      *
      * @return a boolean value
@@ -143,10 +139,7 @@ public class DownloadPhotosTask extends PleaseWaitRunnable {
         boolean result = false;
         final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         final int zoom = Util.zoom(MainApplication.getMap().mapView.getRealBounds());
-        if (mapViewSettings.isManualSwitchFlag()) {
-            result = zoom >= Config.getInstance().getMapPhotoZoom()
-                    && PreferenceManager.getInstance().loadMapViewType() == MapViewType.ELEMENT;
-        } else if (zoom >= mapViewSettings.getPhotoZoom()) {
+        if (zoom >= mapViewSettings.getPhotoZoom()) {
             result = !DataSet.getInstance().hasSelectedSequence();
         }
         return result;

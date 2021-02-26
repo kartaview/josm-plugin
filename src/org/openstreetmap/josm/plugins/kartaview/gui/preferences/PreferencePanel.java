@@ -49,7 +49,6 @@ class PreferencePanel extends JPanel {
 
     /* photo preference settings */
     private JSpinner spPhotoZoom;
-    private JCheckBox cbManualSwitch;
     private JCheckBox cbDataLoad;
     private JCheckBox cbHighQualityPhoto;
     private JCheckBox agDisplayDetection;
@@ -84,19 +83,11 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefPhotoZoomLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PHOTO_ZOOM);
-        final boolean enabled = !mapViewSettings.isManualSwitchFlag();
         spPhotoZoom = TextComponentBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
                 Config.getInstance().getMapPhotoZoom(), Config.getInstance().getPreferencesMaxZoom(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, false, enabled);
+                ComponentOrientation.LEFT_TO_RIGHT, false, true);
         add(spPhotoZoom, Constraints.SP_PHOTO_ZOOM);
-        final ActionListener listener = event -> {
-            final JCheckBox source = (JCheckBox) event.getSource();
-            final boolean spPhotoZoomEnabled = !source.isSelected();
-            spPhotoZoom.setEnabled(spPhotoZoomEnabled);
-        };
-        cbManualSwitch = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefManualSwitchLbl(), listener, Font.PLAIN,
-                getBackground(), mapViewSettings.isManualSwitchFlag());
-        add(cbManualSwitch, Constraints.CB_MANUAL_SWITCH);
+
         cbDataLoad = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDataLoadLbl(), null, Font.PLAIN,
                 getBackground(), mapViewSettings.isDataLoadFlag());
         add(cbDataLoad,Constraints.CB_DATA_LOAD);
@@ -233,7 +224,7 @@ class PreferencePanel extends JPanel {
 
     PreferenceSettings getSelectedSettings() {
         final MapViewSettings mapViewSettings =
-                new MapViewSettings((int) spPhotoZoom.getValue(), cbManualSwitch.isSelected(), cbDataLoad.isSelected());
+                new MapViewSettings((int) spPhotoZoom.getValue(), cbDataLoad.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue(), rbFrontFacingDisplay.isSelected());
         final ClusterSettings aggregatedSettings =

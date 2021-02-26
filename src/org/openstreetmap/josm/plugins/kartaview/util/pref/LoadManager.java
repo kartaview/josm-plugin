@@ -66,7 +66,6 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEA
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
@@ -268,9 +267,8 @@ final class LoadManager {
     MapViewSettings loadMapViewSettings() {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
-        final boolean manualSwitchFlag = Preferences.main().getBoolean(MAP_VIEW_MANUAL_SWITCH);
         final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD, true);
-        return new MapViewSettings(photoZoom, manualSwitchFlag, dataLoadFlag);
+        return new MapViewSettings(photoZoom, dataLoadFlag);
     }
 
     PhotoSettings loadPhotoSettings() {
