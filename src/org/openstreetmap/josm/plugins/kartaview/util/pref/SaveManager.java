@@ -35,9 +35,7 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEA
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.PHOTO_PANEL_OPENED;
@@ -68,7 +66,6 @@ import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
@@ -251,7 +248,6 @@ final class SaveManager {
 
     void saveMapViewSettings(final MapViewSettings mapViewSettings) {
         Preferences.main().putInt(MAP_VIEW_PHOTO_ZOOM, mapViewSettings.getPhotoZoom());
-        Preferences.main().putBoolean(MAP_VIEW_MANUAL_SWITCH, mapViewSettings.isManualSwitchFlag());
         Preferences.main().putBoolean(MAP_VIEW_DATA_LOAD, mapViewSettings.isDataLoadFlag());
     }
 
@@ -300,11 +296,6 @@ final class SaveManager {
 
     void saveDetectionPanelOpenedFlag(final boolean isPanelOpened) {
         Preferences.main().putBoolean(DETECTION_PANEL_OPENED, isPanelOpened);
-    }
-
-    void saveMapViewType(final MapViewType dataType) {
-        final String value = dataType != null ? dataType.name() : "";
-        Preferences.main().put(MAP_VIEW_TYPE, value);
     }
 
     void savePluginLocalVersion(final String localVersion) {

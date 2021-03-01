@@ -30,7 +30,6 @@ public final class GuiConfig extends BaseConfig {
 
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
-    private final String prefManualSwitchLbl;
     private final String prefDataLoadLbl;
     private final String prefImageLbl;
     private final String prefImageHighQualityLbl;
@@ -76,8 +75,6 @@ public final class GuiConfig extends BaseConfig {
     private final String btnSwitchPhotoFormatToWrappedTlt;
     private final String btnWebPageTlt;
     private final String btnWebPageShortcutTlt;
-    private final String btnDataSwitchImageTlt;
-    private final String btnDataSwitchSegmentTlt;
     private final String btnDataSwitchShortcutTlt;
     private final String btnMatchedWayTlt;
     private final String btnMatchedWayShortcutTlt;
@@ -230,7 +227,6 @@ public final class GuiConfig extends BaseConfig {
 
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
-        prefManualSwitchLbl = readProperty("preferences.mapView.switch.lbl");
         prefDataLoadLbl = readProperty("preferences.mapView.load.lbl");
         prefImageLbl = readProperty("preference.photo.lbl");
         prefImageHighQualityLbl = readProperty("preference.photo.highQuality.lbl");
@@ -274,8 +270,6 @@ public final class GuiConfig extends BaseConfig {
         btnWebPageShortcutTlt = readProperty("btn.webPage.shortcut.text");
         btnClosestTlt = readProperty("btn.closest.tlt");
         btnClosestShortcutText = readProperty("btn.closest.shortcut.text");
-        btnDataSwitchImageTlt = readProperty("btn.switch.image.tlt");
-        btnDataSwitchSegmentTlt = readProperty("btn.switch.segment.tlt");
         btnDataSwitchShortcutTlt = readProperty("btn.switch.shortcut.text");
         btnMatchedWayShortcutTlt = readProperty("btn.matchedWay.shortcut.text");
         btnMatchedWayTlt = readProperty("btn.matchedWay.tlt");
@@ -448,10 +442,6 @@ public final class GuiConfig extends BaseConfig {
         return prefPhotoZoomLbl;
     }
 
-    public String getPrefManualSwitchLbl() {
-        return prefManualSwitchLbl;
-    }
-
     public String getPrefDataLoadLbl() {
         return prefDataLoadLbl;
     }
@@ -574,14 +564,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getBtnWebPageTlt() {
         return btnWebPageTlt;
-    }
-
-    public String getBtnDataSwitchImageTlt() {
-        return btnDataSwitchImageTlt;
-    }
-
-    public String getBtnDataSwitchSegmentTlt() {
-        return btnDataSwitchSegmentTlt;
     }
 
     public String getDlgFilterTitle() {

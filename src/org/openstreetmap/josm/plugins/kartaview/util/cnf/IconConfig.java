@@ -72,8 +72,6 @@ public final class IconConfig extends BaseConfig {
     private final Icon matchedWayIcon;
     private final Icon warningIcon;
     private final Icon warningImageFormatIcon;
-    private final Icon manualSwitchSegmentIcon;
-    private final Icon manualSwitchImageIcon;
     private final Icon downloadIcon;
     private final ImageIcon clusterBackgroundIconColorless;
     private final ImageIcon clusterBackgroundSelectedIconColorless;
@@ -147,8 +145,6 @@ public final class IconConfig extends BaseConfig {
         matchedWayIcon = ImageProvider.get(readProperty("matchedWay.icon"));
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
         warningImageFormatIcon = ImageProvider.get(readProperty("warning.image.format.icon"));
-        manualSwitchSegmentIcon = ImageProvider.get(readProperty("manualSwitch.segment.icon"));
-        manualSwitchImageIcon = ImageProvider.get(readProperty("manualSwitch.image.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
         clusterBackgroundIconColorless = getUnselectedClusterBackground("cluster.background.icon");
         clusterBackgroundSelectedIconColorless = getSelectedClusterBackground("cluster.background.icon");
@@ -372,14 +368,6 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getWarningImageFormatIcon() {
         return warningImageFormatIcon;
-    }
-
-    public Icon getManualSwitchSegmentIcon() {
-        return manualSwitchSegmentIcon;
-    }
-
-    public Icon getManualSwitchImageIcon() {
-        return manualSwitchImageIcon;
     }
 
     public String getFilterIconName() {

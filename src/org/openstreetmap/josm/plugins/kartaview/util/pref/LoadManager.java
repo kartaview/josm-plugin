@@ -24,7 +24,6 @@ import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
@@ -66,9 +65,7 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEA
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_TYPE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.PHOTO_PANEL_OPENED;
@@ -268,9 +265,8 @@ final class LoadManager {
     MapViewSettings loadMapViewSettings() {
         final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
                 Config.getInstance().getPreferencesMaxZoom());
-        final boolean manualSwitchFlag = Preferences.main().getBoolean(MAP_VIEW_MANUAL_SWITCH);
         final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD, true);
-        return new MapViewSettings(photoZoom, manualSwitchFlag, dataLoadFlag);
+        return new MapViewSettings(photoZoom, dataLoadFlag);
     }
 
     PhotoSettings loadPhotoSettings() {
@@ -328,17 +324,6 @@ final class LoadManager {
     boolean loadDetectionPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(DETECTION_PANEL_OPENED);
         return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
-    }
-
-    MapViewType loadMapViewType() {
-        final String value = Preferences.main().get(MAP_VIEW_TYPE);
-        MapViewType dataType;
-        try {
-            dataType = MapViewType.valueOf(value);
-        } catch (final RuntimeException e) {
-            dataType = null;
-        }
-        return dataType;
     }
 
     String loadPluginLocalVersion() {

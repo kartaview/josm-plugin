@@ -243,9 +243,6 @@ public final class SelectionHandler extends MouseSelectionHandler
                     PhotoDetailsDialog.getInstance().enableSequenceActions(
                             DataSet.getInstance().enablePreviousPhotoAction(),
                             DataSet.getInstance().enableNextPhotoAction(), null);
-                    if (PreferenceManager.getInstance().loadMapViewSettings().isManualSwitchFlag()) {
-                        PhotoDetailsDialog.getInstance().updateDataSwitchButton(null, false, null);
-                    }
                     KartaViewLayer.getInstance().invalidate();
                     MainApplication.getMap().repaint();
                 });

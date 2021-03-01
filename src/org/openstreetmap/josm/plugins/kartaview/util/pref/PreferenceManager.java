@@ -11,7 +11,6 @@ import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
@@ -28,7 +27,6 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.JOSM_BASIC
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.JOSM_OAUTH_SECRET;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_MANUAL_SWITCH;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_FLAG;
@@ -391,36 +389,6 @@ public final class PreferenceManager {
      */
     public boolean isDisplayTrackFlag(final String key) {
         return DISPLAY_TRACK_FLAG.equals(key);
-    }
-
-    /**
-     * Verifies if the manual data switch type has been changed or not.
-     *
-     * @param key a {@code String} represents the key associated with the manual data switch type
-     * @param newValue a {@code String} represents the new value associated with the manual data switch typee change
-     * event
-     * @return boolean value
-     */
-    public boolean hasManualSwitchDataTypeChanged(final String key, final String newValue) {
-        return MAP_VIEW_MANUAL_SWITCH.equals(key) && newValue != null;
-    }
-
-    /**
-     * Saves the selected map view type to the preference file.
-     *
-     * @param mapViewType the currently selected {@code MapViewType}
-     */
-    public void saveMapViewType(final MapViewType mapViewType) {
-        saveManager.saveMapViewType(mapViewType);
-    }
-
-    /**
-     * Loads the map view type.
-     *
-     * @return a {@code MapViewType} object
-     */
-    public MapViewType loadMapViewType() {
-        return loadManager.loadMapViewType();
     }
 
     /**

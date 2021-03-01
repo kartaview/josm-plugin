@@ -19,7 +19,6 @@ import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.argument.AutoplayAction;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewType;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
@@ -27,7 +26,6 @@ import org.openstreetmap.josm.plugins.kartaview.gui.ShortcutFactory;
 import org.openstreetmap.josm.plugins.kartaview.handler.PhotoHandler;
 import org.openstreetmap.josm.plugins.kartaview.observer.DetectionSelectionObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.kartaview.observer.MapViewTypeChangeObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.NearbyPhotoObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.SequenceAutoplayObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.SequenceObserver;
@@ -235,20 +233,17 @@ public final class PhotoDetailsDialog extends ToggleDialog {
      * Registers the observers to the panels.
      *
      * @param closestPhotoObserver the {@code ClosestPhotoObserver} listens for the closest button's action
-     * @param dataTypeChangeObserver the {@code DataTypeChangeObserver} listens for the data switch button's action
      * @param locationObserver the {@code LocationObserver} listens for the location button's action
      * @param sequenceObserver the {@code SequenceObserver} listens for the next/previous button's action
      * @param trackAutoplayObserver the {@code TrackAutoplayObserver} listens for the play/stop button's action
      * @param switchPhotoFormatObserver the {@code SwitchPhotoFormatObserver} listens for switch image format button's action
      * @param detectionSelectionObserver the {@code DetectionSelectionObserver} listens for detection selection action
      */
-    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver,
-            final MapViewTypeChangeObserver dataTypeChangeObserver, final LocationObserver locationObserver,
+    public void registerObservers(final NearbyPhotoObserver closestPhotoObserver, final LocationObserver locationObserver,
             final SequenceObserver sequenceObserver, final SequenceAutoplayObserver trackAutoplayObserver,
             final SwitchPhotoFormatObserver switchPhotoFormatObserver,
             final DetectionSelectionObserver detectionSelectionObserver) {
         pnlBtn.registerObserver(closestPhotoObserver);
-        pnlBtn.registerObserver(dataTypeChangeObserver);
         pnlBtn.registerObserver(locationObserver);
         pnlBtn.registerObserver(sequenceObserver);
         pnlBtn.registerObserver(trackAutoplayObserver);
@@ -282,27 +277,6 @@ public final class PhotoDetailsDialog extends ToggleDialog {
 
     public void updateSwitchImageFormatButton(final boolean enabled, final boolean isCroppedInPanel){
         pnlBtn.enableSwitchImageFormatButton(enabled, isCroppedInPanel);
-    }
-
-    /**
-     * Updates the properties of the data switch button. Null properties are ignored.
-     *
-     * @param dataType a {@code DataType} specifies the currently displayed data type
-     * @param isEnabled enables/disables the data switch button
-     * @param isVisible specifies the button visibility
-     */
-    public void updateDataSwitchButton(final MapViewType dataType, final Boolean isEnabled, final Boolean isVisible) {
-        if (dataType != null) {
-            pnlBtn.updateDataSwitchButton(dataType);
-        }
-        if (isEnabled != null) {
-            pnlBtn.enableDataSwitchButton(isEnabled);
-        }
-        if (isVisible != null) {
-            pnlBtn.setDataSwitchButtonVisibiliy(isVisible);
-        }
-        pnlBtn.revalidate();
-        repaint();
     }
 
     /**

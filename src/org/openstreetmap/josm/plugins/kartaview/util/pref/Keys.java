@@ -83,10 +83,7 @@ final class Keys {
 
     /* map view related user preference settings */
     static final String MAP_VIEW_PHOTO_ZOOM = "openstreetcam.preferences.mapView.photoZoom";
-    static final String MAP_VIEW_MANUAL_SWITCH = "openstreetcam.preferences.mapView.manualSwitch";
     static final String MAP_VIEW_DATA_LOAD = "openstreetcam.preferences.mapView.dataLoad";
-    static final String MAP_VIEW_TYPE = "openstreetcam.dataType";
-
 
     private Keys() {}
 }
