@@ -54,7 +54,7 @@ final class Constraints {
     static final GridBagConstraints RB_WRAPPED = new GridBagConstraints(0, 10, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
-    static final GridBagConstraints LBL_AGGREGATED = new GridBagConstraints(0, 11, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
+    static final GridBagConstraints LBL_AGGREGATED = new GridBagConstraints(0, 12, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
 
     static final GridBagConstraints CB_DISPLAY_DETECTION = new GridBagConstraints(0, 14, 4, 1, 1, 1, GridBagConstraints.CENTER,
