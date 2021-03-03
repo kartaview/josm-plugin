@@ -6,9 +6,6 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.observer;
 
-import org.openstreetmap.josm.plugins.kartaview.observer.LocationObserver;
-
-
 /**
  * The observable interface for the {@code LocationObserver} object.
  *

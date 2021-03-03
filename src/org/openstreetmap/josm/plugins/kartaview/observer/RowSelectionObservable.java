@@ -7,7 +7,6 @@
 package org.openstreetmap.josm.plugins.kartaview.observer;
 
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
-import org.openstreetmap.josm.plugins.kartaview.observer.RowSelectionObserver;
 
 
 /**
