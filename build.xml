@@ -7,7 +7,6 @@
 	<property name="plugin.dist.dir" value="${basedir}/dist" />
 	<property name="plugin.lib.dir" value="${basedir}/lib" />
 	<property name="plugin.images.dir" value="${basedir}/images" />
-	<property name="plugin.name" value="KartaView.jar" />
 	<property name="JOSM_lib" value="josm-tested.jar" />
 
 	<tstamp>
@@ -32,7 +31,7 @@
 			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-old.jar" />
 			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
 		</path>
-		<javac srcdir="src" debug="true" destdir="${plugin.build.dir}" includeantruntime="true" excludes="**/package-info.java" classpathref="classpath">
+		<javac srcdir="src" debug="true" destdir="${plugin.build.dir}" includeantruntime="true" excludes="**/package-info.java" classpathref="classpath" source="11" target="11">
 			<compilerarg value="-Xlint:deprecation" />
 			<compilerarg value="-Xlint:unchecked" />
 		</javac>
@@ -49,8 +48,8 @@
 			<fileset dir="${plugin.lib.dir}" includes="**/*.jar" excludes="josm-tested.jar,josm-latest.jar" />
 			<fileset dir="${plugin.lib.dir}" includes="${JOSM_lib}" />
 		</path>
-		<javadoc destdir="${plugin.apidoc.dir}" source="1.8" classpathref="classpath" windowtitle="KartaView plugin API">
-			<link href="http://docs.oracle.com/javase/8/docs/api/" />
+		<javadoc destdir="${plugin.apidoc.dir}" source="11" classpathref="classpath" windowtitle="KartaView plugin API">
+			<link href="http://docs.oracle.com/javase/11/docs/api/" />
 			<packageset dir="${plugin.src.dir}">
 			</packageset>
 		</javadoc>
@@ -75,8 +74,14 @@
 		<replaceregexp if:set="osc_service_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.url=.*" replace="${osc_service_url}" />
 		<replaceregexp if:set="osc_details_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.details.url=.*" replace="${osc_details_url}" />
 		<replaceregexp if:set="osc_user_url" file="${plugin.build.dir}/kartaview_service.properties" match="service.user.url=.*" replace="${osc_user_url}" />
-		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/kartaview_apollo_service.properties" match="${url.key}" replace="${apollo_service_url}" />
+		<replaceregexp if:set="apollo_service_url" file="${plugin.build.dir}/kartaview_apollo_service.properties" match="service.url=.*" replace="${apollo_service_url}" />
 		<replaceregexp if:set="debug_log_enabled" file="${plugin.build.dir}/kartaview.properties" match="debug.log.enabled=.*" replace="${debug_log_enabled}" />
+		<replaceregexp if:set="plugin_jar_name" file="${plugin.build.dir}/kartaview.properties" match="plugin.jar.name=.*" replace="${plugin_jar_name}" />
+		<replaceregexp if:set="is_private_build" file="${plugin.build.dir}/kartaview_gui.properties" match="is.private.build=.*" replace="${is_private_build}" />
+		<replaceregexp if:set="enable_cache" file="${plugin.build.dir}/kartaview.properties" match="enable.cache=.*" replace="${enable_cache}" />
+
+		<property file="${plugin.build.dir}/kartaview.properties" prefix="prop"/>
+		<property name="plugin.name" value="${prop.plugin.jar.name}.jar" />
 
 		<copy todir="${plugin.build.dir}/images">
 			<fileset dir="images" />
@@ -89,7 +94,7 @@
 		</copy>
 		<jar destfile="${plugin.out.dir}/${plugin.name}" basedir="${plugin.build.dir}">
 			<zipfileset src="${plugin.lib.dir}/gson-2.5.jar" />
-			<zipfileset src="${plugin.lib.dir}/josm-common-3.6.jar" />
+			<zipfileset src="${plugin.lib.dir}/josm-common-4.3.jar" />
 			<manifest>
 				<attribute name="Author" value="Grab" />
 				<attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.kartaview.KartaViewPlugin" />

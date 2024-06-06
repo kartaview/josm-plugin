@@ -21,7 +21,8 @@ public class HighZoomResultSet {
     private List<Detection> detections;
     private List<Cluster> clusters;
 
-    public HighZoomResultSet() {}
+    public HighZoomResultSet() {
+    }
 
     public HighZoomResultSet(final PhotoDataSet photoDataSet, final List<Detection> detections,
             final List<Cluster> clusters) {

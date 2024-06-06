@@ -8,7 +8,7 @@ package org.openstreetmap.josm.plugins.kartaview;
 
 import java.io.IOException;
 import javax.swing.SwingUtilities;
-import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.imagery.photo.PhotoDetailsDialog;
 import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
 import org.openstreetmap.josm.plugins.kartaview.util.BoundingBoxUtil;
 import org.openstreetmap.josm.plugins.kartaview.util.Util;
@@ -23,7 +23,7 @@ import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.kartaview.handler.ServiceHandler;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.Paging;
+import org.openstreetmap.josm.plugins.kartaview.service.Paging;
 import org.xml.sax.SAXException;
 import com.grab.josm.common.argument.BoundingBox;
 

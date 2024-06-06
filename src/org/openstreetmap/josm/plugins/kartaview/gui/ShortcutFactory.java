@@ -110,7 +110,7 @@ public final class ShortcutFactory {
      * @param key a {@code String} representing a shortcut key
      * @return a {@code Shortcut}
      */
-    public Shortcut getShotrcut(final String key) {
+    public Shortcut getShortcut(final String key) {
         final Shortcut shortcut = shortcutMap.get(key);
         return shortcut != null ? shortcut : defaultShortcutMap.get(key);
     }

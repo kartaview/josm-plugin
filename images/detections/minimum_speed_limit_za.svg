@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="908.79999"
+   height="908.79999"
+   viewBox="0 0 908.79998 908.8"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="SADC_road_sign_R101.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="694.07114"
+     inkscape:cy="414.56559"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-180.4,96.439252)">
+    <circle
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:12;stroke-miterlimit:2.61299992;stroke-dasharray:none;stroke-opacity:1"
+       id="path4136"
+       cx="634.79999"
+       cy="357.96078"
+       r="454" />
+    <circle
+       r="450"
+       cy="357.96078"
+       cx="634.79999"
+       id="circle4138"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:12;stroke-miterlimit:2.61299992;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:#00559b;fill-opacity:1;stroke:none;stroke-width:12;stroke-miterlimit:2.61299992;stroke-dasharray:none;stroke-opacity:1"
+       id="circle4140"
+       cx="634.79999"
+       cy="357.96078"
+       r="405" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4142"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+         id="flowRegion4144"><rect
+           id="rect4146"
+           width="159.6041"
+           height="284.86301"
+           x="-395.9798"
+           y="193.73254" /></flowRegion><flowPara
+         id="flowPara4148" /></flowRoot>    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:276.38327026px;line-height:125%;;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="text4170" />
+    <g
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:594.22418213px;line-height:125%;;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:9.99988461;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="text5413"
+       transform="translate(-9.9999959,0)" />
+    <rect
+       ry="122"
+       rx="122.00002"
+       y="142.96078"
+       x="674.79999"
+       height="430"
+       width="244"
+       id="rect13386"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.4000001;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#00559b;fill-opacity:1;stroke:none;stroke-width:2.4000001;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect13388"
+       width="100"
+       height="286"
+       x="746.80005"
+       y="214.96078"
+       rx="49.999992"
+       ry="50" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4147"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 594.53358,147.22416 -225.61357,0 0,226.51565 76.71945,0 8.09798,-9.04399 c 2.29409,-2.61809 5.13201,-4.96426 8.13557,-7.22761 1.4284,-1.08797 6.38079,-3.45301 9.46118,-4.5477 2.94671,-1.35577 7.25396,-2.04502 10.40542,-2.6799 3.94483,-0.73092 7.54299,-0.83733 10.94859,-0.56821 26.6734,1.95875 34.38298,20.57569 37.11181,37.57659 0.25345,4.75603 16.20534,88.58475 -30.91843,109.20885 -28.79707,11.23873 -57.2533,-5.10854 -64.97285,-34.28386 l -73.10872,0 C 374.04446,578.6861 522.22938,613.8403 584.5911,513.59975 638.40085,403.63411 590.00234,230.8147 441.13634,290.71686 l 0,-71.32486 153.39724,0"
+       sodipodi:nodetypes="ccccccccccccccccc" />
+  </g>
+</svg>

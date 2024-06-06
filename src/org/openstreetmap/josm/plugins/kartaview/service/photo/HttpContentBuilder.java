@@ -8,22 +8,18 @@ package org.openstreetmap.josm.plugins.kartaview.service.photo;
 
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.BBOX_BOTTOM_RIGHT;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.BBOX_TOP_LEFT;
-import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.EXTERNAL_USER_ID;
-import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.MY_TRACKS;
-import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.MY_TRACKS_VAL;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.PAGE;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.PAGE_ITEMS;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.SEQUENCE_ID;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.SEQUENCE_INDEX;
-import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.USER_TYPE;
-import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.USER_TYPE_OSM;
 import static org.openstreetmap.josm.plugins.kartaview.service.photo.RequestConstants.ZOOM;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import com.grab.josm.common.argument.BoundingBox;
+import org.openstreetmap.josm.plugins.kartaview.service.Paging;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import com.grab.josm.common.argument.BoundingBox;
+import com.grab.josm.common.formatter.DateFormatter;
 
 
 /**
@@ -35,32 +31,25 @@ import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
 final class HttpContentBuilder {
 
     private static final String SEPARATOR = ",";
-    private static final String DATE_FORMAT = "YYYY-MM-dd";
-
     private final Map<String, String> content = new HashMap<>();
 
 
-    HttpContentBuilder(final BoundingBox area, final Date date, final Long osmUserId, final Paging paging) {
+    HttpContentBuilder(final BoundingBox area, final Date date, final Paging paging) {
         content.put(BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
         content.put(BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
         if (date != null) {
-            content.put(RequestConstants.DATE, new SimpleDateFormat(DATE_FORMAT).format(date));
-        }
-
-        if (osmUserId != null && osmUserId > 0) {
-            content.put(EXTERNAL_USER_ID, Long.toString(osmUserId));
-            content.put(USER_TYPE, USER_TYPE_OSM);
+            content.put(RequestConstants.DATE, DateFormatter.formatDay(date));
         }
 
         if (paging == null) {
 
-            addPaging(Paging.NEARBY_PHOTOS_DEAFULT);
+            addPaging(Paging.NEARBY_PHOTOS_DEFAULT);
         } else {
             addPaging(paging);
         }
     }
 
-    HttpContentBuilder(final BoundingBox area, final Long osmUserId, final int zoom, final Paging paging) {
+    HttpContentBuilder(final BoundingBox area, final int zoom, final Paging paging) {
         content.put(BBOX_TOP_LEFT, area.getNorth() + SEPARATOR + area.getWest());
         content.put(BBOX_BOTTOM_RIGHT, area.getSouth() + SEPARATOR + area.getEast());
 
@@ -69,11 +58,7 @@ final class HttpContentBuilder {
         } else {
             content.put(ZOOM, Integer.toString(zoom));
         }
-        if (osmUserId != null && osmUserId > 0) {
-            content.put(EXTERNAL_USER_ID, Long.toString(osmUserId));
-            content.put(USER_TYPE, USER_TYPE_OSM);
-            content.put(MY_TRACKS, MY_TRACKS_VAL);
-        }
+
         if (paging == null) {
             addPaging(Paging.TRACKS_DEFAULT);
         } else {
@@ -96,6 +81,6 @@ final class HttpContentBuilder {
 
     private void addPaging(final Paging paging) {
         content.put(PAGE, Integer.toString(paging.getPage()));
-        content.put(PAGE_ITEMS, Integer.toString(paging.getItemsPerPage()));
+        content.put(PAGE_ITEMS, Integer.toString(paging.getItems()));
     }
 }

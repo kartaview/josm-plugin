@@ -75,12 +75,12 @@
        r="250" />
     <g
        aria-label="10"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:389.56521606px;line-height:0;font-family:Giaothong2;-inkscape-font-specification:'Giaothong2 Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.0289855"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:389.56521606px;line-height:0;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.0289855"
        id="text826"
        transform="matrix(-1,0,0,1,867.82065,-210.99998)">
       <path
          d="m 490.61468,128.5881 c 1.52174,0 2.28261,-0.76087 2.28261,-2.28261 V -99.672761 c 5.83333,4.31159 29.16667,21.68478 35,25.86956 0.88768,0.63406 1.71195,0.76087 2.47282,0.38044 0.76087,-0.50725 1.14131,-1.26812 1.14131,-2.28261 v -41.277169 c 0,-0.25363 -0.0634,-0.57066 -0.19022,-0.95109 -0.25362,-0.38043 -0.50724,-0.69746 -0.76087,-0.95109 l -39.18478,-28.34239 h -39.75549 c -1.5217,0 -2.2826,0.76087 -2.2826,2.28261 v 271.24999 c 0,1.52174 0.7609,2.28261 2.2826,2.28261 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Giaothong2;-inkscape-font-specification:'Giaothong2 Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.0289855;stroke-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.0289855;stroke-opacity:1"
          id="path828"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="sscccsscccsssss" />
@@ -107,11 +107,11 @@
       <g
          aria-label="t"
          transform="matrix(0.99958584,0,0,1.0004143,-286.54012,161.68656)"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:225.67027283px;line-height:0;font-family:Giaothong1;-inkscape-font-specification:'Giaothong1 Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.38480067"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:225.67027283px;line-height:0;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.38480067"
          id="text862">
         <path
            d="m 434.57405,-191.81098 h -4.95857 v 20.49544 h 6.83181 q 6.06048,0 10.79868,-1.21209 4.73819,-1.32229 9.256,-5.06877 4.51782,-3.85667 6.39106,-8.48467 1.76304,-4.62801 1.76304,-11.45982 v -64.2411 h 10.5783 v -16.96934 h -10.5783 v -32.50622 h -21.70754 v 32.50622 h -13.33305 v 16.96934 h 13.33305 v 60.49462 q 0,5.39934 -1.43247,7.49296 -1.43248,1.98343 -6.94201,1.98343 z"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Giaothong1;-inkscape-font-specification:'Giaothong1 Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.38480067"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.38480067"
            id="path864"
            inkscape:connector-curvature="0" />
       </g>

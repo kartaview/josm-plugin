@@ -5,7 +5,7 @@
   <g fill="none" fill-rule="evenodd" transform="translate(75)">
     <use fill="#FFF" xlink:href="#aux_direction_west-a"/>
     <rect width="148" height="50" x="1" y="1" stroke="#000" stroke-width="2" rx="6"/>
-    <text fill="#000" font-family="Roboto-Bold, Roboto" font-size="40" font-weight="bold" letter-spacing=".952">
+    <text fill="#000"  font-size="40" font-weight="bold" letter-spacing=".952">
       <tspan x="28.25" y="39">West</tspan>
     </text>
   </g>

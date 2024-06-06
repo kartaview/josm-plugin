@@ -37,7 +37,7 @@ public class Detection implements Comparable<Detection> {
     private DetectionMode mode;
     private Author author;
     private Double facing;
-    private Float distance;
+    private Double distance;
     private Float angleFromCenter;
     private Float orientation;
     private DetectionConfidenceLevel confidenceLevel;
@@ -112,11 +112,11 @@ public class Detection implements Comparable<Detection> {
         return facing;
     }
 
-    public Float getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
-    public void setDistance(final Float distance) {
+    public void setDistance(final Double distance) {
         this.distance = distance;
     }
 

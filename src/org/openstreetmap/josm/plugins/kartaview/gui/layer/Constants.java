@@ -39,7 +39,7 @@ final class Constants {
     static final double ZOOM_16 = 3.825;
 
 
-    static final double CLUSTER_EXTRAPOLATE_DISTANCE = 0.02;
+    static final double EXTRAPOLATE_DISTANCE = 0.02;
 
     static final String BING_LAYER_NAME = "Bing aerial imagery";
     static final String MAPBOX_LAYER_NAME = "Mapbox Satellite";

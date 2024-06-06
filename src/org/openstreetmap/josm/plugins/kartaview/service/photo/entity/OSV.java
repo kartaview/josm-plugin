@@ -6,6 +6,7 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.service.photo.entity;
 
+import com.google.gson.annotations.SerializedName;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
 
 
@@ -18,13 +19,21 @@ public class OSV {
 
     private final Photo photoObject;
 
+    @SerializedName("access_token")
+    private final String accessToken;
 
-    public OSV(final Photo photoObject) {
+
+    public OSV(final Photo photoObject, final String accessToken) {
         this.photoObject = photoObject;
+        this.accessToken = accessToken;
     }
 
 
     public Photo getPhotoObject() {
         return photoObject;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 }

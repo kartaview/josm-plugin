@@ -7,7 +7,7 @@
 package org.openstreetmap.josm.plugins.kartaview.argument;
 
 /**
- * Defines the user configurable aggregated detections (cluster) settings.
+ * Defines the user configurable cluster settings.
  *
  * @author laurad
  * @version $Revision$
@@ -21,8 +21,7 @@ public class ClusterSettings {
     /**
      * Builds a new object with the arguments.
      *
-     * @param displayDetectionLocations specifies if detection locations should be displayed when selecting an
-     * aggregated detection
+     * @param displayDetectionLocations specifies if detection locations should be displayed when selecting a cluster
      * @param displayTags specifies if the tags associated with an OSM element are displayed on the map
      * @param displayColorCoded specifies if the clusters are displayed taking into consideration the color scheme
      * associated with the confidence level

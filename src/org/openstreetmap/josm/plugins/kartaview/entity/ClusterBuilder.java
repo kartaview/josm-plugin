@@ -30,9 +30,13 @@ public class ClusterBuilder {
     private OsmComparison osmComparison;
     private Collection<OsmElement> osmElements;
     private List<Detection> detections;
+    private List<EdgeDetection> edgeDetections;
     private List<Photo> photos;
     private OcrValue ocrValue;
     private Short laneCount;
+    private ConfidenceLevelCategory confidenceCategories;
+    private Algorithm algorithm;
+
 
     public ClusterBuilder() {}
 
@@ -48,6 +52,8 @@ public class ClusterBuilder {
         osmElements(cluster.getOsmElements());
         laneCount(cluster.getLaneCount());
         ocrValue(cluster.getOcrValue());
+        confidenceCategories(cluster.getConfidenceCategories());
+        algorithm(cluster.getAlgorithm());
     }
 
     public void id(final Long id) {
@@ -82,12 +88,20 @@ public class ClusterBuilder {
         this.osmComparison = osmComparison;
     }
 
+    public void confidenceCategories(final ConfidenceLevelCategory confidenceCategories) {
+        this.confidenceCategories = confidenceCategories;
+    }
+    
     public void osmElements(final Collection<OsmElement> osmElements) {
         this.osmElements = osmElements;
     }
 
     public void detections(final List<Detection> detections) {
         this.detections = detections;
+    }
+
+    public void edgeDetections(final List<EdgeDetection> edgeDetections) {
+        this.edgeDetections = edgeDetections;
     }
 
     public void photos(final List<Photo> photos) {
@@ -100,6 +114,10 @@ public class ClusterBuilder {
 
     public void ocrValue(final OcrValue ocrValue) {
         this.ocrValue = ocrValue;
+    }
+
+    public void algorithm(final Algorithm algorithm) {
+        this.algorithm = algorithm;
     }
 
     Long getId() {
@@ -133,6 +151,10 @@ public class ClusterBuilder {
     OsmComparison getOsmComparison() {
         return osmComparison;
     }
+    
+    ConfidenceLevelCategory getConfidenceCategories() {
+        return confidenceCategories;
+    }
 
     Collection<OsmElement> getOsmElements() {
         return osmElements;
@@ -140,6 +162,10 @@ public class ClusterBuilder {
 
     List<Detection> getDetections() {
         return detections;
+    }
+
+    public List<EdgeDetection> getEdgeDetections() {
+        return edgeDetections;
     }
 
     List<Photo> getPhotos() {
@@ -152,6 +178,10 @@ public class ClusterBuilder {
 
     public Short getLaneCount() {
         return laneCount;
+    }
+
+    Algorithm getAlgorithm() {
+        return algorithm;
     }
 
     public Cluster build() {

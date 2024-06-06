@@ -179,6 +179,14 @@ public class Photo {
         return projectionType;
     }
 
+    public Double getHorizontalFieldOfView() {
+        return horizontalFieldOfView;
+    }
+
+    public UprightOrientation getUprightOrientation() {
+        return uprightOrientation;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -6,10 +6,12 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.util.cnf;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
+import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelCategory;
 import org.openstreetmap.josm.tools.ImageProvider;
 import com.grab.josm.common.cnf.BaseConfig;
 
@@ -25,7 +27,10 @@ public final class IconConfig extends BaseConfig {
     private static final IconConfig INSTANCE = new IconConfig();
     private static final String CONFIG_FILE = "kartaview_icon.properties";
     private static final int CLUSTER_BACKGROUND_SIZE = 49;
-    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 60;
+    private static final int CLUSTER_BACKGROUND_SELECTED_SIZE = 65;
+
+    private static final int DETECTION_BACKGROUND_SIZE = 62;
+    private static final int DETECTION_BACKGROUND_SELECTED_SIZE = 85;
     private static final int SELECTED_ICON_SIZE = 28;
     private static final int UNSELECTED_ICON_SIZE = 14;
     private static final int SELECTED_WRAPPED_ICON_SIZE = 37;
@@ -35,11 +40,14 @@ public final class IconConfig extends BaseConfig {
     private final String pluginIconName;
     private final String dialogShortcutName;
     private final String detectionDialogShortcutName;
+    private final String edgeDetectionDialogShortcutName;
     private final String deleteIconName;
-    private final String layerIconName;
+    private final String kartaViewLayerIconName;
+    private final String edgeLayerIconName;
     private final String downloadIconName;
     private final String saveIconName;
-    private final Icon layerIcon;
+    private final Icon kartaViewLayerIcon;
+    private final Icon edgeLayerIcon;
     private final Icon layerIconFiltered;
     private final ImageIcon photoIcon;
     private final ImageIcon photoSelectedIcon;
@@ -73,31 +81,31 @@ public final class IconConfig extends BaseConfig {
     private final Icon warningIcon;
     private final Icon warningImageFormatIcon;
     private final Icon downloadIcon;
-    private final ImageIcon clusterBackgroundIconColorless;
+    private final ImageIcon clusterBackgroundUnselectedIconColorless;
     private final ImageIcon clusterBackgroundSelectedIconColorless;
-    private final ImageIcon clusterBackgroundIconColor1;
-    private final ImageIcon clusterBackgroundSelectedIconColor1;
-    private final ImageIcon clusterBackgroundIconColor2;
-    private final ImageIcon clusterBackgroundSelectedIconColor2;
-    private final ImageIcon clusterBackgroundIconColor3;
-    private final ImageIcon clusterBackgroundSelectedIconColor3;
-    private final ImageIcon clusterBackgroundIconColor4;
-    private final ImageIcon clusterBackgroundSelectedIconColor4;
-    private final ImageIcon clusterBackgroundIconColor5;
-    private final ImageIcon clusterBackgroundSelectedIconColor5;
-    private final ImageIcon clusterBackgroundIconColor6;
-    private final ImageIcon clusterBackgroundSelectedIconColor6;
-    private final ImageIcon clusterBackgroundIconColor7;
-    private final ImageIcon clusterBackgroundSelectedIconColor7;
-    private final ImageIcon clusterBackgroundIconColor8;
-    private final ImageIcon clusterBackgroundSelectedIconColor8;
-    private final ImageIcon clusterBackgroundIconColor9;
-    private final ImageIcon clusterBackgroundSelectedIconColor9;
-    private final ImageIcon clusterBackgroundIconColor10;
-    private final ImageIcon clusterBackgroundSelectedIconColor10;
+    private final ImageIcon clusterBackgroundUnselectedIconColorC3;
+    private final ImageIcon clusterBackgroundSelectedIconColorC3;
+    private final ImageIcon clusterBackgroundUnselectedIconColorC2;
+    private final ImageIcon clusterBackgroundSelectedIconColorC2;
+    private final ImageIcon clusterBackgroundIconUnselectedColorC1;
+    private final ImageIcon clusterBackgroundSelectedIconColorC1;
+    private final ImageIcon detectionHeadingUnselectedIcon;
+    private final ImageIcon detectionHeadingSelectedIcon;
+
+    private final ImageIcon edgeDetectionHeadingUnselectedIcon;
+    private final ImageIcon edgeClusterBackgroundUnselectedIconColorless;
+    private final ImageIcon edgeClusterBackgroundSelectedIconColorless;
+    private final ImageIcon edgeClusterBackgroundUnselectedIconColorC1;
+    private final ImageIcon edgeClusterBackgroundSelectedIconColorC1;
+    private final ImageIcon edgeClusterBackgroundUnselectedIconColorC2;
+    private final ImageIcon edgeClusterBackgroundSelectedIconColorC2;
+    private final ImageIcon edgeClusterBackgroundUnselectedIconColorC3;
+    private final ImageIcon edgeClusterBackgroundSelectedIconColorC3;
+    private final ImageIcon edgeDetectionHeadingSelectedIcon;
     private final String preferenceIconName;
     private final String detectionIconsLongPath;
     private final String detectionIconsPath;
+    private final String edgeDetectionIconsPath;
     private final Icon mappedIcon;
     private final Icon badDetectionIcon;
     private final Icon otherIcon;
@@ -108,11 +116,14 @@ public final class IconConfig extends BaseConfig {
         pluginIconName = readProperty("plugin.icon");
         dialogShortcutName = readProperty("dialog.shortcut");
         detectionDialogShortcutName = readProperty("dialog.detection.shortcut");
+        edgeDetectionDialogShortcutName = readProperty("dialog.edge.detection.shortcut");
         deleteIconName = readProperty("delete.icon");
-        layerIconName = readProperty("layer.icon");
+        kartaViewLayerIconName = readProperty("kartaview.layer.icon");
+        edgeLayerIconName = readProperty("edge.layer.icon");
         downloadIconName = readProperty("download.icon");
         saveIconName = readProperty("save.icon");
-        layerIcon = ImageProvider.get(layerIconName);
+        kartaViewLayerIcon = ImageProvider.get(kartaViewLayerIconName);
+        edgeLayerIcon = ImageProvider.get(edgeLayerIconName);
         layerIconFiltered = ImageProvider.get(readProperty("layer.icon.filtered"));
         photoIcon = getUnselectedPhotoIcon("photo.icon");
         photoSelectedIcon = getSelectedPhotoIcon("photo.icon");
@@ -146,34 +157,40 @@ public final class IconConfig extends BaseConfig {
         warningIcon = ImageProvider.get(readProperty("warning.icon"));
         warningImageFormatIcon = ImageProvider.get(readProperty("warning.image.format.icon"));
         downloadIcon = ImageProvider.get(readProperty("download.icon"));
-        clusterBackgroundIconColorless = getUnselectedClusterBackground("cluster.background.icon");
+        clusterBackgroundUnselectedIconColorless = getUnselectedClusterBackground("cluster.background.icon");
         clusterBackgroundSelectedIconColorless = getSelectedClusterBackground("cluster.background.icon");
-        clusterBackgroundIconColor1 = getUnselectedClusterBackground("cluster.background.icon.color1");
-        clusterBackgroundSelectedIconColor1 = getSelectedClusterBackground("cluster.background.icon.color1");
-        clusterBackgroundIconColor2 = getUnselectedClusterBackground("cluster.background.icon.color2");
-        clusterBackgroundSelectedIconColor2 = getSelectedClusterBackground("cluster.background.icon.color2");
-        clusterBackgroundIconColor3 = getUnselectedClusterBackground("cluster.background.icon.color3");
-        clusterBackgroundSelectedIconColor3 = getSelectedClusterBackground("cluster.background.icon.color3");
-        clusterBackgroundIconColor4 = getUnselectedClusterBackground("cluster.background.icon.color4");
-        clusterBackgroundSelectedIconColor4 = getSelectedClusterBackground("cluster.background.icon.color4");
-        clusterBackgroundIconColor5 = getUnselectedClusterBackground("cluster.background.icon.color5");
-        clusterBackgroundSelectedIconColor5 = getSelectedClusterBackground("cluster.background.icon.color5");
-        clusterBackgroundIconColor6 = getUnselectedClusterBackground("cluster.background.icon.color6");
-        clusterBackgroundSelectedIconColor6 = getSelectedClusterBackground("cluster.background.icon.color6");
-        clusterBackgroundIconColor7 = getUnselectedClusterBackground("cluster.background.icon.color7");
-        clusterBackgroundSelectedIconColor7 = getSelectedClusterBackground("cluster.background.icon.color7");
-        clusterBackgroundIconColor8 = getUnselectedClusterBackground("cluster.background.icon.color8");
-        clusterBackgroundSelectedIconColor8 = getSelectedClusterBackground("cluster.background.icon.color8");
-        clusterBackgroundIconColor9 = getUnselectedClusterBackground("cluster.background.icon.color9");
-        clusterBackgroundSelectedIconColor9 = getSelectedClusterBackground("cluster.background.icon.color9");
-        clusterBackgroundIconColor10 = getUnselectedClusterBackground("cluster.background.icon.color10");
-        clusterBackgroundSelectedIconColor10 = getSelectedClusterBackground("cluster.background.icon.color10");
+        clusterBackgroundUnselectedIconColorC3 = getUnselectedClusterBackground("cluster.background.icon.colorC3");
+        clusterBackgroundSelectedIconColorC3 = getSelectedClusterBackground("cluster.background.icon.colorC3");
+        clusterBackgroundUnselectedIconColorC2 = getUnselectedClusterBackground("cluster.background.icon.colorC2");
+        clusterBackgroundSelectedIconColorC2 = getSelectedClusterBackground("cluster.background.icon.colorC2");
+        clusterBackgroundIconUnselectedColorC1 = getUnselectedClusterBackground("cluster.background.icon.colorC1");
+        clusterBackgroundSelectedIconColorC1 = getSelectedClusterBackground("cluster.background.icon.colorC1");
+        detectionHeadingUnselectedIcon = getUnselectedDetectionBackground("detection.heading.icon");
+        detectionHeadingSelectedIcon = getSelectedDetectionBackground("detection.heading.icon");
+        edgeDetectionHeadingUnselectedIcon = getUnselectedDetectionBackground("edge.detection.heading.icon");
+        edgeClusterBackgroundUnselectedIconColorless = getUnselectedClusterBackground("edge.cluster.background.icon");
+        edgeClusterBackgroundSelectedIconColorless = getSelectedClusterBackground("edge.cluster.background.icon");
+        edgeClusterBackgroundUnselectedIconColorC1 =
+                getUnselectedClusterBackground("edge.cluster.background.icon.colorC1");
+        edgeClusterBackgroundSelectedIconColorC1 = getSelectedClusterBackground("edge.cluster.background.icon.colorC1");
+        edgeClusterBackgroundUnselectedIconColorC2 =
+                getUnselectedClusterBackground("edge.cluster.background.icon.colorC2");
+        edgeClusterBackgroundSelectedIconColorC2 = getSelectedClusterBackground("edge.cluster.background.icon.colorC2");
+        edgeClusterBackgroundUnselectedIconColorC3 =
+                getUnselectedClusterBackground("edge.cluster.background.icon.colorC3");
+        edgeClusterBackgroundSelectedIconColorC3 = getSelectedClusterBackground("edge.cluster.background.icon.colorC3");
+        edgeDetectionHeadingSelectedIcon = getSelectedDetectionBackground("edge.detection.heading.icon");
         preferenceIconName = readProperty("preference.icon");
         detectionIconsLongPath = readProperty("detection.icons.longPath");
         detectionIconsPath = readProperty("detection.icons.path");
+        edgeDetectionIconsPath = readProperty("edge.detection.icons.path");
         mappedIcon = ImageProvider.get(readProperty("mapped.icon"));
         badDetectionIcon = ImageProvider.get(readProperty("bad.detection.icon"));
         otherIcon = ImageProvider.get(readProperty("other.icon"));
+    }
+
+    public static IconConfig getInstance() {
+        return INSTANCE;
     }
 
     private ImageIcon getUnselectedClusterBackground(final String key) {
@@ -185,6 +202,18 @@ public final class IconConfig extends BaseConfig {
     private ImageIcon getSelectedClusterBackground(final String key) {
         final ImageProvider imageProvider = new ImageProvider(readProperty(key));
         imageProvider.setSize(CLUSTER_BACKGROUND_SELECTED_SIZE, CLUSTER_BACKGROUND_SELECTED_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getUnselectedDetectionBackground(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(DETECTION_BACKGROUND_SIZE, DETECTION_BACKGROUND_SIZE);
+        return imageProvider.get();
+    }
+
+    private ImageIcon getSelectedDetectionBackground(final String key) {
+        final ImageProvider imageProvider = new ImageProvider(readProperty(key));
+        imageProvider.setSize(DETECTION_BACKGROUND_SELECTED_SIZE, DETECTION_BACKGROUND_SELECTED_SIZE);
         return imageProvider.get();
     }
 
@@ -212,10 +241,21 @@ public final class IconConfig extends BaseConfig {
         return imageProvider.get();
     }
 
-    public static IconConfig getInstance() {
-        return INSTANCE;
+    public ImageIcon getEdgeDetectionHeadingUnselectedIcon() {
+        return edgeDetectionHeadingUnselectedIcon;
     }
 
+    public ImageIcon getEdgeDetectionHeadingSelectedIcon() {
+        return edgeDetectionHeadingSelectedIcon;
+    }
+
+    public ImageIcon getEdgeClusterBackgroundUnselectedIconColorless() {
+        return edgeClusterBackgroundUnselectedIconColorless;
+    }
+
+    public ImageIcon getEdgeClusterBackgroundSelectedIconColorless() {
+        return edgeClusterBackgroundSelectedIconColorless;
+    }
 
     public String getPluginIconName() {
         return pluginIconName;
@@ -229,13 +269,20 @@ public final class IconConfig extends BaseConfig {
         return detectionDialogShortcutName;
     }
 
+    public String getEdgeDetectionDialogShortcutName() {
+        return edgeDetectionDialogShortcutName;
+    }
 
     public String getDeleteIconName() {
         return deleteIconName;
     }
 
-    public String getLayerIconName() {
-        return layerIconName;
+    public String getKartaViewLayerIconName() {
+        return kartaViewLayerIconName;
+    }
+
+    public String getEdgeLayerIconName() {
+        return edgeLayerIconName;
     }
 
     public String getDownloadIconName() {
@@ -246,8 +293,12 @@ public final class IconConfig extends BaseConfig {
         return saveIconName;
     }
 
-    public Icon getLayerIcon() {
-        return layerIcon;
+    public Icon getKartaViewLayerIcon() {
+        return kartaViewLayerIcon;
+    }
+
+    public Icon getEdgeLayerIcon() {
+        return edgeLayerIcon;
     }
 
     public Icon getLayerIconFiltered(){
@@ -382,27 +433,44 @@ public final class IconConfig extends BaseConfig {
         return downloadIcon;
     }
 
-    public ImageIcon getClusterBackgroundIconColorless() {
-        return clusterBackgroundIconColorless;
+    public ImageIcon getClusterBackgroundUnselectedIconColorless() {
+        return clusterBackgroundUnselectedIconColorless;
     }
 
     public ImageIcon getClusterBackgroundSelectedIconColorless() {
         return clusterBackgroundSelectedIconColorless;
     }
 
-    public List<ImageIcon> getClusterBordersColored() {
-        return Arrays.asList(clusterBackgroundIconColor1, clusterBackgroundIconColor2, clusterBackgroundIconColor3,
-                clusterBackgroundIconColor4, clusterBackgroundIconColor5, clusterBackgroundIconColor6,
-                clusterBackgroundIconColor7, clusterBackgroundIconColor8, clusterBackgroundIconColor9,
-                clusterBackgroundIconColor10);
+    public Map<ConfidenceLevelCategory, ImageIcon> getUnselectedClusterBordersColored() {
+        final Map<ConfidenceLevelCategory, ImageIcon> clusterBordersColored = new HashMap<>();
+        clusterBordersColored.put(ConfidenceLevelCategory.C1, clusterBackgroundIconUnselectedColorC1);
+        clusterBordersColored.put(ConfidenceLevelCategory.C2, clusterBackgroundUnselectedIconColorC2);
+        clusterBordersColored.put(ConfidenceLevelCategory.C3, clusterBackgroundUnselectedIconColorC3);
+        return clusterBordersColored;
     }
 
-    public List<ImageIcon> getSelectedClusterBordersColored() {
-        return Arrays.asList(clusterBackgroundSelectedIconColor1, clusterBackgroundSelectedIconColor2,
-                clusterBackgroundSelectedIconColor3, clusterBackgroundSelectedIconColor4,
-                clusterBackgroundSelectedIconColor5, clusterBackgroundSelectedIconColor6,
-                clusterBackgroundSelectedIconColor7, clusterBackgroundSelectedIconColor8,
-                clusterBackgroundSelectedIconColor9, clusterBackgroundSelectedIconColor10);
+    public Map<ConfidenceLevelCategory, ImageIcon> getSelectedClusterBordersColored() {
+        final Map<ConfidenceLevelCategory, ImageIcon> selectedClusterBordersColored = new HashMap<>();
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C1, clusterBackgroundSelectedIconColorC1);
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C2, clusterBackgroundSelectedIconColorC2);
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C3, clusterBackgroundSelectedIconColorC3);
+        return selectedClusterBordersColored;
+    }
+
+    public Map<ConfidenceLevelCategory, ImageIcon> getUnselectedEdgeClusterBordersColored() {
+        final Map<ConfidenceLevelCategory, ImageIcon> clusterBordersColored = new HashMap<>();
+        clusterBordersColored.put(ConfidenceLevelCategory.C1, edgeClusterBackgroundUnselectedIconColorC1);
+        clusterBordersColored.put(ConfidenceLevelCategory.C2, edgeClusterBackgroundUnselectedIconColorC2);
+        clusterBordersColored.put(ConfidenceLevelCategory.C3, edgeClusterBackgroundUnselectedIconColorC3);
+        return clusterBordersColored;
+    }
+
+    public Map<ConfidenceLevelCategory, ImageIcon> getSelectedEdgeClusterBordersColored() {
+        final Map<ConfidenceLevelCategory, ImageIcon> selectedClusterBordersColored = new HashMap<>();
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C1, edgeClusterBackgroundSelectedIconColorC1);
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C2, edgeClusterBackgroundSelectedIconColorC2);
+        selectedClusterBordersColored.put(ConfidenceLevelCategory.C3, edgeClusterBackgroundSelectedIconColorC3);
+        return selectedClusterBordersColored;
     }
 
     public String getPreferenceIconName() {
@@ -417,6 +485,10 @@ public final class IconConfig extends BaseConfig {
         return detectionIconsPath;
     }
 
+    public String getEdgeDetectionIconsPath() {
+        return edgeDetectionIconsPath;
+    }
+
     public Icon getMappedIcon() {
         return mappedIcon;
     }
@@ -427,5 +499,13 @@ public final class IconConfig extends BaseConfig {
 
     public Icon getOtherIcon() {
         return otherIcon;
+    }
+
+    public ImageIcon getDetectionHeadingUnselectedIcon() {
+        return detectionHeadingUnselectedIcon;
+    }
+
+    public ImageIcon getDetectionHeadingSelectedIcon() {
+        return detectionHeadingSelectedIcon;
     }
 }

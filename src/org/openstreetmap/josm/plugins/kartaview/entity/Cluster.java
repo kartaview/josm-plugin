@@ -6,11 +6,11 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.entity;
 
-import com.grab.josm.common.entity.EntityUtil;
-import org.openstreetmap.josm.data.coor.LatLon;
-
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import org.openstreetmap.josm.data.coor.LatLon;
+import com.grab.josm.common.entity.EntityUtil;
 
 
 /**
@@ -18,6 +18,7 @@ import java.util.List;
  *
  * @author beataj
  */
+// TODO we should create another Cluster entity for the "Edge" clusters and use builders to set the edgeDetections list
 public class Cluster {
 
     private final Long id;
@@ -30,9 +31,12 @@ public class Cluster {
     private final OsmComparison osmComparison;
     private final Collection<OsmElement> osmElements;
     private final List<Detection> detections;
+    private final List<EdgeDetection> edgeDetections;
     private final List<Photo> photos;
     private final OcrValue ocrValue;
     private final Short laneCount;
+    private final ConfidenceLevelCategory confidenceCategories;
+    private final Algorithm algorithm;
 
 
     Cluster(final ClusterBuilder builder) {
@@ -46,9 +50,12 @@ public class Cluster {
         this.osmComparison = builder.getOsmComparison();
         this.osmElements = builder.getOsmElements();
         this.detections = builder.getDetections();
+        this.edgeDetections = builder.getEdgeDetections();
         this.photos = builder.getPhotos();
         this.ocrValue = builder.getOcrValue();
         this.laneCount = builder.getLaneCount();
+        this.confidenceCategories = builder.getConfidenceCategories();
+        this.algorithm = builder.getAlgorithm();
     }
 
 
@@ -84,12 +91,20 @@ public class Cluster {
         return osmComparison;
     }
 
+    public ConfidenceLevelCategory getConfidenceCategories() {
+        return confidenceCategories;
+    }
+
     public Collection<OsmElement> getOsmElements() {
         return osmElements;
     }
 
     public List<Detection> getDetections() {
         return detections;
+    }
+
+    public List<EdgeDetection> getEdgeDetections() {
+        return edgeDetections;
     }
 
     public List<Photo> getPhotos() {
@@ -104,12 +119,20 @@ public class Cluster {
         return laneCount;
     }
 
+    public Algorithm getAlgorithm() {
+        return algorithm;
+    }
+
     public boolean hasPhotos() {
         return photos != null && !photos.isEmpty();
     }
 
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();
+    }
+
+    public boolean hasEdgeDetections() {
+        return Objects.nonNull(edgeDetections) && !edgeDetections.isEmpty();
     }
 
     @Override

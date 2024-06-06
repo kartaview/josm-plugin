@@ -7,8 +7,8 @@
 package org.openstreetmap.josm.plugins.kartaview.gui.layer.gpx;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import org.openstreetmap.josm.data.gpx.GpxData;
 import org.openstreetmap.josm.io.GpxWriter;
 import org.openstreetmap.josm.plugins.kartaview.entity.Sequence;
@@ -30,12 +30,15 @@ public final class GpxManager {
      * @param fileName specifies the name of the GPX file with absolute path
      * @throws GpxManagerException if the operation fails
      */
-    public void saveSequence(final Sequence sequence, final String fileName) throws GpxManagerException {
-        try (final GpxWriter gpxWriter = new GpxWriter(new FileOutputStream(new File(fileName)))) {
-            final GpxData gpxData = GpxBuilder.buildSequenceGpx(sequence);
-            gpxWriter.write(gpxData);
-        } catch (final IOException e) {
-            throw new GpxManagerException(e);
+    public void saveSequence(final Sequence sequence, final String fileName) throws GpxManagerException, IOException {
+        final File file = new File(fileName);
+        if (file.getCanonicalPath().startsWith(fileName)) {
+            try (final GpxWriter gpxWriter = new GpxWriter(Files.newOutputStream(file.toPath()))) {
+                final GpxData gpxData = GpxBuilder.buildSequenceGpx(sequence);
+                gpxWriter.write(gpxData);
+            } catch (final IOException e) {
+                throw new GpxManagerException(e);
+            }
         }
     }
 }

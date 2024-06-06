@@ -15,11 +15,15 @@ package org.openstreetmap.josm.plugins.kartaview.service.apollo;
 public final class RequestConstants {
 
     static final String SEARCH_DETECTIONS = "searchDetections";
+    static final String SEARCH_EDGE_DETECTIONS = "searchEdgeDetections";
     static final String UPDATE_DETECTION = "updateDetection";
     static final String RETRIEVE_SEQUENCE_DETECTIONS = "retrieveSequenceDetections";
     static final String RETRIEVE_PHOTO_DETECTIONS = "retrievePhotoDetections";
     static final String RETRIEVE_DETECTION = "retrieveDetection";
+    static final String RETRIEVE_EDGE_CLUSTER = "retrieveEdgeCluster";
+    static final String RETRIEVE_EDGE_CLUSTER_DETECTIONS = "retrieveEdgeClusterDetections";
     static final String SEARCH_CLUSTERS = "searchClusters";
+    static final String SEARCH_EDGE_CLUSTERS = "searchEdgeClusters";
     static final String RETRIEVE_CLUSTER = "retrieveCluster";
     static final String RETRIEVE_CLUSTER_DETECTIONS = "retrieveClusterDetections";
     static final String RETRIEVE_CLUSTER_PHOTOS = "retrieveClusterPhotos";
@@ -31,6 +35,9 @@ public final class RequestConstants {
     static final String SOUTH = "south";
     static final String EAST = "east";
     static final String WEST = "west";
+
+    static final String PAGE = "page";
+    static final String ITEMS_PER_PAGE = "items";
 
     static final String FORMAT = "format";
     static final String FORMAT_VAL = "json";
@@ -51,8 +58,13 @@ public final class RequestConstants {
     static final String EDIT_STATUS_ALREADY_FIXED = "ALREADY_FIXED";
     static final String ID = "id";
     static final String SIGN_INTERNAL_NAMES = "signInternalNames";
+    static final String SIGN_SCOPES = "signScopes";
     static final String MIN_CONFIDENCE_LEVEL = "minConfidenceLevel";
     static final String MAX_CONFIDENCE_LEVEL = "maxConfidenceLevel";
+    static final String TO_TIMESTAMP = "toTimestamp";
+    static final String FROM_TIMESTAMP = "fromTimestamp";
+    static final String ALGORITHM_NAME = "algorithmName";
+    static final String ALGORITHM_VERSION = "algorithmVersion";
 
     public static final String BLURRING_TYPE = "BLURRING";
     public static final String PHOTO_QUALITY_TYPE = "PHOTO_QUALITY";

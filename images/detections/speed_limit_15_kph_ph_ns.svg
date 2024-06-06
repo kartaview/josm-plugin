@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1600" height="1600" viewBox="0 0 1600 1600" xml:space="preserve">
+<desc>Created with Fabric.js 4.2.0</desc>
+<defs>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="transparent"></rect>
+<g transform="matrix(0 0 0 0 0 0)" id="d7f41ad7-3362-4615-bc0b-cb57668ba980"  >
+</g>
+<g transform="matrix(1 0 0 1 800 800)" id="a3f3dafa-3bc5-4e48-abd0-ab64992ff7f2"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(204,76,192); fill-opacity: 0; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-800" y="-800" rx="0" ry="0" width="1600" height="1600" />
+</g>
+<g transform="matrix(15.37 0 0 23.5 799.88 799.95)" id="d4668c14-f381-4809-a07d-7e5ba935169e"  >
+<rect style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-33.085" y="-33.085" rx="0" ry="0" width="66.17" height="66.17" />
+</g>
+<g transform="matrix(12.33 0 0 18.99 800 800)"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 0.92;" vector-effect="non-scaling-stroke"  transform=" translate(-50, -50)" d="M 90.375 90.375 L 9.625 90.375 L 9.625 9.625 L 90.375 9.625 L 90.375 90.375 z M 11.625 88.375 L 88.375 88.375 L 88.375 11.625 L 11.625 11.625 L 11.625 88.375 z" stroke-linecap="round" />
+</g>
+<g transform="matrix(2.24 0 0 2.24 800 366)" style="" id="d1cd5f49-2628-4c57-8e74-6b9247c22b56"  >
+		<text xml:space="preserve" font-family="Raleway" font-size="105" font-style="normal" font-weight="900" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-165.38" y="-26.34" >SPEED</tspan><tspan x="-141.59" y="92.31" >LIMIT</tspan></text>
+</g>
+<g transform="matrix(7.72 0 0 7.72 800 932.32)" style="" id="53917635-2984-4af3-8492-6c3acc1a63c3"  >
+		<text xml:space="preserve" font-family="Raleway" font-size="105" font-style="normal" font-weight="900" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-58.22" y="32.98" >15</tspan></text>
+</g>
+<g transform="matrix(3.1 0 0 3.1 800 1400.52)" style="" id="4f96faa4-7cfa-4f2b-8751-f60324babec8"  >
+		<text xml:space="preserve" font-family="Raleway" font-size="105" font-style="normal" font-weight="900" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-77.49" y="32.98" >N</tspan><tspan x="12.71" y="32.98" >S</tspan></text>
+</g>
+</svg>

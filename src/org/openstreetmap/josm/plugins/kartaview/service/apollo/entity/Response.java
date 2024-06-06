@@ -7,6 +7,7 @@
 package org.openstreetmap.josm.plugins.kartaview.service.apollo.entity;
 
 import java.util.List;
+import org.openstreetmap.josm.plugins.kartaview.entity.EdgeDetection;
 import org.openstreetmap.josm.plugins.kartaview.service.entity.BaseResponse;
 import org.openstreetmap.josm.plugins.kartaview.entity.Cluster;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
@@ -24,6 +25,7 @@ public class Response extends BaseResponse {
 
     // setters and constructors are not required,since GSON sets the fields directly using reflection.
     private Detection detection;
+    private EdgeDetection edgeDetection;
     private Cluster cluster;
     private Photo photo;
     private List<Detection> detections;
@@ -31,6 +33,7 @@ public class Response extends BaseResponse {
     private List<Photo> photos;
     private List<Sign> signs;
     private List<String> regions;
+    private List<EdgeDetection> edgeDetections;
 
 
     public Response(final Status status) {
@@ -47,6 +50,10 @@ public class Response extends BaseResponse {
 
     public Detection getDetection() {
         return detection;
+    }
+
+    public EdgeDetection getEdgeDetection() {
+        return edgeDetection;
     }
 
     public Photo getPhoto() {
@@ -67,5 +74,9 @@ public class Response extends BaseResponse {
 
     public List<String> getRegions() {
         return regions;
+    }
+
+    public List<EdgeDetection> getEdgeDetections() {
+        return edgeDetections;
     }
 }

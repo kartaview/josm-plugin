@@ -33,7 +33,7 @@ final class Constraints {
     static final GridBagConstraints LBL_IMAGE = new GridBagConstraints(0, 3, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
 
-    static final GridBagConstraints CB_HIGHG_QUALITY = new GridBagConstraints(0, 4, 4, 1, 1, 1,
+    static final GridBagConstraints CB_HIGH_QUALITY = new GridBagConstraints(0, 4, 4, 1, 1, 1,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
 
     static final GridBagConstraints CB_MOUSE_HOVER = new GridBagConstraints(0, 6, 4, 1, 1, 1, GridBagConstraints.CENTER,
@@ -54,7 +54,7 @@ final class Constraints {
     static final GridBagConstraints RB_WRAPPED = new GridBagConstraints(0, 10, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(2, 9, 3, 0), 0, 0);
 
-    static final GridBagConstraints LBL_AGGREGATED = new GridBagConstraints(0, 12, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
+    static final GridBagConstraints LBL_CLUSTER = new GridBagConstraints(0, 12, 4, 1, 1, 1, GridBagConstraints.PAGE_START,
             GridBagConstraints.HORIZONTAL, new Insets(10, 0, 3, 0), 0, 0);
 
     static final GridBagConstraints CB_DISPLAY_DETECTION = new GridBagConstraints(0, 14, 4, 1, 1, 1, GridBagConstraints.CENTER,
@@ -119,7 +119,6 @@ final class Constraints {
 
     static final GridBagConstraints SP_NEARBY_COUNT = new GridBagConstraints(1, 29, 1, 1, 0, 0,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 5, 3, 0), 0, 0);
-
 
     private Constraints() {}
 }

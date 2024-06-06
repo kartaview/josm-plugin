@@ -15,13 +15,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
-import org.openstreetmap.josm.plugins.kartaview.cache.CacheEntry;
-import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSize;
+import org.openstreetmap.josm.plugins.kartaview.cache.CacheEntry;
 import org.openstreetmap.josm.plugins.kartaview.cache.CacheManager;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
-import org.openstreetmap.josm.tools.Logging;
+import org.openstreetmap.josm.plugins.kartaview.service.ClientLogger;
+import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import com.grab.josm.common.entity.Pair;
 
 
@@ -36,6 +37,7 @@ public final class PhotoHandler {
     private static final String STORAGE = "storage";
     private final CacheManager cacheManager = CacheManager.getInstance();
     private static final PhotoHandler INSTANCE = new PhotoHandler();
+    private static final ClientLogger LOGGER = new ClientLogger("error");
 
 
     /**
@@ -59,8 +61,8 @@ public final class PhotoHandler {
      * @throws PhotoHandlerException if the photo could not be loaded or if the photo content could not be
      * read
      */
-    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type) throws
-            PhotoHandlerException {
+    public Pair<BufferedImage, PhotoSize> loadPhoto(final Photo photo, final PhotoSize type)
+            throws PhotoHandlerException {
         Pair<BufferedImage, PhotoSize> result = null;
         ImageIO.setUseCache(false);
         try {
@@ -111,6 +113,7 @@ public final class PhotoHandler {
         try {
             result = loadPhoto(photo.getSequenceId(), name, PhotoSize.HIGH_QUALITY, false);
         } catch (final Exception e) {
+            LOGGER.log("Error loading high quality photo: ", e);
             // try to load large thumbnail image
             result = loadPhoto(photo.getSequenceId(), photo.getLargeThumbnailName(), PhotoSize.LARGE_THUMBNAIL, true);
         }
@@ -120,15 +123,21 @@ public final class PhotoHandler {
     private Pair<BufferedImage, PhotoSize> loadPhoto(final Long sequenceId, final String photoName,
             final PhotoSize photoType, final boolean isWarning) throws ServiceException, IOException {
         final Pair<BufferedImage, PhotoSize> result;
-        final CacheEntry image = cacheManager.getPhoto(sequenceId, photoName);
-        if (image == null) {
-            // load image from server
-            final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
-            cacheManager.putPhoto(sequenceId, photoName, byteImage, isWarning);
-            result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), photoType);
+        if (Config.getInstance().isCacheEnabled()) {
+            final CacheEntry image = cacheManager.getPhoto(sequenceId, photoName);
+            if (image == null) {
+                // load image from server
+                final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
+                cacheManager.putPhoto(sequenceId, photoName, byteImage, isWarning);
+                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))),
+                        photoType);
+            } else {
+                result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
+                        photoType);
+            }
         } else {
-            result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(image.getContent()))),
-                    photoType);
+            final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
+            result = new Pair<>(ImageIO.read(new BufferedInputStream(new ByteArrayInputStream(byteImage))), photoType);
         }
         return result;
     }
@@ -139,27 +148,31 @@ public final class PhotoHandler {
      * @param photos a set of {@code Photo}s
      */
     public void loadPhotos(final Set<Photo> photos) {
-        final boolean highQualityFlag = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag();
-        if (photos != null && !photos.isEmpty()) {
-            final ExecutorService executorService = Executors.newFixedThreadPool(photos.size());
-            for (final Photo photo : photos) {
-                executorService.execute(() -> loadPhotoToCache(photo, highQualityFlag));
+        if (Config.getInstance().isCacheEnabled()) {
+            final boolean highQualityFlag = PreferenceManager.getInstance().loadPhotoSettings().isHighQualityFlag();
+            if (photos != null && !photos.isEmpty()) {
+                final ExecutorService executorService = Executors.newFixedThreadPool(photos.size());
+                for (final Photo photo : photos) {
+                    executorService.execute(() -> loadPhotoToCache(photo, highQualityFlag));
+                }
+                executorService.shutdown();
             }
-            executorService.shutdown();
         }
     }
 
     private void loadPhotoToCache(final Photo photo, final boolean highQualityFlag) {
+        if (Config.getInstance().isCacheEnabled()) {
             if (highQualityFlag) {
                 // retrieve and save high quality image
                 try {
                     loadPhotoToCache(photo.getSequenceId(), photo.getName(), false);
                 } catch (final Exception e) {
+                    LOGGER.log("Error retrieving and save high quality image: ", e);
                     // try to load large thumbnail
                     try {
                         loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), true);
                     } catch (final Exception e2) {
-                        Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
+                        LOGGER.log("Error loading large thumbnail: ", e2);
                     }
                 }
             } else {
@@ -167,16 +180,19 @@ public final class PhotoHandler {
                 try {
                     loadPhotoToCache(photo.getSequenceId(), photo.getLargeThumbnailName(), false);
                 } catch (final Exception e2) {
-                    Logging.warn("Error loading image:" + photo.getLargeThumbnailName(), e2);
+                    LOGGER.log("Error retrieving and save large thumbnail: ", e2);
                 }
             }
+        }
     }
 
     private void loadPhotoToCache(final Long sequenceId, final String photoName, final boolean isWarning)
             throws ServiceException {
-        if (!cacheManager.containsPhoto(sequenceId, photoName)) {
-            final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
-            cacheManager.putPhoto(sequenceId, photoName, byteImage, isWarning);
+        if (Config.getInstance().isCacheEnabled()) {
+            if (!cacheManager.containsPhoto(sequenceId, photoName)) {
+                final byte[] byteImage = ServiceHandler.getInstance().retrievePhoto(photoName);
+                cacheManager.putPhoto(sequenceId, photoName, byteImage, isWarning);
+            }
         }
     }
 }

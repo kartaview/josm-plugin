@@ -6,37 +6,6 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.util.pref;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.DetectionModeEntry;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.EditStatusEntry;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.ImageDataTypeEntry;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.OsmComparisonEntry;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignEntry;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignTypeEntry;
-import org.openstreetmap.josm.data.Preferences;
-import org.openstreetmap.josm.data.StructUtils;
-import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
-import org.openstreetmap.josm.plugins.kartaview.entity.Author;
-import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelFilter;
-import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
-import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
-import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
-import org.openstreetmap.josm.plugins.kartaview.service.apollo.DetectionFilter;
-import org.openstreetmap.josm.plugins.kartaview.util.Util;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.CacheConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.AUTOPLAY_LENGTH;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.AUTOPLAY_STARTED;
@@ -50,12 +19,18 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_DE
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_TRACK_FLAG;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_DATE;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_ONLY_USER_FLAG;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_CONFIDENCE_CATEGORY;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_DATA_TYPE;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_OSM_COMPARISON;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_REGION;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_SIGN_TYPE;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_SPECIFIC_SIGN;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_CONFIDENCE_CATEGORY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_EMPTY;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MAX_CONFIDENCE_LEVEL;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MIN_CONFIDENCE_LEVEL;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -63,7 +38,7 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEA
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.KARTAVIEW_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
@@ -73,6 +48,9 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.PLUGIN_LOC
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_DATA_OPERATION_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_LIST_SIGN_REGIONS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
@@ -81,6 +59,41 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_P
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.openstreetmap.josm.data.Preferences;
+import org.openstreetmap.josm.data.StructUtils;
+import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
+import org.openstreetmap.josm.plugins.kartaview.argument.DetectionFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.EdgeSearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelCategory;
+import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
+import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
+import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
+import org.openstreetmap.josm.plugins.kartaview.util.Util;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.CacheConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.ConfidenceCategoryEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.DetectionModeEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.EditStatusEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.ImageDataTypeEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.OsmComparisonEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignEntry;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignTypeEntry;
 
 
 /**
@@ -92,6 +105,7 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_S
  */
 final class LoadManager {
 
+
     boolean loadPhotosSearchErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_PHOTOS_SEARCH_ERROR);
     }
@@ -100,8 +114,20 @@ final class LoadManager {
         return Preferences.main().getBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR);
     }
 
+    boolean loadEdgeDetectionsSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_EDGE_DETECTIONS_SEARCH_ERROR);
+    }
+
     boolean loadClustersSearchErrorSuppressFlag() {
         return Preferences.main().getBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR);
+    }
+
+    boolean loadEdgeClusterSearchErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_EDGE_CLUSTERS_SEARCH_ERROR);
+    }
+
+    boolean loadEdgeDataOperationErrorSuppressFlag() {
+        return Preferences.main().getBoolean(SUPPRESS_EDGE_DATA_OPERATION_ERROR);
     }
 
     boolean loadPhotosErrorSuppressFlag() {
@@ -143,34 +169,57 @@ final class LoadManager {
     SearchFilter loadSearchFilter() {
         final String dateStr = Preferences.main().get(FILTER_DATE);
         final Date date = !dateStr.isEmpty() ? new Date(Long.parseLong(dateStr)) : null;
-        final String onlyUserFlagStr = Preferences.main().get(FILTER_ONLY_USER_FLAG);
-        final boolean onlyUserFlag = !onlyUserFlagStr.isEmpty() && Boolean.parseBoolean(onlyUserFlagStr);
         final List<DataType> dataType = loadDataTypeFilter();
 
         final List<OsmComparison> osmComparisons = loadOsmComparisonFilter();
         final List<EditStatus> editStatuses = loadEditStatusFilter();
-        final List<Sign> signInternalNames = loadSpecificSignFilter();
-        final List<String> signTypes = loadSignTypeFilter();
+        final List<Sign> signInternalNames = loadSpecificSignFilter(FILTER_SEARCH_SPECIFIC_SIGN);
+        final List<String> signTypes = loadSignTypeFilter(FILTER_SEARCH_SIGN_TYPE);
         final List<DetectionMode> modes = loadModes();
         final String region = Preferences.main().get(FILTER_SEARCH_REGION);
-        final ConfidenceLevelFilter confidenceLevelFilter = loadConfidenceLevelFilter();
-        return new SearchFilter(date, onlyUserFlag, dataType,
-                new DetectionFilter(osmComparisons, editStatuses, signTypes, signInternalNames, modes, region,
-                        confidenceLevelFilter, date, new Author(getOsmUserId())));
+        final List<ConfidenceLevelCategory> confidenceCategories = loadConfidenceCategoriesFilter();
+        return new SearchFilter(date, dataType, new DetectionFilter(osmComparisons, editStatuses, signTypes,
+                signInternalNames, modes, region, confidenceCategories));
+    }
+
+    EdgeSearchFilter loadEdgeSearchFilter() {
+        final List<DataType> dataType = loadEdgeDataTypeFilter();
+        final List<Sign> signInternalNames = loadSpecificSignFilter(FILTER_EDGE_SEARCH_SPECIFIC_SIGN);
+        final List<String> signTypes = loadSignTypeFilter(FILTER_EDGE_SEARCH_SIGN_TYPE);
+        final String region = Preferences.main().get(FILTER_EDGE_SEARCH_REGION);
+        final List<ConfidenceLevelCategory> confidenceCategories = loadEdgeConfidenceCategoriesFilter();
+        final List<OsmComparison> osmComparisons = loadEdgeOsmComparisonFilter();
+        return new EdgeSearchFilter(dataType, osmComparisons, confidenceCategories, region, signTypes,
+                signInternalNames);
     }
 
     public static String getOsmUserId() {
-        final Long id =  Util.getOsmUserId();
+        final Long id = Util.getOsmUserId();
         return id != null ? id.toString() : null;
     }
 
     private List<DataType> loadDataTypeFilter() {
         final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_PHOTO_TYPE);
-        final List<ImageDataTypeEntry> entries =
-                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
+        final List<ImageDataTypeEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_SEARCH_PHOTO_TYPE, ImageDataTypeEntry.class);
         List<DataType> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = SearchFilter.DEFAULT.getDataTypes();
+        } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
+            list = new ArrayList<>();
+        } else {
+            list = entries.stream().map(entry -> DataType.getDataType(entry.getName())).collect(Collectors.toList());
+        }
+        return list;
+    }
+
+    private List<DataType> loadEdgeDataTypeFilter() {
+        final String dataTypeVal = Preferences.main().get(FILTER_EDGE_SEARCH_DATA_TYPE);
+        final List<ImageDataTypeEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_EDGE_SEARCH_DATA_TYPE, ImageDataTypeEntry.class);
+        List<DataType> list;
+        if (dataTypeVal.isEmpty() && entries.isEmpty()) {
+            list = EdgeSearchFilter.DEFAULT.getDataTypes();
         } else if (dataTypeVal.equals(FILTER_SEARCH_EMPTY)) {
             list = new ArrayList<>();
         } else {
@@ -194,10 +243,25 @@ final class LoadManager {
         return list;
     }
 
+    private List<OsmComparison> loadEdgeOsmComparisonFilter() {
+        final List<OsmComparisonEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_EDGE_SEARCH_OSM_COMPARISON, OsmComparisonEntry.class);
+        List<OsmComparison> list;
+        if (Objects.nonNull(entries) && !entries.isEmpty()) {
+            list = new ArrayList<>();
+            for (final OsmComparisonEntry entry : entries) {
+                list.add(OsmComparison.valueOf(entry.getName()));
+            }
+        } else {
+            list = EdgeSearchFilter.DEFAULT.getOsmComparisons();
+        }
+        return list;
+    }
+
     private List<DetectionMode> loadModes() {
         final String dataTypeVal = Preferences.main().get(FILTER_SEARCH_MODE);
-        final List<DetectionModeEntry> entries =
-                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_MODE, DetectionModeEntry.class);
+        final List<DetectionModeEntry> entries = StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_MODE,
+                DetectionModeEntry.class);
         List<DetectionMode> list;
         if (dataTypeVal.isEmpty() && entries.isEmpty()) {
             list = Arrays.asList(DetectionMode.values());
@@ -210,8 +274,8 @@ final class LoadManager {
     }
 
     private List<EditStatus> loadEditStatusFilter() {
-        final List<EditStatusEntry> entries =
-                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
+        final List<EditStatusEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_SEARCH_EDIT_STATUS, EditStatusEntry.class);
         List<EditStatus> list;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
@@ -224,9 +288,9 @@ final class LoadManager {
         return list;
     }
 
-    private List<String> loadSignTypeFilter() {
-        final List<SignTypeEntry> entries =
-                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, SignTypeEntry.class);
+    private List<String> loadSignTypeFilter(final String filterKey) {
+        final List<SignTypeEntry> entries = StructUtils.getListOfStructs(Preferences.main(), filterKey,
+                SignTypeEntry.class);
         List<String> list = null;
         if (entries != null && !entries.isEmpty()) {
             list = new ArrayList<>();
@@ -237,11 +301,10 @@ final class LoadManager {
         return list;
     }
 
-    private List<Sign> loadSpecificSignFilter() {
-        final List<SignEntry> entries =
-                StructUtils.getListOfStructs(Preferences.main(), FILTER_SEARCH_SPECIFIC_SIGN, SignEntry.class);
+    private List<Sign> loadSpecificSignFilter(final String filterKey) {
+        final List<SignEntry> entries = StructUtils.getListOfStructs(Preferences.main(), filterKey, SignEntry.class);
         List<Sign> list = null;
-        if (entries != null && !entries.isEmpty()) {
+        if (Objects.nonNull(entries) && !entries.isEmpty()) {
             list = new ArrayList<>();
             for (final SignEntry entry : entries) {
                 list.add(entry.getSign());
@@ -250,21 +313,39 @@ final class LoadManager {
         return list;
     }
 
-    private ConfidenceLevelFilter loadConfidenceLevelFilter() {
-        final String minConfidenceLevel = Preferences.main().get(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL);
-        final String maxConfidenceLevel = Preferences.main().get(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL);
-        final Double minConfidence =
-                minConfidenceLevel != null && !minConfidenceLevel.isEmpty() ? Double.parseDouble(minConfidenceLevel) :
-                    null;
-                final Double maxConfidence =
-                        maxConfidenceLevel != null && !maxConfidenceLevel.isEmpty() ? Double.parseDouble(maxConfidenceLevel) :
-                            null;
-                        return new ConfidenceLevelFilter(minConfidence, maxConfidence);
+    private List<ConfidenceLevelCategory> loadConfidenceCategoriesFilter() {
+        final List<ConfidenceCategoryEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_SEARCH_CONFIDENCE_CATEGORY, ConfidenceCategoryEntry.class);
+        List<ConfidenceLevelCategory> list;
+        if (entries != null && !entries.isEmpty()) {
+            list = new ArrayList<>();
+            for (final ConfidenceCategoryEntry entry : entries) {
+                list.add(ConfidenceLevelCategory.valueOf(entry.getName()));
+            }
+        } else {
+            list = SearchFilter.DEFAULT.getDetectionFilter().getConfidenceCategories();
+        }
+        return list;
+    }
+
+    private List<ConfidenceLevelCategory> loadEdgeConfidenceCategoriesFilter() {
+        final List<ConfidenceCategoryEntry> entries = StructUtils.getListOfStructs(Preferences.main(),
+                FILTER_EDGE_SEARCH_CONFIDENCE_CATEGORY, ConfidenceCategoryEntry.class);
+        List<ConfidenceLevelCategory> list;
+        if (Objects.nonNull(entries) && !entries.isEmpty()) {
+            list = new ArrayList<>();
+            for (final ConfidenceCategoryEntry entry : entries) {
+                list.add(ConfidenceLevelCategory.valueOf(entry.getName()));
+            }
+        } else {
+            list = EdgeSearchFilter.DEFAULT.getConfidenceCategories();
+        }
+        return list;
     }
 
     MapViewSettings loadMapViewSettings() {
-        final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(),
-                Config.getInstance().getPreferencesMaxZoom());
+        final int photoZoom = loadIntValue(MAP_VIEW_PHOTO_ZOOM, Config.getInstance().getMapPhotoZoom(), Config
+                .getInstance().getPreferencesMaxZoom());
         final boolean dataLoadFlag = Preferences.main().getBoolean(MAP_VIEW_DATA_LOAD, true);
         return new MapViewSettings(photoZoom, dataLoadFlag);
     }
@@ -272,8 +353,8 @@ final class LoadManager {
     PhotoSettings loadPhotoSettings() {
         final boolean highQualityFlag = Preferences.main().getBoolean(HIGH_QUALITY_PHOTO_FLAG);
         final boolean mouseHoverFlag = Preferences.main().getBoolean(MOUSE_HOVER_FLAG);
-        final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(),
-                Config.getInstance().getMouseHoverMaxDelay());
+        final int mouseHoverDelay = loadIntValue(MOUSE_HOVER_DELAY, Config.getInstance().getMouseHoverMinDelay(), Config
+                .getInstance().getMouseHoverMaxDelay());
         final boolean displayFrontFacingFlag = Preferences.main().getBoolean(DISPLAY_FRONT_FACING_FLAG, true);
         return new PhotoSettings(highQualityFlag, mouseHoverFlag, mouseHoverDelay, displayFrontFacingFlag);
     }
@@ -287,15 +368,15 @@ final class LoadManager {
 
     SequenceSettings loadTrackSettings() {
         final String displayTrackFlagVal = Preferences.main().get(DISPLAY_TRACK_FLAG);
-        final boolean displayTrackFlag =
-                displayTrackFlagVal.isEmpty() ? Boolean.TRUE : Boolean.valueOf(displayTrackFlagVal);
+        final boolean displayTrackFlag = displayTrackFlagVal.isEmpty() ? Boolean.TRUE : Boolean.valueOf(
+                displayTrackFlagVal);
         return new SequenceSettings(displayTrackFlag, loadAutoplaySettings());
     }
 
     AutoplaySettings loadAutoplaySettings() {
         final Integer length = loadIntValue(AUTOPLAY_LENGTH, null, null);
-        final int delay = loadIntValue(AUTOPLAY_DELAY, Config.getInstance().getAutoplayMinDelay(),
-                Config.getInstance().getAutoplayMaxDelay());
+        final int delay = loadIntValue(AUTOPLAY_DELAY, Config.getInstance().getAutoplayMinDelay(), Config.getInstance()
+                .getAutoplayMaxDelay());
         return new AutoplaySettings(length, delay);
     }
 
@@ -304,15 +385,20 @@ final class LoadManager {
                 CacheConfig.getInstance().getMaxMemoryCount());
         final int diskCount = loadIntValue(CACHE_DISK_COUNT, CacheConfig.getInstance().getDefaultDiskCount(),
                 CacheConfig.getInstance().getMaxDiskCount());
-        final int prevNextCount = loadIntValue(CACHE_PREV_NEXT_COUNT,
-                CacheConfig.getInstance().getDefaultPrevNextCount(), CacheConfig.getInstance().getMaxPrevNextCount());
+        final int prevNextCount = loadIntValue(CACHE_PREV_NEXT_COUNT, CacheConfig.getInstance()
+                .getDefaultPrevNextCount(), CacheConfig.getInstance().getMaxPrevNextCount());
         final int nearbyCount = loadIntValue(CACHE_NEARBY_COUNT, CacheConfig.getInstance().getMaxNearbyCount(),
                 CacheConfig.getInstance().getDefaultNearbyCount());
         return new CacheSettings(memoryCount, diskCount, prevNextCount, nearbyCount);
     }
 
-    boolean loadLayerOpenedFlag() {
-        final String layerOpened = Preferences.main().get(LAYER_OPENED);
+    boolean loadKartaViewLayerOpenedFlag() {
+        final String layerOpened = Preferences.main().get(KARTAVIEW_LAYER_OPENED);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
+    }
+
+    boolean loadEdgeLayerOpenedFlag() {
+        final String layerOpened = Preferences.main().get(EDGE_LAYER_OPENED);
         return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 
@@ -323,6 +409,11 @@ final class LoadManager {
 
     boolean loadDetectionPanelOpenedFlag() {
         final String layerOpened = Preferences.main().get(DETECTION_PANEL_OPENED);
+        return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
+    }
+
+    boolean loadEdgeDetectionPanelOpenedFlag() {
+        final String layerOpened = Preferences.main().get(EDGE_DETECTION_PANEL_OPENED);
         return layerOpened.isEmpty() ? Boolean.FALSE : Boolean.valueOf(layerOpened);
     }
 

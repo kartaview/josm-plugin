@@ -6,8 +6,11 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.service.apollo;
 
+import com.grab.josm.common.argument.BoundingBox;
 import com.grab.josm.common.http.HttpUtil;
+import org.openstreetmap.josm.plugins.kartaview.service.Paging;
 import org.openstreetmap.josm.plugins.kartaview.util.cnf.ApolloServiceConfig;
+import java.util.Objects;
 
 
 /**
@@ -42,6 +45,13 @@ class HttpQueryBuilder {
         return build();
     }
 
+    String buildSearchEdgeDetectionsQuery() {
+        query.append(RequestConstants.SEARCH_EDGE_DETECTIONS);
+        query.append(QUESTIONM);
+        appendFormatFilter(query);
+        return build();
+    }
+
     String buildSearchClustersQuery() {
         query.append(RequestConstants.SEARCH_CLUSTERS);
         query.append(QUESTIONM);
@@ -49,12 +59,36 @@ class HttpQueryBuilder {
         return build();
     }
 
-    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId) {
+    String buildSearchEdgeClustersQuery() {
+        query.append(RequestConstants.SEARCH_EDGE_CLUSTERS);
+        query.append(QUESTIONM);
+        appendFormatFilter(query);
+        return build();
+    }
+
+    String buildRetrieveSequenceDetectionsQuery(final Long sequenceId, final Paging paging,
+            final BoundingBox boundingBox) {
         query.append(RequestConstants.RETRIEVE_SEQUENCE_DETECTIONS);
         query.append(QUESTIONM);
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);
         appendExcludedSignTypeFilter();
+        appendPaging(paging);
+        appendBoundingBox(boundingBox);
         return build();
+    }
+
+    private void appendBoundingBox(final BoundingBox boundingBox) {
+        if (Objects.nonNull(boundingBox)) {
+            query.append(AND).append(RequestConstants.NORTH).append(EQ).append(boundingBox.getNorth()).append(AND)
+                    .append(RequestConstants.SOUTH).append(EQ).append(boundingBox.getSouth()).append(AND).append(
+                            RequestConstants.EAST).append(EQ).append(boundingBox.getEast()).append(AND).append(
+                                    RequestConstants.WEST).append(EQ).append(boundingBox.getWest());
+        }
+    }
+
+    private void appendPaging(final Paging paging) {
+        query.append(AND).append(RequestConstants.PAGE).append(EQ).append(paging.getPage());
+        query.append(AND).append(RequestConstants.ITEMS_PER_PAGE).append(EQ).append(paging.getItems());
     }
 
     String buildRetrievePhotoDetectionsQuery(final Long sequenceId, final Integer sequenceIndex) {
@@ -67,6 +101,14 @@ class HttpQueryBuilder {
 
     String buildRetrieveDetectionQuery(final Long id) {
         return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_DETECTION, id);
+    }
+
+    String buildRetrieveEdgeClusterDetectionsQuery(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_EDGE_CLUSTER_DETECTIONS, id);
+    }
+
+    String buildRetrieveEdgeCluster(final Long id) {
+        return buildRetrieveByIdQuery(RequestConstants.RETRIEVE_EDGE_CLUSTER, id);
     }
 
     String buildRetrieveClusterQuery(final Long id) {
@@ -94,7 +136,6 @@ class HttpQueryBuilder {
         query.append(RequestConstants.ID).append(EQ).append(id);
         return build();
     }
-
 
     private void appendPhotoIdFilter(final Long sequenceId, final Integer sequenceIndex) {
         query.append(RequestConstants.SEQUENCE_ID).append(EQ).append(sequenceId);

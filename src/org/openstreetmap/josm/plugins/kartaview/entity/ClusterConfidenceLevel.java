@@ -7,6 +7,10 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.entity;
 
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import com.grab.josm.common.formatter.DecimalPattern;
+import com.grab.josm.common.formatter.EntityFormatter;
+
 
 /**
  *
@@ -15,21 +19,39 @@ package org.openstreetmap.josm.plugins.kartaview.entity;
  */
 public class ClusterConfidenceLevel {
 
-    private final Double overallConfidence;
     private final Double ocrConfidence;
+    private final Double matchingConfidence;
+    private final ConfidenceLevelCategory confidenceCategory;
 
 
-    public ClusterConfidenceLevel(final Double overallConfidence, final Double ocrConfidence) {
+    public ClusterConfidenceLevel(final Double ocrConfidence, final Double matchingConfidence,
+            final ConfidenceLevelCategory confidenceCategory) {
         super();
-        this.overallConfidence = overallConfidence;
         this.ocrConfidence = ocrConfidence;
-    }
-
-    public Double getOverallConfidence() {
-        return overallConfidence;
+        this.matchingConfidence = matchingConfidence;
+        this.confidenceCategory = confidenceCategory;
     }
 
     public Double getOcrConfidence() {
         return ocrConfidence;
+    }
+
+    public Double getMatchingConfidence() {
+        return matchingConfidence;
+    }
+
+    public ConfidenceLevelCategory getConfidenceCategory() {
+        return confidenceCategory;
+    }
+
+
+    @Override
+    public String toString() {
+        String result = GuiConfig.getInstance().getClusterOcrValueLbl()
+                + EntityFormatter.formatDouble(ocrConfidence, false, DecimalPattern.MEDIUM);
+        result += ", " + GuiConfig.getInstance().getClusterMatchingConfidenceShortLbl()
+                + EntityFormatter.formatDouble(matchingConfidence, false, DecimalPattern.MEDIUM);
+        result += ", " + GuiConfig.getInstance().getClusterConfidenceCategoryShortLbl() + confidenceCategory;
+        return result;
     }
 }

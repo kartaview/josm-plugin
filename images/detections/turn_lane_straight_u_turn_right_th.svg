@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="858"
+   height="1242"
+   viewBox="0 0 858 1242"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="turn_lane_straight_u_turn_right_th.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="0.69645733"
+     inkscape:cx="429.31561"
+     inkscape:cy="621"
+     inkscape:window-width="1920"
+     inkscape:window-height="1121"
+     inkscape:window-x="265"
+     inkscape:window-y="1791"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
+  <g
+     fill="none"
+     id="g5">
+    <rect
+       width="858"
+       height="1242"
+       fill="#000"
+       rx="33"
+       id="rect1" />
+    <rect
+       width="850"
+       height="1234"
+       x="4"
+       y="4"
+       fill="#FFF"
+       rx="30"
+       id="rect2" />
+    <path
+       fill="#003F87"
+       d="M43,32 L815,32 C820.522847,32 825,36.4771525 825,42 L825,1200 C825,1205.52285 820.522847,1210 815,1210 L43,1210 C37.4771525,1210 33,1205.52285 33,1200 L33,42 C33,36.4771525 37.4771525,32 43,32 Z"
+       id="path2" />
+    <g
+       fill="#FFF"
+       transform="translate(199 180)"
+       id="g4">
+      <path
+         d="M245.4999,368 C342.1729,368 419.9998,446.05015 419.9998,543.00015 L419.999,593.999 L420,594 L472.4759,579.568541 C485.7056,575.930071 496.4688,590.499641 489.1032,602.075861 L381,766 L272.8969,602.075871 C265.5313,590.499651 276.2945,575.930081 289.5241,579.568551 L342,594 L342,543.00015 C342,489.26216 298.9609,445.99988 245.4999,445.99988 C192.0389,445.99988 148.9999,489.26216 148.9999,543.00015 L148.9999,882.999909 L71,882.999909 L71,543.00015 C71,446.05015 148.8269,368 245.4999,368 Z"
+         id="path3" />
+      <path
+         d="M149.499773,57.6258918 L149.499973,465.625701 L201.975873,451.194242 C215.205573,447.555772 225.968773,462.125342 218.603173,473.701562 L110.499973,637.625701 L2.39687304,473.701572 C-4.96872696,462.125352 5.79447304,447.555782 19.024073,451.194252 L71.499973,465.625701 L71.499973,57.6258918 C71.499973,3.88790179 149.499773,-39.3241082 149.499773,57.6258918 Z"
+         transform="rotate(180 110.5 318.813)"
+         id="path4" />
+    </g>
+  </g>
+</svg>

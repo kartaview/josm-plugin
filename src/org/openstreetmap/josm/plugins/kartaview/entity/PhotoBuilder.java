@@ -201,8 +201,10 @@ public class PhotoBuilder {
     }
 
     public Photo build() {
-        if (this.getProjection().equals(Projection.SPHERE)) {
-            visualiseWrappedPhoto(this);
+        if (this.getProjection() != null) {
+            if (this.getProjection().equals(Projection.SPHERE)) {
+                visualiseWrappedPhoto(this);
+            }
         }
         // any photo should have a coordinate
         return point != null ? new Photo(this) : null;

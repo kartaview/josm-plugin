@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1600" height="1600" viewBox="0 0 1600 1600" xml:space="preserve">
+<desc>Created with Fabric.js 4.2.0</desc>
+<defs>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="transparent"></rect>
+<g transform="matrix(1 0 0 1 800 800)" id="5f853bc7-fc33-4190-9e9d-a62b211c5f19"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-opacity: 0; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-800" y="-800" rx="0" ry="0" width="1600" height="1600" />
+</g>
+<g transform="matrix(0 0 0 0 0 0)" id="7dfad023-0891-4225-9645-b2d7f52a0021"  >
+</g>
+<g transform="matrix(13.63 0 0 23.83 800.17 800.15)" id="0a52af06-e524-4e95-98c4-4ba69ac2979b"  >
+<rect style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,254,254); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-33.085" y="-33.085" rx="0" ry="0" width="66.17" height="66.17" />
+</g>
+<g transform="matrix(10.84 0 0 19.17 800 800)"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-50, -50)" d="M 90.375 90.375 L 9.625 90.375 L 9.625 9.625 L 90.375 9.625 L 90.375 90.375 z M 11.625 88.375 L 88.375 88.375 L 88.375 11.625 L 11.625 11.625 L 11.625 88.375 z" stroke-linecap="round" />
+</g>
+<g transform="matrix(1.89 0 0 1.89 800 1223.87)" style="" id="01dfb76b-c761-4b75-9ec7-8b9d900d40db"  >
+		<text xml:space="preserve" font-family="Raleway" font-size="105" font-style="normal" font-weight="900" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-124.21" y="-26.34" >O</tspan><tspan x="-30.77" y="-26.34" >N</tspan><tspan x="61.53" y="-26.34" >E</tspan><tspan x="-131.72" y="92.31" >W</tspan><tspan x="-13.81" y="92.31" >A</tspan><tspan x="61.79" y="92.31" >Y</tspan></text>
+</g>
+<g transform="matrix(10.2 0 0 10.2 800 510.42)" id="929aeb9f-bcb5-4875-828b-8233defd3f41"  >
+<circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,100,206); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  cx="0" cy="0" r="35" />
+</g>
+<g transform="matrix(-3.86 0 0 -7.57 800 477.22)" id="2c6400a9-58c2-4a49-87c9-42bcc96b7516"  >
+<polygon style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  points="0,36.77 15.28,20.24 30.55,3.71 11.79,3.71 11.79,-36.77 -12.82,-36.77 -12.82,3.71 -30.55,3.71 -15.28,20.24 " />
+</g>
+</svg>

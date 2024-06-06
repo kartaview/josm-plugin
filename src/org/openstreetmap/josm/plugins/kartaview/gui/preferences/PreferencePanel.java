@@ -21,10 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.CacheConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
 import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
@@ -32,6 +29,10 @@ import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.PreferenceSettings;
 import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.CacheConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import com.grab.josm.common.gui.builder.CheckBoxBuilder;
 import com.grab.josm.common.gui.builder.LabelBuilder;
 import com.grab.josm.common.gui.builder.TextComponentBuilder;
@@ -81,7 +82,7 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefMapViewLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_MAP_VIEW);
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefPhotoZoomLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PHOTO_ZOOM);
         spPhotoZoom = TextComponentBuilder.buildPositiveNumberSpinner(mapViewSettings.getPhotoZoom(),
                 Config.getInstance().getMapPhotoZoom(), Config.getInstance().getPreferencesMaxZoom(), Font.PLAIN,
@@ -90,7 +91,7 @@ class PreferencePanel extends JPanel {
 
         cbDataLoad = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefDataLoadLbl(), null, Font.PLAIN,
                 getBackground(), mapViewSettings.isDataLoadFlag());
-        add(cbDataLoad,Constraints.CB_DATA_LOAD);
+        add(cbDataLoad, Constraints.CB_DATA_LOAD);
     }
 
     private void createPhotoSettingsComponents(final PreferenceSettings settings) {
@@ -99,7 +100,7 @@ class PreferencePanel extends JPanel {
         final boolean enabled = !settings.getPhotoSettings().isMouseHoverFlag();
         cbHighQualityPhoto = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefImageHighQualityLbl(),
                 new SelectionListener(), Font.PLAIN, settings.getPhotoSettings().isHighQualityFlag(), enabled);
-        add(cbHighQualityPhoto, Constraints.CB_HIGHG_QUALITY);
+        add(cbHighQualityPhoto, Constraints.CB_HIGH_QUALITY);
 
         final boolean selectedMouseHoverFlag = !settings.getTrackSettings().isDisplayTrack()
                 && !settings.getPhotoSettings().isHighQualityFlag() && settings.getPhotoSettings().isMouseHoverFlag();
@@ -110,7 +111,7 @@ class PreferencePanel extends JPanel {
         add(cbMouseHover, Constraints.CB_MOUSE_HOVER);
 
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefMouseHoverDelayLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MOUSE_HOVER_DELAY);
         spMouseHoverDelay =
                 TextComponentBuilder.buildPositiveNumberSpinner(settings.getPhotoSettings().getMouseHoverDelay(),
@@ -120,15 +121,15 @@ class PreferencePanel extends JPanel {
     }
 
     private void createWrappedPhotoSettingsComponent(final PreferenceSettings settings) {
-        add(LabelBuilder
-                .build(GuiConfig.getInstance().getPrefWrappedPhotoLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
-                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_360_IMAGE);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefWrappedPhotoLbl(), Font.PLAIN,
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_360_IMAGE);
         final boolean displayFrontFacingEnabled = settings.getPhotoSettings().isDisplayFrontFacingFlag();
         rbFrontFacingDisplay = new JRadioButton(GuiConfig.getInstance().getPrefPhotoDisplayFrontFacingLbl(),
                 displayFrontFacingEnabled);
         final JRadioButton rbWrappedDisplay =
                 new JRadioButton(GuiConfig.getInstance().getPrefPhotoDisplayWrappedLbl(), !displayFrontFacingEnabled);
-        ButtonGroup photoOptionsGroup = new ButtonGroup();
+        final ButtonGroup photoOptionsGroup = new ButtonGroup();
         photoOptionsGroup.add(rbFrontFacingDisplay);
         photoOptionsGroup.add(rbWrappedDisplay);
 
@@ -137,23 +138,20 @@ class PreferencePanel extends JPanel {
     }
 
     private void createClusterSettingsComponents(final ClusterSettings settings) {
-        add(LabelBuilder
-                .build(GuiConfig.getInstance().getPrefAggregatedLbl(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT,
-                        SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_AGGREGATED);
-        agDisplayDetection = CheckBoxBuilder
-                .build(GuiConfig.getInstance().getPrefAggregatedDisplayDetectionLbl(), new SelectionListener(),
-                        Font.PLAIN, settings.isDisplayDetectionLocations(), true);
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefClusterLbl(), Font.PLAIN,
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                Constraints.LBL_CLUSTER);
+        agDisplayDetection = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefClusterDisplayDetectionLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayDetectionLocations(), true);
         add(agDisplayDetection, Constraints.CB_DISPLAY_DETECTION);
-        cbDisplayTags = CheckBoxBuilder
-                .build(GuiConfig.getInstance().getPrefAggregatedDisplayTagsLbl(), new SelectionListener(), Font.PLAIN,
-                        settings.isDisplayTags(), true);
+        cbDisplayTags = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefClusterDisplayTagsLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayTags(), true);
         add(cbDisplayTags, Constraints.CB_DISPLAY_TAGS);
-        cbDisplayColorBased = CheckBoxBuilder
-                .build(GuiConfig.getInstance().getPrefAggregatedDisplayColorCodedLbl(), new SelectionListener(),
-                        Font.PLAIN, settings.isDisplayColorCoded(), true);
+        cbDisplayColorBased = CheckBoxBuilder.build(GuiConfig.getInstance().getPrefClusterDisplayColorCodedLbl(),
+                new SelectionListener(), Font.PLAIN, settings.isDisplayColorCoded(), true);
         add(cbDisplayColorBased, Constraints.CB_DISPLAY_COLOR_CODED);
-        add(LabelBuilder.build(GuiConfig.getInstance().getPrefAggregatedLegendLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+        add(LabelBuilder.build(GuiConfig.getInstance().getPrefClusterLegendLbl(), Font.PLAIN,
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_DISPLAY_COLOR_LEGEND);
         final LegendTable legendTable = new LegendTable();
         add(legendTable.getComponent(), TABLE_DISPLAY_COLOR_LEGEND);
@@ -169,29 +167,29 @@ class PreferencePanel extends JPanel {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_AUTOPLAY);
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayLengthLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_AUTOPLAY_LENGTH);
         txtAutoplayLength = TextComponentBuilder.buildIntegerTextField(
                 settings.getTrackSettings().getAutoplaySettings().getLength(), 0, null, Font.PLAIN, Color.WHITE, true);
         add(txtAutoplayLength, Constraints.TXT_AUTOPLAY_LENGTH);
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefAutoplayDelayLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_AUTOPLAY_DELAY);
         final int autoplayDelay = settings.getTrackSettings().getAutoplaySettings().getDelay() != null && settings
                 .getTrackSettings().getAutoplaySettings().getDelay() > Config.getInstance().getAutoplayMinDelay()
                 ? settings.getTrackSettings().getAutoplaySettings().getDelay()
-                        : Config.getInstance().getAutoplayMinDelay();
-                spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
-                        Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
-                        ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
-                add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
+                : Config.getInstance().getAutoplayMinDelay();
+        spAutoplayDelay = TextComponentBuilder.buildPositiveNumberSpinner(autoplayDelay,
+                Config.getInstance().getAutoplayMinDelay(), Config.getInstance().getAutoplayMaxDelay(), Font.PLAIN,
+                ComponentOrientation.LEFT_TO_RIGHT, true, enabled);
+        add(spAutoplayDelay, Constraints.SP_AUTOPLAY_DELAY);
     }
 
     private void createCacheSettingsComponents(final CacheSettings settings) {
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefCacheLbl(), Font.PLAIN,
                 ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP), Constraints.LBL_CACHE);
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefMemoryLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_MEMORY_COUNT);
         spMemoryCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getMemoryCount(), null,
                 CacheConfig.getInstance().getMaxMemoryCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
@@ -206,7 +204,7 @@ class PreferencePanel extends JPanel {
         add(spDiskCount, Constraints.SP_DISK_COUNT);
 
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefPrevNextLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_PREV_NEXT_COUNT);
         spPrevNextCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getPrevNextCount(), null,
                 CacheConfig.getInstance().getMaxPrevNextCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
@@ -214,7 +212,7 @@ class PreferencePanel extends JPanel {
         add(spPrevNextCount, Constraints.SP_PREV_NEXT_COUNT);
 
         add(LabelBuilder.build(GuiConfig.getInstance().getPrefNearbyLbl(), Font.PLAIN,
-                ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
+                        ComponentOrientation.LEFT_TO_RIGHT, SwingConstants.LEFT, SwingConstants.TOP),
                 Constraints.LBL_NEARBY_COUNT);
         spNearbyCount = TextComponentBuilder.buildPositiveNumberSpinner(settings.getNearbyCount(), null,
                 CacheConfig.getInstance().getMaxNearbyCount(), Font.PLAIN, ComponentOrientation.LEFT_TO_RIGHT, false,
@@ -227,9 +225,8 @@ class PreferencePanel extends JPanel {
                 new MapViewSettings((int) spPhotoZoom.getValue(), cbDataLoad.isSelected());
         final PhotoSettings photoSettings = new PhotoSettings(cbHighQualityPhoto.isSelected(),
                 cbMouseHover.isSelected(), (int) spMouseHoverDelay.getValue(), rbFrontFacingDisplay.isSelected());
-        final ClusterSettings aggregatedSettings =
-                new ClusterSettings(agDisplayDetection.isSelected(), cbDisplayTags.isSelected(),
-                        cbDisplayColorBased.isSelected());
+        final ClusterSettings clusterSettings = new ClusterSettings(agDisplayDetection.isSelected(),
+                cbDisplayTags.isSelected(), cbDisplayColorBased.isSelected());
 
         final String lengthValue = txtAutoplayLength.getText().trim();
         final Integer length = lengthValue.isEmpty() ? null : Integer.parseInt(lengthValue);
@@ -237,7 +234,7 @@ class PreferencePanel extends JPanel {
                 new AutoplaySettings(length, (int) spAutoplayDelay.getValue()));
         final CacheSettings cacheSettings = new CacheSettings((int) spMemoryCount.getValue(),
                 (int) spDiskCount.getValue(), (int) spPrevNextCount.getValue(), (int) spNearbyCount.getValue());
-        return new PreferenceSettings(mapViewSettings, photoSettings, aggregatedSettings, trackSettings, cacheSettings);
+        return new PreferenceSettings(mapViewSettings, photoSettings, clusterSettings, trackSettings, cacheSettings);
     }
 
 

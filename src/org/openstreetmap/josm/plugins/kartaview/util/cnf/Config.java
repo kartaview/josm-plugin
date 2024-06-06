@@ -44,6 +44,7 @@ public final class Config extends BaseConfig {
     private final double clusterFacingThreshold;
     private final double clusterDistanceThreshold;
     private final boolean debugLoggingEnabled;
+    private final boolean enableCache;
 
 
     private Config() {
@@ -63,6 +64,8 @@ public final class Config extends BaseConfig {
         clusterDistanceThreshold = readDoubleProperty("cluster.distance.threshold", DISTANCE_THRESHOLD);
 
         debugLoggingEnabled = Boolean.parseBoolean(readProperty("debug.log.enabled"));
+
+        enableCache = Boolean.parseBoolean(readProperty("enable.cache"));
     }
 
 
@@ -117,5 +120,9 @@ public final class Config extends BaseConfig {
 
     public boolean isDebugLoggingEnabled() {
         return debugLoggingEnabled;
+    }
+
+    public boolean isCacheEnabled() {
+        return enableCache;
     }
 }

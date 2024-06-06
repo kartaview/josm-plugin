@@ -7,7 +7,6 @@
 package org.openstreetmap.josm.plugins.kartaview.handler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,25 +16,31 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
 import javax.swing.JOptionPane;
-import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
-import org.openstreetmap.josm.plugins.kartaview.util.Util;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
 import org.openstreetmap.josm.data.UserIdentityManager;
 import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.kartaview.argument.EdgeSearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
 import org.openstreetmap.josm.plugins.kartaview.entity.Author;
 import org.openstreetmap.josm.plugins.kartaview.entity.Cluster;
 import org.openstreetmap.josm.plugins.kartaview.entity.ClusterBuilder;
 import org.openstreetmap.josm.plugins.kartaview.entity.Contribution;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
+import org.openstreetmap.josm.plugins.kartaview.entity.EdgeDataResultSet;
+import org.openstreetmap.josm.plugins.kartaview.entity.EdgeDetection;
 import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
 import org.openstreetmap.josm.plugins.kartaview.entity.HighZoomResultSet;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
 import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
 import org.openstreetmap.josm.plugins.kartaview.entity.Sequence;
 import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
+import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
+import org.openstreetmap.josm.plugins.kartaview.util.Util;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
 import com.grab.josm.common.argument.BoundingBox;
 
 
@@ -50,6 +55,7 @@ public final class ServiceHandler extends SearchServiceHandler {
 
     private static final int CLUSTER_THREAD_POOL_SIZE = 3;
     private static final int SEQUENCE_THREAD_POOL_SIZE = 2;
+    private static final int EDGE_CLUSTER_THREAD_POOL_SIZE = 2;
 
     private static final ServiceHandler INSTANCE = new ServiceHandler();
 
@@ -58,9 +64,15 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     @Override
-    public HighZoomResultSet searchHighZoomData(final List<BoundingBox> areas, final SearchFilter filter) {
+    public HighZoomResultSet searchHighZoomImageryData(final List<BoundingBox> areas, final SearchFilter filter) {
         return filter != null && filter.getDataTypes() != null && !filter.getDataTypes().isEmpty()
-                ? super.searchHighZoomData(areas, filter) : new HighZoomResultSet();
+                ? super.searchHighZoomImageryData(areas, filter) : new HighZoomResultSet();
+    }
+
+    @Override
+    public EdgeDataResultSet searchEdgeData(final List<BoundingBox> areas, final EdgeSearchFilter filter) {
+        return filter != null && filter.getDataTypes() != null && !filter.getDataTypes().isEmpty()
+                ? super.searchEdgeData(areas, filter) : new EdgeDataResultSet();
     }
 
     /**
@@ -69,20 +81,19 @@ public final class ServiceHandler extends SearchServiceHandler {
      * @param sequenceId the identifier of the sequence
      * @return a {@code Sequence} object
      */
-    public Sequence retrieveSequence(final Long sequenceId) {
+    public Sequence retrieveSequence(final Long sequenceId, final BoundingBox area) {
         final ExecutorService executorService = Executors.newFixedThreadPool(SEQUENCE_THREAD_POOL_SIZE);
 
         final Future<Sequence> sequenceFuture = executorService.submit(() -> retrieveSequencePhotos(sequenceId));
-        final Future<List<Detection>> detectionsFuture =
-                executorService.submit(() -> retrieveSequenceDetections(sequenceId));
+        final Future<List<Detection>> detectionsFuture = executorService.submit(() -> retrieveSequenceDetections(
+                sequenceId, area));
 
         List<Photo> photos = null;
         try {
-            if (sequenceFuture != null) {
-                final Sequence sequence = sequenceFuture.get();
-                photos = sequence != null ? sequence.getPhotos() : null;
-            }
+            final Sequence sequence = sequenceFuture.get();
+            photos = sequence != null ? sequence.getPhotos() : null;
         } catch (final Exception ex) {
+            LOGGER.log("Error retrieving photos: ", ex);
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
@@ -90,8 +101,9 @@ public final class ServiceHandler extends SearchServiceHandler {
         }
         List<Detection> detections = null;
         try {
-            detections = detectionsFuture != null ? detectionsFuture.get() : null;
+            detections = detectionsFuture.get();
         } catch (final Exception ex) {
+            LOGGER.log("Error retrieving detections: ", ex);
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorSequenceText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
@@ -111,13 +123,14 @@ public final class ServiceHandler extends SearchServiceHandler {
         final ExecutorService executorService = Executors.newFixedThreadPool(CLUSTER_THREAD_POOL_SIZE);
         final Future<Cluster> clusterFuture = executorService.submit(() -> apolloService.retrieveCluster(id));
         final Future<List<Photo>> photosFuture = executorService.submit(() -> apolloService.retrieveClusterPhotos(id));
-        final Future<List<Detection>> detectionsFuture =
-                executorService.submit(() -> apolloService.retrieveClusterDetections(id));
+        final Future<List<Detection>> detectionsFuture = executorService.submit(() -> apolloService
+                .retrieveClusterDetections(id));
 
         ClusterBuilder clusterBuilder = new ClusterBuilder();
         try {
             clusterBuilder = new ClusterBuilder(clusterFuture.get());
         } catch (final Exception ex) {
+            LOGGER.log("Error retrieving clusters: ", ex);
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
@@ -126,18 +139,16 @@ public final class ServiceHandler extends SearchServiceHandler {
         try {
             clusterBuilder.photos(photosFuture.get());
         } catch (final Exception ex) {
+            LOGGER.log("Error retrieving clusters identified by photos: ", ex);
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
             }
         }
         try {
-            final List<Detection> detections = detectionsFuture.get();
-            if (detections != null) {
-                Collections.sort(detections);
-            }
-            clusterBuilder.detections(detections);
+            clusterBuilder.detections(detectionsFuture.get());
         } catch (final Exception ex) {
+            LOGGER.log("Error retrieving clusters identified by detections: ", ex);
             if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
                 final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
                 PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
@@ -160,14 +171,13 @@ public final class ServiceHandler extends SearchServiceHandler {
         return sequence;
     }
 
-    private List<Detection> retrieveSequenceDetections(final Long id) {
+    public List<Detection> retrieveSequenceDetections(final Long id, final BoundingBox boundingBox) {
         List<Detection> result = null;
         try {
-            result = apolloService.retrieveSequenceDetections(id);
+            result = apolloService.retrieveSequenceDetections(id, boundingBox);
             if (result != null) {
-                result = result.stream().filter(detection -> Util
-                        .isDetectionMatchingFilters(PreferenceManager.getInstance().loadSearchFilter(), detection))
-                        .collect(Collectors.toList());
+                result = result.stream().filter(detection -> Util.isDetectionMatchingFilters(PreferenceManager
+                        .getInstance().loadSearchFilter(), detection)).collect(Collectors.toList());
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
@@ -190,9 +200,8 @@ public final class ServiceHandler extends SearchServiceHandler {
         try {
             result = apolloService.retrievePhotoDetections(sequenceId, sequenceIndex);
             if (result != null) {
-                result = result.stream().filter(detection -> Util
-                        .isDetectionMatchingFilters(PreferenceManager.getInstance().loadSearchFilter(), detection))
-                        .collect(Collectors.toList());
+                result = result.stream().filter(detection -> Util.isDetectionMatchingFilters(PreferenceManager
+                        .getInstance().loadSearchFilter(), detection)).collect(Collectors.toList());
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSequenceDetectionsErrorFlag()) {
@@ -204,8 +213,7 @@ public final class ServiceHandler extends SearchServiceHandler {
     }
 
     /**
-     * Lists the segments that have KartaView coverage from the given area(s) corresponding to the specified zoom
-     * level.
+     * Lists the segments that have KartaView coverage from the given area(s) corresponding to the specified zoom level.
      *
      * @param areas a list of {@code BoundingBox}s representing the search areas. If the OsmDataLayer is active, there
      * might be several bounding boxes.
@@ -215,21 +223,19 @@ public final class ServiceHandler extends SearchServiceHandler {
      */
     public List<Segment> listMatchedTracks(final List<BoundingBox> areas, final SearchFilter filter, final int zoom) {
         List<Segment> finalResult = new ArrayList<>();
-        final Long osmUserId = filter != null ? filter.getOsmUserId() : null;
         try {
             if (areas.size() > 1) {
-                // special case: there are several different areas visible in the OSM data layer
+                // special case: there are several areas visible in the OSM data layer
                 final ExecutorService executor = Executors.newFixedThreadPool(areas.size());
                 final List<Future<List<Segment>>> futures = new ArrayList<>();
                 for (final BoundingBox bbox : areas) {
-                    final Callable<List<Segment>> callable =
-                            () -> kartaViewService.listMatchedTracks(bbox, osmUserId, zoom);
+                    final Callable<List<Segment>> callable = () -> kartaViewService.listMatchedTracks(bbox, zoom);
                     futures.add(executor.submit(callable));
                 }
                 finalResult.addAll(readResult(futures));
                 executor.shutdown();
             } else {
-                finalResult = kartaViewService.listMatchedTracks(areas.get(0), osmUserId, zoom);
+                finalResult = kartaViewService.listMatchedTracks(areas.get(0), zoom);
             }
         } catch (final ServiceException e) {
             if (!PreferenceManager.getInstance().loadSegmentsErrorSuppressFlag()) {
@@ -282,14 +288,14 @@ public final class ServiceHandler extends SearchServiceHandler {
         final Long userId = Util.getOsmUserId();
         final String userName = UserIdentityManager.getInstance().getUserName();
         if (userId == null) {
-            JOptionPane.showMessageDialog(MainApplication.getMap().mapView,
-                    GuiConfig.getInstance().getAuthenticationNeededErrorMessage(),
-                    GuiConfig.getInstance().getWarningTitle(), JOptionPane.WARNING_MESSAGE, null);
+            JOptionPane.showMessageDialog(MainApplication.getMap().mapView, GuiConfig.getInstance()
+                    .getAuthenticationNeededErrorMessage(), GuiConfig.getInstance().getWarningTitle(),
+                    JOptionPane.WARNING_MESSAGE, null);
         } else {
             final Author author = new Author(userId.toString(), userName);
             try {
-                apolloService.updateDetection(new Detection(detectionId, editStatus),
-                        new Contribution(author, comment));
+                apolloService.updateDetection(new Detection(detectionId, editStatus), new Contribution(author,
+                        comment));
             } catch (final ServiceException e) {
                 if (!PreferenceManager.getInstance().loadDetectionUpdateErrorSuppressFlag()) {
                     final boolean flag = handleException(GuiConfig.getInstance().getErrorDetectionUpdateText());
@@ -374,13 +380,51 @@ public final class ServiceHandler extends SearchServiceHandler {
         return result;
     }
 
+    /**
+     * Retrieves the edge cluster with the given identifier and all associated data.
+     *
+     * @param id - the identifier of the edge cluster id
+     * @return edge cluster entity
+     */
+    public Cluster retrieveEdgeCluster(final Long id) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(EDGE_CLUSTER_THREAD_POOL_SIZE);
+        final Future<Cluster> clusterFuture = executorService.submit(() -> apolloService.retrieveEdgeCluster(id));
+        final Future<List<EdgeDetection>> detectionsFuture = executorService.submit(() -> apolloService
+                .retrieveEdgeClusterDetections(id));
+
+        ClusterBuilder clusterBuilder = new ClusterBuilder();
+        try {
+            clusterBuilder = new ClusterBuilder(clusterFuture.get());
+        } catch (final Exception ex) {
+            LOGGER.log("Error retrieving clusters: ", ex);
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        try {
+            clusterBuilder.edgeDetections(detectionsFuture.get());
+        } catch (final Exception ex) {
+            LOGGER.log("Error retrieving clusters identified by detections: ", ex);
+            if (!PreferenceManager.getInstance().loadSequenceErrorSuppressFlag()) {
+                final boolean flag = handleException(GuiConfig.getInstance().getErrorClusterRetrieveText());
+                PreferenceManager.getInstance().saveSequenceErrorSuppressFlag(flag);
+            }
+        }
+        executorService.shutdown();
+        return clusterBuilder.build();
+    }
+
     private <T> Set<T> readResult(final List<Future<List<T>>> futures) throws ServiceException {
         final Set<T> result = new HashSet<>();
         for (final Future<List<T>> future : futures) {
             try {
                 result.addAll(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ServiceException(e);
+            } catch (final InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new ServiceException(ie);
+            } catch (final ExecutionException ee) {
+                throw new ServiceException(ee);
             }
         }
         return result;

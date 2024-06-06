@@ -5,7 +5,7 @@
   <g fill="none" fill-rule="evenodd">
     <use fill="#FFD11E" xlink:href="#exit_sign_panel_left-a"/>
     <rect width="118" height="50" x="1" y="1" stroke="#000" stroke-width="2" rx="6"/>
-    <text fill="#000" font-family="Roboto-Bold, Roboto" font-size="40" font-weight="bold" letter-spacing=".952">
+    <text fill="#000"  font-size="40" font-weight="bold" letter-spacing=".952">
       <tspan x="25.5" y="41">Left</tspan>
     </text>
   </g>

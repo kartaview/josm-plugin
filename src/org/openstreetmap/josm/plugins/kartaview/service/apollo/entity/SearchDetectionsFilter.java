@@ -1,14 +1,22 @@
+/*
+ * Copyright 2024 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ *
+ */
 package org.openstreetmap.josm.plugins.kartaview.service.apollo.entity;
-
-import org.openstreetmap.josm.plugins.kartaview.argument.SignFilter;
-import org.openstreetmap.josm.plugins.kartaview.entity.Author;
-import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
-import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
-import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.kartaview.entity.ValidationStatus;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.openstreetmap.josm.plugins.kartaview.argument.DetectionFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.SignFilter;
+import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
+import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
+import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
+import org.openstreetmap.josm.plugins.kartaview.entity.ValidationStatus;
 
 
 /**
@@ -17,51 +25,39 @@ import java.util.Date;
  * @author nicoleta.viregan
  */
 
-class SearchDetectionsFilter {
+public class SearchDetectionsFilter extends SearchFilter {
 
-    private final Author author;
-    private final Date date;
-    private final Collection<EditStatus> editStatuses;
-    private final Collection<ValidationStatus> validationStatuses;
-    private final Collection<OsmComparison> osmComparisons;
-    private final Collection<DetectionMode> detectionModes;
-    private final SignFilter signFilter;
+    private Collection<EditStatus> editStatuses;
+    private Collection<ValidationStatus> validationStatuses;
+    private Collection<DetectionMode> detectionModes;
 
-    SearchDetectionsFilter(final SearchDetectionsFilterBuilder builder) {
-        this.author = builder.getAuthor();
-        this.date = builder.getDate();
-        this.editStatuses = builder.getEditStatuses();
-        this.validationStatuses = builder.getValidationStatuses();
-        this.osmComparisons = builder.getOsmComparisons();
-        this.detectionModes = builder.getDetectionModes();
-        this.signFilter = builder.getSignFilter();
+
+    public SearchDetectionsFilter(final Date date, final DetectionFilter detectionFilter) {
+        super(date);
+        if (Objects.nonNull(detectionFilter)) {
+            this.editStatuses = detectionFilter.getEditStatuses();
+            this.detectionModes = detectionFilter.getModes();
+            setOsmComparisons(detectionFilter.getOsmComparisons());
+            Collection<String> includedNames = null;
+            if (detectionFilter.getSpecificSigns() != null) {
+                includedNames = detectionFilter.getSpecificSigns().stream().map(Sign::getInternalName).collect(
+                        Collectors.toList());
+            }
+            setSignFilter(new SignFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
+                    SignFilter.EXCLUDED_SIGN_TYPES, includedNames));
+
+        }
     }
 
-    Author getAuthor() {
-        return author;
-    }
-
-    Date getDate() {
-        return date;
-    }
-
-    Collection<EditStatus> getEditStatuses() {
+    public Collection<EditStatus> getEditStatuses() {
         return editStatuses;
     }
 
-    Collection<ValidationStatus> getValidationStatuses() {
+    public Collection<ValidationStatus> getValidationStatuses() {
         return validationStatuses;
     }
 
-    Collection<OsmComparison> getOsmComparisons() {
-        return osmComparisons;
-    }
-
-    Collection<DetectionMode> getDetectionModes() {
+    public Collection<DetectionMode> getDetectionModes() {
         return detectionModes;
-    }
-
-    SignFilter getSignFilter() {
-        return signFilter;
     }
 }

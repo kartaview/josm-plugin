@@ -8,17 +8,12 @@ package org.openstreetmap.josm.plugins.kartaview;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
+import java.util.Objects;
+
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import org.openstreetmap.josm.plugins.kartaview.gui.details.detection.DetectionDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.details.filter.DetectionTypeContent;
-import org.openstreetmap.josm.plugins.kartaview.gui.details.photo.PhotoDetailsDialog;
-import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
-import org.openstreetmap.josm.plugins.kartaview.gui.preferences.PreferenceEditor;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -34,21 +29,35 @@ import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.kartaview.argument.AutoplayAction;
+import org.openstreetmap.josm.plugins.kartaview.argument.DetectionFilter;
 import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSize;
 import org.openstreetmap.josm.plugins.kartaview.argument.Projection;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
 import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
-import org.openstreetmap.josm.plugins.kartaview.handler.DataUpdateHandler;
-import org.openstreetmap.josm.plugins.kartaview.handler.SelectionHandler;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.common.DetectionTypeContent;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.edge.detection.EdgeDetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.imagery.detection.DetectionDetailsDialog;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.imagery.photo.PhotoDetailsDialog;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.EdgeLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.layer.KartaViewLayer;
+import org.openstreetmap.josm.plugins.kartaview.gui.preferences.PreferenceEditor;
 import org.openstreetmap.josm.plugins.kartaview.handler.ServiceHandler;
+import org.openstreetmap.josm.plugins.kartaview.handler.ZoomActionListener;
+import org.openstreetmap.josm.plugins.kartaview.handler.edge.EdgeDataUpdateHandler;
+import org.openstreetmap.josm.plugins.kartaview.handler.edge.EdgeSelectionHandler;
+import org.openstreetmap.josm.plugins.kartaview.handler.imagery.KartaViewDataUpdateHandler;
+import org.openstreetmap.josm.plugins.kartaview.handler.imagery.KartaViewLayerSelectionHandler;
 import org.openstreetmap.josm.plugins.kartaview.observer.DetectionChangeObserver;
 import org.openstreetmap.josm.plugins.kartaview.observer.LocationObserver;
-import org.openstreetmap.josm.plugins.kartaview.service.apollo.DetectionFilter;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.spi.preferences.PreferenceChangeEvent;
 import org.openstreetmap.josm.spi.preferences.PreferenceChangedListener;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.Logging;
+
 import com.grab.josm.common.thread.ThreadPool;
 
 
@@ -58,15 +67,20 @@ import com.grab.josm.common.thread.ThreadPool;
  * @author Beata
  * @version $Revision$
  */
-public class KartaViewPlugin extends Plugin
-        implements LayerChangeListener, LocationObserver, ZoomChangeListener, DetectionChangeObserver {
+public class KartaViewPlugin extends Plugin implements LayerChangeListener, LocationObserver, ZoomChangeListener,
+        DetectionChangeObserver {
 
     private static final int SEARCH_DELAY = 1000;
 
-    private JMenuItem layerActivatorMenuItem;
-    private final SelectionHandler selectionHandler;
+    private JMenuItem kartaViewLayerActivatorMenuItem;
+    private JMenuItem edgeLayerActivatorMenuItem;
+    private final KartaViewLayerSelectionHandler selectionHandler;
+    private final EdgeSelectionHandler edgeSelectionHandler;
     private final PreferenceChangedHandler preferenceChangedHandler;
     private Timer zoomTimer;
+    private boolean kartaViewLayerListenersRegistered = false;
+    private boolean edgeLayerListenersRegistered = false;
+    private boolean commonListenersRegistered = false;
 
 
     /**
@@ -80,11 +94,10 @@ public class KartaViewPlugin extends Plugin
         // initialize detection signs
         ThreadPool.getInstance().execute(DetectionTypeContent::getInstance);
 
-        this.selectionHandler = new SelectionHandler();
+        this.selectionHandler = new KartaViewLayerSelectionHandler();
+        this.edgeSelectionHandler = new EdgeSelectionHandler();
         this.preferenceChangedHandler = new PreferenceChangedHandler();
-        if (layerActivatorMenuItem == null) {
-            layerActivatorMenuItem = MainMenu.add(MainApplication.getMenu().imageryMenu, new LayerActivator(), false);
-        }
+
         PreferenceManager.getInstance().savePluginLocalVersion(getPluginInformation().localversion);
         PreferenceManager.getInstance().saveAutoplayStartedFlag(false);
     }
@@ -99,31 +112,75 @@ public class KartaViewPlugin extends Plugin
         if (MainApplication.getMap() != null && !GraphicsEnvironment.isHeadless()) {
             // initialize detection details dialog
             initializeDetectionDetailsDialog(newMapFrame);
+            initializeEdgeDetectionDetailsDialog(newMapFrame);
 
             // initialize photo details dialog
             initializePhotoDetailsDialog(newMapFrame);
 
-            // initialize layer menu item & layer
-            layerActivatorMenuItem.setEnabled(true);
-            if (PreferenceManager.getInstance().loadLayerOpenedFlag()) {
-                addLayer();
+            // initialize menu items
+            initializeMenuItems();
+
+            // initialize KartaView menu item & layer
+            kartaViewLayerActivatorMenuItem.setEnabled(true);
+            if (PreferenceManager.getInstance().loadKartaViewLayerOpenedFlag()) {
+                registerKartaViewLayerListeners();
+                addKartaViewLayer();
             }
-            Preferences.main().addPreferenceChangeListener(preferenceChangedHandler);
+
+            // initialize Edge detections menu item & layer
+            edgeLayerActivatorMenuItem.setEnabled(true);
+            if (PreferenceManager.getInstance().loadEdgeLayerOpenedFlag()) {
+                registerEdgeLayerListeners();
+                addEdgeLayer();
+            }
+            if (kartaViewLayerListenersRegistered || edgeLayerListenersRegistered) {
+                registerCommonListeners();
+            }
         }
 
         if (oldMapFrame != null && newMapFrame == null) {
             // clean-up
-            layerActivatorMenuItem.setEnabled(false);
-            Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
-            oldMapFrame.removeToggleDialog(PhotoDetailsDialog.getInstance());
+            kartaViewLayerActivatorMenuItem.setEnabled(false);
+            edgeLayerActivatorMenuItem.setEnabled(false);
+            removeCommonListeners();
+            removeEdgeLayerListeners();
+            removeKartaViewLayerListeners();
+            if (Objects.nonNull(oldMapFrame.getToggleDialog(PhotoDetailsDialog.class))) {
+                oldMapFrame.removeToggleDialog(PhotoDetailsDialog.getInstance());
+            }
+            if (Objects.nonNull(oldMapFrame.getToggleDialog(DetectionDetailsDialog.class))) {
+                oldMapFrame.removeToggleDialog(DetectionDetailsDialog.getInstance());
+            }
+            if (Objects.nonNull(oldMapFrame.getToggleDialog(EdgeDetectionDetailsDialog.class))) {
+                oldMapFrame.removeToggleDialog(EdgeDetectionDetailsDialog.getInstance());
+            }
             PhotoDetailsDialog.destroyInstance();
             DetectionDetailsDialog.destroyInstance();
+            EdgeDetectionDetailsDialog.destroyInstance();
             KartaViewLayer.destroyInstance();
+            EdgeLayer.destroyInstance();
             try {
                 ThreadPool.getInstance().shutdown();
             } catch (final InterruptedException e) {
                 Logging.error("Could not shutdown thread pool.", e);
             }
+        }
+    }
+
+    private void initializeMenuItems() {
+        if (!MainApplication.getMenu().getMenu(GuiConfig.getInstance().getMenuItemPosition()).getText().equals(GuiConfig
+                .getInstance().getMenuItemName())) {
+            MainApplication.getMenu().addMenu(GuiConfig.getInstance().getMenuItemName(), GuiConfig.getInstance()
+                    .getMenuItemName(), GuiConfig.getInstance().getMenuItemMnemonicKey(), GuiConfig.getInstance()
+                            .getMenuItemPosition(), GuiConfig.getInstance().getMenuItemHelpTopic());
+        }
+        if (Objects.isNull(kartaViewLayerActivatorMenuItem)) {
+            kartaViewLayerActivatorMenuItem = MainMenu.add(MainApplication.getMenu().getMenu(GuiConfig.getInstance()
+                    .getMenuItemPosition()), new LayerActivator());
+        }
+        if (Objects.isNull(edgeLayerActivatorMenuItem)) {
+            edgeLayerActivatorMenuItem = MainMenu.add(MainApplication.getMenu().getMenu(GuiConfig.getInstance()
+                    .getMenuItemPosition()), new EdgeLayerActivator());
         }
     }
 
@@ -150,15 +207,58 @@ public class KartaViewPlugin extends Plugin
         }
     }
 
-    private void addLayer() {
-        // register listeners that needs to be registered only if the layer is created
-        NavigatableComponent.addZoomChangeListener(this);
-        MainApplication.getLayerManager().addLayerChangeListener(this);
-        MainApplication.getMap().mapView.addMouseListener(selectionHandler);
-        MainApplication.getMap().mapView.addMouseMotionListener(selectionHandler);
+    private void initializeEdgeDetectionDetailsDialog(final MapFrame mapFrame) {
+        final EdgeDetectionDetailsDialog edgeDetectionDetailsDialog = EdgeDetectionDetailsDialog.getInstance();
+        mapFrame.addToggleDialog(edgeDetectionDetailsDialog, false);
+        edgeDetectionDetailsDialog.registerObservers(edgeSelectionHandler);
+        if (PreferenceManager.getInstance().loadEdgeDetectionPanelOpenedFlag()) {
+            edgeDetectionDetailsDialog.showDialog();
+        } else {
+            edgeDetectionDetailsDialog.hideDialog();
+        }
+    }
 
-        // add layer
+    /**
+     * Registers listeners that need to be registered only if one of the plugin layers is created.
+     */
+    private void registerKartaViewLayerListeners() {
+        if (!kartaViewLayerListenersRegistered) {
+            MainApplication.getMap().mapView.addMouseListener(selectionHandler);
+            MainApplication.getMap().mapView.addMouseMotionListener(selectionHandler);
+            kartaViewLayerListenersRegistered = true;
+        }
+    }
+
+    /**
+     * Registers listeners that need to be registered only if one of the plugin layers is created.
+     */
+    private void registerEdgeLayerListeners() {
+        if (!edgeLayerListenersRegistered) {
+            MainApplication.getMap().mapView.addMouseListener(edgeSelectionHandler);
+            MainApplication.getMap().mapView.addMouseMotionListener(edgeSelectionHandler);
+            edgeLayerListenersRegistered = true;
+        }
+    }
+
+    /**
+     * Registers listeners that need to be registered only if one of the plugin layers is created.
+     */
+    private void registerCommonListeners() {
+        if (!commonListenersRegistered) {
+            Preferences.main().addPreferenceChangeListener(preferenceChangedHandler);
+            NavigatableComponent.addZoomChangeListener(this);
+            MainApplication.getLayerManager().addLayerChangeListener(this);
+            commonListenersRegistered = true;
+        }
+    }
+
+
+    private void addKartaViewLayer() {
         MainApplication.getMap().mapView.getLayerManager().addLayer(KartaViewLayer.getInstance());
+    }
+
+    private void addEdgeLayer() {
+        MainApplication.getMap().mapView.getLayerManager().addLayer(EdgeLayer.getInstance());
     }
 
     /* implementation of LayerChangeListener */
@@ -166,7 +266,11 @@ public class KartaViewPlugin extends Plugin
     @Override
     public void layerAdded(final LayerAddEvent event) {
         if (event.getAddedLayer() instanceof KartaViewLayer) {
-            PreferenceManager.getInstance().saveLayerOpenedFlag(true);
+            PreferenceManager.getInstance().saveKartaViewLayerOpenedFlag(true);
+            zoomChanged();
+        }
+        if (event.getAddedLayer() instanceof EdgeLayer) {
+            PreferenceManager.getInstance().saveEdgeLayerOpenedFlag(true);
             zoomChanged();
         }
     }
@@ -179,25 +283,67 @@ public class KartaViewPlugin extends Plugin
     @Override
     public void layerRemoving(final LayerRemoveEvent event) {
         if (event.getRemovedLayer() instanceof KartaViewLayer) {
-            NavigatableComponent.removeZoomChangeListener(this);
-            MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
-            MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
-            MainApplication.getLayerManager().removeLayerChangeListener(this);
             PhotoDetailsDialog.getInstance().updateUI(null, null, false);
             DetectionDetailsDialog.getInstance().clearDetailsDialog();
             KartaViewLayer.destroyInstance();
-            DataSet.getInstance().clear(true);
+            DataSet.getInstance().clearKartaViewLayerData(true);
+            if (!MainApplication.getLayerManager().getLayers().contains(EdgeLayer.getInstance())) {
+                removeKartaViewLayerListeners();
+            }
+        }
+
+        if (event.getRemovedLayer() instanceof EdgeLayer) {
+            EdgeDetectionDetailsDialog.getInstance().clearDetailsDialog();
+            EdgeLayer.destroyInstance();
+            DataSet.getInstance().clearEdgeLayerData(true);
+            if (!MainApplication.getLayerManager().getLayers().contains(KartaViewLayer.getInstance())) {
+                removeEdgeLayerListeners();
+            }
         }
     }
 
+    /**
+     * Removes the mouse listeners when all layers have been deleted.
+     */
+    private void removeKartaViewLayerListeners() {
+        if (Objects.nonNull(MainApplication.getMap())) {
+            if (kartaViewLayerListenersRegistered) {
+                MainApplication.getMap().mapView.removeMouseListener(selectionHandler);
+                MainApplication.getMap().mapView.removeMouseMotionListener(selectionHandler);
+                kartaViewLayerListenersRegistered = false;
+            }
+        }
+    }
+
+    /**
+     * Removes the mouse listeners when all layers have been deleted.
+     */
+    private void removeEdgeLayerListeners() {
+        if (Objects.nonNull(MainApplication.getMap())) {
+            if (edgeLayerListenersRegistered) {
+                MainApplication.getMap().mapView.removeMouseListener(edgeSelectionHandler);
+                MainApplication.getMap().mapView.removeMouseMotionListener(edgeSelectionHandler);
+                edgeLayerListenersRegistered = false;
+            }
+        }
+    }
+
+    private void removeCommonListeners() {
+        if (commonListenersRegistered) {
+            Preferences.main().removePreferenceChangeListener(preferenceChangedHandler);
+            NavigatableComponent.removeZoomChangeListener(this);
+            MainApplication.getLayerManager().removeLayerChangeListener(this);
+            commonListenersRegistered = false;
+        }
+    }
 
     /* implementation of LocationObserver */
 
     @Override
     public void zoomToSelectedPhoto() {
         final Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
-        if (selectedPhoto != null
-                && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto.getPoint())) {
+        if (selectedPhoto != null && !MainApplication.getMap().mapView.getRealBounds().contains(selectedPhoto
+                .getPoint())) {
             SwingUtilities.invokeLater(() -> {
                 MainApplication.getMap().mapView.zoomTo(selectedPhoto.getPoint());
                 KartaViewLayer.getInstance().invalidate();
@@ -215,8 +361,7 @@ public class KartaViewPlugin extends Plugin
             zoomTimer.restart();
         } else {
             if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
-                zoomTimer = new Timer(SEARCH_DELAY,
-                        event -> ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(false)));
+                zoomTimer = new Timer(SEARCH_DELAY, new ZoomActionListener());
                 zoomTimer.setRepeats(false);
                 zoomTimer.start();
             }
@@ -231,16 +376,16 @@ public class KartaViewPlugin extends Plugin
         ThreadPool.getInstance().execute(() -> {
             ServiceHandler.getInstance().updateDetection(DataSet.getInstance().getSelectedDetection().getId(),
                     editStatus, text);
-            final Detection changedDetection = ServiceHandler.getInstance()
-                    .retrieveDetection(DataSet.getInstance().getSelectedDetection().getId());
+            final Detection changedDetection = ServiceHandler.getInstance().retrieveDetection(DataSet.getInstance()
+                    .getSelectedDetection().getId());
             SwingUtilities.invokeLater(() -> updateDetection(changedDetection));
         });
     }
 
     private void updateDetection(final Detection detection) {
         final DetectionFilter filter = PreferenceManager.getInstance().loadSearchFilter().getDetectionFilter();
-        if (!DataSet.getInstance().hasSelectedSequence()
-                && (filter != null && !filter.containsEditStatus(detection.getEditStatus()))) {
+        if (!DataSet.getInstance().hasSelectedSequence() && (filter != null && !filter.containsEditStatus(detection
+                .getEditStatus()))) {
             // remove detection
             DataSet.getInstance().removeDetection(detection);
             PhotoDetailsDialog.getInstance().removePhotoDetection(detection);
@@ -259,7 +404,7 @@ public class KartaViewPlugin extends Plugin
 
 
     /**
-     * Activates the layer.
+     * Activates the KartaView layer.
      *
      * @author beataj
      * @version $Revision$
@@ -269,16 +414,45 @@ public class KartaViewPlugin extends Plugin
         private static final long serialVersionUID = -1361735274900300621L;
 
         private LayerActivator() {
-            super(GuiConfig.getInstance().getPluginShortName(),
-                    new ImageProvider(IconConfig.getInstance().getLayerIconName()), null, null, false, null, false);
+            super(GuiConfig.getInstance().getPluginShortName(), new ImageProvider(IconConfig.getInstance()
+                    .getKartaViewLayerIconName()), null, null, false, null, false);
             setEnabled(false);
         }
 
         @Override
         public void actionPerformed(final ActionEvent e) {
             if (!MainApplication.getMap().mapView.getLayerManager().containsLayer(KartaViewLayer.getInstance())) {
-                addLayer();
-                PreferenceManager.getInstance().saveLayerOpenedFlag(true);
+                registerKartaViewLayerListeners();
+                registerCommonListeners();
+                addKartaViewLayer();
+                PreferenceManager.getInstance().saveKartaViewLayerOpenedFlag(true);
+            }
+        }
+    }
+
+
+    /**
+     * Activates the Edge detections layer.
+     *
+     * @author maria.mitisor
+     */
+    private final class EdgeLayerActivator extends JosmAction {
+
+        private static final long serialVersionUID = -5200864370725838383L;
+
+        private EdgeLayerActivator() {
+            super(GuiConfig.getInstance().getEdgeDataName(), new ImageProvider(IconConfig.getInstance()
+                    .getEdgeLayerIconName()), null, null, false, null, false);
+            setEnabled(false);
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            if (!MainApplication.getMap().mapView.getLayerManager().containsLayer(EdgeLayer.getInstance())) {
+                registerEdgeLayerListeners();
+                registerCommonListeners();
+                addEdgeLayer();
+                PreferenceManager.getInstance().saveEdgeLayerOpenedFlag(true);
             }
         }
     }
@@ -298,16 +472,20 @@ public class KartaViewPlugin extends Plugin
             if (event != null && (event.getNewValue() != null && !event.getNewValue().equals(event.getOldValue()))) {
                 final PreferenceManager prefManager = PreferenceManager.getInstance();
                 final String newValue = event.getNewValue().getValue().toString();
-                if (prefManager.dataDownloadPreferencesChanged(event.getKey(), newValue)) {
-                    handleDataDownload();
+                if (prefManager.kartaViewLayerDataDownloadPreferencesChanged(event.getKey(), newValue)) {
+                    handleKartaViewLayerDataDownload();
+                } else if (prefManager.edgeLayerDataDownloadPreferencesChanged(event.getKey(), newValue)) {
+                    handleEdgeLayerDataDownload();
                 } else if (prefManager.hasHighQualityPhotoFlagChanged(event.getKey(), newValue)) {
                     handleHighQualityPhotoSelection();
                 } else if (prefManager.isDisplayTrackFlag(event.getKey())) {
                     handleDisplayTrack(newValue);
                 } else if (prefManager.isPhotoPanelIconVisibilityKey(event.getKey())) {
-                    prefManager.savePhotoPanelOpenedFlag(event.getNewValue().toString());
+                    prefManager.savePhotoPanelOpenedFlag(newValue);
                 } else if (prefManager.isDetectionPanelIconVisibilityKey(event.getKey())) {
-                    prefManager.saveDetectionPanelOpenedFlag(event.getNewValue().toString());
+                    prefManager.saveDetectionPanelOpenedFlag(newValue);
+                } else if (prefManager.isEdgeDetectionPanelIconVisibilityKey(event.getKey())) {
+                    prefManager.saveEdgeDetectionPanelOpenedFlag(newValue);
                 } else if (prefManager.isMouseHoverDelayKey(event.getKey())) {
                     selectionHandler.changeMouseHoverTimerDelay();
                 } else if (prefManager.hasMouseHoverFlagChanged(event.getKey(), newValue)) {
@@ -330,8 +508,12 @@ public class KartaViewPlugin extends Plugin
             }
         }
 
-        private void handleDataDownload() {
-            ThreadPool.getInstance().execute(() -> new DataUpdateHandler().updateData(true));
+        private void handleKartaViewLayerDataDownload() {
+            ThreadPool.getInstance().execute(() -> new KartaViewDataUpdateHandler().updateData(true));
+        }
+
+        private void handleEdgeLayerDataDownload() {
+            ThreadPool.getInstance().execute(() -> new EdgeDataUpdateHandler().updateData(true));
         }
 
         private void handleHighQualityPhotoSelection() {
@@ -343,11 +525,11 @@ public class KartaViewPlugin extends Plugin
 
         private void handleDisplayTrack(final String newValue) {
             final DataSet dataSet = DataSet.getInstance();
-            if (newValue.equals(Boolean.TRUE.toString())
-                    && (dataSet.hasSelectedPhoto() || dataSet.hasSelectedDetection())) {
+            if (newValue.equals(Boolean.TRUE.toString()) && (dataSet.hasSelectedPhoto() || dataSet
+                    .hasSelectedDetection())) {
                 selectionHandler.loadSequence(dataSet.getSelectedPhoto());
             } else if (dataSet.hasSelectedSequence()) {
-                dataSet.setSelectedSequence(null);
+                dataSet.setSelectedSequence(null, null);
                 selectionHandler.play(AutoplayAction.STOP);
                 final PhotoDetailsDialog detailsDialog = PhotoDetailsDialog.getInstance();
                 detailsDialog.enableSequenceActions(false, false, null);
@@ -357,26 +539,26 @@ public class KartaViewPlugin extends Plugin
         }
 
         /**
-         * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in
-         * the preference panel. In case the photo filter is excluded, the selectPhoto value changes according to the
-         * corresponding selected detection.
+         * Updates the PhotoPanel elements according to the selectedPhoto and to the filters set in the preference
+         * panel. In case the photo filter is excluded, the selectPhoto value changes according to the corresponding
+         * selected detection.
          *
          * It has to be called whenever there is a format change in order to update the text associated with the image.
          */
         private void updatePhotoPanel() {
             Photo selectedPhoto = DataSet.getInstance().getSelectedPhoto();
             if (DataSet.getInstance().getSelectedDetection() != null && selectedPhoto == null) {
-                SelectionHandler handler = new SelectionHandler();
+                final KartaViewLayerSelectionHandler handler = new KartaViewLayerSelectionHandler();
                 selectedPhoto = handler.loadDetectionPhoto(DataSet.getInstance().getSelectedDetection());
             }
-            final boolean preferencePanelValue =
-                    PreferenceManager.getInstance().loadPhotoSettings().isDisplayFrontFacingFlag();
+            final boolean preferencePanelValue = PreferenceManager.getInstance().loadPhotoSettings()
+                    .isDisplayFrontFacingFlag();
             if (selectedPhoto != null && selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
-                final SelectionHandler handler = new SelectionHandler();
+                final KartaViewLayerSelectionHandler handler = new KartaViewLayerSelectionHandler();
                 DataSet.getInstance().setFrontFacingDisplayed(preferencePanelValue);
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(true, preferencePanelValue);
-                handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(),
-                        DataSet.getInstance().getSelectedCluster(), true, false);
+                handler.handleDataSelection(selectedPhoto, DataSet.getInstance().getSelectedDetection(), DataSet
+                        .getInstance().getSelectedCluster(), true, false);
             } else if (selectedPhoto == null || !selectedPhoto.getProjectionType().equals(Projection.SPHERE)) {
                 PhotoDetailsDialog.getInstance().updateSwitchImageFormatButton(false, preferencePanelValue);
             }

@@ -34,17 +34,10 @@ class LegendTable {
     private final JScrollPane tablePane;
     private final JTable legendTable;
     private final LegendTableModel model;
-    private static final Color R1 = new Color(255, 0, 0);
-    private static final Color R2 = new Color(255, 42, 0);
-    private static final Color R3 = new Color(254, 91, 0);
-    private static final Color R4 = new Color(255, 144, 0);
-    private static final Color R5 = new Color(255, 198, 2);
-    private static final Color R6 = new Color(254, 255, 0);
-    private static final Color R7 = new Color(198, 255, 0);
-    private static final Color R8 = new Color(144, 255, 3);
-    private static final Color R9 = new Color(91, 255, 0);
-    private static final Color R10 = new Color(0, 139, 0);
-    private static final List<Color> COLORS = Arrays.asList(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10);
+    private static final Color R3 = new Color(255, 0, 0);
+    private static final Color R2 = new Color(254, 255, 0);
+    private static final Color R1 = new Color(0, 139, 0);
+    private static final List<Color> COLORS = Arrays.asList(R1, R2, R3);
     private static final int ROW_HEIGHT = 15;
     private static final int TABLE_WIDTH = 13;
     private static final String FONT_NAME = "Tahoma";
@@ -83,10 +76,10 @@ class LegendTable {
 
         private static final long serialVersionUID = 1L;
 
-        private final String[] columnNames = GuiConfig.getInstance().getPrefAggregatedLegendHeaders();
+        private final String[] columnNames = GuiConfig.getInstance().getPrefClusterLegendHeaders();
 
-        private final transient Object[][] data = { { GuiConfig.getInstance().getPregAggregatedLegendHeaderColor(), "",
-            "", "", "", "", "", "", "", "", "" } };
+        private final transient Object[][] data =
+                { { GuiConfig.getInstance().getPrefClusterLegendHeaderColor(), "", "", "" } };
 
 
         @Override

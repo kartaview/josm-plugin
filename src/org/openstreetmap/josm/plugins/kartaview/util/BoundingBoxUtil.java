@@ -9,7 +9,6 @@ package org.openstreetmap.josm.plugins.kartaview.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.ProjectionBounds;
 import org.openstreetmap.josm.data.coor.EastNorth;
@@ -18,6 +17,7 @@ import org.openstreetmap.josm.data.projection.Projection;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.tools.Geometry;
 import com.grab.josm.common.argument.BoundingBox;
 
@@ -30,8 +30,6 @@ import com.grab.josm.common.argument.BoundingBox;
  */
 public final class BoundingBoxUtil {
 
-    private static final Bounds WORLD_BOUNDS = new Bounds(-90, -180, 90, 180);
-
     private BoundingBoxUtil() {}
 
     /**
@@ -42,6 +40,18 @@ public final class BoundingBoxUtil {
      * @return list of {@code Circle}s
      */
     public static BoundingBox currentBoundingBox() {
+        final Bounds bounds = currentBounds();
+        return new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                bounds.getMin().lon());
+    }
+
+    /**
+     * Returns a bounds that represents the current search area. The method takes into consideration also the edit layer
+     * bounds. If there are more edit layer bounds the method returns the bounds of the current MapView.
+     *
+     * @return a list of {@code Bounds}
+     */
+    public static Bounds currentBounds() {
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         Bounds bounds;
         if (osmDataLayerBounds != null && !osmDataLayerBounds.isEmpty()) {
@@ -53,9 +63,9 @@ public final class BoundingBoxUtil {
         } else {
             bounds = MainApplication.getMap().mapView.getRealBounds();
         }
-        return new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
-                bounds.getMin().lon());
+        return bounds;
     }
+
 
     /**
      * Returns a list of bounding boxes, representing the current search area. The method takes into consideration also
@@ -90,12 +100,12 @@ public final class BoundingBoxUtil {
      *
      * @return a list of {@code Bounds}
      */
-    public static List<Bounds> currentBounds() {
+    public static List<Bounds> currentAreas() {
         final MapViewSettings mapViewSettings = PreferenceManager.getInstance().loadMapViewSettings();
         List<Bounds> result = new ArrayList<>();
         final List<Bounds> osmDataLayerBounds = editLayerDataBounds();
         if (!mapViewSettings.isDataLoadFlag() || osmDataLayerBounds == null || osmDataLayerBounds.isEmpty()) {
-            result.add(WORLD_BOUNDS);
+            result.add(MainApplication.getMap().mapView.getRealBounds());
         } else {
             result = osmDataLayerBounds;
         }
@@ -165,6 +175,17 @@ public final class BoundingBoxUtil {
             }
         }
         return intersectionPoint;
+    }
+
+    /**
+     * Transforms a {@code Bounds} object into its {@code BoundingBox} correspondence.
+     *
+     * @param bounds represents a {@code Bounds}
+     * @return a {@code BoundingBox}
+     */
+    public static BoundingBox boundsToBoundingBox(Bounds bounds) {
+        return new BoundingBox(bounds.getMax().lat(), bounds.getMin().lat(), bounds.getMax().lon(),
+                bounds.getMin().lon());
     }
 
     private static BoundingBox mapViewBounds() {

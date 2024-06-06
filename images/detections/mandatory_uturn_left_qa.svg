@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Fabric.js 3.5.0 -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="1000"
+   height="1000"
+   id="svg2"
+   xml:space="preserve">
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g id="layer1">
+    <title>Background</title>
+    <rect id="backgroundrect" width="100%" height="100%" fill="#ffffff"/>
+    <g id="circle1335" transform="matrix(1.4168 0 0 1.4168 500.013 514.048)">
+      <circle id="circle1" fill="#0000ff" r="303" cy="6.764" cx="7.058"/>
+    </g>
+    <g id="svgcontent" transform="matrix(-1.257 0 0 1.28093 453.161 488.536)">
+      <path id="svgarrow" fill="#ffffff" d="m-50.865,-255.939c96.673,0 174.5,78.05 174.5,175l-0.001,167.999 52.477,-14.431c13.23,-3.639 23.993,10.931 16.627,22.507l-108.103,163.924 -108.103,-163.924c-7.366,-11.576 3.398,-26.146 16.627,-22.507l52.476,14.431 0,-167.999c0,-53.738 -43.039,-97 -96.5,-97 -53.461,0 -96.5,43.262 -96.5,97l0,339.999 -78,0 0,-339.999c0,-96.95 77.827,-175 174.5,-175z"/>
+    </g>
+  </g>
+</svg>

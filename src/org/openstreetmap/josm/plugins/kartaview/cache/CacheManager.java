@@ -12,11 +12,12 @@ import org.apache.commons.jcs3.access.CacheAccess;
 import org.apache.commons.jcs3.engine.CompositeCacheAttributes;
 import org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes.DiskUsagePattern;
 import org.apache.commons.jcs3.engine.control.CompositeCacheManager;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.cache.JCSCacheManager;
 import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 
 
 /**
@@ -27,28 +28,28 @@ import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
  */
 public final class CacheManager {
 
-    private static final String CACHE_NAME = "kartaview";
+    private static final String CACHE_NAME = "kartaview-private";
     private static final String CACHE_LOCATION = "/cache/";
     private static final String MEMORY_MANAGER = "org.apache.commons.jcs3.engine.memory.fifo.FIFOMemoryCache";
-    private final CacheAccess<Key, CacheEntry> cache;
+    private CacheAccess<Key, CacheEntry> cache;
 
     private static final CacheManager INSTANCE = new CacheManager();
 
 
     private CacheManager() {
-        final String pluginLocation =
-                new File(Preferences.main().getPluginsDirectory(), GuiConfig.getInstance().getPluginShortName())
-                        .getPath();
-        final CacheSettings settings = PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
-
-        this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),
-                pluginLocation + CACHE_LOCATION);
-        final CompositeCacheAttributes attr = (CompositeCacheAttributes) this.cache.getCacheAttributes();
-        attr.setDiskUsagePattern(DiskUsagePattern.SWAP);
-        attr.setMemoryCacheName(MEMORY_MANAGER);
-        attr.setUseMemoryShrinker(true);
-        this.cache.setCacheAttributes(attr);
-        this.cache.clear();
+        if (Config.getInstance().isCacheEnabled()) {
+            final String pluginLocation = new File(Preferences.main().getPluginsDirectory(),
+                    GuiConfig.getInstance().getPluginShortName()).getPath();
+            final CacheSettings settings = PreferenceManager.getInstance().loadPreferenceSettings().getCacheSettings();
+            this.cache = JCSCacheManager.getCache(CACHE_NAME, settings.getMemoryCount(), settings.getDiskCount(),
+                    pluginLocation + CACHE_LOCATION);
+            final CompositeCacheAttributes attr = (CompositeCacheAttributes) this.cache.getCacheAttributes();
+            attr.setDiskUsagePattern(DiskUsagePattern.SWAP);
+            attr.setMemoryCacheName(MEMORY_MANAGER);
+            attr.setUseMemoryShrinker(true);
+            this.cache.setCacheAttributes(attr);
+            this.cache.clear();
+        }
     }
 
     /**
@@ -89,10 +90,12 @@ public final class CacheManager {
      * @param sequenceId the identifier of the sequence to which the photo belongs
      */
     public void removePhotos(final Long sequenceId) {
-        final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
-        for (final Object key : keySet) {
-            if (((Key) key).getSequenceId().equals(sequenceId)) {
-                cache.remove((Key) key);
+        if (Config.getInstance().isCacheEnabled()) {
+            final Set<Object> keySet = CompositeCacheManager.getInstance().getCache(CACHE_NAME).getKeySet();
+            for (final Object key : keySet) {
+                if (((Key) key).getSequenceId().equals(sequenceId)) {
+                    cache.remove((Key) key);
+                }
             }
         }
     }

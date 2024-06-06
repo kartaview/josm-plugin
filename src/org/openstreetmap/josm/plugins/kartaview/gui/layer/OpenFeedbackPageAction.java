@@ -31,7 +31,7 @@ class OpenFeedbackPageAction extends JosmAction {
     OpenFeedbackPageAction() {
         super(GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(), IconConfig.getInstance().getFeedbackIconName(),
                 GuiConfig.getInstance().getLayerFeedbackMenuItemLbl(),
-                ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getLayerFeedbackShortcutText()),
+                ShortcutFactory.getInstance().getShortcut(GuiConfig.getInstance().getLayerFeedbackShortcutText()),
                 true);
     }
 

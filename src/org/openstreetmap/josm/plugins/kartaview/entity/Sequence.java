@@ -6,7 +6,9 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.entity;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -19,13 +21,12 @@ public class Sequence {
 
     private final Long id;
     private final List<Photo> photos;
-    private final List<Detection> detections;
-
+    private final Set<Detection> detections;
 
     public Sequence(final Long id, final List<Photo> photos, final List<Detection> detections) {
         this.id = id;
         this.photos = photos;
-        this.detections = detections;
+        this.detections = new HashSet<>(detections);
     }
 
     public Long getId() {
@@ -36,15 +37,17 @@ public class Sequence {
         return photos;
     }
 
-    public List<Detection> getDetections() {
-        return detections;
+    public void addDetections(List<Detection> detections) {
+        this.detections.addAll(detections);
     }
 
+    public Set<Detection> getDetections() {
+        return detections;
+    }
 
     public boolean hasPhotos() {
         return photos != null && !photos.isEmpty();
     }
-
 
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();

@@ -11,8 +11,7 @@ import com.grab.josm.common.argument.BoundingBox;
 public class SearchClustersAreaFilter {
 
     private final BoundingBox boundingBox;
-    private final SearchClustersFilter
-            searchClustersFilter;
+    private final SearchClustersFilter searchClustersFilter;
 
     public SearchClustersAreaFilter(final BoundingBox boundingBox, final SearchClustersFilter searchClustersFilter) {
         this.boundingBox = boundingBox;

@@ -9,8 +9,9 @@ package org.openstreetmap.josm.plugins.kartaview.gui;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
 import org.openstreetmap.josm.plugins.kartaview.entity.Cluster;
+import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelCategory;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
 import com.grab.josm.common.entity.Pair;
 
 
@@ -22,38 +23,45 @@ public enum ClusterBackgroundIconFactory {
 
     INSTANCE;
 
-    private final Map<Integer, Pair<ImageIcon, ImageIcon>> coloredBorders;
+    private final Map<ConfidenceLevelCategory, Pair<ImageIcon, ImageIcon>> coloredBorders;
+    private final Map<ConfidenceLevelCategory, Pair<ImageIcon, ImageIcon>> edgeColoredBorders;
     private final Pair<ImageIcon, ImageIcon> colorlessBorders;
-    static final double CLUSTER_CONFIDENCE_COLOR_RANGE_STEP = 0.1;
+    private final Pair<ImageIcon, ImageIcon> edgeColorlessBorders;
 
     ClusterBackgroundIconFactory() {
         coloredBorders = new HashMap<>();
-        for (int i = 0; i < IconConfig.getInstance().getClusterBordersColored().size(); i++) {
-            coloredBorders.put(i, new Pair<>(IconConfig.getInstance().getClusterBordersColored().get(i),
-                    IconConfig.getInstance().getSelectedClusterBordersColored().get(i)));
+        edgeColoredBorders = new HashMap<>();
+        for (final ConfidenceLevelCategory confidenceLevelCategory : ConfidenceLevelCategory.values()) {
+            coloredBorders.put(confidenceLevelCategory, new Pair<>(
+                    IconConfig.getInstance().getUnselectedClusterBordersColored().get(confidenceLevelCategory),
+                    IconConfig.getInstance().getSelectedClusterBordersColored().get(confidenceLevelCategory)));
+            edgeColoredBorders.put(confidenceLevelCategory, new Pair<>(
+                    IconConfig.getInstance().getUnselectedEdgeClusterBordersColored().get(confidenceLevelCategory),
+                    IconConfig.getInstance().getSelectedEdgeClusterBordersColored().get(confidenceLevelCategory)));
         }
-        colorlessBorders = new Pair<>(IconConfig.getInstance().getClusterBackgroundIconColorless(),
+        colorlessBorders = new Pair<>(IconConfig.getInstance().getClusterBackgroundUnselectedIconColorless(),
                 IconConfig.getInstance().getClusterBackgroundSelectedIconColorless());
+        edgeColorlessBorders = new Pair<>(IconConfig.getInstance().getEdgeClusterBackgroundUnselectedIconColorless(),
+                IconConfig.getInstance().getEdgeClusterBackgroundSelectedIconColorless());
     }
 
-    public ImageIcon getClusterBackground(final Cluster cluster, final boolean isSelected, final boolean isColorCoded) {
-        ImageIcon backgroundIcon = null;
+    // TODO: refactor this method into 2 metods
+    public ImageIcon getClusterBackground(final Cluster cluster, final boolean isSelected, final boolean isColorCoded,
+            final boolean isEdgeCluster) {
+        ImageIcon backgroundIcon;
+        final Map<ConfidenceLevelCategory, Pair<ImageIcon, ImageIcon>> confidenceBorders =
+                isEdgeCluster ? edgeColoredBorders : coloredBorders;
+        final Pair<ImageIcon, ImageIcon> plainBorders = isEdgeCluster ? edgeColorlessBorders : colorlessBorders;
         if (isColorCoded) {
-            int i = 0;
-            while (i < coloredBorders.size() && backgroundIcon == null) {
-                final double minRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * i;
-                final double maxRange = CLUSTER_CONFIDENCE_COLOR_RANGE_STEP * (i + 1);
-                if (cluster.getConfidenceLevel().getOverallConfidence() >= minRange
-                        && cluster.getConfidenceLevel().getOverallConfidence() <= maxRange) {
-                    backgroundIcon = isSelected ? coloredBorders.get(i).getSecond() : coloredBorders.get(i).getFirst();
-                }
-                i++;
-            }
+            backgroundIcon =
+                    isSelected ? confidenceBorders.get(cluster.getConfidenceLevel().getConfidenceCategory()).getSecond()
+                            : confidenceBorders.get(cluster.getConfidenceLevel().getConfidenceCategory()).getFirst();
+
             if (backgroundIcon == null) {
-                backgroundIcon = isSelected ? colorlessBorders.getSecond() : colorlessBorders.getFirst();
+                backgroundIcon = isSelected ? plainBorders.getSecond() : plainBorders.getFirst();
             }
         } else {
-            backgroundIcon = isSelected ? colorlessBorders.getSecond() : colorlessBorders.getFirst();
+            backgroundIcon = isSelected ? plainBorders.getSecond() : plainBorders.getFirst();
         }
         return backgroundIcon;
     }

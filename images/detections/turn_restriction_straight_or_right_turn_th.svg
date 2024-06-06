@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1000" height="1000" viewBox="0 0 1000 1000" xml:space="preserve">
+<desc>Created with Fabric.js 3.5.0</desc>
+<defs>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="rgba(255,255,255,0)"/>
+<g transform="matrix(0.2638 0 0 0.2638 499.9608 499.9608)" id="194297">
+<g style="" vector-effect="non-scaling-stroke">
+		<g transform="matrix(3.7795 0 0 3.7795 -0.0141 -0.0141)" id="path815">
+<circle style="stroke: none; stroke-width: 315.8149; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: rgb(240,10,10); fill-rule: nonzero; opacity: 1;" paint-order="stroke" cx="0" cy="0" r="350"/>
+</g>
+		<g transform="matrix(3.7795 0 0 3.7795 -0.01 -0.01)" id="circle817">
+<circle style="stroke: none; stroke-width: 225.5821; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" paint-order="stroke" cx="0" cy="0" r="250"/>
+</g>
+		<g transform="matrix(3.7795 0 0 3.7795 96.3721 -0.006)" id="rect815">
+<path style="stroke: none; stroke-width: 1.0371; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; is-custom-font: none; font-file-url: none; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" paint-order="stroke" transform=" translate(-376.4998, 54.0001)" d="m 253.9999 -264.00018 l 69.9998 140.00022 H 288.9998 V -19.000181 H 429 v -34.99992 L 568.9997 15.999779 L 429 86.000139 V 51.000209 H 288.9998 V 156 H 218.9999 V -123.99996 H 184 Z" stroke-linecap="round"/>
+</g>
+		<g transform="matrix(2.6725 -2.6725 2.6725 2.6725 -0.0085 -0.0058)" id="rect821">
+<rect style="stroke: none; stroke-width: 72.0997; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: rgb(240,10,10); fill-rule: nonzero; opacity: 1;" paint-order="stroke" x="-25" y="-340" rx="0" ry="0" width="50" height="680"/>
+</g>
+</g>
+</g>
+</svg>

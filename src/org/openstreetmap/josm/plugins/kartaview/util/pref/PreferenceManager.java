@@ -7,30 +7,33 @@
 package org.openstreetmap.josm.plugins.kartaview.util.pref;
 
 
-import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.PreferenceSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.ACCESS_TOKEN;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.AUTOPLAY_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DETECTION_PANEL_ICON_VISIBILITY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_DETECTION_LOCATIONS;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_TRACK_FLAG;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_DETECTION_PANEL_ICON_VISIBILITY;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_FILTER_CHANGED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_CHANGED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.JOSM_AUTH_METHOD;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.JOSM_BASIC_VAL;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.JOSM_OAUTH_SECRET;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.KARTAVIEW_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.PHOTO_PANEL_ICON_VISIBILITY;
+
+import org.openstreetmap.josm.plugins.kartaview.argument.AutoplaySettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.EdgeSearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.PreferenceSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
 
 
 /**
@@ -48,8 +51,8 @@ public final class PreferenceManager {
     private final LoadManager loadManager = new LoadManager();
     private final SaveManager saveManager = new SaveManager();
 
-    private PreferenceManager() {}
-
+    private PreferenceManager() {
+    }
 
     public static PreferenceManager getInstance() {
         return INSTANCE;
@@ -67,16 +70,36 @@ public final class PreferenceManager {
         saveManager.saveDetectionsSearchErrorSuppressFlag(flag);
     }
 
+    public void saveEdgeDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveEdgeDetectionsSearchErrorSuppressFlag(flag);
+    }
+
     public boolean loadDetectionsSearchErrorSuppressFlag() {
         return loadManager.loadDetectionsSearchErrorSuppressFlag();
+    }
+
+    public boolean loadEdgeDetectionsSearchErrorSuppressFlag() {
+        return loadManager.loadEdgeDetectionsSearchErrorSuppressFlag();
     }
 
     public boolean loadClustersSearchErrorSuppressFlag() {
         return loadManager.loadClustersSearchErrorSuppressFlag();
     }
 
+    public boolean loadEdgeClustersSearchErrorSuppressFlag() {
+        return loadManager.loadEdgeClusterSearchErrorSuppressFlag();
+    }
+
+    public boolean loadEdgeDataOperationErrorSuppressFlag() {
+        return loadManager.loadEdgeDataOperationErrorSuppressFlag();
+    }
+
     public void saveClustersSearchErrorSuppressFlag(final boolean flag) {
         saveManager.saveClustersSearchErrorSuppressFlag(flag);
+    }
+
+    public void saveEdgeClustersSearchErrorSuppressFlag(final boolean flag) {
+        saveManager.saveEdgeClustersSearchErrorSuppressFlag(flag);
     }
 
     /**
@@ -108,6 +131,10 @@ public final class PreferenceManager {
 
     public void saveDetectionUpdateErrorSuppressFlag(final boolean flag) {
         saveManager.saveDetectionUpdateErrorSuppressFlag(flag);
+    }
+
+    public void saveEdgeDataOperationErrorSuppressFlag(final boolean flag) {
+        saveManager.saveEdgeDataOperationErrorSuppressFlag(flag);
     }
 
     public boolean loadSequenceDetectionsErrorFlag() {
@@ -171,7 +198,16 @@ public final class PreferenceManager {
      * @param changed a boolean value
      */
     public void saveFiltersChangedFlag(final boolean changed) {
-        saveManager.saveFiltersChangedFlag(changed);
+        saveManager.saveFiltersChangedFlag(changed, FILTER_CHANGED);
+    }
+
+    /**
+     * Saves the 'edgeFiltersChanged' flag to the preference file.
+     *
+     * @param edgeFiltersChanged a boolean value
+     */
+    public void saveEdgeFiltersChangedFlag(final boolean edgeFiltersChanged) {
+        saveManager.saveFiltersChangedFlag(edgeFiltersChanged, EDGE_FILTER_CHANGED);
     }
 
     /**
@@ -184,13 +220,30 @@ public final class PreferenceManager {
     }
 
     /**
+     * Loads the edge filters from the preference file.
+     *
+     * @return a {@code EdgeSearchFilter}
+     */
+    public EdgeSearchFilter loadEdgeSearchFilter() {
+        return loadManager.loadEdgeSearchFilter();
+    }
+
+    /**
      * Saves the list filter to the preference file.
      *
      * @param filter a {@code ListFilter} represents the current filter settings
-     * @param isHighZoomLevel a boolean representing the zoom state of the filter
      */
-    public void saveListFilter(final SearchFilter filter, final boolean isHighZoomLevel) {
-        saveManager.saveSearchFilter(filter, isHighZoomLevel);
+    public void saveListFilter(final SearchFilter filter) {
+        saveManager.saveSearchFilter(filter);
+    }
+
+    /**
+     * Saves the list edge filter to the preference file.
+     *
+     * @param edgeSearchFilter a {@code EdgeSearchFilter} represents the current edge filter settings
+     */
+    public void saveEdgeSearchFilter(final EdgeSearchFilter edgeSearchFilter) {
+        saveManager.saveEdgeSearchFilter(edgeSearchFilter);
     }
 
     /**
@@ -204,7 +257,7 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the the user's map view related preference settings from the preference file.
+     * Loads the user's map view related preference settings from the preference file.
      *
      * @return a {@code MapViewSettings} object
      */
@@ -266,21 +319,39 @@ public final class PreferenceManager {
     }
 
     /**
-     * Loads the layer appearance status from the preference file.
+     * Loads the KartaView layer appearance status from the preference file.
      *
      * @return a boolean value
      */
-    public boolean loadLayerOpenedFlag() {
-        return loadManager.loadLayerOpenedFlag();
+    public boolean loadKartaViewLayerOpenedFlag() {
+        return loadManager.loadKartaViewLayerOpenedFlag();
     }
 
     /**
-     * Saves the layer appearance status to the preference file.
+     * Saves the KartaView layer appearance status to the preference file.
      *
      * @param isLayerOpened represents the layer showing/hiding status
      */
-    public void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        saveManager.saveLayerOpenedFlag(isLayerOpened);
+    public void saveKartaViewLayerOpenedFlag(final boolean isLayerOpened) {
+        saveManager.saveKartaViewLayerOpenedFlag(isLayerOpened);
+    }
+
+    /**
+     * Loads the Edge layer appearance status from the preference file.
+     *
+     * @return a boolean value representing the status of the layer
+     */
+    public boolean loadEdgeLayerOpenedFlag() {
+        return loadManager.loadEdgeLayerOpenedFlag();
+    }
+
+    /**
+     * Saves the Edge layer appearance status to the preference file.
+     *
+     * @param isLayerOpened represents the layer showing/hiding status
+     */
+    public void saveEdgeLayerOpenedFlag(final boolean isLayerOpened) {
+        saveManager.saveEdgeLayerOpenedFlag(isLayerOpened);
     }
 
     /**
@@ -294,6 +365,15 @@ public final class PreferenceManager {
 
     public boolean loadDetectionPanelOpenedFlag() {
         return loadManager.loadDetectionPanelOpenedFlag();
+    }
+
+    /**
+     * Loads the edge detection panel appearance status flag from the preference file.
+     *
+     * @return a boolean a boolean value
+     */
+    public boolean loadEdgeDetectionPanelOpenedFlag() {
+        return loadManager.loadEdgeDetectionPanelOpenedFlag();
     }
 
     /**
@@ -312,32 +392,55 @@ public final class PreferenceManager {
     }
 
     /**
-     * Verifies if the data download related preference settings has changed or not.
+     * Saves the edge detection panel appearance status flag to the preference file.
+     *
+     * @param value true/false in string format
+     */
+    public void saveEdgeDetectionPanelOpenedFlag(final String value) {
+        final Boolean panelOpened = Boolean.parseBoolean(value);
+        saveManager.saveEdgeDetectionPanelOpenedFlag(panelOpened);
+    }
+
+    /**
+     * Verifies if the KartaView layer data download related preference settings has changed or not.
      *
      * @param key a {@code String} represents the key associated with the authentication preference change event
      * @param newValue a {@code String} represents the new value associated with the authentication preference change
      * event
      * @return true if the data download preference settings has been changed; false otherwise
      */
-    public boolean dataDownloadPreferencesChanged(final String key, final String newValue) {
-        return isFiltersChangedKey(key, newValue) || isMapViewZoomKey(key) || hasAuthMethodChanged(key, newValue)
-                || isLayerOpenedFlag(key, newValue) || isDataDownloadedFlag(key);
+    public boolean kartaViewLayerDataDownloadPreferencesChanged(final String key, final String newValue) {
+        return isFiltersChangedKey(key, newValue, FILTER_CHANGED) || isMapViewZoomKey(key)
+                || isKartaViewLayerOpenedFlag(key, newValue) || isDataDownloadedFlag(key);
     }
 
-    private boolean hasAuthMethodChanged(final String key, final String value) {
-        return (JOSM_AUTH_METHOD.equals(key) && JOSM_BASIC_VAL.equals(value)) || JOSM_OAUTH_SECRET.equals(key);
+    /**
+     * Verifies if the Edge layer data download related preference settings has changed or not.
+     *
+     * @param key a {@code String} represents the key associated with the authentication preference change event
+     * @param newValue a {@code String} represents the new value associated with the authentication preference change
+     * event
+     * @return true if the data download preference settings has been changed; false otherwise
+     */
+    public boolean edgeLayerDataDownloadPreferencesChanged(final String key, final String newValue) {
+        return isFiltersChangedKey(key, newValue, EDGE_FILTER_CHANGED) || isMapViewZoomKey(key)
+                || isEdgeLayerOpenedFlag(key, newValue) || isDataDownloadedFlag(key);
     }
 
-    private boolean isFiltersChangedKey(final String value, final String newValue) {
-        return FILTER_CHANGED.equals(value) && Boolean.TRUE.toString().equals(newValue);
+    private boolean isFiltersChangedKey(final String value, final String newValue, final String filterKey) {
+        return filterKey.equals(value) && Boolean.TRUE.toString().equals(newValue);
     }
 
     private boolean isMapViewZoomKey(final String value) {
         return MAP_VIEW_PHOTO_ZOOM.equals(value);
     }
 
-    private boolean isLayerOpenedFlag(final String key, final String newValue) {
-        return LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    private boolean isKartaViewLayerOpenedFlag(final String key, final String newValue) {
+        return KARTAVIEW_LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    private boolean isEdgeLayerOpenedFlag(final String key, final String newValue) {
+        return EDGE_LAYER_OPENED.equals(key) && Boolean.TRUE.toString().equals(newValue);
     }
 
     private boolean isDataDownloadedFlag(final String key) {
@@ -361,7 +464,7 @@ public final class PreferenceManager {
     }
 
     /**
-     * Verifies if the photo format  flag from preference settings has been changed or not.
+     * Verifies if the photo format flag from preference settings has been changed or not.
      *
      * @param key a {@code String} represents the key associated with the photo format.
      * @return true if the flag has been selected, false otherwise
@@ -379,6 +482,16 @@ public final class PreferenceManager {
      */
     public boolean hasMouseHoverFlagChanged(final String key, final String newValue) {
         return MOUSE_HOVER_FLAG.equals(key) && Boolean.TRUE.toString().equals(newValue);
+    }
+
+    /**
+     * Verifies if the access token flag has been changed or not
+     *
+     * @param key Represents the key associated with the access token
+     * @return boolean value
+     */
+    public boolean hasAccessTokenFlagChanged(final String key) {
+        return ACCESS_TOKEN.equals(key);
     }
 
     /**
@@ -403,6 +516,16 @@ public final class PreferenceManager {
 
     public boolean isDetectionPanelIconVisibilityKey(final String key) {
         return DETECTION_PANEL_ICON_VISIBILITY.equals(key);
+    }
+
+    /**
+     * Verifies if the given key represents the edge detection panel visibility icon key.
+     *
+     * @param key a {@code String} value
+     * @return a boolean value
+     */
+    public boolean isEdgeDetectionPanelIconVisibilityKey(final String key) {
+        return EDGE_DETECTION_PANEL_ICON_VISIBILITY.equals(key);
     }
 
     /**

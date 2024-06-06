@@ -19,13 +19,18 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_DE
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_FRONT_FACING_FLAG;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_TAGS;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.DISPLAY_TRACK_FLAG;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_CHANGED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_DETECTION_PANEL_OPENED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.EDGE_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_DATE;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_ONLY_USER_FLAG;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_CONFIDENCE_CATEGORY;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_DATA_TYPE;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_OSM_COMPARISON;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_REGION;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_SIGN_TYPE;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_EDGE_SEARCH_SPECIFIC_SIGN;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_CONFIDENCE_CATEGORY;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_EDIT_STATUS;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_EMPTY;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MAX_CONFIDENCE_LEVEL;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MIN_CONFIDENCE_LEVEL;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_MODE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_OSM_COMPARISON;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_PHOTO_TYPE;
@@ -33,7 +38,7 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEA
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_SIGN_TYPE;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.FILTER_SEARCH_SPECIFIC_SIGN;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.HIGH_QUALITY_PHOTO_FLAG;
-import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.LAYER_OPENED;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.KARTAVIEW_LAYER_OPENED;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_DATA_LOAD;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MAP_VIEW_PHOTO_ZOOM;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.MOUSE_HOVER_DELAY;
@@ -43,6 +48,9 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.PLUGIN_LOC
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_CLUSTERS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_DETECTION_UPDATE_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_CLUSTERS_SEARCH_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_DATA_OPERATION_ERROR;
+import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_EDGE_DETECTIONS_SEARCH_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_LIST_SIGNS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_LIST_SIGN_REGIONS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_PHOTOS_ERROR;
@@ -51,30 +59,35 @@ import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_P
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEGMENTS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEQUENCE_DETECTIONS_ERROR;
 import static org.openstreetmap.josm.plugins.kartaview.util.pref.Keys.SUPPRESS_SEQUENCE_ERROR;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.openstreetmap.josm.data.Preferences;
+import org.openstreetmap.josm.data.StructUtils;
+import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
+import org.openstreetmap.josm.plugins.kartaview.argument.DetectionFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.EdgeSearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
+import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
+import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelCategory;
+import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
+import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
+import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
+import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.ConfidenceCategoryEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.DetectionModeEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.EditStatusEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.ImageDataTypeEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.OsmComparisonEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignEntry;
 import org.openstreetmap.josm.plugins.kartaview.util.pref.entity.SignTypeEntry;
-import org.openstreetmap.josm.data.Preferences;
-import org.openstreetmap.josm.data.StructUtils;
-import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.ClusterSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
-import org.openstreetmap.josm.plugins.kartaview.argument.MapViewSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.PhotoSettings;
-import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
-import org.openstreetmap.josm.plugins.kartaview.argument.SequenceSettings;
-import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelFilter;
-import org.openstreetmap.josm.plugins.kartaview.entity.DetectionMode;
-import org.openstreetmap.josm.plugins.kartaview.entity.EditStatus;
-import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
-import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
-import org.openstreetmap.josm.plugins.kartaview.service.apollo.DetectionFilter;
 
 
 /**
@@ -94,8 +107,16 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_DETECTIONS_SEARCH_ERROR, flag);
     }
 
+    void saveEdgeDetectionsSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_EDGE_DETECTIONS_SEARCH_ERROR, flag);
+    }
+
     void saveClustersSearchErrorSuppressFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_CLUSTERS_SEARCH_ERROR, flag);
+    }
+
+    void saveEdgeClustersSearchErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_EDGE_CLUSTERS_SEARCH_ERROR, flag);
     }
 
     void savePhotosErrorSuppressFlag(final boolean flag) {
@@ -122,6 +143,10 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_DETECTION_UPDATE_ERROR, flag);
     }
 
+    void saveEdgeDataOperationErrorSuppressFlag(final boolean flag) {
+        Preferences.main().putBoolean(SUPPRESS_EDGE_DATA_OPERATION_ERROR, flag);
+    }
+
     void saveListSignErrorSuppressFlag(final boolean flag) {
         Preferences.main().putBoolean(SUPPRESS_LIST_SIGNS_ERROR, flag);
     }
@@ -130,31 +155,41 @@ final class SaveManager {
         Preferences.main().putBoolean(SUPPRESS_LIST_SIGN_REGIONS_ERROR, flag);
     }
 
-    void saveFiltersChangedFlag(final boolean changed) {
-        Preferences.main().put(FILTER_CHANGED, "");
-        Preferences.main().put(FILTER_CHANGED, Boolean.toString(changed));
+    void saveFiltersChangedFlag(final boolean changed, final String filterKey) {
+        Preferences.main().put(filterKey, "");
+        Preferences.main().put(filterKey, Boolean.toString(changed));
     }
 
-    void saveSearchFilter(final SearchFilter filter, final boolean isHighZoomLevel) {
+    void saveSearchFilter(final SearchFilter filter) {
         if (filter != null) {
             final String dateStr = filter.getDate() != null ? Long.toString(filter.getDate().getTime()) : "";
             Preferences.main().put(FILTER_DATE, dateStr);
-            Preferences.main().putBoolean(FILTER_ONLY_USER_FLAG, filter.isOlnyUserData());
-            if (isHighZoomLevel) {
-                saveDataTypeFilter(filter.getDataTypes());
-                saveDetectionFilter(filter.getDetectionFilter());
+            saveDataTypeFilter(filter.getDataTypes(), FILTER_SEARCH_PHOTO_TYPE);
+            saveDetectionFilter(filter.getDetectionFilter());
+        }
+    }
+
+    void saveEdgeSearchFilter(final EdgeSearchFilter edgeSearchFilter) {
+        if (Objects.nonNull(edgeSearchFilter)) {
+            saveDataTypeFilter(edgeSearchFilter.getDataTypes(), FILTER_EDGE_SEARCH_DATA_TYPE);
+            saveSignTypeFilter(edgeSearchFilter.getSignTypes(), FILTER_EDGE_SEARCH_SIGN_TYPE);
+            saveSpecificSignsFilter(edgeSearchFilter.getSpecificSigns(), FILTER_EDGE_SEARCH_SPECIFIC_SIGN);
+            saveConfidenceCategoryFilter(edgeSearchFilter.getConfidenceCategories(),
+                    FILTER_EDGE_SEARCH_CONFIDENCE_CATEGORY);
+            saveOsmComparisonFilter(edgeSearchFilter.getOsmComparisons(), FILTER_EDGE_SEARCH_OSM_COMPARISON);
+            if (Objects.nonNull(edgeSearchFilter.getRegion())) {
+                Preferences.main().put(FILTER_EDGE_SEARCH_REGION, edgeSearchFilter.getRegion());
             }
         }
     }
 
-    private void saveDataTypeFilter(final List<DataType> types) {
-        if (types == null || types.isEmpty()) {
-            Preferences.main().put(FILTER_SEARCH_PHOTO_TYPE, FILTER_SEARCH_EMPTY);
+    private void saveDataTypeFilter(final List<DataType> types, final String filter) {
+        if (Objects.isNull(types) || types.isEmpty()) {
+            Preferences.main().put(filter, FILTER_SEARCH_EMPTY);
         } else {
-            final List<ImageDataTypeEntry> entries =
-                    types.stream().map(ImageDataTypeEntry::new).collect(Collectors.toList());
-            StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_PHOTO_TYPE, entries,
-                    ImageDataTypeEntry.class);
+            final List<ImageDataTypeEntry> entries = types.stream().map(ImageDataTypeEntry::new).collect(Collectors
+                    .toList());
+            StructUtils.putListOfStructs(Preferences.main(), filter, entries, ImageDataTypeEntry.class);
         }
     }
 
@@ -165,7 +200,8 @@ final class SaveManager {
         List<String> signTypes = null;
         List<DetectionMode> detectionModes = null;
         String region = null;
-        ConfidenceLevelFilter confidenceLevelFilter = null;
+        List<ConfidenceLevelCategory> confidenceCategories = null;
+
         if (filter != null) {
             osmComparions = filter.getOsmComparisons();
             editStatuses = filter.getEditStatuses();
@@ -173,37 +209,39 @@ final class SaveManager {
             signTypes = filter.getSignTypes();
             detectionModes = filter.getModes();
             region = filter.getRegion();
-            confidenceLevelFilter = filter.getConfidenceLevelFilter();
+            confidenceCategories = filter.getConfidenceCategories();
         }
-        saveOsmComparisonFilter(osmComparions);
+        saveOsmComparisonFilter(osmComparions, FILTER_SEARCH_OSM_COMPARISON);
         saveEditStatusFilter(editStatuses);
-        saveSignTypeFilter(signTypes);
-        saveSpecificSignsFilter(specificSigns);
+        saveSignTypeFilter(signTypes, FILTER_SEARCH_SIGN_TYPE);
+        saveSpecificSignsFilter(specificSigns, FILTER_SEARCH_SPECIFIC_SIGN);
         saveModesFilter(detectionModes);
-        saveConfidenceLevelFilter(confidenceLevelFilter);
+        saveConfidenceCategoryFilter(confidenceCategories, FILTER_SEARCH_CONFIDENCE_CATEGORY);
+
         if (region != null) {
             Preferences.main().put(FILTER_SEARCH_REGION, region);
         }
     }
 
-    private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons) {
+    private void saveOsmComparisonFilter(final List<OsmComparison> osmComparisons, final String filterKey) {
         final List<OsmComparisonEntry> entries = new ArrayList<>();
         if (osmComparisons != null) {
             for (final OsmComparison osmComparison : osmComparisons) {
                 entries.add(new OsmComparisonEntry(osmComparison));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_OSM_COMPARISON, entries,
-                OsmComparisonEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), filterKey, entries, OsmComparisonEntry.class);
     }
 
-    private void saveConfidenceLevelFilter(final ConfidenceLevelFilter confidenceLevelFilter) {
-        Preferences.main().put(FILTER_SEARCH_MIN_CONFIDENCE_LEVEL,
-                confidenceLevelFilter != null && confidenceLevelFilter.getMinConfidenceLevel() != null ?
-                        confidenceLevelFilter.getMinConfidenceLevel().toString() : "");
-        Preferences.main().put(FILTER_SEARCH_MAX_CONFIDENCE_LEVEL,
-                confidenceLevelFilter != null && confidenceLevelFilter.getMaxConfidenceLevel() != null ?
-                        confidenceLevelFilter.getMaxConfidenceLevel().toString() : "");
+    private void saveConfidenceCategoryFilter(final List<ConfidenceLevelCategory> confidenceCategories,
+            final String filterKey) {
+        final List<ConfidenceCategoryEntry> entries = new ArrayList<>();
+        if (Objects.nonNull(confidenceCategories)) {
+            for (final ConfidenceLevelCategory confidenceCategory : confidenceCategories) {
+                entries.add(new ConfidenceCategoryEntry(confidenceCategory));
+            }
+        }
+        StructUtils.putListOfStructs(Preferences.main(), filterKey, entries, ConfidenceCategoryEntry.class);
     }
 
     private void saveEditStatusFilter(final List<EditStatus> editStatuses) {
@@ -216,32 +254,32 @@ final class SaveManager {
         StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_EDIT_STATUS, entries, EditStatusEntry.class);
     }
 
-    private void saveSignTypeFilter(final List<String> signTypes) {
+    private void saveSignTypeFilter(final List<String> signTypes, final String filterKey) {
         final List<SignTypeEntry> entries = new ArrayList<>();
-        if (signTypes != null) {
+        if (Objects.nonNull(signTypes)) {
             for (final String sign : signTypes) {
                 entries.add(new SignTypeEntry(sign));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SIGN_TYPE, entries, SignTypeEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), filterKey, entries, SignTypeEntry.class);
     }
 
-    private void saveSpecificSignsFilter(final List<Sign> specificSigns) {
+    private void saveSpecificSignsFilter(final List<Sign> specificSigns, final String filterKey) {
         final List<SignEntry> entries = new ArrayList<>();
         if (specificSigns != null) {
             for (final Sign sign : specificSigns) {
                 entries.add(new SignEntry(sign));
             }
         }
-        StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_SPECIFIC_SIGN, entries, SignEntry.class);
+        StructUtils.putListOfStructs(Preferences.main(), filterKey, entries, SignEntry.class);
     }
 
     private void saveModesFilter(final List<DetectionMode> modes) {
         if (modes == null || modes.isEmpty()) {
             Preferences.main().put(FILTER_SEARCH_MODE, FILTER_SEARCH_EMPTY);
         } else {
-            final List<DetectionModeEntry> entries =
-                    modes.stream().map(DetectionModeEntry::new).collect(Collectors.toList());
+            final List<DetectionModeEntry> entries = modes.stream().map(DetectionModeEntry::new).collect(Collectors
+                    .toList());
             StructUtils.putListOfStructs(Preferences.main(), FILTER_SEARCH_MODE, entries, DetectionModeEntry.class);
         }
     }
@@ -259,19 +297,19 @@ final class SaveManager {
     }
 
 
-    void saveClusterSettings(final ClusterSettings aggregatedSettings) {
-        Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, aggregatedSettings.isDisplayDetectionLocations());
-        Preferences.main().putBoolean(DISPLAY_TAGS, aggregatedSettings.isDisplayTags());
-        Preferences.main().putBoolean(DISPLAY_COLOR_CODED, aggregatedSettings.isDisplayColorCoded());
+    void saveClusterSettings(final ClusterSettings clusterSettings) {
+        Preferences.main().putBoolean(DISPLAY_DETECTION_LOCATIONS, clusterSettings.isDisplayDetectionLocations());
+        Preferences.main().putBoolean(DISPLAY_TAGS, clusterSettings.isDisplayTags());
+        Preferences.main().putBoolean(DISPLAY_COLOR_CODED, clusterSettings.isDisplayColorCoded());
     }
 
     void saveTrackSettings(final SequenceSettings trackSettings) {
         Preferences.main().putBoolean(DISPLAY_TRACK_FLAG, trackSettings.isDisplayTrack());
         if (trackSettings.getAutoplaySettings() != null) {
-            final String length = trackSettings.getAutoplaySettings().getLength() != null
-                    ? Integer.toString(trackSettings.getAutoplaySettings().getLength()) : "";
-                    Preferences.main().put(AUTOPLAY_LENGTH, length);
-                    Preferences.main().putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
+            final String length = trackSettings.getAutoplaySettings().getLength() != null ? Integer.toString(
+                    trackSettings.getAutoplaySettings().getLength()) : "";
+            Preferences.main().put(AUTOPLAY_LENGTH, length);
+            Preferences.main().putInt(AUTOPLAY_DELAY, trackSettings.getAutoplaySettings().getDelay());
         }
     }
 
@@ -286,8 +324,16 @@ final class SaveManager {
         Preferences.main().putInt(CACHE_NEARBY_COUNT, cacheSettings.getNearbyCount());
     }
 
-    void saveLayerOpenedFlag(final boolean isLayerOpened) {
-        Preferences.main().putBoolean(LAYER_OPENED, isLayerOpened);
+    void saveKartaViewLayerOpenedFlag(final boolean isLayerOpened) {
+        Preferences.main().putBoolean(KARTAVIEW_LAYER_OPENED, isLayerOpened);
+    }
+
+    void saveEdgeLayerOpenedFlag(final boolean isLayerOpened) {
+        Preferences.main().putBoolean(EDGE_LAYER_OPENED, isLayerOpened);
+    }
+
+    void saveEdgeDetectionPanelOpenedFlag(final boolean isPanelOpened) {
+        Preferences.main().putBoolean(EDGE_DETECTION_PANEL_OPENED, isPanelOpened);
     }
 
     void savePhotoPanelOpenedFlag(final boolean isPanelOpened) {

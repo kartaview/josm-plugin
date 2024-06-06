@@ -12,26 +12,32 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.openstreetmap.josm.plugins.kartaview.util.Util;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
+import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.SimplePrimitiveId;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.kartaview.argument.CacheSettings;
 import org.openstreetmap.josm.plugins.kartaview.entity.Cluster;
 import org.openstreetmap.josm.plugins.kartaview.entity.Detection;
+import org.openstreetmap.josm.plugins.kartaview.entity.EdgeDetection;
 import org.openstreetmap.josm.plugins.kartaview.entity.OsmElement;
 import org.openstreetmap.josm.plugins.kartaview.entity.OsmElementType;
 import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
 import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
 import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
 import org.openstreetmap.josm.plugins.kartaview.entity.Sequence;
-import org.openstreetmap.josm.plugins.kartaview.handler.OsmDataHandler;
 import org.openstreetmap.josm.plugins.kartaview.handler.PhotoHandler;
+import org.openstreetmap.josm.plugins.kartaview.handler.imagery.OsmDataHandler;
+import org.openstreetmap.josm.plugins.kartaview.util.Util;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.Config;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+
 import com.grab.josm.common.thread.ThreadPool;
 
 
@@ -45,92 +51,87 @@ public final class DataSet {
 
     private static final DataSet INSTANCE = new DataSet();
 
-    /** the segments from the current map view; available only for small zoom levels */
     private List<Segment> segments = new ArrayList<>();
-
-    /** the photos from the current map view; available only for high zoom levels */
     private PhotoDataSet photoDataSet = new PhotoDataSet();
-
-    /** the detections from the current map view; available only for high zoom levels */
     private List<Detection> detections = new ArrayList<>();
-
-    /** the clusters from the current map view; available only for high zoom levels */
+    private List<EdgeDetection> edgeDetections = new ArrayList<>();
     private List<Cluster> clusters = new ArrayList<>();
-
-    /** the currently selected photo */
+    private List<Cluster> edgeClusters = new ArrayList<>();
     private Photo selectedPhoto;
-
-    /** the currently selected detection */
     private Detection selectedDetection;
-
-    /** the currently selected cluster */
+    private EdgeDetection selectedEdgeDetection;
     private Cluster selectedCluster;
-
-    /** the currently selected sequence */
+    private Cluster selectedEdgeCluster;
     private Sequence selectedSequence;
-
-    /** the currently selected nearby photos */
+    private Bounds selectedSequenceDetectionBounds;
     private Photo nearyPhotosStartPhoto;
     private Collection<Photo> nearbyPhotos;
-
-    /** the currently downloaded OSM matched data */
     private List<OsmElement> matchedData;
-
-    /** true if the currently selected elements are a result of a remote selection action */
     private boolean isRemoteSelection;
-
-    /** true if the a detection containing only front facing information is selected from the map */
     private boolean isFrontFacingDisplayed;
-
-    /** true if the changes are triggered by switch photo format button, false otherwise */
     private boolean isSwitchPhotoFormatAction;
 
-    private DataSet() {}
+    private DataSet() {
+    }
 
     public static DataSet getInstance() {
         return INSTANCE;
     }
 
     /**
-     * Clears the current data set.
+     * Clears the current data set from the KartaView layer.
      *
-     * @param clearSelection if true also the previously selected data is removed.
+     * @param clearSelection if true, the previously selected data is also removed.
      */
-    public synchronized void clear(final boolean clearSelection) {
+    public synchronized void clearKartaViewLayerData(final boolean clearSelection) {
         this.segments = new ArrayList<>();
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
         this.clusters = new ArrayList<>();
         this.matchedData = new ArrayList<>();
         if (clearSelection) {
-            clearSelection();
+            clearKartaViewLayerSelection();
         }
     }
 
     /**
-     * Clears the currently selected items.
+     * Clears the current data set from the Edge layer.
+     *
+     * @param clearSelection if true, the previously selected data is also removed.
      */
-    public synchronized void clearSelection() {
+    public synchronized void clearEdgeLayerData(final boolean clearSelection) {
+        this.edgeDetections = new ArrayList<>();
+        this.edgeClusters = new ArrayList<>();
+        if (clearSelection) {
+            clearEdgeLayerSelection();
+        }
+    }
+
+
+    public synchronized void clearKartaViewLayerSelection() {
         this.selectedDetection = null;
         this.selectedPhoto = null;
         this.nearbyPhotos = new ArrayList<>();
         this.nearyPhotosStartPhoto = null;
         this.selectedSequence = null;
+        this.selectedSequenceDetectionBounds = null;
         this.selectedCluster = null;
         this.matchedData = null;
         this.isFrontFacingDisplayed = false;
         setRemoteSelection(false);
     }
 
-    /**
-     * Clears the high zoom level data (photo locations and detections) including selected items.
-     */
+    public synchronized void clearEdgeLayerSelection() {
+        this.selectedEdgeDetection = null;
+        this.selectedEdgeCluster = null;
+    }
+
     public synchronized void cleaHighZoomLevelData() {
         this.detections = new ArrayList<>();
         this.photoDataSet = new PhotoDataSet();
         this.clusters = new ArrayList<>();
         this.matchedData = new ArrayList<>();
-        clearSelection();
+        clearKartaViewLayerSelection();
     }
 
     /**
@@ -152,11 +153,40 @@ public final class DataSet {
     public synchronized void updateHighZoomLevelDetectionData(final List<Detection> detections,
             final boolean updateSelection) {
         this.detections = detections;
-        if (updateSelection && selectedDetection != null && !selectedDetectionBelongsToSelectedCluster() &&
-                selectedCluster != null) {
-            selectedDetection = detections != null ?
-                    detections.stream().filter(detection -> detection.equals(selectedDetection)).findFirst()
-                    .orElse(null) : null;
+        if (updateSelection && selectedDetection != null && !selectedDetectionBelongsToSelectedCluster()
+                && selectedCluster != null) {
+            selectedDetection = detections != null ? detections.stream().filter(detection -> detection.equals(
+                    selectedDetection)).findFirst().orElse(null) : null;
+        }
+    }
+
+    /**
+     * Updates the edge detection data with a new list of Edge detections.
+     *
+     * @param edgeDetections a new list of {@code EdgeDetection}s
+     */
+    public synchronized void updateHighZoomLevelEdgeDetectionData(final List<EdgeDetection> edgeDetections) {
+        this.edgeDetections = edgeDetections;
+    }
+
+    public synchronized void updateHighZoomLevelEdgeClusterData(final List<Cluster> edgeClusters) {
+        this.edgeClusters = edgeClusters;
+    }
+
+    /**
+     * Updates the EDGE layer selected data, based on the current EDGE data set.
+     */
+    public void updateEdgeLayerSelection() {
+        //check if selected edge cluster is present in the current data set
+        if (Objects.nonNull(selectedEdgeCluster) && (Objects.isNull(edgeClusters) || !edgeClusters.contains(
+                selectedEdgeCluster))) {
+            setSelectedEdgeCluster(null);
+            setSelectedEdgeDetection(null);
+        }
+        //check if selected edge detection is present in the current data set
+        if (Objects.nonNull(selectedEdgeDetection) && !edgeDetectionBelongsToSelectedCluster(selectedEdgeDetection)
+                && (Objects.isNull(edgeDetections) || !edgeDetections.contains(selectedEdgeDetection))) {
+            setSelectedEdgeDetection(null);
         }
     }
 
@@ -181,14 +211,20 @@ public final class DataSet {
      * @param photoDataSet a {@code PhotoDataSet} containing a new list of {@code Photo}s
      */
     public synchronized void updateHighZoomLevelPhotoData(final PhotoDataSet photoDataSet) {
-        revalidatePhotosToBeDrawn(photoDataSet);
-        if (hasSelectedPhoto() && hasNearbyPhotos()) {
-            selectNearbyPhotos(getSelectedPhoto());
-            ThreadPool.getInstance().execute(() -> {
-                final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
-                PhotoHandler.getInstance()
-                .loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(), cacheSettings.getNearbyCount()));
-            });
+        if (Objects.isNull(photoDataSet)) {
+            this.photoDataSet.removeAllPhotos();
+        } else {
+            revalidatePhotosToBeDrawn(photoDataSet);
+            if (hasSelectedPhoto() && hasNearbyPhotos()) {
+                selectNearbyPhotos(getSelectedPhoto());
+                if (Config.getInstance().isCacheEnabled()) {
+                    ThreadPool.getInstance().execute(() -> {
+                        final CacheSettings cacheSettings = PreferenceManager.getInstance().loadCacheSettings();
+                        PhotoHandler.getInstance().loadPhotos(nearbyPhotos(cacheSettings.getPrevNextCount(),
+                                cacheSettings.getNearbyCount()));
+                    });
+                }
+            }
         }
     }
 
@@ -199,18 +235,16 @@ public final class DataSet {
      * @param currentPhotoDataSet - the photos to be added in the map after an action
      */
     private void revalidatePhotosToBeDrawn(final PhotoDataSet currentPhotoDataSet) {
-        List<Photo> photosToBeDrawn = new ArrayList<>();
-        if (currentPhotoDataSet != null && currentPhotoDataSet.getPhotos() != null) {
-            for (final Photo photo : currentPhotoDataSet.getPhotos()) {
-                if (!isPhotoDrawn(photo, this.photoDataSet)) {
+        final PhotoDataSet oldDataSet = this.photoDataSet;
+        this.photoDataSet = currentPhotoDataSet;
+        final List<Photo> photosToBeDrawn = new ArrayList<>();
+        if (oldDataSet != null && oldDataSet.getPhotos() != null) {
+            for (final Photo photo : oldDataSet.getPhotos()) {
+                if (!isPhotoDrawn(photo, photoDataSet)) {
                     photosToBeDrawn.add(photo);
                 }
             }
         }
-        final List<Photo> photosOutOfArea =
-                this.photoDataSet.getPhotos().stream().filter(photo -> !Util.isPointInActiveArea(photo.getPoint()))
-                        .collect(Collectors.toList());
-        this.photoDataSet.removePhotos(photosOutOfArea);
         this.photoDataSet.addPhotos(photosToBeDrawn);
     }
 
@@ -223,7 +257,7 @@ public final class DataSet {
     }
 
     /**
-     * Returns the photo that is located near to the given point. The method returns null if there is no nearby item.
+     * Returns the photo that is located near the given point. The method returns null if there is no nearby item.
      *
      * @param point a {@code Point} represents location where the user had clicked
      * @return a {@code Photo}
@@ -295,6 +329,24 @@ public final class DataSet {
     }
 
     /**
+     * Returns the Edge detection that is nearest to the given point. The method returns null if there is no nearby
+     * item.
+     *
+     * @param point a {@code Point} represents location where the user clicked
+     * @return a {@code EdgeDetection}
+     */
+    public EdgeDetection nearbyEdgeDetection(final Point point) {
+        EdgeDetection edgeDetection = null;
+        if (selectedEdgeCluster != null && selectedEdgeCluster.hasEdgeDetections()) {
+            edgeDetection = Util.nearbyEdgeDetection(selectedEdgeCluster.getEdgeDetections(), point);
+        }
+        if (edgeDetection == null && edgeDetections != null) {
+            edgeDetection = Util.nearbyEdgeDetection(edgeDetections, point);
+        }
+        return edgeDetection;
+    }
+
+    /**
      * Returns the cluster that is located near to the given point. The method returns null if there is no nearby item.
      *
      * @param point a {@code Point} represents the location on the screen where the user had clicked
@@ -305,7 +357,17 @@ public final class DataSet {
     }
 
     /**
-     * Checks if the given photo belongs or not to the selected sequence.
+     * Returns the Edge cluster that is closest to the given point. The method returns null if there is no nearby item.
+     *
+     * @param point a {@code Point} represents the location on the screen where the user clicked
+     * @return a {@code Cluster}
+     */
+    public Cluster nearbyEdgeCluster(final Point point) {
+        return Objects.nonNull(edgeClusters) ? Util.nearbyCluster(edgeClusters, point) : null;
+    }
+
+    /**
+     * Checks if the given photo belongs to the selected sequence or not.
      *
      * @param photo a {@code Photo}
      * @return boolean
@@ -345,8 +407,8 @@ public final class DataSet {
             }
         } else if (photoDataSet != null && photoDataSet.hasItems() && selectedPhoto != null) {
             for (final Photo elem : photoDataSet.getPhotos()) {
-                if (elem.getSequenceIndex().equals(index)
-                        && elem.getSequenceId().equals(selectedPhoto.getSequenceId())) {
+                if (elem.getSequenceIndex().equals(index) && elem.getSequenceId().equals(selectedPhoto
+                        .getSequenceId())) {
                     photo = elem;
                     break;
                 }
@@ -373,9 +435,9 @@ public final class DataSet {
                 }
             }
             int index = isNext ? ++selectedIndex : --selectedIndex;
-            index = index > selectedCluster.getDetections().size() - 1 ? 0
-                    : index < 0 ? selectedCluster.getDetections().size() - 1 : index;
-                    detection = selectedCluster.getDetections().get(index);
+            index = index > selectedCluster.getDetections().size() - 1 ? 0 : index < 0 ? selectedCluster.getDetections()
+                    .size() - 1 : index;
+            detection = selectedCluster.getDetections().get(index);
         }
         return detection;
     }
@@ -389,9 +451,8 @@ public final class DataSet {
      * method returns empty
      */
     public Optional<Detection> selectedClusterDetection(final Long sequenceId, final Integer sequenceIndex) {
-        return selectedCluster != null ? selectedCluster.getDetections().stream()
-                .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                .findFirst() : Optional.empty();
+        return selectedCluster != null ? selectedCluster.getDetections().stream().filter(d -> d.getSequenceId().equals(
+                sequenceId) && d.getSequenceIndex().equals(sequenceIndex)).findFirst() : Optional.empty();
     }
 
     /**
@@ -418,11 +479,10 @@ public final class DataSet {
     public Optional<Photo> clusterPhoto(final Cluster cluster, final Long sequenceId, final Integer sequenceIndex) {
         Optional<Photo> clusterPhoto = Optional.empty();
         if (cluster != null) {
-            final List<Photo> clusterPhotos =
-                    cluster.getPhotos() != null ? new ArrayList<>(cluster.getPhotos()) : new ArrayList<>();
-            clusterPhoto = clusterPhotos.stream()
-                    .filter(d -> d.getSequenceId().equals(sequenceId) && d.getSequenceIndex().equals(sequenceIndex))
-                    .findFirst();
+            final List<Photo> clusterPhotos = cluster.getPhotos() != null ? new ArrayList<>(cluster.getPhotos())
+                    : new ArrayList<>();
+            clusterPhoto = clusterPhotos.stream().filter(d -> d.getSequenceId().equals(sequenceId) && d
+                    .getSequenceIndex().equals(sequenceIndex)).findFirst();
         }
         return clusterPhoto;
     }
@@ -435,8 +495,8 @@ public final class DataSet {
     public void selectNearbyPhotos(final Photo photo) {
         nearyPhotosStartPhoto = photo;
         if (photo != null && photoDataSet != null && photoDataSet.hasItems()) {
-            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto,
-                    Config.getInstance().getClosestPhotosMaxItems());
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto, Config.getInstance()
+                    .getClosestPhotosMaxItems());
         } else {
             nearbyPhotos = Collections.emptyList();
         }
@@ -453,10 +513,10 @@ public final class DataSet {
             result = nearbyPhotos.iterator().next();
             nearbyPhotos.remove(result);
         }
-        // recalculate closest photos when latest closest photo is returned
+        // recalculate the closest photos when latest closest photo is returned
         if (nearbyPhotos != null && nearbyPhotos.isEmpty() && nearyPhotosStartPhoto != null) {
-            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto,
-                    Config.getInstance().getClosestPhotosMaxItems());
+            nearbyPhotos = Util.nearbyPhotos(photoDataSet.getPhotos(), nearyPhotosStartPhoto, Config.getInstance()
+                    .getClosestPhotosMaxItems());
         }
         return result;
     }
@@ -472,13 +532,12 @@ public final class DataSet {
     public Optional<Photo> detectionPhoto(final Long sequenceId, final Integer sequenceIndex) {
         final List<Photo> photos = hasSelectedSequence() && selectedSequence.hasPhotos() ? selectedSequence.getPhotos()
                 : hasPhotos() ? photoDataSet.getPhotos() : null;
-                Optional<Photo> result = Optional.empty();
-                if (photos != null) {
-                    result = photos.stream()
-                            .filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(sequenceIndex))
-                            .findFirst();
-                }
-                return result;
+        Optional<Photo> result = Optional.empty();
+        if (photos != null) {
+            result = photos.stream().filter(p -> p.getSequenceId().equals(sequenceId) && p.getSequenceIndex().equals(
+                    sequenceIndex)).findFirst();
+        }
+        return result;
     }
 
     /**
@@ -491,8 +550,7 @@ public final class DataSet {
         if (selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()) {
             final int selectedIndex = selectedSequence.getPhotos().indexOf(selectedPhoto);
             result = !selectedSequence.getPhotos().get(0).getSequenceIndex().equals(selectedPhoto.getSequenceIndex())
-                    && selectedIndex != -1
-                    && Util.isPointInActiveArea(selectedSequence.getPhotos().get(selectedIndex - 1).getPoint());
+                    && selectedIndex != -1 && matchesBboxCriteria(selectedIndex - 1);
         }
         return result;
     }
@@ -507,14 +565,30 @@ public final class DataSet {
         if (selectedSequence != null && selectedPhoto != null && selectedSequence.hasPhotos()) {
             final int selectedIndex = selectedSequence.getPhotos().indexOf(selectedPhoto);
             result = !selectedSequence.getPhotos().get(selectedSequence.getPhotos().size() - 1).getSequenceIndex()
-                    .equals(selectedPhoto.getSequenceIndex()) && selectedIndex != -1
-                    && Util.isPointInActiveArea(selectedSequence.getPhotos().get(selectedIndex + 1).getPoint());
+                    .equals(selectedPhoto.getSequenceIndex()) && selectedIndex != -1 && matchesBboxCriteria(
+                            selectedIndex + 1);
         }
         return result;
     }
 
     /**
-     * Returns the selected sequence last photo.
+     * Method for validating if the photo matches the bbox criteria and the load data preferences.
+     *
+     * @param selectedIndex index of the photo in the sequence
+     * @return boolean true if the photo matches the bbox criteria; false otherwise
+     */
+    private boolean matchesBboxCriteria(final int selectedIndex) {
+        boolean matches = true;
+        if (MainApplication.getLayerManager().getActiveLayer() instanceof OsmDataLayer && PreferenceManager
+                .getInstance().loadMapViewSettings().isDataLoadFlag() && !Util.isPointInActiveArea(selectedSequence
+                        .getPhotos().get(selectedIndex).getPoint())) {
+            matches = false;
+        }
+        return matches;
+    }
+
+    /**
+     * Returns the last photo of the selected sequence.
      *
      * @return a {@code Photo}
      */
@@ -541,40 +615,37 @@ public final class DataSet {
         }
     }
 
-    /**
-     * Sets the selected photo.
-     *
-     * @param selectedPhoto a {@code Photo}
-     */
     public void setSelectedPhoto(final Photo selectedPhoto) {
         this.selectedPhoto = selectedPhoto;
 
-        // workaround for the case when the cluster photo is selected and object is not complete
+        // workaround for the case when the cluster photo is selected and object is not
+        // complete
         // (avoiding to load more than once the same photo from KartaView API
-        if (selectedPhoto != null && selectedCluster != null && selectedCluster.getPhotos() != null
-                && selectedCluster.getPhotos().contains(selectedPhoto)) {
+        if (selectedPhoto != null && selectedCluster != null && selectedCluster.getPhotos() != null && selectedCluster
+                .getPhotos().contains(selectedPhoto)) {
             selectedCluster.getPhotos().remove(selectedPhoto);
             selectedCluster.getPhotos().add(selectedPhoto);
         }
     }
 
-    /**
-     * Sets the selected detection.
-     *
-     * @param selectedDetection a {@code Detection}
-     */
     public void setSelectedDetection(final Detection selectedDetection) {
         this.selectedDetection = selectedDetection;
     }
 
-    /**
-     * Sets the selected cluster.
-     *
-     * @param selectedCluster a {@code Cluster}
-     *
-     */
+    public void setSelectedEdgeDetection(final EdgeDetection selectedEdgeDetection) {
+        this.selectedEdgeDetection = selectedEdgeDetection;
+    }
+
+    public EdgeDetection getSelectedEdgeDetection() {
+        return selectedEdgeDetection;
+    }
+
     public void setSelectedCluster(final Cluster selectedCluster) {
         this.selectedCluster = selectedCluster;
+    }
+
+    public void setSelectedEdgeCluster(final Cluster selectedEdgeCluster) {
+        this.selectedEdgeCluster = selectedEdgeCluster;
     }
 
     /**
@@ -601,13 +672,26 @@ public final class DataSet {
         }
     }
 
+    public synchronized void updateSelectedSequenceDetections(List<Detection> detections, final Bounds bounds) {
+        if (hasSelectedSequence() && (Objects.nonNull(detections))) {
+            selectedSequence.addDetections(detections);
+            selectedSequenceDetectionBounds.extend(bounds);
+        }
+    }
+
+    public boolean selectedSequenceHasDetectionsForBounds(final Bounds bounds) {
+        return selectedSequenceDetectionBounds.contains(bounds);
+    }
+
     /**
-     * Sets the selected sequence.
+     * Sets the selected sequence within the bounds.
      *
-     * @param selectedSequence a {@code Sequence}
+     * @param sequence a {@code Sequence}
+     * @param detectionBounds a {@code Bounds}
      */
-    public void setSelectedSequence(final Sequence selectedSequence) {
-        this.selectedSequence = selectedSequence;
+    public void setSelectedSequence(final Sequence sequence, final Bounds detectionBounds) {
+        this.selectedSequence = sequence;
+        this.selectedSequenceDetectionBounds = detectionBounds;
     }
 
     /**
@@ -619,83 +703,50 @@ public final class DataSet {
         this.matchedData = matchedData;
     }
 
-    /**
-     * Returns the list of segments.
-     *
-     * @return a list of {@code Segment}s
-     */
     public List<Segment> getSegments() {
         return segments;
     }
 
-    /**
-     * Returns the photo data set.
-     *
-     * @return a {@code PhotoDataSet}
-     */
     public PhotoDataSet getPhotoDataSet() {
         return photoDataSet;
     }
 
-    /**
-     * Returns the list of detections.
-     *
-     * @return a list of {@code Detection}
-     */
     public List<Detection> getDetections() {
         return detections;
     }
 
-    /**
-     * Returns the list of clusters.
-     *
-     * @return a list of {@code Cluster}
-     */
+    public List<EdgeDetection> getEdgeDetections() {
+        return edgeDetections;
+    }
+
     public List<Cluster> getClusters() {
         return clusters;
     }
 
-    /**
-     * Returns the selected photo.
-     *
-     * @return a {@code Photo}
-     */
+    public List<Cluster> getEdgeClusters() {
+        return edgeClusters;
+    }
+
     public Photo getSelectedPhoto() {
         return selectedPhoto;
     }
 
-    /**
-     * Returns the selected detection.
-     *
-     * @return a {@code Detection}
-     */
     public Detection getSelectedDetection() {
         return selectedDetection;
     }
 
-    /**
-     * Returns the selected cluster.
-     *
-     * @return a {@code Cluster}
-     */
     public Cluster getSelectedCluster() {
         return selectedCluster;
     }
 
-    /**
-     * Returns the selected sequence.
-     *
-     * @return a {@code Sequence}
-     */
+    public Cluster getSelectedEdgeCluster() {
+        return selectedEdgeCluster;
+    }
+
     public Sequence getSelectedSequence() {
         return selectedSequence;
     }
 
-    /**
-     * Returns the list of nearby photos.
-     *
-     * @return a list of {@code Photo}s
-     */
     public Collection<Photo> getNearbyPhotos() {
         return nearbyPhotos;
     }
@@ -704,85 +755,57 @@ public final class DataSet {
         return matchedData;
     }
 
-    /**
-     * Verifies if the data set has items or not.
-     *
-     * @return boolean
-     */
     public boolean hasItems() {
-        return hasSegments() || hasDetections() || hasPhotos() || hasClusters() || isRemoteSelection;
+        return hasSegments() || hasDetections() || hasPhotos() || hasClusters() || hasEdgeDetections()
+                || hasEdgeClusters() || isRemoteSelection;
     }
 
-    /**
-     * Verifies if the data-set has photos or not.
-     *
-     * @return boolean
-     */
     public boolean hasPhotos() {
         return photoDataSet != null && photoDataSet.hasItems();
     }
 
-    /**
-     * Verifies if the data-set has segments or not.
-     *
-     * @return boolean
-     */
     public boolean hasSegments() {
         return segments != null && !segments.isEmpty();
     }
 
-    /**
-     * Verifies if the data-set has detections or not.
-     *
-     * @return boolean
-     */
     public boolean hasDetections() {
         return detections != null && !detections.isEmpty();
     }
 
-    /**
-     * Verifies if the data-set has clusters or not.
-     *
-     * @return boolean
-     */
+    public boolean hasEdgeDetections() {
+        return edgeDetections != null && !edgeDetections.isEmpty();
+    }
+
     public boolean hasClusters() {
         return clusters != null && !clusters.isEmpty();
     }
 
-    /**
-     * Checks is the data-set has nearby photos or not.
-     *
-     * @return boolean
-     */
+    public boolean hasEdgeClusters() {
+        return Objects.nonNull(edgeClusters) && !edgeClusters.isEmpty();
+    }
+
     public boolean hasNearbyPhotos() {
         return nearbyPhotos != null && !nearbyPhotos.isEmpty();
     }
 
-    /**
-     * Checks if the data-set has a selected sequence or not.
-     *
-     * @return boolean
-     */
     public boolean hasSelectedSequence() {
         return selectedSequence != null;
     }
 
-    /**
-     * Checks if the data-set has selected photo or not.
-     *
-     * @return boolean
-     */
     public boolean hasSelectedPhoto() {
         return selectedPhoto != null;
     }
 
-    /**
-     * Checks if the data set has detection selected or not.
-     *
-     * @return boolean
-     */
     public boolean hasSelectedDetection() {
         return selectedDetection != null;
+    }
+
+    public boolean hasSelectedEdgeDetection() {
+        return Objects.nonNull(selectedEdgeDetection);
+    }
+
+    public boolean hasSelectedEdgeCluster() {
+        return Objects.nonNull(selectedEdgeCluster);
     }
 
     public boolean hasSelectedCluster() {
@@ -790,19 +813,14 @@ public final class DataSet {
     }
 
     public boolean hasActiveSelection() {
-        return selectedCluster != null || selectedDetection != null || selectedPhoto != null
-                || selectedSequence != null;
+        return selectedCluster != null || selectedDetection != null || selectedPhoto != null || selectedSequence
+                != null;
     }
 
     public boolean hasMatchedData() {
         return matchedData != null && !matchedData.isEmpty();
     }
 
-    /**
-     * Checks if the currently selected photo belongs or not to the selected cluster.
-     *
-     * @return boolean
-     */
     public boolean selectedPhotoBelongsToSelectedCluster() {
         return photoBelongsToSelectedCluster(selectedPhoto);
     }
@@ -811,66 +829,40 @@ public final class DataSet {
         return detectionBelongsToSelectedCluster(selectedDetection);
     }
 
-    /**
-     * Checks if the given detection belongs to the selected cluster.
-     *
-     * @param detection a {@code Detection} object
-     * @return boolean
-     */
     public boolean detectionBelongsToSelectedCluster(final Detection detection) {
         return selectedCluster != null && detection != null && selectedCluster.getDetections() != null
                 && selectedCluster.getDetections().contains(detection);
     }
 
-    /**
-     * Checks if the given photo belongs to the selected cluster or not.
-     *
-     * @param photo a {@code Photo} object
-     * @return boolean
-     */
+    public boolean edgeDetectionBelongsToSelectedCluster(final EdgeDetection edgeDetection) {
+        return Objects.nonNull(selectedEdgeCluster) && Objects.nonNull(edgeDetection) && Objects.nonNull(
+                selectedEdgeCluster.getEdgeDetections()) && selectedEdgeCluster.getEdgeDetections().contains(
+                        edgeDetection);
+    }
+
     public boolean photoBelongsToSelectedCluster(final Photo photo) {
-        return selectedCluster != null && selectedCluster.getPhotos() != null
-                && selectedCluster.getPhotos().contains(photo);
+        return selectedCluster != null && selectedCluster.getPhotos() != null && selectedCluster.getPhotos().contains(
+                photo);
     }
 
-    /**
-     * Checks if the current selected detection has OSM elements.
-     *
-     * @return {@code boolean}
-     */
     public boolean selectedDetectionHasOsmElements() {
-        return selectedDetection != null && selectedDetection.getOsmElements() != null
-                && !selectedDetection.getOsmElements().isEmpty();
+        return selectedDetection != null && selectedDetection.getOsmElements() != null && !selectedDetection
+                .getOsmElements().isEmpty();
     }
 
-    /**
-     * Checks if the currently selected detection has valid OSM elements.
-     *
-     * @return a {@code boolean} value
-     */
     public boolean selectedDetectionHasValidOsmElements() {
         boolean validOsmElement = false;
-        if (selectedClusterHasOsmElements()) {
+        if (selectedClusterHasOsmElements() && selectedDetection != null) {
             validOsmElement = hasValidOsmElements(selectedDetection.getOsmElements());
         }
         return validOsmElement;
     }
 
-    /**
-     * Checks if the current selected cluster has OSM elements.
-     *
-     * @return {@code boolean} value
-     */
     public boolean selectedClusterHasOsmElements() {
-        return selectedCluster != null && selectedCluster.getOsmElements() != null
-                && !selectedCluster.getOsmElements().isEmpty();
+        return selectedCluster != null && selectedCluster.getOsmElements() != null && !selectedCluster.getOsmElements()
+                .isEmpty();
     }
 
-    /**
-     * Checks if the currently selected cluster has valid OSM elements.
-     *
-     * @return a {@code boolean} value
-     */
     public boolean selectedClusterHasValidOsmElements() {
         boolean validOsmElement = false;
         if (selectedClusterHasOsmElements()) {
@@ -881,15 +873,15 @@ public final class DataSet {
 
     private boolean hasValidOsmElements(final Collection<OsmElement> osmElements) {
         boolean isValid = false;
-        final Optional<org.openstreetmap.josm.data.osm.DataSet> result =
-                OsmDataHandler.retrieveServerObjects(osmElements);
+        final Optional<org.openstreetmap.josm.data.osm.DataSet> result = OsmDataHandler.retrieveServerObjects(
+                osmElements);
         if (result.isPresent()) {
             isValid = true;
             for (final OsmElement osmElement : osmElements) {
                 final OsmElementType element = osmElement.getType();
                 if (element.equals(OsmElementType.WAY_SECTION)) {
-                    final Way downloadedWay = (Way) result.get()
-                            .getPrimitiveById(new SimplePrimitiveId(osmElement.getOsmId(), OsmPrimitiveType.WAY));
+                    final Way downloadedWay = (Way) result.get().getPrimitiveById(new SimplePrimitiveId(osmElement
+                            .getOsmId(), OsmPrimitiveType.WAY));
                     if (downloadedWay != null && downloadedWay.getNodesCount() <= 0) {
                         isValid = false;
                     }
@@ -899,58 +891,43 @@ public final class DataSet {
         return isValid;
     }
 
-    /**
-     * Returns the 'isRemoteSelection' flag.
-     *
-     * @return a {@code boolean} value
-     */
     public boolean isRemoteSelection() {
         return isRemoteSelection;
     }
 
     /**
-     * Sets the 'isRemoteSelection' flag. This flag indicates if the selected items are selected as a result of a remote
-     * item selection.
+     * Sets the 'isRemoteSelection' flag.
      *
-     * @param isRemoteSelection boolean value
+     * @param isRemoteSelection boolean value that indicates if the selected items are selected as a result of a remote
+     * item selection.
      */
     public void setRemoteSelection(final boolean isRemoteSelection) {
         this.isRemoteSelection = isRemoteSelection;
     }
 
-    /**
-     * Returns the 'isFrontFacingDisplayed' flag.
-     *
-     * @return a {@code boolean} value
-     */
     public boolean isFrontFacingDisplayed() {
         return isFrontFacingDisplayed;
     }
 
     /**
-     * Sets the 'isFrontFacingDisplayed' flag. This flag indicates if the front facing version of the image is
-     * displayed in the photo panel.
+     * Sets the 'isFrontFacingDisplayed' flag.
      *
-     * @param frontFacingDisplayed boolean value
+     * @param frontFacingDisplayed boolean value that indicates if the front facing version of the image is displayed
+     * in the photo panel.
      */
     public void setFrontFacingDisplayed(final boolean frontFacingDisplayed) {
         isFrontFacingDisplayed = frontFacingDisplayed;
     }
 
-    /**
-     * Get the value of the flag.
-     *
-     * @return boolean value
-     */
     public boolean isSwitchPhotoFormatAction() {
         return isSwitchPhotoFormatAction;
     }
 
     /**
-     * Sets the 'isSwitchPhotoFormatAction' flag. This flag indicates if the switch photo format triggered an update in
-     * the panel.
+     * Sets the 'isSwitchPhotoFormatAction' flag.
      *
-     * @param switchPhotoFormatAction boolean value
+     * @param switchPhotoFormatAction boolean value that indicates if the switch photo format action triggered an
+     * update in the panel.
      */
     public void setSwitchPhotoFormatAction(final boolean switchPhotoFormatAction) {
         isSwitchPhotoFormatAction = switchPhotoFormatAction;

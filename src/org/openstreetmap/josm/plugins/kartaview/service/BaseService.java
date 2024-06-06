@@ -87,7 +87,7 @@ public abstract class BaseService {
         String response;
         try {
             final Instant startTime = Instant.now();
-            response = new HttpConnector(url).post(content, ContentType.JSON);
+            response = new HttpConnector(url, getHeaders()).post(content, ContentType.JSON);
             final Instant endTime = Instant.now();
             serviceLogger.log(componentName + SPACE + url + " with content: " + content + " responded in " + Duration
                     .between(startTime, endTime).toMillis() + "ms", null);

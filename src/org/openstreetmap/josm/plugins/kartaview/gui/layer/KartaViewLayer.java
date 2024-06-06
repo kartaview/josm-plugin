@@ -6,16 +6,30 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.gui.layer;
 
+import static org.openstreetmap.josm.plugins.kartaview.gui.layer.Constants.RENDERING_MAP;
+
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.util.ArrayList;
 import java.util.List;
-import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
+import java.util.Objects;
+
+import javax.swing.Action;
+import javax.swing.Icon;
+
+import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.dialogs.LayerListDialog;
+import org.openstreetmap.josm.gui.dialogs.LayerListPopup;
 import org.openstreetmap.josm.plugins.kartaview.DataSet;
 import org.openstreetmap.josm.plugins.kartaview.argument.DataType;
-import static org.openstreetmap.josm.plugins.kartaview.gui.layer.Constants.RENDERING_MAP;
+import org.openstreetmap.josm.plugins.kartaview.argument.SearchFilter;
+import org.openstreetmap.josm.plugins.kartaview.gui.details.imagery.filter.FilterDialog;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.GuiConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.IconConfig;
+import org.openstreetmap.josm.plugins.kartaview.util.pref.PreferenceManager;
 
 
 /**
@@ -24,13 +38,21 @@ import static org.openstreetmap.josm.plugins.kartaview.gui.layer.Constants.RENDE
  * @author Beata
  * @version $Revision$
  */
-public final class KartaViewLayer extends AbtractLayer {
+public final class KartaViewLayer extends BaseAbstractLayer {
 
-    private final PaintHandler paintHandler = new PaintHandler();
+    private final JosmAction downloadPreviousPhotosAction;
+    private final JosmAction downloadNextPhotosAction;
+    private final JosmAction saveSequenceAction;
     private static KartaViewLayer instance;
 
     private KartaViewLayer() {
-        super();
+        super(GuiConfig.getInstance().getPluginShortName(), new KartaViewDeleteLayerAction(),
+                new DisplayFilterDialogAction(new FilterDialog(IconConfig.getInstance().getFilterIcon())));
+        downloadPreviousPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerPreviousMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadPreviousPhotosTitle(), false);
+        downloadNextPhotosAction = new DownloadPhotosAction(GuiConfig.getInstance().getLayerNextMenuItemLbl(),
+                GuiConfig.getInstance().getInfoDownloadNextPhotosTitle(), true);
+        saveSequenceAction = new SaveTrackAction();
     }
 
     /**
@@ -53,6 +75,12 @@ public final class KartaViewLayer extends AbtractLayer {
     }
 
     @Override
+    public Icon getIcon() {
+        return SearchFilter.DEFAULT.equals(PreferenceManager.getInstance().loadSearchFilter())
+                ? IconConfig.getInstance().getKartaViewLayerIcon() : IconConfig.getInstance().getLayerIconFiltered();
+    }
+
+    @Override
     public void paint(final Graphics2D graphics, final MapView mapView, final Bounds bounds) {
         mapView.setDoubleBuffered(true);
         graphics.setRenderingHints(RENDERING_MAP);
@@ -64,8 +92,7 @@ public final class KartaViewLayer extends AbtractLayer {
                 paintHandler.drawSegments(graphics, mapView, dataSet.getSegments());
             } else {
                 // draw photos
-                final boolean isTransparent =
-                        dataSet.getSelectedSequence() != null || dataSet.getSelectedCluster() != null;
+                final boolean isTransparent = Objects.nonNull(dataSet.getSelectedSequence());
                 final List<DataType> dataTypes = PreferenceManager.getInstance().loadSearchFilter().getDataTypes();
                 if (dataSet.hasPhotos() && (dataTypes.contains(DataType.PHOTO))) {
                     paintHandler.drawPhotos(graphics, mapView, dataSet.getPhotoDataSet().getPhotos(),
@@ -84,24 +111,24 @@ public final class KartaViewLayer extends AbtractLayer {
                     paintHandler.drawClusters(graphics, mapView, dataSet.getClusters(), dataSet.getSelectedCluster(),
                             dataSet.getSelectedPhoto(), dataSet.getSelectedDetection());
                 }
-            }
 
-            // draw sequence if any
-            if (dataSet.getSelectedSequence() != null && dataSet.getSelectedSequence().hasData()) {
-                paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(), dataSet.getSelectedPhoto(),
-                        dataSet.getSelectedDetection());
-            }
+                // draw sequence if any
+                if (dataSet.getSelectedSequence() != null && dataSet.getSelectedSequence().hasData()) {
+                    final boolean isClusterSelected = Objects.nonNull(dataSet.getSelectedCluster());
+                    paintHandler.drawSequence(graphics, mapView, dataSet.getSelectedSequence(),
+                            dataSet.getSelectedPhoto(), dataSet.getSelectedDetection(), isClusterSelected);
+                }
 
-            // draw downloaded matched data
-            if (dataSet.hasMatchedData()) {
-                paintHandler.drawMatchedData(graphics, mapView, dataSet.getMatchedData());
+                // draw downloaded matched data
+                if (dataSet.hasMatchedData()) {
+                    paintHandler.drawMatchedData(graphics, mapView, dataSet.getMatchedData());
+                }
             }
 
             graphics.setComposite(originalComposite);
             graphics.setStroke(originalStroke);
         }
     }
-
 
     public void enablePhotoDataSetDownloadActions() {
         final DataSet dataSet = DataSet.getInstance();
@@ -111,17 +138,57 @@ public final class KartaViewLayer extends AbtractLayer {
             enablePrevious = dataSet.getPhotoDataSet().hasPreviousItems();
             enableNext = dataSet.getPhotoDataSet().hasNextItems();
         }
-        super.enablePhotoDataSetDownloadActions(enablePrevious, enableNext);
+        enablePhotoDataSetDownloadActions(enablePrevious, enableNext);
     }
 
+    @Override
+    public Object getInfoComponent() {
+        return GuiConfig.getInstance().getPluginTlt();
+    }
 
     @Override
+    public Action[] getMenuEntries() {
+        final LayerListDialog layerListDialog = LayerListDialog.getInstance();
+        final List<Action> actions = new ArrayList<>();
+        actions.add(layerListDialog.createActivateLayerAction(this));
+        actions.add(layerListDialog.createShowHideLayerAction());
+        actions.add(getDeleteLayerAction());
+        actions.add(SeparatorLayerAction.INSTANCE);
+        if (addSequenceMenuItem()) {
+            actions.add(saveSequenceAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
+        actions.add(getDisplayFilterAction());
+        actions.add(SeparatorLayerAction.INSTANCE);
+        if (addPhotoDataSetMenuItems()) {
+            actions.add(downloadPreviousPhotosAction);
+            actions.add(downloadNextPhotosAction);
+            actions.add(SeparatorLayerAction.INSTANCE);
+        }
+        actions.add(getOpenFeedbackAction());
+        actions.add(SeparatorLayerAction.INSTANCE);
+
+        actions.add(getOpenPreferencesAction());
+        actions.add(SeparatorLayerAction.INSTANCE);
+        actions.add(new LayerListPopup.InfoAction(this));
+        return actions.toArray(new Action[0]);
+    }
+
+    @Override
+    public String getToolTipText() {
+        return GuiConfig.getInstance().getPluginLongName();
+    }
+
     boolean addPhotoDataSetMenuItems() {
         return DataSet.getInstance().getPhotoDataSet() != null;
     }
 
-    @Override
     boolean addSequenceMenuItem() {
         return DataSet.getInstance().getSelectedSequence() != null;
+    }
+
+    void enablePhotoDataSetDownloadActions(final boolean downloadPrevious, final boolean downloadNext) {
+        downloadPreviousPhotosAction.setEnabled(downloadPrevious);
+        downloadNextPhotosAction.setEnabled(downloadNext);
     }
 }

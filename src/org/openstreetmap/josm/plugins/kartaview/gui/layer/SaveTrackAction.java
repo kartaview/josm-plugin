@@ -8,6 +8,7 @@ package org.openstreetmap.josm.plugins.kartaview.gui.layer;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -69,7 +70,7 @@ class SaveTrackAction extends JosmAction {
     private void saveSequence(final String fileName) {
         try {
             gpxManager.saveSequence(DataSet.getInstance().getSelectedSequence(), fileName);
-        } catch (final GpxManagerException e) {
+        } catch (final GpxManagerException | IOException e) {
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(),
                     GuiConfig.getInstance().getErrorSequenceSaveText(), GuiConfig.getInstance().getErrorTitle(),
                     JOptionPane.ERROR_MESSAGE);

@@ -30,7 +30,7 @@ public abstract class DownloadMatchedOsmElement extends JosmAction {
 
     public DownloadMatchedOsmElement(final String name, final String tooltip) {
         super(name, null, tooltip,
-                ShortcutFactory.getInstance().getShotrcut(GuiConfig.getInstance().getBtnMatchedWayShortcutTlt()), true);
+                ShortcutFactory.getInstance().getShortcut(GuiConfig.getInstance().getBtnMatchedWayShortcutTlt()), true);
     }
 
     @Override

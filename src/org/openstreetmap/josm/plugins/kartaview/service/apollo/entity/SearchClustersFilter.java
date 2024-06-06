@@ -1,10 +1,20 @@
+/*
+ * Copyright 2024 Grabtaxi Holdings PTE LTE (GRAB), All rights reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
+ *
+ */
 package org.openstreetmap.josm.plugins.kartaview.service.apollo.entity;
-
-import org.openstreetmap.josm.plugins.kartaview.argument.SignFilter;
-import org.openstreetmap.josm.plugins.kartaview.entity.OsmComparison;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.openstreetmap.josm.plugins.kartaview.argument.DetectionFilter;
+import org.openstreetmap.josm.plugins.kartaview.argument.SignFilter;
+import org.openstreetmap.josm.plugins.kartaview.entity.ConfidenceLevelCategory;
+import org.openstreetmap.josm.plugins.kartaview.entity.Sign;
 
 
 /**
@@ -13,39 +23,27 @@ import java.util.Date;
  * @author nicoleta.viregan
  */
 
-class SearchClustersFilter {
+public class SearchClustersFilter extends SearchFilter {
 
-    private final Date date;
-    private final Double minConfidenceLevel;
-    private final Double maxConfidenceLevel;
-    private final Collection<OsmComparison> osmComparisons;
-    private final SignFilter signFilter;
+    private Collection<ConfidenceLevelCategory> confidenceCategories;
 
-    SearchClustersFilter(final SearchClustersFilterBuilder builder) {
-        this.date = builder.getDate();
-        this.minConfidenceLevel = builder.getMinConfidenceLevel();
-        this.maxConfidenceLevel = builder.getMaxConfidenceLevel();
-        this.osmComparisons = builder.getOsmComparisons();
-        this.signFilter = builder.getSignFilter();
+
+    public SearchClustersFilter(final Date date, final DetectionFilter detectionFilter) {
+        super(date);
+        if (Objects.nonNull(detectionFilter)) {
+            setOsmComparisons(detectionFilter.getOsmComparisons());
+            Collection<String> includedNames = null;
+            if (detectionFilter.getSpecificSigns() != null) {
+                includedNames = detectionFilter.getSpecificSigns().stream().map(Sign::getInternalName).collect(
+                        Collectors.toList());
+            }
+            setSignFilter(new SignFilter(detectionFilter.getRegion(), detectionFilter.getSignTypes(),
+                    SignFilter.EXCLUDED_SIGN_TYPES, includedNames));
+            this.confidenceCategories = detectionFilter.getConfidenceCategories();
+        }
     }
 
-    Date getDate() {
-        return date;
-    }
-
-    Double getMinConfidenceLevel() {
-        return minConfidenceLevel;
-    }
-
-    Double getMaxConfidenceLevel() {
-        return maxConfidenceLevel;
-    }
-
-    Collection<OsmComparison> getOsmComparisons() {
-        return osmComparisons;
-    }
-
-    SignFilter getSignFilter() {
-        return signFilter;
+    public Collection<ConfidenceLevelCategory> getConfidenceCategories() {
+        return confidenceCategories;
     }
 }

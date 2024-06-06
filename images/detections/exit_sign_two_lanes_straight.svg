@@ -5,7 +5,7 @@
   <g fill="none" fill-rule="evenodd">
     <use fill="#FFD11E" xlink:href="#exit_sign_panel_two_lanes_straight-a"/>
     <rect width="298" height="50" x="1" y="1" stroke="#000" stroke-width="2" rx="6"/>
-    <text fill="#000" font-family="Roboto-Bold, Roboto" font-size="40" font-weight="bold" letter-spacing=".952">
+    <text fill="#000"  font-size="40" font-weight="bold" letter-spacing=".952">
       <tspan x="69" y="41">Exit Only</tspan>
     </text>
     <path fill="#000" fill-rule="nonzero" d="M36.1175474,29.8069318 L44.8821237,30.8466455 C47.0056398,31.6841439 48.6760491,30.5832388 47.4790352,28.5367711 L34.0954731,10.3486034 C32.8849336,8.63308263 31.8637523,8.63308263 30.6599756,10.3486034 L17.2831763,28.5367711 C16.0793996,30.5832388 17.7498088,31.6773899 19.8800878,30.8466455 L28.6446641,29.8069318 L28.6446641,41.6459165 C28.6446641,42.750486 29.5400946,43.6459165 30.6446641,43.6459165 L34.1175474,43.6459165 C35.2221169,43.6459165 36.1175474,42.750486 36.1175474,41.6459165 L36.1175474,29.8069318 Z" transform="matrix(1 0 0 -1 0 52.708)"/>

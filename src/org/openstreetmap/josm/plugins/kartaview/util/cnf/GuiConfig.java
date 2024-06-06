@@ -20,13 +20,20 @@ public final class GuiConfig extends BaseConfig {
     private static final String CONFIG_FILE = "kartaview_gui.properties";
     private static final GuiConfig INSTANCE = new GuiConfig();
 
-    private final String pluginShortName;
-    private final String pluginLongName;
-    private final String pluginTlt;
-    private final String pluginShortcutText;
-    private final String pluginShortcutLongText;
-    private final String pluginDetectionShortcutText;
-    private final String pluginDetectionShortcutLongText;
+    private final boolean isPrivateBuild;
+    private String pluginShortName;
+    private String pluginLongName;
+    private String pluginTlt;
+    private String pluginShortcutText;
+    private String pluginShortcutLongText;
+    private String pluginDetectionShortcutText;
+    private String pluginDetectionShortcutLongText;
+    private String edgeDetectionShortcutText;
+    private String edgeDetectionShortcutLongText;
+    private final String menuItemName;
+    private final Integer menuItemMnemonicKey;
+    private final Integer menuItemPosition;
+    private final String menuItemHelpTopic;
 
     private final String prefMapViewLbl;
     private final String prefPhotoZoomLbl;
@@ -38,13 +45,13 @@ public final class GuiConfig extends BaseConfig {
     private final String prefWrappedPhotoLbl;
     private final String prefPhotoDisplayFrontFacingLbl;
     private final String prefPhotoDisplayWrappedLbl;
-    private final String prefAggregatedLbl;
-    private final String prefAggregatedDisplayDetectionLbl;
-    private final String prefAggregatedDisplayTagsLbl;
-    private final String prefAggregatedDisplayColorCodedLbl;
-    private final String prefAggregatedLegendLbl;
-    private final String[] prefAggregatedLegendHeader;
-    private final String pregAggregatedLegendHeaderColor;
+    private final String prefClusterLbl;
+    private final String prefClusterDisplayDetectionLbl;
+    private final String prefClusterDisplayTagsLbl;
+    private final String prefClusterDisplayColorCodedLbl;
+    private final String prefClusterLegendLbl;
+    private final String[] prefClusterLegendHeader;
+    private final String prefClusterLegendHeaderColor;
 
     private final String prefTrackLbl;
     private final String prefDisplayTrackLbl;
@@ -57,30 +64,29 @@ public final class GuiConfig extends BaseConfig {
     private final String prefDiskLbl;
     private final String prefPrevNextLbl;
     private final String prefNearbyLbl;
-
     private final String btnPreviousTlt;
-    private final String btnPreviousShortcutText;
+    private String btnPreviousShortcutText;
     private final String btnNextTlt;
-    private final String btnNextShortcutText;
+    private String btnNextShortcutText;
 
     private final String btnClosestTlt;
-    private final String btnClosestShortcutText;
+    private String btnClosestShortcutText;
     private final String btnPlayTlt;
-    private final String btnPlayShortcutText;
+    private String btnPlayShortcutText;
     private final String btnStopTlt;
     private final String btnStopShortcutText;
     private final String btnLocationTlt;
-    private final String btnLocationShortcutText;
+    private String btnLocationShortcutText;
     private final String btnSwitchPhotoFormatToFrontFacingTlt;
     private final String btnSwitchPhotoFormatToWrappedTlt;
     private final String btnWebPageTlt;
-    private final String btnWebPageShortcutTlt;
-    private final String btnDataSwitchShortcutTlt;
+    private String btnWebPageShortcutTlt;
+    private String btnDataSwitchShortcutTlt;
     private final String btnMatchedWayTlt;
-    private final String btnMatchedWayShortcutTlt;
+    private String btnMatchedWayShortcutTlt;
 
     private final String dlgFilterTitle;
-    private final String dlgFilterShortcutText;
+    private String dlgFilterShortcutText;
     private final String dlgFilterDateLbl;
     private final String dlgFilterUserLbl;
     private final String dlgFilterLoginWarningLbl;
@@ -92,13 +98,17 @@ public final class GuiConfig extends BaseConfig {
     private final String dlgFilterDetectionTypeLbl;
     private final String dlgFilterDataTypeImageTxt;
     private final String dlgFilterDataTypeDetectionsTxt;
-    private final String dlgFilterDataTypeAggregatedDetectionsTxt;
+    private final String dlgFilterDataTypeClusterTxt;
     private final String dlgFilterDataRegionLbl;
     private final String dlgFilterSearchDataLbl;
     private final String dlgFilterSearchDataExplicationLbl;
-    private final String dlgFilterConfidenceLbl;
-    private final String dlgFilterConfidenceMinLbl;
-    private final String dlgFilterConfidenceMaxLbl;
+    private final String dlgFilterClusterLbl;
+    private final String dlgFilterConfidenceCategoryLbl;
+    private final String dlgFilterConfidenceCategoryC1Lbl;
+    private final String dlgFilterConfidenceCategoryC2Lbl;
+    private final String dlgFilterConfidenceCategoryC3Lbl;
+    private final String dlgFilterSignLbl;
+    private final String dlgFilterCommonLbl;
 
     private final String btnOkLbl;
     private final String btnClearLbl;
@@ -107,7 +117,7 @@ public final class GuiConfig extends BaseConfig {
     private final String btnResetLbl;
 
     private final String errorTitle;
-    private final String errorPhotoListText;
+    private String errorPhotoListText;
     private final String errorSequenceText;
     private final String errorPhotoLoadingText;
     private final String errorLoadingPhotoPanelText;
@@ -118,18 +128,16 @@ public final class GuiConfig extends BaseConfig {
     private final String incorrectDateFilterText;
     private final String unacceptedDateFilterText;
     private final String errorSequenceSaveText;
-    private final String errorSegmentListText;
+    private String errorSegmentListText;
     private final String errorDetectionRetrieveText;
+    private final String errorEdgeDetectionRetrieveText;
     private final String errorDetectionUpdateText;
     private final String errorClusterRetrieveText;
     private final String errorListSignsText;
     private final String errorListRegionsText;
 
-    private final String incorrectConfidenceFilterText;
-    private final String unacceptedConfidenceFilterText;
-
     private final String errorDownloadOsmData;
-    private final String warningTitle;
+    private String warningTitle;
     private final String warningHighQualityPhoto;
     private final String warningLoadingPhoto;
     private final String warningPhotoCanNotBeLoaded;
@@ -138,7 +146,7 @@ public final class GuiConfig extends BaseConfig {
     private final String layerDeleteMenuItemLbl;
     private final String layerDeleteMenuItemTlt;
     private final String layerFeedbackMenuItemLbl;
-    private final String layerFeedbackShortcutText;
+    private String layerFeedbackShortcutText;
     private final String layerPreviousMenuItemLbl;
     private final String layerNextMenuItemLbl;
     private final String layerPreferenceMenuItemLbl;
@@ -149,26 +157,26 @@ public final class GuiConfig extends BaseConfig {
     private final String infoDownloadPreviousPhotosTitle;
     private final String infoFileExistsTitle;
     private final String infoFileExistsText;
-    private final String gpxTrackDescription;
+    private String gpxTrackDescription;
 
-    private final String detectionDialogTitleName;
-    private final String clusterDialogTitleName;
-    private final String btnFixDetectionShortcutText;
+    private String detectionDialogTitleName;
+    private String clusterDialogTitleName;
+    private String btnFixDetectionShortcutText;
     private final String btnFixDetectionTlt;
-    private final String btnAlreadyFixedDetectionShortcutText;
+    private String btnAlreadyFixedDetectionShortcutText;
     private final String btnAlreadyFixedDetectionTlt;
     private final String btnCouldntFixDetection;
     private final String btnBadDetection;
-    private final String btnBadDetectionShortcutText;
+    private String btnBadDetectionShortcutText;
     private final String btnBadDetectionTlt;
     private final String btnOtherActionOnDetection;
-    private final String btnOtherActionOnDetectionShortcutText;
+    private String btnOtherActionOnDetectionShortcutText;
     private final String btnOtherActionOnDetectionTlt;
     private final String btnMatchedData;
-    private final String btnMatchedDataShortcutText;
+    private String btnMatchedDataShortcutText;
     private final String btnMatchedDataTlt;
-    private final String btnClusterNextShortcutText;
-    private final String btnClusterPreviousShortcutText;
+    private String btnClusterNextShortcutText;
+    private String btnClusterPreviousShortcutText;
 
     private final String detectedDetectionText;
     private final String detectionOnOsmText;
@@ -195,28 +203,66 @@ public final class GuiConfig extends BaseConfig {
     private final String clusterOcrValueLbl;
     private final String detectionIdLbl;
     private final String detectionConfidenceLbl;
+    private final String detectionConfidenceShortLbl;
     private final String detectionOcrValueLbl;
     private final String detectionOcrValueLanguageLbl;
     private final String detectionOcrValueCharacterSetLbl;
     private final String facingConfidenceLbl;
+    private final String facingConfidenceShortLbl;
     private final String positioningConfidenceLbl;
+    private final String positioningConfidenceShortLbl;
     private final String keypointsConfidenceLbl;
     private final String trackingConfidenceLbl;
+    private final String trackingConfidenceShortLbl;
     private final String ocrConfidenceLbl;
     private final String detectionTrackingIdLbl;
     private final String detectionAutomaticOcrValueLbl;
     private final String detectionManualOcrValueLbl;
     private final String clusterLaneCountText;
     private final String clusterConfidenceLevelText;
+    private final String clusterMatchingConfidenceLbl;
+    private final String clusterMatchingConfidenceShortLbl;
+    private final String clusterConfidenceCategoryLbl;
+    private final String clusterConfidenceCategoryShortLbl;
+    private final String clusterOcrConfidenceShortLbl;
+    private final String edgeDetectionIdLbl;
+    private final String edgeDetectionGeneratedAtLbl;
+    private final String edgeDetectionSavedAtLbl;
+    private final String edgeDetectionSignLbl;
+    private final String edgeDetectionAlgorithmLbl;
+    private final String edgeDetectionConfidenceLevelLbl;
+    private final String edgeDetectionTrackingIdLbl;
+    private final String edgeDetectionExtendedIdLbl;
+    private final String edgeDetectionPhotoMetadataLbl;
+    private final String edgeDetectionDeviceLbl;
+    private final String edgeDetectionSizeLbl;
+    private final String edgeDetectionSensorHeadingLbl;
+    private final String edgeDetectionGpsAccuracyLbl;
+    private final String edgeDetectionHorizontalFieldOfViewLbl;
+    private final String edgeDetectionVerticalFieldOfViewLbl;
+    private final String edgeDetectionProjectionTypeLbl;
+    private final String edgeDetectionCustomAttributesLbl;
+    private final String edgeClusterCreatedAtLbl;
+    private final String edgeClusterOSMLbl;
+    private String edgeDataName;
 
     private final String[] clusterTableHeader;
+    private final String[] attributeTableHeader;
+    private final String[] edgeDetectionsTableHeader;
 
     private final String nextRowSelection;
     private final String prevRowSelection;
+    private final String kartaViewNamePrivate;
+    private final String edgeDataNamePrivate;
 
     private GuiConfig() {
         super(CONFIG_FILE);
 
+        isPrivateBuild = Boolean.parseBoolean(readProperty("is.private.build"));
+        menuItemName = readProperty("plugin.menu.name");
+        menuItemMnemonicKey = readIntegerProperty("plugin.menu.item.mnemonic.key");
+        menuItemPosition = readIntegerProperty("plugin.menu.item.position");
+        menuItemHelpTopic = readProperty("plugin.menu.item.help.topic");
         pluginShortName = readProperty("plugin.name.short");
         pluginLongName = readProperty("plugin.name.long");
         pluginTlt = readProperty("plugin.tlt");
@@ -224,6 +270,8 @@ public final class GuiConfig extends BaseConfig {
         pluginShortcutLongText = readProperty("plugin.shortcut.longText");
         pluginDetectionShortcutText = readProperty("plugin.detection.shortcut.text");
         pluginDetectionShortcutLongText = readProperty("plugin.detection.shortcut.longText");
+        edgeDetectionShortcutText = readProperty("edge.detection.shortcut.text");
+        edgeDetectionShortcutLongText = readProperty("edge.detection.shortcut.longText");
 
         prefMapViewLbl = readProperty("preferences.mapView.lbl");
         prefPhotoZoomLbl = readProperty("preferences.mapView.zoom.lbl");
@@ -235,13 +283,13 @@ public final class GuiConfig extends BaseConfig {
         prefWrappedPhotoLbl = readProperty("preferences.wrapped.photo.lbl");
         prefPhotoDisplayFrontFacingLbl = readProperty("preferences.photo.display.front.facing.lbl");
         prefPhotoDisplayWrappedLbl = readProperty("preferences.photo.display.wrapped.lbl");
-        prefAggregatedLbl = readProperty("preference.aggregated.lbl");
-        prefAggregatedDisplayDetectionLbl = readProperty("preference.aggregated.detection");
-        prefAggregatedDisplayTagsLbl = readProperty("preference.aggregated.tags");
-        prefAggregatedDisplayColorCodedLbl = readProperty("preference.aggregated.colorCoded");
-        prefAggregatedLegendLbl = readProperty("preference.aggregated.legend");
-        prefAggregatedLegendHeader = readPropertiesArray("preference.aggregated.legend.header");
-        pregAggregatedLegendHeaderColor = readProperty("preference.aggregated.legend.header.color");
+        prefClusterLbl = readProperty("preference.cluster.lbl");
+        prefClusterDisplayDetectionLbl = readProperty("preference.cluster.detection");
+        prefClusterDisplayTagsLbl = readProperty("preference.cluster.tags");
+        prefClusterDisplayColorCodedLbl = readProperty("preference.cluster.colorCoded");
+        prefClusterLegendLbl = readProperty("preference.cluster.legend");
+        prefClusterLegendHeader = readPropertiesArray("preference.cluster.legend.header");
+        prefClusterLegendHeaderColor = readProperty("preference.cluster.legend.header.color");
         prefTrackLbl = readProperty("preference.track.lbl");
         prefDisplayTrackLbl = readProperty("preference.track.displayTrack.lbl");
         prefAutoplayLbl = readProperty("preference.track.autoplay.lbl");
@@ -287,13 +335,17 @@ public final class GuiConfig extends BaseConfig {
         dlgFilterDetectionTypeLbl = readProperty("filter.detectionType.lbl");
         dlgFilterDataTypeImageTxt = readProperty("filter.dataType.photos");
         dlgFilterDataTypeDetectionsTxt = readProperty("filter.dataType.detections");
-        dlgFilterDataTypeAggregatedDetectionsTxt = readProperty("filter.dataType.aggregatedDetections");
+        dlgFilterDataTypeClusterTxt = readProperty("filter.dataType.clusters");
         dlgFilterDataRegionLbl = readProperty("filter.detectionRegion.lbl");
         dlgFilterSearchDataLbl = readProperty("filter.searchData.lbl");
         dlgFilterSearchDataExplicationLbl = readProperty("filter.searchData.explication.lbl");
-        dlgFilterConfidenceLbl = readProperty("filter.confidenceLevel.lbl");
-        dlgFilterConfidenceMinLbl = readProperty("filter.confidence.min.lbl");
-        dlgFilterConfidenceMaxLbl = readProperty("filter.confidence.max.lbl");
+        dlgFilterClusterLbl = readProperty("filter.clusterFilter.lbl");
+        dlgFilterConfidenceCategoryLbl = readProperty("filter.confidenceCategory.lbl");
+        dlgFilterConfidenceCategoryC1Lbl = readProperty("filter.confidence.c1.value");
+        dlgFilterConfidenceCategoryC2Lbl = readProperty("filter.confidence.c2.value");
+        dlgFilterConfidenceCategoryC3Lbl = readProperty("filter.confidence.c3.value");
+        dlgFilterSignLbl = readProperty("filter.signFilter.lbl");
+        dlgFilterCommonLbl = readProperty("filter.commonFilters.lbl");
 
         btnOkLbl = readProperty("btn.ok.lbl");
         btnClearLbl = readProperty("btn.clear.lbl");
@@ -312,6 +364,7 @@ public final class GuiConfig extends BaseConfig {
         errorSegmentListText = readProperty("error.segment.list");
         errorSequenceSaveText = readProperty("error.track.save");
         errorDetectionRetrieveText = readProperty("error.detection.retrieve");
+        errorEdgeDetectionRetrieveText = readProperty("error.edge.detection.retrieve");
         errorDetectionUpdateText = readProperty("error.detection.update");
         errorClusterRetrieveText = readProperty("error.cluster.retrieve");
         errorListSignsText = readProperty("error.sign.list");
@@ -320,8 +373,6 @@ public final class GuiConfig extends BaseConfig {
         unacceptedDateFilterText = readProperty("error.dateFilter.unaccepted");
         errorPluginVersionText= readProperty("error.plugin.version");
         incorrectDateFilterText = readProperty("error.dateFilter.incorrect");
-        incorrectConfidenceFilterText = readProperty("error.confidenceFilter.incorrect");
-        unacceptedConfidenceFilterText = readProperty("error.confidenceFilter.unaccepted");
         warningTitle = readProperty("warning.title");
         warningPhotoCanNotBeLoaded = readProperty("warning.photo.can.not.be.loaded");
         warningDetectionCanNotBeLoaded = readProperty("warning.detection.can.not.be.loaded");
@@ -362,6 +413,7 @@ public final class GuiConfig extends BaseConfig {
         btnMatchedDataTlt = readProperty("btn.matchedData.tlt");
         btnMatchedDataShortcutText = readProperty("btn.matchedData.shortcut.text");
 
+        edgeDataName = readProperty("edge.data.dialog.title");
         detectionDialogTitleName = readProperty("detection.dialog.title");
         clusterDialogTitleName = readProperty("cluster.dialog.title");
         detectedDetectionText = readProperty("detection.detected.text");
@@ -391,23 +443,106 @@ public final class GuiConfig extends BaseConfig {
         detectionIdLbl = readProperty("detection.id");
         detectionTrackingIdLbl = readProperty("detection.tracking.id");
         detectionConfidenceLbl = readProperty("detection.confidence.detection");
+        detectionConfidenceShortLbl = readProperty("detection.confidence.detection.short");
         detectionOcrValueLbl = readProperty("detection.ocr.value");
         detectionOcrValueLanguageLbl = readProperty("detection.ocr.value.language");
         detectionOcrValueCharacterSetLbl = readProperty("detection.ocr.value.character.set");
         detectionAutomaticOcrValueLbl = readProperty("detection.automaticOcrValue.lbl");
         detectionManualOcrValueLbl = readProperty("detection.manualOcrValue.lbl");
         facingConfidenceLbl = readProperty("detection.confidence.facing");
+        facingConfidenceShortLbl = readProperty("detection.confidence.facing.short");
         positioningConfidenceLbl = readProperty("detection.confidece.positioning");
+        positioningConfidenceShortLbl = readProperty("detection.confidece.positioning.short");
         keypointsConfidenceLbl = readProperty("detection.confidence.keypoints");
         trackingConfidenceLbl = readProperty("detection.confidence.tracking");
+        trackingConfidenceShortLbl = readProperty("detection.confidence.tracking.short");
         ocrConfidenceLbl = readProperty("detection.confidence.ocr");
         clusterLaneCountText = readProperty("cluster.lane.count.text");
         clusterConfidenceLevelText = readProperty("cluster.confidence.level.text");
+        clusterMatchingConfidenceLbl = readProperty("cluster.matching.confidence");
+        clusterMatchingConfidenceShortLbl = readProperty("cluster.matching.confidence.short");
+        clusterConfidenceCategoryLbl = readProperty("cluster.confidence.category");
+        clusterConfidenceCategoryShortLbl = readProperty("cluster.confidence.category.short");
+        clusterOcrConfidenceShortLbl = readProperty("cluster.ocr.confidence.short");
+        edgeDetectionIdLbl = readProperty("edge.detection.id");
+        edgeDetectionGeneratedAtLbl = readProperty("edge.detection.generatedAt");
+        edgeDetectionSavedAtLbl = readProperty("edge.detection.savedAt");
+        edgeDetectionSignLbl = readProperty("edge.detection.sign");
+        edgeDetectionAlgorithmLbl = readProperty("edge.detection.algorithm");
+        edgeDetectionConfidenceLevelLbl = readProperty("edge.detection.confidenceLevel");
+        edgeDetectionTrackingIdLbl = readProperty("edge.detection.trackingId");
+        edgeDetectionExtendedIdLbl = readProperty("edge.detection.extendedId");
+        edgeDetectionPhotoMetadataLbl = readProperty("edge.detection.photoMetadata");
+        edgeDetectionDeviceLbl = readProperty("edge.detection.photoMetadata.device");
+        edgeDetectionSizeLbl = readProperty("edge.detection.photoMetadata.size");
+        edgeDetectionSensorHeadingLbl = readProperty("edge.detection.photoMetadata.sensorHeading");
+        edgeDetectionGpsAccuracyLbl = readProperty("edge.detection.photoMetadata.gpsAccuracy");
+        edgeDetectionHorizontalFieldOfViewLbl = readProperty("edge.detection.photoMetadata.horizontalFieldOfView");
+        edgeDetectionProjectionTypeLbl = readProperty("edge.detection.photoMetadata.projectionType");
+        edgeDetectionVerticalFieldOfViewLbl = readProperty("edge.detection.photoMetadata.verticalFieldOfView");
+        edgeDetectionCustomAttributesLbl = readProperty("edge.detection.customAttributes");
+        edgeClusterCreatedAtLbl = readProperty("edge.cluster.createdAt");
+        edgeClusterOSMLbl = readProperty("edge.cluster.OSM");
 
         clusterTableHeader = readPropertiesArray("cluster.table.header");
+        attributeTableHeader = readPropertiesArray("attribute.table.header");
+        edgeDetectionsTableHeader = readPropertiesArray("edge.detections.table.header");
 
         nextRowSelection = readProperty("table.next.row.selection");
         prevRowSelection = readProperty("table.prev.row.selection");
+        kartaViewNamePrivate = readProperty("kartaView.name.private");
+        edgeDataNamePrivate = readProperty("edge.data.name.private");
+
+        if (isPrivateBuild) {
+            pluginShortName = pluginShortName.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginLongName = pluginLongName.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginTlt = pluginTlt.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginShortcutText = pluginShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginShortcutLongText = pluginShortcutLongText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginDetectionShortcutText = pluginDetectionShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            pluginDetectionShortcutLongText = pluginDetectionShortcutLongText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            dlgFilterShortcutText = dlgFilterShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnPreviousShortcutText = btnPreviousShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnNextShortcutText = btnNextShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnClosestShortcutText = btnClosestShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnPlayShortcutText = btnPlayShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnLocationShortcutText = btnLocationShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnWebPageShortcutTlt = btnWebPageShortcutTlt.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnDataSwitchShortcutTlt = btnDataSwitchShortcutTlt.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnMatchedWayShortcutTlt = btnMatchedWayShortcutTlt.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnMatchedDataShortcutText = btnMatchedDataShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnClusterNextShortcutText = btnClusterNextShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnClusterPreviousShortcutText = btnClusterPreviousShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            errorPhotoListText = errorPhotoListText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            errorSegmentListText = errorSegmentListText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            warningTitle = warningTitle.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            layerFeedbackShortcutText = layerFeedbackShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            gpxTrackDescription = gpxTrackDescription.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            detectionDialogTitleName = detectionDialogTitleName.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            clusterDialogTitleName = clusterDialogTitleName.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnFixDetectionShortcutText = btnFixDetectionShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnAlreadyFixedDetectionShortcutText = btnAlreadyFixedDetectionShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnBadDetectionShortcutText = btnBadDetectionShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            btnOtherActionOnDetectionShortcutText = btnOtherActionOnDetectionShortcutText.replaceAll(getMenuItemName(), getKartaViewNamePrivate());
+            edgeDataName = edgeDataName.replaceAll(getEdgeDataName(), getEdgeDataNamePrivate());
+            edgeDetectionShortcutLongText = edgeDetectionShortcutLongText.replaceAll("Edge data", "Edge data - Grab");
+        }
+    }
+
+    public String getMenuItemName() {
+        return menuItemName;
+    }
+
+    public Integer getMenuItemMnemonicKey() {
+        return menuItemMnemonicKey;
+    }
+
+    public Integer getMenuItemPosition() {
+        return menuItemPosition;
+    }
+
+    public String getMenuItemHelpTopic() {
+        return menuItemHelpTopic;
     }
 
     public static GuiConfig getInstance() {
@@ -416,6 +551,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPluginShortName() {
         return pluginShortName;
+    }
+
+    public boolean isPrivateBuild() {
+        return isPrivateBuild;
+    }
+
+    public String getPluginLogName() {
+        return pluginShortName.toLowerCase();
     }
 
     public String getPluginLongName() {
@@ -428,6 +571,14 @@ public final class GuiConfig extends BaseConfig {
 
     public String getPluginDetectionShortcutLongText() {
         return pluginDetectionShortcutLongText;
+    }
+
+    public String getEdgeDetectionShortcutText() {
+        return edgeDetectionShortcutText;
+    }
+
+    public String getEdgeDetectionShortcutLongText() {
+        return edgeDetectionShortcutLongText;
     }
 
     public String getPluginTlt() {
@@ -478,32 +629,32 @@ public final class GuiConfig extends BaseConfig {
         return prefPhotoDisplayWrappedLbl;
     }
 
-    public String getPrefAggregatedLbl() {
-        return prefAggregatedLbl;
+    public String getPrefClusterLbl() {
+        return prefClusterLbl;
     }
 
-    public String getPrefAggregatedDisplayDetectionLbl() {
-        return prefAggregatedDisplayDetectionLbl;
+    public String getPrefClusterDisplayDetectionLbl() {
+        return prefClusterDisplayDetectionLbl;
     }
 
-    public String getPrefAggregatedDisplayTagsLbl() {
-        return prefAggregatedDisplayTagsLbl;
+    public String getPrefClusterDisplayTagsLbl() {
+        return prefClusterDisplayTagsLbl;
     }
 
-    public String getPrefAggregatedDisplayColorCodedLbl() {
-        return prefAggregatedDisplayColorCodedLbl;
+    public String getPrefClusterDisplayColorCodedLbl() {
+        return prefClusterDisplayColorCodedLbl;
     }
 
-    public String getPrefAggregatedLegendLbl() {
-        return prefAggregatedLegendLbl;
+    public String getPrefClusterLegendLbl() {
+        return prefClusterLegendLbl;
     }
 
-    public String[] getPrefAggregatedLegendHeaders() {
-        return prefAggregatedLegendHeader;
+    public String[] getPrefClusterLegendHeaders() {
+        return prefClusterLegendHeader;
     }
 
-    public String getPregAggregatedLegendHeaderColor() {
-        return pregAggregatedLegendHeaderColor;
+    public String getPrefClusterLegendHeaderColor() {
+        return prefClusterLegendHeaderColor;
     }
 
     public String getPrefTrackLbl() {
@@ -574,6 +725,7 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDateLbl;
     }
 
+
     public String getDlgFilterUserLbl() {
         return dlgFilterUserLbl;
     }
@@ -594,16 +746,32 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterOsmComparisonLbl;
     }
 
-    public String getDlgFilterConfidenceLbl() {
-        return dlgFilterConfidenceLbl;
+    public String getDlgFilterClusterLbl() {
+        return dlgFilterClusterLbl;
     }
 
-    public String getDlgFilterConfidenceMinLbl() {
-        return dlgFilterConfidenceMinLbl;
+    public String getDlgFilterConfidenceCategoryLbl() {
+        return dlgFilterConfidenceCategoryLbl;
     }
 
-    public String getDlgFilterConfidenceMaxLbl() {
-        return dlgFilterConfidenceMaxLbl;
+    public String getDlgFilterConfidenceCategoryC1Lbl() {
+        return dlgFilterConfidenceCategoryC1Lbl;
+    }
+
+    public String getDlgFilterConfidenceCategoryC2Lbl() {
+        return dlgFilterConfidenceCategoryC2Lbl;
+    }
+
+    public String getDlgFilterConfidenceCategoryC3Lbl() {
+        return dlgFilterConfidenceCategoryC3Lbl;
+    }
+
+    public String getDlgFilterSignLbl() {
+        return dlgFilterSignLbl;
+    }
+
+    public String getDlgFilterCommonLbl() {
+        return dlgFilterCommonLbl;
     }
 
     public String getDlgFilterModeLbl() {
@@ -698,6 +866,10 @@ public final class GuiConfig extends BaseConfig {
         return errorDetectionRetrieveText;
     }
 
+    public String getErrorEdgeDetectionRetrieveText() {
+        return errorEdgeDetectionRetrieveText;
+    }
+
     public String getErrorDetectionUpdateText() {
         return errorDetectionUpdateText;
     }
@@ -724,14 +896,6 @@ public final class GuiConfig extends BaseConfig {
 
     public String getUnacceptedDateFilterText() {
         return unacceptedDateFilterText;
-    }
-
-    public String getIncorrectConfidenceFilterText() {
-        return incorrectConfidenceFilterText;
-    }
-
-    public String getUnacceptedConfidenceFilterText() {
-        return unacceptedConfidenceFilterText;
     }
 
     public String getErrorSequenceSaveText() {
@@ -1014,8 +1178,8 @@ public final class GuiConfig extends BaseConfig {
         return dlgFilterDataTypeDetectionsTxt;
     }
 
-    public String getDlgFilterDataTypeAggregatedDetectionsTxt() {
-        return dlgFilterDataTypeAggregatedDetectionsTxt;
+    public String getDlgFilterDataTypeClusterTxt() {
+        return dlgFilterDataTypeClusterTxt;
     }
 
     public String getDialogAddCommentText() {
@@ -1098,6 +1262,14 @@ public final class GuiConfig extends BaseConfig {
         return clusterTableHeader;
     }
 
+    public String[] getAttributeTableHeader() {
+        return attributeTableHeader;
+    }
+
+    public String[] getEdgeDetectionsTableHeader() {
+        return edgeDetectionsTableHeader;
+    }
+
     public String getBtnMatchedData() {
         return btnMatchedData;
     }
@@ -1120,5 +1292,129 @@ public final class GuiConfig extends BaseConfig {
 
     public String getDetectionManualOcrValueLbl() {
         return detectionManualOcrValueLbl;
+    }
+
+    public String getClusterMatchingConfidenceLbl() {
+        return clusterMatchingConfidenceLbl;
+    }
+
+    public String getClusterConfidenceCategoryLbl() {
+        return clusterConfidenceCategoryLbl;
+    }
+
+    public String getEdgeDetectionIdLbl() {
+        return edgeDetectionIdLbl;
+    }
+
+    public String getEdgeDetectionGeneratedAtLbl() {
+        return edgeDetectionGeneratedAtLbl;
+    }
+
+    public String getEdgeDetectionSavedAtLbl() {
+        return edgeDetectionSavedAtLbl;
+    }
+
+    public String getEdgeDetectionSignLbl() {
+        return edgeDetectionSignLbl;
+    }
+
+    public String getEdgeDetectionAlgorithmLbl() {
+        return edgeDetectionAlgorithmLbl;
+    }
+
+    public String getEdgeDetectionConfidenceLevelLbl() {
+        return edgeDetectionConfidenceLevelLbl;
+    }
+
+    public String getEdgeDetectionTrackingIdLbl() {
+        return edgeDetectionTrackingIdLbl;
+    }
+
+    public String getEdgeDetectionExtendedIdLbl() {
+        return edgeDetectionExtendedIdLbl;
+    }
+
+    public String getEdgeDetectionPhotoMetadataLbl() {
+        return edgeDetectionPhotoMetadataLbl;
+    }
+
+    public String getEdgeDetectionDeviceLbl() {
+        return edgeDetectionDeviceLbl;
+    }
+
+    public String getEdgeDetectionSizeLbl() {
+        return edgeDetectionSizeLbl;
+    }
+
+    public String getEdgeDetectionSensorHeadingLbl() {
+        return edgeDetectionSensorHeadingLbl;
+    }
+
+    public String getEdgeDetectionGpsAccuracyLbl() {
+        return edgeDetectionGpsAccuracyLbl;
+    }
+
+    public String getEdgeDetectionHorizontalFieldOfViewLbl() {
+        return edgeDetectionHorizontalFieldOfViewLbl;
+    }
+
+    public String getEdgeDetectionProjectionTypeLbl() {
+        return edgeDetectionProjectionTypeLbl;
+    }
+
+    public String getEdgeDetectionCustomAttributesLbl() {
+        return edgeDetectionCustomAttributesLbl;
+    }
+
+    public String getEdgeClusterCreatedAtLbl() {
+        return edgeClusterCreatedAtLbl;
+    }
+
+    public String getEdgeClusterOSMLbl() {
+        return edgeClusterOSMLbl;
+    }
+
+    public String getEdgeDetectionVerticalFieldOfViewLbl() {
+        return edgeDetectionVerticalFieldOfViewLbl;
+    }
+
+    public String getClusterMatchingConfidenceShortLbl() {
+        return clusterMatchingConfidenceShortLbl;
+    }
+
+    public String getClusterConfidenceCategoryShortLbl() {
+        return clusterConfidenceCategoryShortLbl;
+    }
+
+    public String getClusterOcrConfidenceShortLbl() {
+        return clusterOcrConfidenceShortLbl;
+    }
+
+    public String getDetectionConfidenceShortLbl() {
+        return detectionConfidenceShortLbl;
+    }
+
+    public String getFacingConfidenceShortLbl() {
+        return facingConfidenceShortLbl;
+    }
+
+    public String getPositioningConfidenceShortLbl() {
+        return positioningConfidenceShortLbl;
+    }
+
+    public String getTrackingConfidenceShortLbl() {
+        return trackingConfidenceShortLbl;
+    }
+
+    public String getEdgeDataName() {
+        return edgeDataName;
+    }
+
+    private String getKartaViewNamePrivate() {
+        return kartaViewNamePrivate;
+    }
+
+    private String getEdgeDataNamePrivate() {
+        return edgeDataNamePrivate;
     }
 }

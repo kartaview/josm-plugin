@@ -6,10 +6,9 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.entity;
 
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
 
 /**
  *
@@ -18,59 +17,61 @@ import java.util.List;
  */
 public class PhotoDataSet {
 
-    private final List<Photo> photos;
-    private Integer page;
-    private Integer totalItems;
+	private List<Photo> photos;
+	private Integer page;
+	private Integer totalItems;
 
+	public PhotoDataSet() {
+		this.photos = new ArrayList<>();
+	}
 
-    public PhotoDataSet() {
-        this.photos = new ArrayList<>();
-    }
+	public PhotoDataSet(final List<Photo> photos) {
+		this.photos = photos;
+	}
 
-    public PhotoDataSet(final List<Photo> photos) {
-        this.photos = photos;
-    }
+	public PhotoDataSet(final List<Photo> photos, final Integer page, final Integer totalItems) {
+		this.photos = photos;
+		this.page = page;
+		this.totalItems = totalItems;
+	}
 
+	public List<Photo> getPhotos() {
+		return photos;
+	}
 
-    public PhotoDataSet(final List<Photo> photos, final Integer page, final Integer totalItems) {
-        this.photos = photos;
-        this.page = page;
-        this.totalItems = totalItems;
-    }
+	public Integer getPage() {
+		return page;
+	}
 
-    public List<Photo> getPhotos() {
-        return photos;
-    }
+	public Integer getTotalItems() {
+		return totalItems;
+	}
 
-    public Integer getPage() {
-        return page;
-    }
+	public boolean hasPreviousItems() {
+		return page != null && page > 1;
+	}
 
-    public Integer getTotalItems() {
-        return totalItems;
-    }
+	public boolean hasNextItems() {
+		return page != null && totalItems > page * KartaViewServiceConfig.getInstance().getNearbyPhotosMaxItems();
+	}
 
-    public boolean hasPreviousItems() {
-        return page != null && page > 1;
-    }
+	public boolean hasItems() {
+		return photos != null && !photos.isEmpty();
+	}
 
-    public boolean hasNextItems() {
-        return page != null && totalItems > page * KartaViewServiceConfig.getInstance().getNearbyPhotosMaxItems();
-    }
+	public void addPhotos(final List<Photo> photos) {
+		if (photos != null && !photos.isEmpty()) {
+			this.photos.addAll(photos);
+		}
+	}
 
-    public boolean hasItems() {
-        return photos != null && !photos.isEmpty();
-    }
+	public void removePhotos(final List<Photo> photos) {
+		if (photos != null && !photos.isEmpty()) {
+			this.photos.removeAll(photos);
+		}
+	}
 
-    public void addPhotos(final List<Photo> photos) {
-        if (photos != null && !photos.isEmpty()) {
-            this.photos.addAll(photos);
-        }
-    }
-
-    public void removePhotos(final List<Photo> photos) {
-        if (photos != null && !photos.isEmpty()) {
-            this.photos.removeAll(photos);
-        }
-    }
+	public void removeAllPhotos() {
+		this.photos = new ArrayList<>();
+	}
 }

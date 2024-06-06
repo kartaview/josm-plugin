@@ -60,7 +60,7 @@
        style="opacity:1;fill:#0046aa;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:315.81494141;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
        r="350" />
     <rect
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:414.86404419px;line-height:0;font-family:Giaothong1;-inkscape-font-specification:'Giaothong1 Bold';letter-spacing:0px;word-spacing:0px;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.09109017;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:414.86404419px;line-height:0;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.09109017;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
        id="rect984"
        width="178.88254"
        height="424.56006"
@@ -75,11 +75,11 @@
        height="303.29202"
        width="57.61451"
        id="rect988"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:414.86404419px;line-height:0;font-family:Giaothong1;-inkscape-font-specification:'Giaothong1 Bold';letter-spacing:0px;word-spacing:0px;opacity:1;fill:#0046aa;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.04369327;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:414.86404419px;line-height:0;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#0046aa;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.04369327;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
        ry="28.807257" />
     <path
        d="m 325.69246,-58.070949 q 4.91431,7.98569 6.44999,17.50711 1.84296,9.521402 1.84296,23.342802 v 80.47124 q 0,15.66426 -3.0715,28.56423 -2.76422,12.899957 -18.7357,38.699897 Q 296.20689,156.31429 250.13556,160 221.87852,160 199.14992,147.71431 176.7286,135.42861 167.51425,118.22866 158.30004,101.0287 156.1501,89.357293 154,77.685883 154,63.250203 v -66.03556 q 0,-13.8214 0.61427,-19.6571 0.61442,-6.14284 4.30004,-16.278542 L 242.1499,-263.24191 h 67.87837 L 242.1499,-87.249449 q 12.59284,-4.3 27.02849,-4.3 h 5.52858 q 34.09276,4.3 50.98549,33.4785 z m -57.12834,31.328512 q -9.52149,-12.592852 -25.18568,-12.592852 -8.2928,0 -15.6642,5.221422 -7.06441,4.91428 -10.13576,11.97854 -3.0715,6.75714 -3.0715,19.34997 v 66.03556 q 0,13.8214 7.37154,25.79996 7.67853,11.978537 25.79996,10.13568 16.27846,0 21.19278,-11.05712 5.22144,-11.05712 5.22144,-24.87852 v -66.03556 q 0,-8.29285 -0.92155,-13.51426 -0.92141,-5.52856 -4.60703,-10.44282 z"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:412.47674561px;line-height:0;font-family:Giaothong1;-inkscape-font-specification:'Giaothong1 Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.27618313"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:412.47674561px;line-height:0;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.27618313"
        id="path824"
        inkscape:connector-curvature="0" />
     <path

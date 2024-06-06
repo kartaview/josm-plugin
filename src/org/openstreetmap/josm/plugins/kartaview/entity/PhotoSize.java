@@ -11,6 +11,7 @@ package org.openstreetmap.josm.plugins.kartaview.entity;
  * @author nicoleta.viregan
  */
 public class PhotoSize {
+
     private final Long width;
     private final Long height;
 
@@ -29,5 +30,10 @@ public class PhotoSize {
 
     public boolean isNotNull() {
         return width != null && height != null;
+    }
+
+    @Override
+    public String toString() {
+        return width + "x" + height;
     }
 }

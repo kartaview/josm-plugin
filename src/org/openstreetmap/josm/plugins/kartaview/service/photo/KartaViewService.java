@@ -6,6 +6,27 @@
  */
 package org.openstreetmap.josm.plugins.kartaview.service.photo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.grab.josm.common.argument.BoundingBox;
+import com.grab.josm.common.http.HttpConnector;
+import com.grab.josm.common.http.HttpConnectorException;
+import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
+import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
+import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
+import org.openstreetmap.josm.plugins.kartaview.entity.Sequence;
+import org.openstreetmap.josm.plugins.kartaview.service.BaseService;
+import org.openstreetmap.josm.plugins.kartaview.service.ClientLogger;
+import org.openstreetmap.josm.plugins.kartaview.service.Paging;
+import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.adapter.PhotoTypeAdapter;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.adapter.SegmentTypeAdapter;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.ListResponse;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.PhotoDetailsResponse;
+import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.SequencePhotoListResponse;
+import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,25 +40,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.openstreetmap.josm.plugins.kartaview.service.ClientLogger;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.adapter.PhotoTypeAdapter;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.adapter.SegmentTypeAdapter;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.ListResponse;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.PhotoDetailsResponse;
-import org.openstreetmap.josm.plugins.kartaview.service.photo.entity.SequencePhotoListResponse;
-import org.openstreetmap.josm.plugins.kartaview.util.cnf.KartaViewServiceConfig;
-import org.openstreetmap.josm.plugins.kartaview.entity.Photo;
-import org.openstreetmap.josm.plugins.kartaview.entity.PhotoDataSet;
-import org.openstreetmap.josm.plugins.kartaview.entity.Segment;
-import org.openstreetmap.josm.plugins.kartaview.entity.Sequence;
-import org.openstreetmap.josm.plugins.kartaview.service.BaseService;
-import org.openstreetmap.josm.plugins.kartaview.service.ServiceException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.grab.josm.common.argument.BoundingBox;
-import com.grab.josm.common.http.HttpConnector;
-import com.grab.josm.common.http.HttpConnectorException;
 
 
 /**
@@ -50,6 +52,7 @@ public class KartaViewService extends BaseService {
 
     private static final int SECOND_PAGE = 2;
     private static final ClientLogger logger = new ClientLogger("oscApi");
+
 
     @Override
     public Gson createGson() {
@@ -67,15 +70,13 @@ public class KartaViewService extends BaseService {
      * @param area a {@code BoundingBox} defines the searching area
      * @param date a {@code Date} if not null, then the method returns the photos that were uploaded after the specified
      * date
-     * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
-     * uploaded by the logged in user
      * @param paging a {@code Paging} represents the pagination for the data set
      * @return a list of {@code Photo}s
      * @throws ServiceException if the operation fails
      */
-    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final Date date, final Long osmUserId,
-            final Paging paging) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(area, date, osmUserId, paging).getContent();
+    public PhotoDataSet listNearbyPhotos(final BoundingBox area, final Date date, final Paging paging)
+            throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(area, date, paging).getContent();
         final String url =
                 KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.LIST_NEARBY_PHOTOS);
         final ListResponse<Photo> listPhotoResponse = executePost(url, arguments,
@@ -145,23 +146,19 @@ public class KartaViewService extends BaseService {
     /**
      * Returns a list of segments that has KartaView coverage from the given area.
      *
-     * @param area a {@code BoundingBox} represents the current area
-     * @param osmUserId a {@code Long} specifies the user's OSM identifier; if not null return only the photos that were
-     * uploaded by the logged in user
+     * @param area a {@code BoundingBox} represents the current area uploaded by the logged in user
      * @param zoom represents the current zoom level
      * @return a list of {@code Segment}s
      * @throws ServiceException if the operation fails
      */
-    public List<Segment> listMatchedTracks(final BoundingBox area, final Long osmUserId, final int zoom)
-            throws ServiceException {
-        final ListResponse<Segment> listSegmentResponse =
-                listMatchedTacks(area, osmUserId, zoom, Paging.TRACKS_DEFAULT);
+    public List<Segment> listMatchedTracks(final BoundingBox area, final int zoom) throws ServiceException {
+        final ListResponse<Segment> listSegmentResponse = listMatchedTacks(area, zoom, Paging.TRACKS_DEFAULT);
         final Set<Segment> segments = new HashSet<>();
         if (listSegmentResponse != null) {
             segments.addAll(listSegmentResponse.getCurrentPageItems());
             if (listSegmentResponse.getTotalItems() > KartaViewServiceConfig.getInstance().getTracksMaxItems()) {
-                final int pages = listSegmentResponse.getTotalItems() > KartaViewServiceConfig.getInstance()
-                        .getTracksMaxItems()
+                final int pages =
+                        listSegmentResponse.getTotalItems() > KartaViewServiceConfig.getInstance().getTracksMaxItems()
                                 ? (listSegmentResponse.getTotalItems()
                                         / KartaViewServiceConfig.getInstance().getTracksMaxItems()) + 1
                                 : SECOND_PAGE;
@@ -169,8 +166,7 @@ public class KartaViewService extends BaseService {
                 final List<Future<ListResponse<Segment>>> futures = new ArrayList<>();
                 for (int i = SECOND_PAGE; i <= pages; i++) {
                     final Paging paging = new Paging(i, KartaViewServiceConfig.getInstance().getTracksMaxItems());
-                    final Callable<ListResponse<Segment>> callable =
-                            () -> listMatchedTacks(area, osmUserId, zoom, paging);
+                    final Callable<ListResponse<Segment>> callable = () -> listMatchedTacks(area, zoom, paging);
                     futures.add(executor.submit(callable));
                 }
                 segments.addAll(readResult(futures));
@@ -180,11 +176,11 @@ public class KartaViewService extends BaseService {
         return new ArrayList<>(segments);
     }
 
-    private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final Long osmUserId, final int zoom,
-            final Paging paging) throws ServiceException {
-        final Map<String, String> arguments = new HttpContentBuilder(area, osmUserId, zoom, paging).getContent();
-        final String url = KartaViewServiceConfig.getInstance().getServiceBaseUrl()
-                .concat(RequestConstants.LIST_MATCHED_TRACKS);
+    private ListResponse<Segment> listMatchedTacks(final BoundingBox area, final int zoom, final Paging paging)
+            throws ServiceException {
+        final Map<String, String> arguments = new HttpContentBuilder(area, zoom, paging).getContent();
+        final String url =
+                KartaViewServiceConfig.getInstance().getServiceBaseUrl().concat(RequestConstants.LIST_MATCHED_TRACKS);
         final ListResponse<Segment> listSegmentResponse = executePost(url, arguments,
                 new TypeToken<ListResponse<Segment>>() {}.getType(), logger, RequestConstants.LIST_MATCHED_TRACKS);
         verifyResponseStatus(listSegmentResponse);
@@ -194,8 +190,7 @@ public class KartaViewService extends BaseService {
 
     public Photo retrievePhotoDetails(final Long sequenceId, final Integer sequenceIndex) throws ServiceException {
         final Map<String, String> arguments = new HttpContentBuilder(sequenceId, sequenceIndex).getContent();
-        final String url =
-                KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
+        final String url = KartaViewServiceConfig.getInstance().getServiceUrl().concat(RequestConstants.PHOTO_DETAILS);
         final PhotoDetailsResponse result =
                 executePost(url, arguments, PhotoDetailsResponse.class, logger, RequestConstants.PHOTO_DETAILS);
         verifyResponseStatus(result);
